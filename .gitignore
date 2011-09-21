@@ -1,0 +1,9 @@
+*.py[co]
+*~
+/*.egg
+/*.egg-info
+/.project
+/.pydevproject
+/.settings
+boris/settings/local.py
+
