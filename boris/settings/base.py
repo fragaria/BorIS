@@ -1,80 +1,112 @@
-import os
+# Django base settings for dum_common project.
 
-PROJECT_ROOT = os.path.dirname(os.path.dirname(__file__))
+from os.path import dirname, join, abspath
 
-DEBUG = TEMPLATE_DEBUG = False
+import boris
+
+gettext = lambda s: s
+
+PROJECT_ROOT = abspath(dirname(boris.__file__))
 
 ADMINS = (
+    ('Filip Varecha', 'filip.varecha@fragaria.cz'),
     ('Hynek Urban', 'hynek.urban@fragaria.cz'),
 )
-
 MANAGERS = ADMINS
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'boris.db',                      # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-    }
-}
-
+# Local time zone for this installation. Choices can be found here:
+# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
+# although not all choices may be available on all operating systems.
+# If running in a Windows environment this must be set to the same as your
+# system time zone.
 TIME_ZONE = 'Europe/Prague'
 
+# Language code for this installation. All choices can be found here:
+# http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'cs'
 
-SITE_ID = 1
-
-USE_I18N = False
+# If you set this to False, Django will make some optimizations so as not
+# to load the internationalization machinery.
+USE_I18N = True
 USE_L10N = True
 
-ADMIN_MEDIA_PREFIX = '/static/admin/'
+# Site ID
+SITE_ID = 1
 
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = 'lu4bsm7a)jppr!8#_mr9s!yu!bdma$^)$a7k34ycylrl!u2w9g'
+# Absolute path to the directory that holds media.
+MEDIA_ROOT = join(PROJECT_ROOT, 'media')
+
+ROOT_URLCONF = 'boris.urls'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
+    'django.template.loaders.filesystem.load_template_source',
+    'django.template.loaders.app_directories.load_template_source',
 )
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.http.ConditionalGetMiddleware',
 )
 
-ROOT_URLCONF = 'boris.urls'
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.auth',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.request',
+    'django.core.context_processors.media',
+    'django.core.context_processors.static',
+)
 
 TEMPLATE_DIRS = (
-    os.path.join(PROJECT_ROOT, 'templates'),
+    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+    # Always use forward slashes, even on Windows.
+    # Don't forget to use absolute paths, not relative paths.
+    join(PROJECT_ROOT, 'templates'),
 )
 
+FIXTURE_DIRS = (
+   join(PROJECT_ROOT, 'fixtures'),
+)
+
+ODT_DIR = join(PROJECT_ROOT, 'templates', 'odt')
+
+STATICFILES_FINDERS = (
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder"
+)
+STATIC_URL = '/static/'
+
 INSTALLED_APPS = (
+    # core django apps
+    'django.contrib.admin',
+    'django.contrib.admindocs',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'django.contrib.admin',
+    'django.contrib.redirects',
+    'django.contrib.sitemaps',
+    'django.contrib.staticfiles',
+
+    'tagging',
+
+    'south',
 )
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': True,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'level': 'INFO',
-        }
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'INFO',
-    },
-}
+try:
+    import gunicorn
+    INSTALLED_APPS += ('gunicorn',)
+except ImportError:
+    pass
+
+# always freeze south migrations
+SOUTH_AUTO_FREEZE_APP = True
+
+# don't run south tests
+SKIP_SOUTH_TESTS = True
+
+# logout the user on browser close
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 

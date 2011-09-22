@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# activate the VirtualEnv
+source /srv/boris/bin/activate
+# add the project to pythonpath
+export PYTHONPATH=$PYTHONPATH:/srv/boris/repo
+# set current project
+export DJANGO_SETTINGS_MODULE=boris.settings
+
