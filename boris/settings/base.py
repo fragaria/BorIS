@@ -4,8 +4,6 @@ from os.path import dirname, join, abspath
 
 import boris
 
-gettext = lambda s: s
-
 PROJECT_ROOT = abspath(dirname(boris.__file__))
 
 ADMINS = (
@@ -70,8 +68,6 @@ FIXTURE_DIRS = (
    join(PROJECT_ROOT, 'fixtures'),
 )
 
-ODT_DIR = join(PROJECT_ROOT, 'templates', 'odt')
-
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder"
@@ -90,16 +86,8 @@ INSTALLED_APPS = (
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
 
-    'tagging',
-
     'south',
 )
-
-try:
-    import gunicorn
-    INSTALLED_APPS += ('gunicorn',)
-except ImportError:
-    pass
 
 # always freeze south migrations
 SOUTH_AUTO_FREEZE_APP = True
