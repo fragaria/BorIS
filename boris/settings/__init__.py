@@ -18,9 +18,9 @@ from config import *
 
 # try to import some settings from /etc/
 import sys
-sys.path.insert(0, '/etc/mealplanner')
+sys.path.insert(0, '/etc/boris')
 try:
-    from mealplanner_config import *
+    from boris_config import *
 except ImportError:
     pass
 del sys.path[0]
