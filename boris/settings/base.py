@@ -48,6 +48,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.http.ConditionalGetMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -93,6 +94,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'south',
+
+    'boris.clients',
 )
 
 # always freeze south migrations
