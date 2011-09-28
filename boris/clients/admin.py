@@ -71,11 +71,11 @@ class ClientModelAdmin(admin.ModelAdmin):
             if obj.pk:
                 anamnesis = obj.anamnesis
             else:
-                anamnesis = 'disallow'
-        except:
+                anamnesis = -1
+        except Anamnesis.DoesNotExist:
             anamnesis = None
 
-        if anamnesis == 'disallow':
+        if anamnesis == -1:
             return u'(Nejdřív prosím uložte klienta)'
         elif anamnesis:
             return '<a href="/clients/anamnesis/%i">Anamnéza</a>' % obj.anamnesis.pk
