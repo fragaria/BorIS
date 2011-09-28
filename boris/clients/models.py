@@ -5,12 +5,12 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from model_utils.models import TimeStampedModel
-from model_utils import Choices
 
-from boris.clients.classification import SEXES, APPLICATIONS, NATIONALITIES,\
+from boris.clients.classification import SEXES, NATIONALITIES,\
     ETHNIC_ORIGINS, LIVING_CONDITIONS, ACCOMODATION_TYPES, EMPLOYMENT_TYPES,\
     EDUCATION_LEVELS, HIV_EXAMINATION_CLASSES, HEPATITIS_EXAMINATION_CLASSES,\
-    DRUG_APPLICATION_FREQUENCY, DRUG_APPLICATION_TYPES
+    DRUG_APPLICATION_FREQUENCY, DRUG_APPLICATION_TYPES,\
+    PRIMARY_DRUG_APPLICATION_TYPES, RISKY_BEHAVIOR_PERIODICITY
 
 
 class StringEnum(models.Model):
@@ -18,10 +18,10 @@ class StringEnum(models.Model):
 
     def __unicode__(self):
         return self.title
-    
+
     class Meta:
         abstract = True
-    
+
 
 class Drug(StringEnum):
     class Meta:
@@ -32,7 +32,7 @@ class Drug(StringEnum):
 class RiskyBehavior(StringEnum):
     class Meta:
         verbose_name = u'Rizikové chování'
-        verbose_name_plural = u'Riziková chování' 
+        verbose_name_plural = u'Riziková chování'
 
 
 class Town(StringEnum):
@@ -46,56 +46,83 @@ class Client(TimeStampedModel):
     sex = models.PositiveSmallIntegerField(choices=SEXES, verbose_name=u'Pohlaví')
     first_name = models.CharField(max_length=63, blank=True, null=True, verbose_name=u'Jméno')
     last_name= models.CharField(max_length=63, blank=True, null=True, verbose_name=u'Příjmení')
-    
-    # in-come anamnesis
     birthdate = models.DateField(blank=True, null=True, verbose_name=u'Datum narození')
-    nationality = models.PositiveSmallIntegerField(choices=NATIONALITIES,
-        blank=True, null=True, verbose_name=u'Státní příslušnost')
-    ethnic_origin = models.PositiveSmallIntegerField(choices=ETHNIC_ORIGINS,
-        blank=True, null=True, verbose_name=u'Etnická příslušnost')
-    living_condition = models.PositiveSmallIntegerField(choices=LIVING_CONDITIONS,
-        blank=True, null=True, verbose_name=u'Bydlení (s kým klient žije)')
-    accomodation = models.PositiveSmallIntegerField(choices=ACCOMODATION_TYPES,
-        blank=True, null=True, verbose_name=u'Bydlení (kde klient žije)')
-    lives_with_junks = models.NullBooleanField(verbose_name=u'Žije klient s osobou užívající drogy')
-    employment = models.PositiveSmallIntegerField(choices=EMPLOYMENT_TYPES,
-        blank=True, null=True, verbose_name=u'Zaměstnání / škola')
-    education = models.PositiveSmallIntegerField(choices=EDUCATION_LEVELS,
-        blank=True, null=True, verbose_name=u'Vzdělání')
-    hiv_examination = models.PositiveSmallIntegerField(choices=HIV_EXAMINATION_CLASSES,
-        blank=True, null=True, verbose_name=u'Vyšetření HIV')
-    hepatitis_examination = models.PositiveSmallIntegerField(
-        choices=HEPATITIS_EXAMINATION_CLASSES, blank=True, null=True,
-        verbose_name=u'Vyšetření hepatitidy')
-    been_cured_before = models.NullBooleanField(verbose_name=u'Dříve léčen')
-    been_cured_currently = models.NullBooleanField(verbose_name=u'Nyní léčen')
     town = models.ForeignKey(Town, verbose_name=u'Město')
-    district = models.CharField(max_length=100, blank=True, null=True,
-        verbose_name=u'Okres')
-    region = models.CharField(max_length=100, blank=True,
-        null=True, verbose_name=u'Kraj')
-    
-    drugs = models.ManyToManyField(Drug, through='DrugUsage',
-        verbose_name=u'Užívané drogy')
-    risky_manners = models.ManyToManyField(RiskyBehavior, through='RiskyManners',
-        verbose_name=u'Riziková chování')
+    primary_drug = models.ForeignKey(Drug, blank=True, null=True, verbose_name=u'Primární droga')
+    primary_drug_usage = models.PositiveSmallIntegerField(blank=True, null=True,
+        choices=PRIMARY_DRUG_APPLICATION_TYPES, verbose_name=u'Způsob aplikace')
 
     @property
     def first_contact_date(self):
         pass
-    
+
     @property
     def last_contact_date(self):
         pass
-    
+
     def __unicode__(self):
         return self.code
 
     class Meta:
         verbose_name = u'Klient'
         verbose_name_plural = u'Klienti'
-        
-        
+
+
+class Anamnesis(TimeStampedModel):
+    """ Income anamnesis. """
+
+    client = models.OneToOneField(Client)
+    filled_when = models.DateField(verbose_name=u'Datum kontaktu')
+    filled_where = models.CharField(max_length=255, verbose_name=u'Místo kontaktu')
+    author = models.ForeignKey(User, verbose_name=u'Vyplnil')
+
+    nationality = models.PositiveSmallIntegerField(choices=NATIONALITIES,
+        verbose_name=u'Státní příslušnost')
+    ethnic_origin = models.PositiveSmallIntegerField(choices=ETHNIC_ORIGINS,
+        verbose_name=u'Etnická příslušnost')
+    living_condition = models.PositiveSmallIntegerField(choices=LIVING_CONDITIONS,
+        verbose_name=u'Bydlení (s kým klient žije)')
+    accomodation = models.PositiveSmallIntegerField(choices=ACCOMODATION_TYPES,
+        verbose_name=u'Bydlení (kde klient žije)')
+    lives_with_junkies = models.BooleanField(verbose_name=u'Žije klient s osobou užívající drogy?')
+    employment = models.PositiveSmallIntegerField(choices=EMPLOYMENT_TYPES,
+        verbose_name=u'Zaměstnání / škola')
+    education = models.PositiveSmallIntegerField(choices=EDUCATION_LEVELS,
+        verbose_name=u'Vzdělání')
+    hiv_examination = models.PositiveSmallIntegerField(choices=HIV_EXAMINATION_CLASSES,
+        verbose_name=u'Vyšetření HIV')
+    hepatitis_examination = models.PositiveSmallIntegerField(
+        choices=HEPATITIS_EXAMINATION_CLASSES, verbose_name=u'Vyšetření hepatitidy')
+    been_cured_before = models.BooleanField(verbose_name=u'Dříve léčen')
+    been_cured_currently = models.BooleanField(verbose_name=u'Nyní léčen')
+    district = models.CharField(max_length=100, verbose_name=u'Okres')
+    region = models.CharField(max_length=100, verbose_name=u'Kraj')
+
+    drugs = models.ManyToManyField(Drug, through='DrugUsage',
+        verbose_name=u'Užívané drogy')
+    risky_manners = models.ManyToManyField(RiskyBehavior, through='RiskyManners',
+        verbose_name=u'Riziková chování')
+
+    @property
+    def birth_year(self):
+        return self.client.birth_year
+
+    @property
+    def client_code(self):
+        return self.client.code
+
+    @property
+    def sex(self):
+        return self.client.sex
+
+    def __unicode__(self):
+        return u'Anamnéza: %s' % self.client
+
+    class Meta:
+        verbose_name = u'Anamnéza'
+        verbose_name_plural = u'Anamnézy'
+
+
 class ClientNote(models.Model):
     author = models.ForeignKey(User, verbose_name=u'Autor')
     client = models.ForeignKey(Client, verbose_name=u'Klient')
@@ -111,12 +138,12 @@ class ClientNote(models.Model):
         verbose_name = u'Poznámka'
         verbose_name_plural = u'Poznámky'
         ordering = ('-datetime',)
-        
-        
+
+
 class DrugUsage(models.Model):
     drug = models.ForeignKey(Drug, verbose_name=u'Droga')
-    client = models.ForeignKey(Client, verbose_name=u'Klient')
-    
+    anamnesis = models.ForeignKey(Anamnesis, verbose_name=u'Anamnéza')
+
     application = models.PositiveSmallIntegerField(choices=DRUG_APPLICATION_TYPES,
         verbose_name=u'Aplikace')
     frequency = models.PositiveSmallIntegerField(choices=DRUG_APPLICATION_FREQUENCY,
@@ -130,35 +157,27 @@ class DrugUsage(models.Model):
     was_first_illegal = models.NullBooleanField(verbose_name=u'První neleg. droga')
     is_primary = models.BooleanField(verbose_name=u'Primární droga')
     note = models.TextField(null=True, blank=True, verbose_name=u'Poznámka')
-    
+
     def __unicode__(self):
-        return u'%s: %s' % (self.client, self.drug)
-    
+        return u'%s: %s' % (self.anamnesis.client, self.drug)
+
     class Meta:
         verbose_name = u'Užívaná droga'
         verbose_name_plural = u'Užívané drogy'
-        
-    
-class RiskyManners(models.Model):
-    OCCURENCES = Choices((1, 'ONCE', u'Jednorázově'), (2, 'RECURRING', u'Opakovaně'))
-    
-    behavior = models.ForeignKey(RiskyBehavior, verbose_name=u'Chování')
-    client = models.ForeignKey(Client, verbose_name=u'Klient')
-    
-    past = models.PositiveSmallIntegerField(choices=OCCURENCES,
-        null=True, blank=True, verbose_name=u'Minulost')
-    present = models.PositiveSmallIntegerField(choices=OCCURENCES,
-        null=True, blank=True, verbose_name=u'Současnost')
-    never = models.NullBooleanField(verbose_name=u'Nikdy')
+        unique_together = ('drug', 'anamnesis')
 
-    @property
-    def unknown(self):
-        return all((self.past is None, self.present is None, self.never is None))
+
+class RiskyManners(models.Model):
+    behavior = models.ForeignKey(RiskyBehavior, verbose_name=u'Chování')
+    anamnesis = models.ForeignKey(Anamnesis, verbose_name=u'Anamnéza')
+    periodicity = models.PositiveSmallIntegerField(blank=True, null=True,
+        choices=RISKY_BEHAVIOR_PERIODICITY, verbose_name=u'Jak často')
 
     def __unicode__(self):
-        return u'%s: %s' % (self.client, self.behavior)
-    
+        return u'%s: %s' % (self.anamnesis.client, self.behavior)
+
     class Meta:
         verbose_name = u'Rizikové chování'
         verbose_name = u'Riziková chování'
-        
+        unique_together = ('behavior', 'anamnesis')
+

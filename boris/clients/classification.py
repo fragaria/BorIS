@@ -38,14 +38,15 @@ ACCOMODATION_TYPES = Choices(
     (2, 'OWN_FLAT', u'Vlastní byt (i pronajatý)'),
     (3, 'FOREIGN_FLAT', u'Cizí byt'),
     (4, 'PUBLIC_ACCOMODATION', u'Ubytovna'),
-    (5, 'BARRACKS', u'Kasárna'),
-    (6, 'HOMELESS', u'Bez domova, na ulici')
+    (5, 'SQUAT', u'Squat'),
+    (6, 'BARRACKS', u'Kasárna'),
+    (7, 'HOMELESS', u'Bez domova, na ulici')
 )
 EMPLOYMENT_TYPES = Choices(
     (1, 'REGULAR', u'Pravidelné zam.'),
     (2, 'SCHOOL', u'Škola'),
     (3, 'OCCASIONAL_WORK', u'Příležitostná práce'),
-    (4, 'REGISTERED_ON_EB', u'Registrován na UP'),
+    (4, 'REGISTERED_ON_EB', u'Registrován na ÚP'),
     (5, 'NO_EMPLOYMENT', u'Bez zaměstnání'),
     (6, 'STATE_SUPPORT', u'Dávky SZ')
 )
@@ -90,3 +91,17 @@ DRUG_APPLICATION_TYPES = Choices(
     (5, 'SMOKING', u'kouření'),
     (6, 'INHALATION', u'inhalace')
 )
+
+PRIMARY_DRUG_APPLICATION_TYPES = Choices(
+    (1, 'IV', u'intravenózní (IV)'),
+    (2, 'NON_IV', u'jiná (neIV)'),
+)
+
+RISKY_BEHAVIOR_PERIODICITY = Choices(
+        (1, 'NEVER', u'Nikdy'),
+        (1, 'ONCE_BACK_THEN', u'Jednorázově v minulosti'),
+        (1, 'OFTEN_BACK_THEN', u'Opakovaně v minulosti'),
+        (1, 'ONCE_CURRENTLY', u'Jednorázově v současnosti'),
+        (1, 'OFTEN_CURRENTLY', u'Opakovaně v současnosti'),
+)
+
