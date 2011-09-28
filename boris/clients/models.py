@@ -71,7 +71,7 @@ class Client(TimeStampedModel):
 class Anamnesis(TimeStampedModel):
     """ Income anamnesis. """
 
-    client = models.OneToOneField(Client)
+    client = models.OneToOneField(Client, verbose_name=u'Klient')
     filled_when = models.DateField(verbose_name=u'Datum kontaktu')
     filled_where = models.CharField(max_length=255, verbose_name=u'Místo kontaktu')
     author = models.ForeignKey(User, verbose_name=u'Vyplnil')
@@ -148,7 +148,7 @@ class DrugUsage(models.Model):
         verbose_name=u'Aplikace')
     frequency = models.PositiveSmallIntegerField(choices=DRUG_APPLICATION_FREQUENCY,
         verbose_name=u'Četnost')
-    first_try_age = models.PositiveSmallIntegerField(null=True, blank=True,
+    first_try_age = models.PositiveSmallIntegerField(
         verbose_name=u'První užití (věk)')
     first_try_iv_age = models.PositiveSmallIntegerField(null=True, blank=True,
         verbose_name=u'První i.v. užití (věk)')
