@@ -54,6 +54,7 @@ class AnamnesisAdmin(admin.ModelAdmin):
 
 
 class ClientModelAdmin(admin.ModelAdmin):
+    search_fields = ('code', 'first_name', 'last_name')
     fieldsets = (
         (u'Základní informace', {'fields': (
             ('code', 'sex', 'town'),
