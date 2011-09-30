@@ -1,10 +1,18 @@
 # -*- coding: utf-8 -*-
+from anyjson import serialize
+
+from django.conf.urls.defaults import patterns, url
 from django.contrib import admin
 from django.db import models
 from django.forms import Textarea
+from django.http import Http404, HttpResponseBadRequest, HttpResponse
+from django.utils.translation import ugettext as _
+from django.utils.dateformat import format
+from django.utils.formats import get_format
 
 from boris.clients.models import Client, Drug, ClientNote, Town,\
     RiskyBehavior, Anamnesis, DrugUsage, RiskyManners
+from django.core.urlresolvers import reverse
 
 
 class DrugUsageInline(admin.StackedInline):
@@ -48,9 +56,10 @@ class AnamnesisAdmin(admin.ModelAdmin):
 
 
     def client_link(self, obj):
-        return '<a href="/clients/client/%i" style="font-weight: bold">%s</a>' % (obj.client.pk, obj.client)
+        return '<a href="%s" style="font-weight: bold">%s</a>' % (
+            obj.client.get_admin_url(), obj.client)
     client_link.allow_tags = True
-    client_link.short_description = u'Klient'
+    client_link.short_description = _(u'Klient')
 
 
 class ClientAdmin(admin.ModelAdmin):
@@ -66,6 +75,16 @@ class ClientAdmin(admin.ModelAdmin):
     )
 
     readonly_fields = (u'anamnesis_link', )
+    
+    def get_urls(self):
+        urls = super(ClientAdmin, self).get_urls()
+        my_urls = patterns('',
+            url(r'^(?P<object_id>\d+)/add-note/$',
+                self.admin_site.admin_view(self.add_note),
+                name='clients_add_note'
+            ),
+        )
+        return my_urls + urls
 
     def anamnesis_link(self, obj):
         try:
@@ -77,22 +96,36 @@ class ClientAdmin(admin.ModelAdmin):
             anamnesis = None
 
         if anamnesis == -1:
-            return u'(Nejdřív prosím uložte klienta)'
+            return _(u'(Nejdřív prosím uložte klienta)')
         elif anamnesis:
-            return '<a href="/clients/anamnesis/%i">Anamnéza</a>' % obj.anamnesis.pk
+            return u'<a href="%s">%s</a>' % (
+                obj.anamnesis.get_admin_url(), _(u'Zobrazit &raquo;'))
         else:
-            return '<a href="/clients/anamnesis/add" id="add_id_anamnesis" onclick="return showAddAnotherPopup(this);">Přidat anamnézu</a>'
+            return '<a href="%s" id="add_id_anamnesis" onclick="return showAddAnotherPopup(this);">%s</a>' % (
+                reverse('admin:clients_anamnesis_add'), _(u'Přidat anamnézu'))
     anamnesis_link.allow_tags = True
-    anamnesis_link.short_description = u'Anamnéza'
+    anamnesis_link.short_description = _(u'Anamnéza')
+    
+    def add_note(self, request, object_id):
+        if not request.method == 'POST' or not request.POST.get('text') or not request.is_ajax():
+            raise Http404
 
-    def change_view(self, request, object_id, extra_context=None):
-        my_context = {
-            'clientnotes': ClientNote.objects.filter(client__pk=object_id)
+        try:
+            client = Client.objects.get(pk=object_id)
+        except (Client.DoesNotExist, ValueError):
+            return HttpResponseBadRequest()
+
+        client_note = ClientNote.objects.create(author=request.user,
+            text=request.POST['text'], client=client)
+
+        ret = {
+            'author': client_note.author.username,
+            'datetime': format(client_note.datetime, get_format('DATE_FORMAT')),
+            'text': client_note.text,
         }
-        return super(ClientAdmin, self).change_view(request, object_id,
-            extra_context=my_context)
 
-
+        return HttpResponse(serialize(ret))
+    
 admin.site.register(RiskyBehavior)
 admin.site.register(Drug)
 admin.site.register(Town)

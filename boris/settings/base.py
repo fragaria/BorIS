@@ -76,7 +76,7 @@ STATICFILES_FINDERS = (
 )
 
 STATICFILES_DIRS = (
-   join(PROJECT_ROOT, 'static'),
+   join(PROJECT_ROOT, 'static_ex'),
 )
 
 STATIC_URL = '/static/'

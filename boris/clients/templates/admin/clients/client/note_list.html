@@ -1,0 +1,72 @@
+{% load i18n %}
+
+{% if not add %}
+
+<script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.autocsrf.js"></script>
+<script type="text/javascript">
+function add_new_note() {
+    (function ($) {
+        $.ajax({
+            type : 'POST',
+            url : '{% url admin:clients_add_note original.pk %}',
+            dataType: 'json',
+            data : {'text': $('#new_note').val()},
+            success : function (data) {
+                var cls;
+                var tr_count = $('#notes tr').length; 
+                
+                if (tr_count > 2)
+                    cls = $('#notes tr:eq(1)').attr('class');
+                else
+                    tr_count == 2 ? cls = 'row2' : 'row1';
+                
+                
+                $('#note_template').tmpl(data, {cls: cls}).prependTo('#notes');
+                $('#new_note').val('');
+            },
+            error : function () {
+                alert('{% trans "Došlo k chybě při přidávání poznámky." %}');
+            }
+        });
+    })(django.jQuery);
+}
+</script>
+    
+<script id="note_template" type="text/x-jquery-tmpl">
+    <tr class="${$item.cls}">
+        <td>${author}</td>
+        <td>${datetime}</td>
+        <td>${text}</td>
+    </tr>
+</script>
+    
+<div class="inline-group">
+    <div class="tabular inline-related">
+        <fieldset class="module">
+            <h2>{% trans "Poznámky ke klientovi" %}</h2>
+            <table>
+                <thead><tr>
+                    <th>{% trans "Autor" %}</th>
+                    <th>{% trans "Datum" %}</th>
+                    <th>{% trans "Text" %}</th>
+                </tr></thead>
+                <tbody id="notes">
+                    {% for note in original.notes.all %}
+                    <tr class="{% cycle 'row1' 'row2'%}">
+                        <td>{{ note.author }}</td>
+                        <td>{{ note.datetime|date:"DATETIME_FORMAT" }}</td>
+                        <td>{{ note.text }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="2"><textarea id="new_note" style="width: 100%;"></textarea></td>
+                        <td><input type="button" onclick="add_new_note();" value="{% trans "Přidat poznámku" %}" /></td>
+                    </tr>
+                </tbody>
+            </table>
+        </fieldset>
+    </div>
+</div>
+
+{% endif %}
