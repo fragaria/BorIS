@@ -1,5 +1,29 @@
 {% extends "admin/change_form.html" %}
 
+{% block extrahead %}
+    {{ block.super }}
+    <script type="text/javascript">
+        /**
+         * Ensure, that when no primary drug is selected, no application type
+         * is selected as well.
+         */
+        (function ($) {
+            $(document).ready(function () {
+                $('#id_primary_drug').change(function () {
+                    if ($(this).val() == '') {
+                        $('#id_primary_drug_usage option[value!=]').hide();
+                        $('#id_primary_drug_usage').val('');
+                    } else
+                        $('#id_primary_drug_usage option[value!=]').show();
+                    return true; 
+                });
+                $('#id_primary_drug').change();
+            });
+            
+        })(django.jQuery);
+    </script>
+{% endblock %}
+
 {% block after_related_objects %}
     {% include "admin/clients/client/note_list.html" %}
 {% endblock %}
