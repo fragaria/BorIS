@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from datetime import date
 from anyjson import serialize
 
 from django.conf.urls.defaults import patterns, url
@@ -13,6 +14,7 @@ from django.utils.formats import get_format
 from boris.clients.models import Client, Drug, ClientNote, Town,\
     RiskyBehavior, Anamnesis, DrugUsage, RiskyManners
 from django.core.urlresolvers import reverse
+from django.forms.extras.widgets import SelectDateWidget
 
 
 class DrugUsageInline(admin.StackedInline):
@@ -63,18 +65,26 @@ class AnamnesisAdmin(admin.ModelAdmin):
 
 
 class ClientAdmin(admin.ModelAdmin):
+    list_display = ('code', 'first_name', 'last_name', 'sex', 'town')
+    list_filter = ('town', 'sex', 'primary_drug')
     search_fields = ('code', 'first_name', 'last_name')
     fieldsets = (
-        (u'Základní informace', {'fields': (
+        (_(u'Základní informace'), {'fields': (
             ('code', 'sex', 'town'),
             ('first_name', 'last_name'),
             'birthdate',
             ('primary_drug', 'primary_drug_usage'),
+            ('first_contact_date', 'last_contact_date'),
             'anamnesis_link',
             )}),
     )
+    
+    formfield_overrides = {
+        models.DateField: {'widget': SelectDateWidget(years=reversed(range(
+                date.today().year - 100, date.today().year + 1)))},
+    }
 
-    readonly_fields = (u'anamnesis_link', )
+    readonly_fields = (u'anamnesis_link', 'first_contact_date', 'last_contact_date')
     
     def get_urls(self):
         urls = super(ClientAdmin, self).get_urls()

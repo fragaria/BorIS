@@ -6,7 +6,7 @@ from django.db.models import permalink
 from django.contrib.auth.models import User
 from django.utils.dateformat import format
 from django.utils.formats import get_format
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, gettext
 
 from model_utils.models import TimeStampedModel
 
@@ -50,19 +50,21 @@ class Client(TimeStampedModel):
     sex = models.PositiveSmallIntegerField(choices=SEXES, verbose_name=_(u'Pohlaví'))
     first_name = models.CharField(max_length=63, blank=True, null=True, verbose_name=_(u'Jméno'))
     last_name= models.CharField(max_length=63, blank=True, null=True, verbose_name=_(u'Příjmení'))
-    birthdate = models.DateField(blank=True, null=True, verbose_name=_(u'Datum narození'))
+    birthdate = models.DateField(blank=True, null=True,
+        verbose_name=_(u'Datum narození'), help_text=_(u'Pokud nevíte den nebo '
+        u'měsíc, vyplňte 1. leden.'))
     town = models.ForeignKey(Town, verbose_name=_(u'Město'))
     primary_drug = models.ForeignKey(Drug, blank=True, null=True, verbose_name=_(u'Primární droga'))
     primary_drug_usage = models.PositiveSmallIntegerField(blank=True, null=True,
         choices=PRIMARY_DRUG_APPLICATION_TYPES, verbose_name=_(u'Způsob aplikace'))
 
-    @property
     def first_contact_date(self):
-        pass
+        return _(u'Není známo')
+    first_contact_date.short_description = _(u'Datum prvního kontaktu')
 
-    @property
     def last_contact_date(self):
-        pass
+        return _(u'Není známo')
+    last_contact_date.short_description = _(u'Datum posledního kontaktu')
 
     def __unicode__(self):
         return self.code
