@@ -53,7 +53,7 @@ class AnamnesisAdmin(admin.ModelAdmin):
     client_link.short_description = u'Klient'
 
 
-class ClientModelAdmin(admin.ModelAdmin):
+class ClientAdmin(admin.ModelAdmin):
     search_fields = ('code', 'first_name', 'last_name')
     fieldsets = (
         (u'Základní informace', {'fields': (
@@ -85,11 +85,17 @@ class ClientModelAdmin(admin.ModelAdmin):
     anamnesis_link.allow_tags = True
     anamnesis_link.short_description = u'Anamnéza'
 
+    def change_view(self, request, object_id, extra_context=None):
+        my_context = {
+            'clientnotes': ClientNote.objects.filter(client__pk=object_id)
+        }
+        return super(ClientAdmin, self).change_view(request, object_id,
+            extra_context=my_context)
+
 
 admin.site.register(RiskyBehavior)
 admin.site.register(Drug)
 admin.site.register(Town)
-admin.site.register(Client, ClientModelAdmin)
-admin.site.register(ClientNote)
+admin.site.register(Client, ClientAdmin)
 admin.site.register(Anamnesis, AnamnesisAdmin)
 
