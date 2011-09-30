@@ -6,6 +6,9 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
+    # Django grappelli
+    (r'^grappelli/', include('grappelli.urls')),
+    
     # Uncomment the admin/doc line below to enable admin documentation:
      url(r'^doc/', include('django.contrib.admindocs.urls')),
 

@@ -2,10 +2,11 @@
 
 {% if not add %}
 
-<script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.tmpl.min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.autocsrf.js"></script>
 <script type="text/javascript">
 function add_new_note() {
+    
     (function ($) {
         $.ajax({
             type : 'POST',
@@ -13,16 +14,7 @@ function add_new_note() {
             dataType: 'json',
             data : {'text': $('#new_note').val()},
             success : function (data) {
-                var cls;
-                var tr_count = $('#notes tr').length; 
-                
-                if (tr_count > 2)
-                    cls = $('#notes tr:eq(1)').attr('class');
-                else
-                    tr_count == 2 ? cls = 'row2' : 'row1';
-                
-                
-                $('#note_template').tmpl(data, {cls: cls}).prependTo('#notes');
+                $('#note_template').tmpl(data).prependTo('#notes');
                 $('#new_note').val('');
             },
             error : function () {
@@ -34,38 +26,37 @@ function add_new_note() {
 </script>
     
 <script id="note_template" type="text/x-jquery-tmpl">
-    <tr class="${$item.cls}">
-        <td>${author}</td>
-        <td>${datetime}</td>
-        <td>${text}</td>
-    </tr>
+<div class="tr">
+    <div class="td">${author}</div>
+    <div class="td">${datetime}</div>
+    <div class="td">${text}</div>
+</div>
 </script>
     
-<div class="inline-group">
-    <div class="tabular inline-related">
-        <fieldset class="module">
-            <h2>{% trans "Poznámky ke klientovi" %}</h2>
-            <table>
-                <thead><tr>
-                    <th>{% trans "Autor" %}</th>
-                    <th>{% trans "Datum" %}</th>
-                    <th>{% trans "Text" %}</th>
-                </tr></thead>
-                <tbody id="notes">
-                    {% for note in original.notes.all %}
-                    <tr class="{% cycle 'row1' 'row2'%}">
-                        <td>{{ note.author }}</td>
-                        <td>{{ note.datetime|date:"DATETIME_FORMAT" }}</td>
-                        <td>{{ note.text }}</td>
-                    </tr>
-                    {% endfor %}
-                    <tr>
-                        <td colspan="2"><textarea id="new_note" style="width: 100%;"></textarea></td>
-                        <td><input type="button" onclick="add_new_note();" value="{% trans "Přidat poznámku" %}" /></td>
-                    </tr>
-                </tbody>
-            </table>
-        </fieldset>
+<div class="group tabular">
+    <h2>{% trans "Poznámky ke klientovi" %}</h2>
+    <div class="table module dynamic-form">
+        <div class="module thead dynamic-form">
+            <div class="tr">
+                <div class="th">{% trans "Autor" %}</div>
+                <div class="th">{% trans "Datum" %}</div>
+                <div class="th">{% trans "Text" %}</div>
+            </div>
+        </div>
+        <div class="module tbody dynamic-form" id="notes">
+            {% for note in original.notes.all %}
+            <div class="tr">
+                <div class="td">{{ note.author }}</div>
+                <div class="td">{{ note.datetime|date:"DATETIME_FORMAT" }}</div>
+                <div class="td">{{ note.text }}</div>
+            </div>
+            {% endfor %}
+            <div class="tr">
+                <div class="td">&nbsp;</div>
+                <div class="td">&nbsp;</div>
+                <div class="td"><textarea id="new_note" style="width: 50%; margin-right: 20px;"></textarea><input type="button" onclick="add_new_note();" value="{% trans "Přidat poznámku" %}" /></div>
+            </div>
+        </div>
     </div>
 </div>
 

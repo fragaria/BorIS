@@ -175,7 +175,7 @@ class DrugUsage(models.Model):
     note = models.TextField(null=True, blank=True, verbose_name=_(u'Poznámka'))
 
     def __unicode__(self):
-        return u'%s: %s' % (self.anamnesis.client, self.drug)
+        return unicode(self.drug)
 
     class Meta:
         verbose_name = _(u'Užívaná droga')

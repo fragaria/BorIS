@@ -82,6 +82,7 @@ STATICFILES_DIRS = (
 STATIC_URL = '/static/'
 
 INSTALLED_APPS = (
+    'grappelli',
     # core django apps
     'django.contrib.admin',
     'django.contrib.admindocs',

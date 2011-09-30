@@ -6,6 +6,7 @@ from django.conf.urls.defaults import patterns, url
 from django.contrib import admin
 from django.db import models
 from django.forms import Textarea
+from django.forms.extras.widgets import SelectDateWidget
 from django.http import Http404, HttpResponseBadRequest, HttpResponse
 from django.utils.translation import ugettext as _
 from django.utils.dateformat import format
@@ -14,18 +15,18 @@ from django.utils.formats import get_format
 from boris.clients.models import Client, Drug, ClientNote, Town,\
     RiskyBehavior, Anamnesis, DrugUsage, RiskyManners
 from django.core.urlresolvers import reverse
-from django.forms.extras.widgets import SelectDateWidget
-
 
 class DrugUsageInline(admin.StackedInline):
     model = DrugUsage
     extra = 0
-    fields = (
+    fieldsets = (
+        (None, {'fields': (
             ('drug', 'application', 'is_primary'),
             ('frequency', ),
             ('first_try_age', 'first_try_iv_age', 'first_try_application'),
             ('was_first_illegal', ),
-            ('note'),
+            ('note')
+        )}),
     )
 
     formfield_overrides = {
@@ -39,11 +40,11 @@ class RiskyMannersInline(admin.TabularInline):
 
 
 class AnamnesisAdmin(admin.ModelAdmin):
-
     list_display = ('__unicode__', 'client_link')
     search_fields = ('client__code', 'client__first_name', 'client__last_name')
-    fields = (
-            ('client', ),
+    fieldsets = (
+        (None, {'fields': (
+            'client',
             ('filled_when', 'filled_where', 'author'),
             ('nationality', 'ethnic_origin'),
             ('living_condition', 'accomodation'),
@@ -51,7 +52,8 @@ class AnamnesisAdmin(admin.ModelAdmin):
             ('employment', 'education'),
             ('hiv_examination', 'hepatitis_examination'),
             ('been_cured_before', 'been_cured_currently'),
-            ('district', 'region')
+            ('district', 'region'),
+        )}),
     )
 
     inlines = (DrugUsageInline, RiskyMannersInline)
@@ -78,13 +80,26 @@ class ClientAdmin(admin.ModelAdmin):
             'anamnesis_link',
             )}),
     )
-    
-    formfield_overrides = {
-        models.DateField: {'widget': SelectDateWidget(years=reversed(range(
-                date.today().year - 100, date.today().year + 1)))},
+    raw_id_fields = ('town',)
+    autocomplete_lookup_fields = {
+        'fk': ['town',] 
     }
-
     readonly_fields = (u'anamnesis_link', 'first_contact_date', 'last_contact_date')
+    
+    class SelectBornDateWidget(SelectDateWidget):
+        """
+        Extend to avoid passing attrs to formfield_overrides - because
+        if we did, admin would work only when web servery is just refreshed,
+        on second view, it would be wasted :(
+        """
+        def __init__(self, attrs=None, required=True):
+            super(ClientAdmin.SelectBornDateWidget, self).__init__(
+                attrs=attrs, required=required,
+                years=reversed(range(date.today().year - 100, date.today().year + 1))
+            )
+    formfield_overrides = {
+        models.DateField: {'widget': SelectBornDateWidget},
+    }
     
     def get_urls(self):
         urls = super(ClientAdmin, self).get_urls()
