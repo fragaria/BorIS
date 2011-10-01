@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Django base settings for dum_common project.
 
 from os.path import dirname, join, abspath
@@ -5,6 +6,8 @@ from os.path import dirname, join, abspath
 import boris
 
 PROJECT_ROOT = abspath(dirname(boris.__file__))
+
+gettext = lambda s: s 
 
 ADMINS = (
     ('Filip Varecha', 'filip.varecha@fragaria.cz'),
@@ -107,4 +110,6 @@ SKIP_SOUTH_TESTS = True
 
 # logout the user on browser close
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+GRAPPELLI_ADMIN_TITLE = gettext(u'Informační systém BorIS')
 
