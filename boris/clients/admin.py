@@ -74,7 +74,7 @@ class ClientAdmin(admin.ModelAdmin):
         (_(u'Základní informace'), {'fields': (
             ('code', 'sex', 'town'),
             ('first_name', 'last_name'),
-            'birthdate',
+            ('birthdate', 'birthdate_year_only'),
             ('primary_drug', 'primary_drug_usage'),
             ('first_contact_date', 'last_contact_date'),
             'anamnesis_link',
