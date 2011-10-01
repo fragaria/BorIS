@@ -73,7 +73,7 @@ class AnamnesisAdmin(admin.ModelAdmin):
         to be filled up.
         """
         request = kwargs.get('request', None)
-        if request is not None and request.GET.get('_popup', False) and db_field.name == 'client':
+        if request is not None and request.GET.get('_popup', False) and request.GET.get('client_id') and db_field.name == 'client':
             cid = request.GET.get('client_id')
             kwargs.pop('request')
             kwargs['widget'] = ReadOnlyWidget(cid, Client.objects.get(pk=cid))
@@ -173,7 +173,7 @@ class ClientAdmin(admin.ModelAdmin):
         if anamnesis == -1:
             return _(u'(Nejdřív prosím uložte klienta)')
         elif anamnesis:
-            return u'<a href="%s" onclick="return showRelatedObjectLookupPopup(this);">%s</a>' % (
+            return u'<a href="%s" onclick="return showAddAnotherPopup(this);">%s</a>' % (
                 obj.anamnesis.get_admin_url(), _(u'Zobrazit &raquo;'))
         else:
             return '<a href="%s?client_id=%s" id="add_id_anamnesis" onclick="return showAddAnotherPopup(this);">%s</a>' % (

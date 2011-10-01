@@ -11,6 +11,7 @@
             django.jQuery('#add_id_anamnesis').attr('href', '/clients/anamnesis/' + newId + '/');
             django.jQuery('#add_id_anamnesis').html('{% trans "Zobrazit &raquo;" %}');
             win.close();
+            return false;
         }
         /**
          * Ensure, that when no primary drug is selected, no application type
