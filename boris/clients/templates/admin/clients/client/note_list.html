@@ -29,7 +29,7 @@ function add_new_note() {
 <div class="tr">
     <div class="td">${author}</div>
     <div class="td">${datetime}</div>
-    <div class="td">${text}</div>
+    <div class="td wrap_lines">${text}</div>
 </div>
 </script>
     
@@ -48,7 +48,7 @@ function add_new_note() {
             <div class="tr">
                 <div class="td">{{ note.author }}</div>
                 <div class="td">{{ note.datetime|date:"DATETIME_FORMAT" }}</div>
-                <div class="td">{{ note.text }}</div>
+                <div class="td wrap_lines">{{ note.text }}</div>
             </div>
             {% endfor %}
             <div class="tr">
