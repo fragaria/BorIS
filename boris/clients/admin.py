@@ -85,6 +85,8 @@ class AnamnesisAdmin(admin.ModelAdmin):
     def response_add(self, request, obj, post_url_continue='../%s/'):
         """
         Determines the HttpResponse for the add_view stage.
+        
+        Overriden to use special callback when closing popup.
         """
         opts = obj._meta
         pk_value = obj._get_pk_val()
