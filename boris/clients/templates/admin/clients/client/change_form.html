@@ -5,9 +5,6 @@
     {{ block.super }}
     <link href="{{ STATIC_URL}}/css/clients.css" rel="stylesheet" type="text/css" media="screen" />
 
-    <style>
-        .inactive { color: #DDD; }
-    </style>
     <script type="text/javascript">
         function dismissAddAnamnesisPopup(win, newId, newRepr) {
             django.jQuery('#add_id_anamnesis').attr('href', '/clients/anamnesis/' + newId + '/');
