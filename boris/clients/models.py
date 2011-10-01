@@ -6,7 +6,7 @@ from django.db.models import permalink
 from django.contrib.auth.models import User
 from django.utils.dateformat import format
 from django.utils.formats import get_format
-from django.utils.translation import ugettext_lazy as _, gettext
+from django.utils.translation import ugettext_lazy as _
 
 from model_utils.models import TimeStampedModel
 
@@ -50,9 +50,8 @@ class Client(TimeStampedModel):
     sex = models.PositiveSmallIntegerField(choices=SEXES, verbose_name=_(u'Pohlaví'))
     first_name = models.CharField(max_length=63, blank=True, null=True, verbose_name=_(u'Jméno'))
     last_name= models.CharField(max_length=63, blank=True, null=True, verbose_name=_(u'Příjmení'))
-    birthdate = models.DateField(blank=True, null=True,
-        verbose_name=_(u'Datum narození'), help_text=_(u'Pokud znáte pouze rok, '
-        u'zaškrtněte políčko `Známý pouze rok`.'))
+    birthdate = models.DateField(verbose_name=_(u'Datum narození'),
+        help_text=_(u'Pokud znáte pouze rok, zaškrtněte políčko `Známý pouze rok`.'))
     birthdate_year_only = models.BooleanField(default=False,
         verbose_name=_(u'Známý pouze rok'))
     town = models.ForeignKey(Town, verbose_name=_(u'Město'))
@@ -70,11 +69,11 @@ class Client(TimeStampedModel):
 
     def __unicode__(self):
         return self.code
-    
+
     @permalink
     def get_admin_url(self):
         return ('admin:clients_client_change', (str(self.pk),))
-    
+
     class Meta:
         verbose_name = _(u'Klient')
         verbose_name_plural = _(u'Klienti')
@@ -129,7 +128,7 @@ class Anamnesis(TimeStampedModel):
 
     def __unicode__(self):
         return _(u'Anamnéza: %s') % self.client
-    
+
     @permalink
     def get_admin_url(self):
         return ('admin:clients_anamnesis_change', (str(self.pk),))
