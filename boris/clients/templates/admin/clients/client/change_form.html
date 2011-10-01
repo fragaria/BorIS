@@ -31,11 +31,10 @@
                 
                 $('#id_birthdate_year_only').change(function () {
                     if ($(this).attr('checked') == 'checked') {
+                        $('#id_birthdate_day, #id_birthdate_month').val('1');
                         $('#id_birthdate_day, #id_birthdate_month').addClass('inactive');
-                        $('#id_birthdate_day, #id_birthdate_month').attr('disabled', 'disabled');
                     } else {
                         $('#id_birthdate_day, #id_birthdate_month').removeClass('inactive');
-                        $('#id_birthdate_day, #id_birthdate_month').removeAttr('disabled');
                     }
                 });
                 $('#id_birthdate_year_only').change();
