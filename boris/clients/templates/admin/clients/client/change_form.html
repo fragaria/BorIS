@@ -1,16 +1,25 @@
 {% extends "admin/change_form.html" %}
+{% load i18n %}
 
 {% block extrahead %}
     {{ block.super }}
-
     <link href="{{ STATIC_URL}}/css/clients.css" rel="stylesheet" type="text/css" media="screen" />
 
+    <style>
+        .inactive { color: #DDD; }
+    </style>
     <script type="text/javascript">
+        function dismissAddAnamnesisPopup(win, newId, newRepr) {
+            django.jQuery('#add_id_anamnesis').attr('href', '/clients/anamnesis/' + newId + '/');
+            django.jQuery('#add_id_anamnesis').html('{% trans "Zobrazit &raquo;" %}');
+            win.close();
+        }
         /**
          * Ensure, that when no primary drug is selected, no application type
          * is selected as well.
          */
         (function ($) {
+            
             $(document).ready(function () {
                 $('#id_primary_drug').change(function () {
                     if ($(this).val() == '') {
@@ -21,6 +30,16 @@
                     return true; 
                 });
                 $('#id_primary_drug').change();
+                
+                $('#id_birthdate_year_only').change(function () {
+                    if ($(this).attr('checked') == 'checked') {
+                        $('#id_birthdate_day, #id_birthdate_month').val('1');
+                        $('#id_birthdate_day, #id_birthdate_month').addClass('inactive');
+                    } else {
+                        $('#id_birthdate_day, #id_birthdate_month').removeClass('inactive');
+                    }
+                });
+                $('#id_birthdate_year_only').change();
             });
             
         })(django.jQuery);

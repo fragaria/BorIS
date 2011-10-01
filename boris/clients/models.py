@@ -51,8 +51,10 @@ class Client(TimeStampedModel):
     first_name = models.CharField(max_length=63, blank=True, null=True, verbose_name=_(u'Jméno'))
     last_name= models.CharField(max_length=63, blank=True, null=True, verbose_name=_(u'Příjmení'))
     birthdate = models.DateField(blank=True, null=True,
-        verbose_name=_(u'Datum narození'), help_text=_(u'Pokud nevíte den nebo '
-        u'měsíc, vyplňte 1. leden.'))
+        verbose_name=_(u'Datum narození'), help_text=_(u'Pokud znáte pouze rok, '
+        u'zaškrtněte políčko `Známý pouze rok`.'))
+    birthdate_year_only = models.BooleanField(default=False,
+        verbose_name=_(u'Známý pouze rok'))
     town = models.ForeignKey(Town, verbose_name=_(u'Město'))
     primary_drug = models.ForeignKey(Drug, blank=True, null=True, verbose_name=_(u'Primární droga'))
     primary_drug_usage = models.PositiveSmallIntegerField(blank=True, null=True,
@@ -72,7 +74,7 @@ class Client(TimeStampedModel):
     @permalink
     def get_admin_url(self):
         return ('admin:clients_client_change', (str(self.pk),))
-
+    
     class Meta:
         verbose_name = _(u'Klient')
         verbose_name_plural = _(u'Klienti')

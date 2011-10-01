@@ -32,9 +32,9 @@ function add_new_note() {
     
 <script id="note_template" type="text/x-jquery-tmpl">
 <div class="tr">
-    <div class="td">${author}</div>
-    <div class="td">${datetime}</div>
-    <div class="td wrap_lines">${text}</div>
+    <div class="td"><p><strong>${author}</strong></p></div>
+    <div class="td"><p>${datetime}</p></div>
+    <div class="td wrap_lines"><p>${text}</p></div>
 </div>
 </script>
     
@@ -51,9 +51,9 @@ function add_new_note() {
         <div class="module tbody dynamic-form" id="notes">
             {% for note in original.notes.all %}
             <div class="tr">
-                <div class="td">{{ note.author }}</div>
-                <div class="td">{{ note.datetime|date:"DATETIME_FORMAT" }}</div>
-                <div class="td wrap_lines">{{ note.text }}</div>
+                <div class="td"><p><strong>{{ note.author }}</strong></p></div>
+                <div class="td"><p>{{ note.datetime|date:"DATETIME_FORMAT" }}</p></div>
+                <div class="td wrap_lines"><p>{{ note.text }}</p></div>
             </div>
             {% endfor %}
             <div class="tr">
