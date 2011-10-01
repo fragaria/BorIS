@@ -1,4 +1,5 @@
 {% extends "admin/change_form.html" %}
+{% load i18n %}
 
 {% block extrahead %}
     {{ block.super }}
@@ -6,8 +7,10 @@
         .inactive { color: #DDD; }
     </style>
     <script type="text/javascript">
-        function dismissAddAnamnesisPopup() {
-            
+        function dismissAddAnamnesisPopup(win, newId, newRepr) {
+            django.jQuery('#add_id_anamnesis').attr('href', '/clients/anamnesis/' + newId + '/');
+            django.jQuery('#add_id_anamnesis').html('{% trans "Zobrazit &raquo;" %}');
+            win.close();
         }
         /**
          * Ensure, that when no primary drug is selected, no application type
