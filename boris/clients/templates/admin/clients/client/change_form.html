@@ -6,11 +6,15 @@
         .inactive { color: #DDD; }
     </style>
     <script type="text/javascript">
+        function dismissAddAnamnesisPopup() {
+            
+        }
         /**
          * Ensure, that when no primary drug is selected, no application type
          * is selected as well.
          */
         (function ($) {
+            
             $(document).ready(function () {
                 $('#id_primary_drug').change(function () {
                     if ($(this).val() == '') {

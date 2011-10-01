@@ -15,6 +15,7 @@ from django.utils.formats import get_format
 from boris.clients.models import Client, Drug, ClientNote, Town,\
     RiskyBehavior, Anamnesis, DrugUsage, RiskyManners
 from django.core.urlresolvers import reverse
+from boris.clients.forms import ReadOnlyWidget
 
 class DrugUsageInline(admin.StackedInline):
     model = DrugUsage
@@ -58,13 +59,27 @@ class AnamnesisAdmin(admin.ModelAdmin):
 
     inlines = (DrugUsageInline, RiskyMannersInline)
 
-
     def client_link(self, obj):
         return '<a href="%s" style="font-weight: bold">%s</a>' % (
             obj.client.get_admin_url(), obj.client)
     client_link.allow_tags = True
     client_link.short_description = _(u'Klient')
-
+    
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        """
+        When popup and client_id in GET, use special widget that doesn't need
+        to be filled up.
+        """
+        request = kwargs.get('request', None)
+        if request is not None and request.GET.get('_popup', False) and db_field.name == 'client':
+            cid = request.GET.get('client_id')
+            kwargs.pop('request')
+            kwargs['widget'] = ReadOnlyWidget(cid, Client.objects.get(pk=cid))
+            kwargs['initial'] = cid
+            return db_field.formfield(**kwargs)
+        else:
+            return super(AnamnesisAdmin, self).formfield_for_dbfield(db_field, **kwargs) 
+        
 
 class ClientAdmin(admin.ModelAdmin):
     list_display = ('code', 'first_name', 'last_name', 'sex', 'town')
@@ -113,21 +128,18 @@ class ClientAdmin(admin.ModelAdmin):
 
     def anamnesis_link(self, obj):
         try:
-            if obj.pk:
-                anamnesis = obj.anamnesis
-            else:
-                anamnesis = -1
+            anamnesis = obj.anamnesis if obj.pk else -1
         except Anamnesis.DoesNotExist:
             anamnesis = None
 
         if anamnesis == -1:
             return _(u'(Nejdřív prosím uložte klienta)')
         elif anamnesis:
-            return u'<a href="%s">%s</a>' % (
+            return u'<a href="%s" onclick="return showRelatedObjectLookupPopup(this);">%s</a>' % (
                 obj.anamnesis.get_admin_url(), _(u'Zobrazit &raquo;'))
         else:
-            return '<a href="%s" id="add_id_anamnesis" onclick="return showAddAnotherPopup(this);">%s</a>' % (
-                reverse('admin:clients_anamnesis_add'), _(u'Přidat anamnézu'))
+            return '<a href="%s?client_id=%s" id="add_id_anamnesis" onclick="return showAddAnotherPopup(this);">%s</a>' % (
+                reverse('admin:clients_anamnesis_add'), obj.pk, _(u'Přidat anamnézu'))
     anamnesis_link.allow_tags = True
     anamnesis_link.short_description = _(u'Anamnéza')
     
