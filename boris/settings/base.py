@@ -111,5 +111,5 @@ SKIP_SOUTH_TESTS = True
 # logout the user on browser close
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-GRAPPELLI_ADMIN_TITLE = gettext(u'Informační systém BorIS')
+GRAPPELLI_ADMIN_TITLE = gettext(u'Informační systém BorIS - Elektronická databáze pro evidenci výkonů v sociálních službách')
 
