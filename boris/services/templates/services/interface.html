@@ -1,0 +1,104 @@
+{% load i18n %}
+
+<div id="service-interface">
+<div class="group tabular">
+    <h2>{% trans "Provedené výkony" %}</h2>
+    <div class="table module dynamic-form">
+        <div class="module thead dynamic-form">
+            <div class="tr">
+                <div class="th">{% trans "Název" %}</div>
+                <div class="th">{% trans "Datum" %}</div>
+                <div class="th">{% trans "Provedl" %}</div>
+                <div class="th">{% trans "Akce" %}</div>
+            </div>
+        </div>
+        <div class="module tbody dynamic-form" id="done-services">
+            
+        </div>
+    </div>
+</div>
+
+<fieldset class="module">
+    <h2>{% trans "Nový výkon" %}</h2>
+    
+    <div class="row cells-2 cells">
+        <div class="cell">
+            <div class="column span-4"><label>{% trans "Zvolte druh výkonu:" %}</label></div>
+            <div class="column span-flexible">
+                <select id="service-selector">
+                    {% for s in service_list %}
+                        <option value="{{ s.class_name }}">{{ s.service.title }}</option>
+                    {% endfor %}
+                </select>
+                <input type="button" value="{% trans "OK" %}" onclick="ui.loadForm(); return false;" />
+            </div>
+        </div>
+    </div>
+    <div id="service-form-wrap"></div>
+</fieldset>
+</div>
+
+<script type="text/javascript">
+    var $ = django.jQuery;
+    var ui = null;
+    
+    function ServiceUI(clientId) {
+        this.clientId = clientId;
+        
+        this.getServiceClass = function () {
+            return $('#service-selector').val();
+        }
+        
+        this.getForm = function () {
+            return $('#service-form');
+        }
+        
+        this.refreshServiceList = function () {
+           $('#done-services').load('{% url services_list client.pk %}'); 
+        };
+        
+        this.getHandlerUrl = function (serviceId) {
+            var url = '/services/handle-form/' + this.clientId + '/' + this.getServiceClass() + '/';
+            if (serviceId)
+                return url + serviceId + '/';
+            return url; 
+        }
+        
+        this.placeForm = function (html) {
+            $('#service-form-wrap').html(html);
+            grappelli.initDateAndTimePicker();
+        }
+        
+        this.loadForm = function (serviceId) { $.get(this.getHandlerUrl(serviceId), this.placeForm); }
+        
+        this.cleanForm = function () { this.placeForm(''); }
+        
+        this.saveForm = function () {
+            var data = this.getForm().serialize();
+            $.post(this.getForm().attr('action'), data, function (response) {
+                if (response.ok) {
+                    ui.cleanForm();
+                    ui.refreshServiceList();
+                } else {
+                    ui.placeForm(response.content);                
+                }
+                
+            }, 'json');
+            
+            return false;
+        }
+        
+        this.dropService = function (serviceId) {
+            $.post('/services/drop/' + serviceId + '/', {}, function () {
+               ui.cleanForm();
+               ui.refreshServiceList(); 
+            });
+        }
+        
+        this.refreshServiceList();
+    }
+    
+    $(document).ready(function () {
+       ui = new ServiceUI({{ client.pk }}); 
+    });
+</script>

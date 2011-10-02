@@ -9,6 +9,8 @@ urlpatterns = patterns('',
     # Django grappelli
     (r'^grappelli/', include('grappelli.urls')),
     
+    (r'^services/', include('boris.services.urls')),
+    
     # Uncomment the admin/doc line below to enable admin documentation:
      url(r'^doc/', include('django.contrib.admindocs.urls')),
 

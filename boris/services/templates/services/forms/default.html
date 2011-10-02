@@ -1,0 +1,27 @@
+{% load i18n %}
+<h3>{{ service.service_title }}</h3>
+
+<div class="row cells-1 cells">
+    <div class="cell">
+        <div class="column span-flexible">
+            <p>{{ service.service_description }}</p>
+        </div>
+    </div>
+</div>
+
+<form id="service-form" action="{{ action_link }}" method='POST'>
+    {% include "form_snippet.html" %}
+    <div class="row cells-2 cells">
+        <div class="cell">
+            <div class="column span-4">&nbsp;</div>
+            <div class="column span-flexible">
+                <button id="service-form-submit" onclick="ui.saveForm(); return false;">{% trans "Uložit výkon" %}</button>
+                {% if is_edit %}
+                <button style="background: -moz-linear-gradient(center top , #D93636, #BF3030) repeat scroll 0 0 transparent;" onclick="ui.dropService({{ obj.pk }}); return false;">{% trans "Smazat výkon" %}</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</form>
+
+{{ form.media }}

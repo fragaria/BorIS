@@ -1,5 +1,5 @@
 {% extends "admin/change_form.html" %}
-{% load i18n %}
+{% load i18n services %}
 
 {% block extrahead %}
     {{ block.super }}
@@ -47,5 +47,8 @@
 
 {% block after_related_objects %}
     {% include "admin/clients/client/note_list.html" %}
+    {% if not add %}
+        {% render_service_interface original %}
+    {% endif %}
 {% endblock %}
 
