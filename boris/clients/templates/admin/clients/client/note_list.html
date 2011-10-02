@@ -16,6 +16,11 @@ function add_new_note() {
             success : function (data) {
                 $('#note_template').tmpl(data).prependTo('#notes');
                 $('#new_note').val('');
+                var top_offset = $('#header').outerHeight() + $('#breadcrumbs').outerHeight();
+                var max_top = $('#notes_wrap').offset().top - top_offset;
+                if ($(document).scrollTop() > max_top) {
+					$('html, body').animate({scrollTop: max_top}, 'fast');
+                }
             },
             error : function () {
                 alert('{% trans "Došlo k chybě při přidávání poznámky." %}');
@@ -29,11 +34,11 @@ function add_new_note() {
 <div class="tr">
     <div class="td"><p><strong>${author}</strong></p></div>
     <div class="td"><p>${datetime}</p></div>
-    <div class="td"><p>${text}</p></div>
+    <div class="td wrap_lines"><p>${text}</p></div>
 </div>
 </script>
     
-<div class="group tabular">
+<div class="group tabular" id="notes_wrap">
     <h2>{% trans "Poznámky ke klientovi" %}</h2>
     <div class="table module dynamic-form">
         <div class="module thead dynamic-form">
@@ -48,7 +53,7 @@ function add_new_note() {
             <div class="tr">
                 <div class="td"><p><strong>{{ note.author }}</strong></p></div>
                 <div class="td"><p>{{ note.datetime|date:"DATETIME_FORMAT" }}</p></div>
-                <div class="td"><p>{{ note.text }}</p></div>
+                <div class="td wrap_lines"><p>{{ note.text }}</p></div>
             </div>
             {% endfor %}
             <div class="tr">

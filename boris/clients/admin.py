@@ -8,7 +8,10 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.forms import Textarea
 from django.forms.extras.widgets import SelectDateWidget
-from django.http import Http404, HttpResponseBadRequest, HttpResponse, HttpResponseRedirect
+
+from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404
+
 from django.utils.translation import ugettext as _
 from django.utils.dateformat import format
 from django.utils.formats import get_format
@@ -137,10 +140,10 @@ class ClientAdmin(admin.ModelAdmin):
     )
     raw_id_fields = ('town',)
     autocomplete_lookup_fields = {
-        'fk': ['town',] 
+        'fk': ['town',]
     }
     readonly_fields = (u'anamnesis_link', 'first_contact_date', 'last_contact_date')
-    
+
     class SelectBornDateWidget(SelectDateWidget):
         """
         Extend to avoid passing attrs to formfield_overrides - because
@@ -155,7 +158,7 @@ class ClientAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.DateField: {'widget': SelectBornDateWidget},
     }
-    
+
     def get_urls(self):
         urls = super(ClientAdmin, self).get_urls()
         my_urls = patterns('',
@@ -182,15 +185,12 @@ class ClientAdmin(admin.ModelAdmin):
                 reverse('admin:clients_anamnesis_add'), obj.pk, _(u'Přidat anamnézu'))
     anamnesis_link.allow_tags = True
     anamnesis_link.short_description = _(u'Anamnéza')
-    
+
     def add_note(self, request, object_id):
         if not request.method == 'POST' or not request.POST.get('text') or not request.is_ajax():
             raise Http404
 
-        try:
-            client = Client.objects.get(pk=object_id)
-        except (Client.DoesNotExist, ValueError):
-            return HttpResponseBadRequest()
+        client = get_object_or_404(Client, pk=object_id)
 
         client_note = ClientNote.objects.create(author=request.user,
             text=request.POST['text'], client=client)
@@ -202,7 +202,7 @@ class ClientAdmin(admin.ModelAdmin):
         }
 
         return HttpResponse(serialize(ret))
-    
+
 admin.site.register(RiskyBehavior)
 admin.site.register(Drug)
 admin.site.register(Town)
