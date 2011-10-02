@@ -59,13 +59,19 @@ class Client(TimeStampedModel):
     primary_drug_usage = models.PositiveSmallIntegerField(blank=True, null=True,
         choices=PRIMARY_DRUG_APPLICATION_TYPES, verbose_name=_(u'Způsob aplikace'))
 
+    @property
     def first_contact_date(self):
-        return _(u'Není známo')
-    first_contact_date.short_description = _(u'Datum prvního kontaktu')
+        try:
+            return self.services.order_by('performed_on').values_list('performed_on', flat=True)[0]
+        except IndexError:
+            return None
 
+    @property
     def last_contact_date(self):
-        return _(u'Není známo')
-    last_contact_date.short_description = _(u'Datum posledního kontaktu')
+        try:
+            return self.services.order_by('-performed_on').values_list('performed_on', flat=True)[0]
+        except IndexError:
+            return None
 
     def __unicode__(self):
         return self.code

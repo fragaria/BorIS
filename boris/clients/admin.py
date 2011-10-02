@@ -134,7 +134,7 @@ class ClientAdmin(admin.ModelAdmin):
             ('first_name', 'last_name'),
             ('birthdate', 'birthdate_year_only'),
             ('primary_drug', 'primary_drug_usage'),
-            ('first_contact_date', 'last_contact_date'),
+            ('first_contact_verbose', 'last_contact_verbose'),
             'anamnesis_link',
             )}),
     )
@@ -142,7 +142,7 @@ class ClientAdmin(admin.ModelAdmin):
     autocomplete_lookup_fields = {
         'fk': ['town',]
     }
-    readonly_fields = (u'anamnesis_link', 'first_contact_date', 'last_contact_date')
+    readonly_fields = (u'anamnesis_link', 'first_contact_verbose', 'last_contact_verbose')
 
     class SelectBornDateWidget(SelectDateWidget):
         """
@@ -168,6 +168,20 @@ class ClientAdmin(admin.ModelAdmin):
             ),
         )
         return my_urls + urls
+
+    def _contact_verbose(self, val):
+        if val is None:
+            return _(u'(Není známo)')
+        else:
+            return format(val, get_format('DATE_FORMAT'))
+
+    def first_contact_verbose(self, obj):
+        return self._contact_verbose(obj.first_contact_date)
+    first_contact_verbose.short_description = _(u'Datum prvního kontaktu')
+    
+    def last_contact_verbose(self, obj):
+        return self._contact_verbose(obj.last_contact_date)
+    last_contact_verbose.short_description = _(u'Datum posledního kontaktu')
 
     def anamnesis_link(self, obj):
         try:
