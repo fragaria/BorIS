@@ -3,7 +3,6 @@ django==1.3
 nose
 south
 django-grappelli
-django-nose
 djangosanetesting
 
 -e git+https://github.com/carljm/django-model-utils.git#egg=model_utils
