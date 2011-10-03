@@ -17,7 +17,7 @@ DJANGO_SETTINGS_MODULE = '%s.%s' % (split(abspath(dirname(__file__)))[1], 'setti
 
 # pythonpath dirs
 PYTHONPATH = [
-    #abspath(join(dirname(__file__), pardir, pardir)),
+    abspath(join(dirname(__file__), pardir, pardir)),
     abspath(join(dirname(__file__), pardir)),
 ]
 

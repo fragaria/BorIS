@@ -2,29 +2,21 @@ from djangosanetesting.cases import HttpTestCase
 
 from django.core.urlresolvers import reverse
 
-#from boris.clients.models import Client, ClientNote, Town
-from boris.clients.models import Client, Town
-from boris.clients.classification import SEXES
+from boris.clients.models import ClientNote
+
+from test_project.helpers import get_testing_user, get_testing_client
 
 
 class TestClientNote(HttpTestCase):
 
    def setUp(self):
-       town = Town.objects.create(title='Rakovnik') # TODO: move into a test fixture
 
-       client_data = { # TODO: move into a test helper
-            'code': 'abcdef',
-            'sex': SEXES.MALE,
-            'birthdate': '1980-10-10',
-            'town': town,
-       }
-
-       # self.client is the http client
-       self.my_client = Client(**client_data)
-       self.my_client.save()
+       self.my_client = get_testing_client()
+       self.user = get_testing_user()
 
 
    def test_add_ok(self):
+       self.client.login(username=self.user.username, password=self.user.cleartext_password)
        res = self.client.post(reverse('admin:clients_add_note', kwargs={'object_id': self.my_client.pk}),
            data = {'text': 'Note text.'},
            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
@@ -34,6 +26,23 @@ class TestClientNote(HttpTestCase):
 
 
    def test_add_actually_adds(self):
-       # TODO
-       pass
+
+       self.assert_equals(0, ClientNote.objects.count())
+       self.client.login(username=self.user.username, password=self.user.cleartext_password)
+       for i in range(0, 10):
+           self.client.post(reverse('admin:clients_add_note', kwargs={'object_id': self.my_client.pk}),
+               data = {'text': 'Note text.'},
+               HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+           )
+       self.assert_equals(10, ClientNote.objects.count())
+
+
+   def test_restricted_access(self):
+       # login ommitted
+       self.assert_equals(0, ClientNote.objects.count())
+       self.client.post(reverse('admin:clients_add_note', kwargs={'object_id': self.my_client.pk}),
+           data = {'text': 'Note text.'},
+           HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+       )
+       self.assert_equals(0, ClientNote.objects.count())
 
