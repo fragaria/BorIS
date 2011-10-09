@@ -8,6 +8,10 @@
 function add_new_note() {
     
     (function ($) {
+        if ($('#new_note').val() == '') {
+            alert('{% trans "Vyplňte prosím text poznámky." %}');
+            return;
+        }
         $.ajax({
             type : 'POST',
             url : '{% url admin:clients_add_note original.pk %}',
