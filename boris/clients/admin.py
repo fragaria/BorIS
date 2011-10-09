@@ -50,8 +50,8 @@ class AnamnesisAdmin(admin.ModelAdmin):
     search_fields = ('client__code', 'client__first_name', 'client__last_name')
     fieldsets = (
         (None, {'fields': (
-            'client',
-            ('filled_when', 'filled_where', 'author'),
+            ('client', 'author'),
+            ('filled_when', 'filled_where'),
             ('nationality', 'ethnic_origin'),
             ('living_condition', 'accomodation'),
             'lives_with_junkies',
