@@ -69,7 +69,7 @@ class AnamnesisAdmin(admin.ModelAdmin):
             obj.client.get_admin_url(), obj.client)
     client_link.allow_tags = True
     client_link.short_description = _(u'Klient')
-    
+
     def formfield_for_dbfield(self, db_field, **kwargs):
         """
         When popup and client_id in GET, use special widget that doesn't need
@@ -84,11 +84,11 @@ class AnamnesisAdmin(admin.ModelAdmin):
             return db_field.formfield(**kwargs)
         else:
             return super(AnamnesisAdmin, self).formfield_for_dbfield(db_field, **kwargs)
-        
+
     def response_add(self, request, obj, post_url_continue='../%s/'):
         """
         Determines the HttpResponse for the add_view stage.
-        
+
         Overriden to use special callback when closing popup.
         """
         opts = obj._meta
@@ -122,7 +122,7 @@ class AnamnesisAdmin(admin.ModelAdmin):
             else:
                 post_url = '../../../'
             return HttpResponseRedirect(post_url)
-        
+
 
 class ClientAdmin(admin.ModelAdmin):
     list_display = ('code', 'first_name', 'last_name', 'sex', 'town')
@@ -178,7 +178,7 @@ class ClientAdmin(admin.ModelAdmin):
     def first_contact_verbose(self, obj):
         return self._contact_verbose(obj.first_contact_date)
     first_contact_verbose.short_description = _(u'Datum prvního kontaktu')
-    
+
     def last_contact_verbose(self, obj):
         return self._contact_verbose(obj.last_contact_date)
     last_contact_verbose.short_description = _(u'Datum posledního kontaktu')
@@ -192,8 +192,8 @@ class ClientAdmin(admin.ModelAdmin):
         if anamnesis == -1:
             return _(u'(Nejdřív prosím uložte klienta)')
         elif anamnesis:
-            return u'<a href="%s" onclick="return showAddAnotherPopup(this);">%s</a>' % (
-                obj.anamnesis.get_admin_url(), _(u'Zobrazit &raquo;'))
+            return u'<a href="%s?client_id=%s" onclick="return showAddAnotherPopup(this);">%s</a>' % (
+                obj.anamnesis.get_admin_url(), obj.pk, _(u'Zobrazit &raquo;'))
         else:
             return '<a href="%s?client_id=%s" id="add_id_anamnesis" onclick="return showAddAnotherPopup(this);">%s</a>' % (
                 reverse('admin:clients_anamnesis_add'), obj.pk, _(u'Přidat anamnézu'))
