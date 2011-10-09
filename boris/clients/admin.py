@@ -87,41 +87,16 @@ class AnamnesisAdmin(admin.ModelAdmin):
 
     def response_add(self, request, obj, post_url_continue='../%s/'):
         """
-        Determines the HttpResponse for the add_view stage.
-
         Overriden to use special callback when closing popup.
         """
-        opts = obj._meta
-        pk_value = obj._get_pk_val()
 
-        msg = _('The %(name)s "%(obj)s" was added successfully.') % {'name': force_unicode(opts.verbose_name), 'obj': force_unicode(obj)}
-        # Here, we distinguish between different save types by checking for
-        # the presence of keys in request.POST.
-        if "_continue" in request.POST:
-            self.message_user(request, msg + ' ' + _("You may edit it again below."))
-            if "_popup" in request.POST:
-                post_url_continue += "?_popup=1"
-            return HttpResponseRedirect(post_url_continue % pk_value)
-
-        if "_popup" in request.POST:
+        if "_popup" in request.POST and "_continue" not in request.POST:
             # @attention: Change function call
             return HttpResponse('<script type="text/javascript">opener.dismissAddAnamnesisPopup(window, "%s", "%s");</script>' % \
                 # escape() calls force_unicode.
-                (escape(pk_value), escapejs(obj)))
-        elif "_addanother" in request.POST:
-            self.message_user(request, msg + ' ' + (_("You may add another %s below.") % force_unicode(opts.verbose_name)))
-            return HttpResponseRedirect(request.path)
+                (escape(obj._get_pk_val()), escapejs(obj)))
         else:
-            self.message_user(request, msg)
-
-            # Figure out where to redirect. If the user has change permission,
-            # redirect to the change-list page for this object. Otherwise,
-            # redirect to the admin index.
-            if self.has_change_permission(request, None):
-                post_url = '../'
-            else:
-                post_url = '../../../'
-            return HttpResponseRedirect(post_url)
+            return super(AnamnesisAdmin, self).response_add(request, obj, post_url_continue)
 
 
 class ClientAdmin(admin.ModelAdmin):
