@@ -100,7 +100,7 @@ class AnamnesisAdmin(admin.ModelAdmin):
 
     def response_change(self, request, obj):
         if "_popup" in request.REQUEST:
-            return HttpResponse('<script type="text/javascript">window.close()</script>')
+            return HttpResponse('<script type="text/javascript">window.close();</script>')
         else:
             return super(AnamnesisAdmin, self).response_change(request, obj)
 
