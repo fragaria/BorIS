@@ -98,6 +98,12 @@ class AnamnesisAdmin(admin.ModelAdmin):
         else:
             return super(AnamnesisAdmin, self).response_add(request, obj, post_url_continue)
 
+    def response_change(self, request, obj):
+        if "_popup" in request.REQUEST:
+            return HttpResponse('<script type="text/javascript">window.close()</script>')
+        else:
+            return super(AnamnesisAdmin, self).response_change(request, obj)
+
 
 class ClientAdmin(admin.ModelAdmin):
     list_display = ('code', 'first_name', 'last_name', 'sex', 'town')
