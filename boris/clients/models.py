@@ -50,7 +50,7 @@ class Client(TimeStampedModel):
     sex = models.PositiveSmallIntegerField(choices=SEXES, verbose_name=_(u'Pohlaví'))
     first_name = models.CharField(max_length=63, blank=True, null=True, verbose_name=_(u'Jméno'))
     last_name= models.CharField(max_length=63, blank=True, null=True, verbose_name=_(u'Příjmení'))
-    birthdate = models.DateField(verbose_name=_(u'Datum narození'),
+    birthdate = models.DateField(verbose_name=_(u'Datum narození'), blank=True, null=True,
         help_text=_(u'Pokud znáte pouze rok, zaškrtněte políčko `Známý pouze rok`.'))
     birthdate_year_only = models.BooleanField(default=False,
         verbose_name=_(u'Známý pouze rok'))
