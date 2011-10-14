@@ -147,6 +147,10 @@ class ClientAdmin(admin.ModelAdmin):
                 self.admin_site.admin_view(self.add_note),
                 name='clients_add_note'
             ),
+            url(r'^delete-note/(?P<note_id>\d+)/$',
+                self.admin_site.admin_view(self.delete_note),
+                name='clients_delete_note'
+            ),
         )
         return my_urls + urls
 
@@ -197,6 +201,15 @@ class ClientAdmin(admin.ModelAdmin):
         }
 
         return HttpResponse(serialize(ret))
+
+    def delete_note(self, request, note_id):
+        if not request.is_ajax():
+            raise Http404
+
+        ClientNote.objects.filter(pk=note_id).delete()
+
+        return HttpResponse('OK')
+
 
 admin.site.register(RiskyBehavior)
 admin.site.register(Drug)
