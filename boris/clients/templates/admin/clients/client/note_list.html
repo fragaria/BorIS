@@ -32,6 +32,23 @@ function add_new_note() {
         });
     })(django.jQuery);
 }
+
+function delete_note(link, note_id) {
+    
+    (function ($) {
+        $.ajax({
+                type : 'GET',
+                url : '/clients/client/delete-note/' + note_id + '/',
+                success : function (data) {
+					$(link).parents('div.tr').remove();
+                },
+                error : function () {
+                    alert('{% trans "Došlo k chybě při mazání poznámky." %}');
+                }
+        });
+    })(django.jQuery);
+}
+
 </script>
     
 <script id="note_template" type="text/x-jquery-tmpl">
@@ -58,6 +75,7 @@ function add_new_note() {
                 <div class="td"><p><strong>{{ note.author }}</strong></p></div>
                 <div class="td"><p>{{ note.datetime|date:"DATETIME_FORMAT" }}</p></div>
                 <div class="td wrap_lines"><p>{{ note.text }}</p></div>
+				<div class="td"><p><a onclick="delete_note(this, {{ note.pk }}); return false;">Smazat</a></p></div>
             </div>
             {% endfor %}
             <div class="tr">
