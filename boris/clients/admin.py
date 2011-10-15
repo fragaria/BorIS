@@ -201,7 +201,14 @@ class ClientAdmin(admin.ModelAdmin):
         form = ClientNoteForm(request.POST)
 
         if not form.is_valid():
-            raise Http404
+            if 'datetime' in form.errors:
+                err_msg = _(u'Zadejte prosím platné datum a čas.')
+            elif 'text' in form.errors:
+                err_msg = _(u'Zadejte prosím neprázdný text.')
+            elif 'client' in form.errors:
+                err_msg = _(u'Zadaný klient neexistuje. (Nebyl mezitím smazán?)')
+
+            return HttpResponse(serialize({'error': err_msg}))
 
         client_note = form.save(commit=False)
         client_note.author = request.user

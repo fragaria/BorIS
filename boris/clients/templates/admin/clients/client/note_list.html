@@ -23,8 +23,12 @@ function add_new_note() {
                 'client': {{ original.pk }}
             },
             success : function (data) {
-                $('#notes div.tr').eq(0).after($('#note_template').tmpl(data));
-                $('#new_note_text').val('');
+                if (typeof(data.error) != 'undefined'){
+                    alert(data.error);
+                } else {
+                    $('#notes div.tr').eq(0).after($('#note_template').tmpl(data));
+                    $('#new_note_text').val('');
+                }
             },
             error : function () {
                 alert('{% trans "Došlo k chybě při přidávání poznámky." %}');
