@@ -195,6 +195,7 @@ class ClientAdmin(admin.ModelAdmin):
             text=request.POST['text'], client=client)
 
         ret = {
+            'id': client_note.pk,
             'author': client_note.author.username,
             'datetime': format(client_note.datetime, get_format('DATE_FORMAT')),
             'text': client_note.text,
