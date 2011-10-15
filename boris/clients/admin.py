@@ -178,7 +178,7 @@ class ClientAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(ClientAdmin, self).get_urls()
         my_urls = patterns('',
-            url(r'^(?P<object_id>\d+)/add-note/$',
+            url(r'^add-note/$',
                 self.admin_site.admin_view(self.add_note),
                 name='clients_add_note'
             ),
@@ -220,7 +220,7 @@ class ClientAdmin(admin.ModelAdmin):
     anamnesis_link.allow_tags = True
     anamnesis_link.short_description = _(u'Anamnéza')
 
-    def add_note(self, request, object_id):
+    def add_note(self, request):
         if not request.method == 'POST' or not request.is_ajax():
             raise Http404
 

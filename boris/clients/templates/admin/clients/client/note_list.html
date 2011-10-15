@@ -14,7 +14,7 @@ function add_new_note() {
         }
         $.ajax({
             type : 'POST',
-            url : '{% url admin:clients_add_note original.pk %}',
+            url : '{% url admin:clients_add_note %}',
             dataType: 'json',
             data : {
                 'text': $('#new_note_text').val(),
@@ -60,7 +60,7 @@ function delete_note(link, note_id) {
     <div class="td"><p><strong>${author}</strong></p></div>
     <div class="td"><p>${datetime}</p></div>
     <div class="td wrap_lines"><p>${text}</p></div>
-    <div class="td"><p><a onclick="delete_note(this, ${id}); return false;">Smazat</a></p></div>
+    <div class="td"><p><a onclick="delete_note(this, ${id}); return false;" class="delete-note">Smazat</a></p></div>
 </div>
 </script>
     
