@@ -48,17 +48,32 @@ class RiskyMannersInline(admin.TabularInline):
 class AnamnesisAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'client_link')
     search_fields = ('client__code', 'client__first_name', 'client__last_name')
+    readonly_fields = ('client__sex', 'client__birthyear')
     fieldsets = (
-        (None, {'fields': (
-            ('client', 'author'),
-            ('filled_when', 'filled_where'),
+        (
+            _(u'Základní klientská data'),
+            {
+                'description': _(u'Případné změny v této sekci prosím provádějte přímo na kartě klienta'),
+                'fields': (('client', 'client__sex', 'client__birthyear'),),
+            }
+        ),
+        (
+            _(u'Kontakt'),
+            {
+                'fields': (
+                    ('author', 'filled_when',),
+                    ('filled_where',),
+                    ('district', 'region')
+                ),
+            }
+        ),
+        (_(u'Anamnestické údaje'), {'fields': (
             ('nationality', 'ethnic_origin'),
             ('living_condition', 'accomodation'),
             'lives_with_junkies',
             ('employment', 'education'),
             ('hiv_examination', 'hepatitis_examination'),
             ('been_cured_before', 'been_cured_currently'),
-            ('district', 'region'),
         )}),
     )
 
@@ -69,6 +84,17 @@ class AnamnesisAdmin(admin.ModelAdmin):
             obj.client.get_admin_url(), obj.client)
     client_link.allow_tags = True
     client_link.short_description = _(u'Klient')
+
+    def client__sex(self, obj):
+        return obj.client.get_sex_display()
+    client__sex.short_description = _(u'Pohlaví')
+
+    def client__birthyear(self, obj):
+        if obj.client.birthdate:
+            return obj.client.birthdate.strftime('%Y')
+        else:
+            return _(u'(Zatím neznámý)')
+    client__birthyear.short_description = _(u'Rok narození')
 
     def formfield_for_dbfield(self, db_field, **kwargs):
         """
