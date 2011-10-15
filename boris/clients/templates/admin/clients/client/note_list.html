@@ -16,12 +16,12 @@ function add_new_note() {
             type : 'POST',
             url : '{% url admin:clients_add_note original.pk %}',
             dataType: 'json',
-			data : {
-				'text': $('#new_note_text').val(),
-				'datetime_0': $('#new_note_date').val(),
-				'datetime_1': $('#new_note_time').val(),
-				'client': {{ original.pk }}
-			},
+            data : {
+                'text': $('#new_note_text').val(),
+                'datetime_0': $('#new_note_date').val(),
+                'datetime_1': $('#new_note_time').val(),
+                'client': {{ original.pk }}
+            },
             success : function (data) {
                 $('#notes div.tr').eq(0).after($('#note_template').tmpl(data));
                 $('#new_note_text').val('');
@@ -40,7 +40,7 @@ function delete_note(link, note_id) {
                 type : 'GET',
                 url : '/clients/client/delete-note/' + note_id + '/',
                 success : function (data) {
-					$(link).parents('div.tr').remove();
+                    $(link).parents('div.tr').remove();
                 },
                 error : function () {
                     alert('{% trans "Došlo k chybě při mazání poznámky." %}');
@@ -56,7 +56,7 @@ function delete_note(link, note_id) {
     <div class="td"><p><strong>${author}</strong></p></div>
     <div class="td"><p>${datetime}</p></div>
     <div class="td wrap_lines"><p>${text}</p></div>
-	<div class="td"><p><a onclick="delete_note(this, ${id}); return false;">Smazat</a></p></div>
+    <div class="td"><p><a onclick="delete_note(this, ${id}); return false;">Smazat</a></p></div>
 </div>
 </script>
     
@@ -65,7 +65,7 @@ function delete_note(link, note_id) {
     <div class="table module dynamic-form">
         <div class="module thead dynamic-form">
             <div class="tr">
-				<div class="th">{% trans "Autor" %}</div>
+                <div class="th">{% trans "Autor" %}</div>
                 <div class="th">{% trans "Datum" %}</div>
                 <div class="th">{% trans "Text" %}</div>
             </div>
@@ -73,19 +73,19 @@ function delete_note(link, note_id) {
         <div class="module tbody dynamic-form" id="notes">
             <div class="tr">
                 <div class="td">&nbsp;</div>
-				<div class="td">
-					<input value="{{ current_date }}" class="vDateField" type="text" id="new_note_date" size="10" name="datetime_0" />
-					<input value="{{ current_time }}" class="vTimeField" type="text" id="new_note_time" size="5" name="datetime_1" />
-				</div>
+                <div class="td">
+                    <input value="{{ current_date }}" class="vDateField" type="text" id="new_note_date" size="10" name="datetime_0" />
+                    <input value="{{ current_time }}" class="vTimeField" type="text" id="new_note_time" size="5" name="datetime_1" />
+                </div>
                 <div class="td"><textarea id="new_note_text" style="width: 50%; margin-right: 20px;"></textarea><input type="button" onclick="add_new_note();" value="{% trans "Přidat poznámku" %}" /></div>
-				<div class="td">&nbsp;</div>
+                <div class="td">&nbsp;</div>
             </div>
             {% for note in original.notes.all %}
             <div class="tr">
                 <div class="td"><p><strong>{{ note.author }}</strong></p></div>
                 <div class="td"><p>{{ note.datetime|date:"DATETIME_FORMAT" }}</p></div>
                 <div class="td wrap_lines"><p>{{ note.text }}</p></div>
-				<div class="td"><p><a onclick="delete_note(this, {{ note.pk }}); return false;">Smazat</a></p></div>
+                <div class="td"><p><a onclick="delete_note(this, {{ note.pk }}); return false;">Smazat</a></p></div>
             </div>
             {% endfor %}
         </div>
