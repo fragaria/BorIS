@@ -160,7 +160,7 @@ class ClientNote(models.Model):
     class Meta:
         verbose_name = _(u'Poznámka')
         verbose_name_plural = _(u'Poznámky')
-        ordering = ('-datetime',)
+        ordering = ('-datetime', '-id')
 
 
 class DrugUsage(models.Model):

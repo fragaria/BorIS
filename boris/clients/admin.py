@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import date
+from datetime import datetime, date
 from anyjson import serialize
 
 from django.conf.urls.defaults import patterns, url
@@ -20,7 +20,7 @@ from django.utils.html import escape, escapejs
 
 from boris.clients.models import Client, Drug, ClientNote, Town,\
     RiskyBehavior, Anamnesis, DrugUsage, RiskyManners
-from boris.clients.forms import ReadOnlyWidget
+from boris.clients.forms import ClientNoteForm, ReadOnlyWidget
 
 class DrugUsageInline(admin.StackedInline):
     model = DrugUsage
@@ -125,6 +125,15 @@ class ClientAdmin(admin.ModelAdmin):
     }
     readonly_fields = (u'anamnesis_link', 'first_contact_verbose', 'last_contact_verbose')
 
+    def change_view(self, request, object_id, extra_context=None):
+        extra_context = {
+            'current_date': datetime.now().strftime('%d.%m.%Y'),
+            'current_time': datetime.now().strftime('%H:%M'),
+        }
+        return super(ClientAdmin, self).change_view(request, object_id,
+            extra_context=extra_context)
+
+
     class SelectBornDateWidget(SelectDateWidget):
         """
         Extend to avoid passing attrs to formfield_overrides - because
@@ -186,13 +195,17 @@ class ClientAdmin(admin.ModelAdmin):
     anamnesis_link.short_description = _(u'Anamnéza')
 
     def add_note(self, request, object_id):
-        if not request.method == 'POST' or not request.POST.get('text') or not request.is_ajax():
+        if not request.method == 'POST' or not request.is_ajax():
             raise Http404
 
-        client = get_object_or_404(Client, pk=object_id)
+        form = ClientNoteForm(request.POST)
 
-        client_note = ClientNote.objects.create(author=request.user,
-            text=request.POST['text'], client=client)
+        if not form.is_valid():
+            raise Http404
+
+        client_note = form.save(commit=False)
+        client_note.author = request.user
+        client_note.save()
 
         ret = {
             'id': client_note.pk,

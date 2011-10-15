@@ -5,6 +5,8 @@ Created on 1.10.2011
 '''
 from django import forms
 
+from boris.clients.models import ClientNote
+
 class ReadOnlyWidget(forms.Widget):
 
     def __init__(self, original_value, display_value):
@@ -22,3 +24,14 @@ class ReadOnlyWidget(forms.Widget):
 
     def value_from_datadict(self, data, files, name):
         return self.original_value
+
+
+class ClientNoteForm(forms.ModelForm):
+
+    class Meta:
+        model = ClientNote
+        fields = ('datetime', 'text', 'client')
+        widgets = {
+            'datetime': forms.SplitDateTimeWidget(),
+        }
+

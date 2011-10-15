@@ -8,7 +8,7 @@
 function add_new_note() {
     
     (function ($) {
-        if ($('#new_note').val() == '') {
+        if ($('#new_note_text').val() == '') {
             alert('{% trans "Vyplňte prosím text poznámky." %}');
             return;
         }
@@ -16,10 +16,15 @@ function add_new_note() {
             type : 'POST',
             url : '{% url admin:clients_add_note original.pk %}',
             dataType: 'json',
-            data : {'text': $('#new_note').val()},
+			data : {
+				'text': $('#new_note_text').val(),
+				'datetime_0': $('#new_note_date').val(),
+				'datetime_1': $('#new_note_time').val(),
+				'client': {{ original.pk }}
+			},
             success : function (data) {
                 $('#notes div.tr').eq(0).after($('#note_template').tmpl(data));
-                $('#new_note').val('');
+                $('#new_note_text').val('');
             },
             error : function () {
                 alert('{% trans "Došlo k chybě při přidávání poznámky." %}');
@@ -60,7 +65,7 @@ function delete_note(link, note_id) {
     <div class="table module dynamic-form">
         <div class="module thead dynamic-form">
             <div class="tr">
-                <div class="th">{% trans "Autor" %}</div>
+				<div class="th">{% trans "Autor" %}</div>
                 <div class="th">{% trans "Datum" %}</div>
                 <div class="th">{% trans "Text" %}</div>
             </div>
@@ -68,8 +73,11 @@ function delete_note(link, note_id) {
         <div class="module tbody dynamic-form" id="notes">
             <div class="tr">
                 <div class="td">&nbsp;</div>
-                <div class="td">&nbsp;</div>
-                <div class="td"><textarea id="new_note" style="width: 50%; margin-right: 20px;"></textarea><input type="button" onclick="add_new_note();" value="{% trans "Přidat poznámku" %}" /></div>
+				<div class="td">
+					<input value="{{ current_date }}" class="vDateField" type="text" id="new_note_date" size="10" name="datetime_0" />
+					<input value="{{ current_time }}" class="vTimeField" type="text" id="new_note_time" size="5" name="datetime_1" />
+				</div>
+                <div class="td"><textarea id="new_note_text" style="width: 50%; margin-right: 20px;"></textarea><input type="button" onclick="add_new_note();" value="{% trans "Přidat poznámku" %}" /></div>
 				<div class="td">&nbsp;</div>
             </div>
             {% for note in original.notes.all %}
