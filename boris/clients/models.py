@@ -211,7 +211,7 @@ class RiskyManners(models.Model):
 
     class Meta:
         verbose_name = _(u'Rizikové chování')
-        verbose_name = _(u'Riziková chování')
+        verbose_name_plural = _(u'Riziková chování')
         unique_together = ('behavior', 'anamnesis')
 
 
@@ -221,9 +221,10 @@ class DiseaseTest(models.Model):
     result = models.PositiveSmallIntegerField(choices=DISEASE_TEST_RESULTS, verbose_name=_(u'Výsledek testu'))
 
     def __unicode__(self):
-        return unicode(self.get_display_disease)
+        return unicode(self.disease)
 
     class Meta:
         verbose_name = _(u'Vyšetření na onemocnění')
         verbose_name_plural = _(u'Vyšetření na onemocnění')
+        unique_together = ('disease', 'anamnesis')
 
