@@ -117,7 +117,7 @@ class Anamnesis(TimeStampedModel):
         verbose_name=_(u'Bydlení (s kým klient žije)'))
     accomodation = models.PositiveSmallIntegerField(choices=ACCOMODATION_TYPES,
         verbose_name=_(u'Bydlení (kde klient žije)'))
-    lives_with_junkies = models.BooleanField(verbose_name=_(u'Žije klient s osobou užívající drogy?'))
+    lives_with_junkies = models.NullBooleanField(verbose_name=_(u'Žije klient s osobou užívající drogy?'))
     employment = models.PositiveSmallIntegerField(choices=EMPLOYMENT_TYPES,
         verbose_name=_(u'Zaměstnání / škola'))
     education = models.PositiveSmallIntegerField(choices=EDUCATION_LEVELS,
