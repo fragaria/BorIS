@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, date
-from anyjson import serialize
 
 from django.conf.urls.defaults import patterns, url
 from django.contrib import admin
@@ -9,18 +8,17 @@ from django.db import models
 from django.forms import Textarea
 from django.forms.extras.widgets import SelectDateWidget
 
-from django.http import Http404, HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
 
 from django.utils.translation import ugettext as _
 from django.utils.dateformat import format
 from django.utils.formats import get_format
-from django.utils.encoding import force_unicode
 from django.utils.html import escape, escapejs
 
-from boris.clients.models import Client, Drug, ClientNote, Town,\
-    RiskyBehavior, Anamnesis, DrugUsage, RiskyManners
-from boris.clients.forms import ClientNoteForm, ReadOnlyWidget
+from boris.clients.models import Client, Drug, Town, RiskyBehavior, Anamnesis,\
+     DrugUsage, RiskyManners
+from boris.clients.forms import ReadOnlyWidget
+from boris.clients.views import add_note, delete_note
 
 class DrugUsageInline(admin.StackedInline):
     model = DrugUsage
@@ -179,11 +177,11 @@ class ClientAdmin(admin.ModelAdmin):
         urls = super(ClientAdmin, self).get_urls()
         my_urls = patterns('',
             url(r'^add-note/$',
-                self.admin_site.admin_view(self.add_note),
+                self.admin_site.admin_view(add_note),
                 name='clients_add_note'
             ),
             url(r'^delete-note/(?P<note_id>\d+)/$',
-                self.admin_site.admin_view(self.delete_note),
+                self.admin_site.admin_view(delete_note),
                 name='clients_delete_note'
             ),
         )
@@ -220,42 +218,6 @@ class ClientAdmin(admin.ModelAdmin):
     anamnesis_link.allow_tags = True
     anamnesis_link.short_description = _(u'Anamnéza')
 
-    def add_note(self, request):
-        if not request.method == 'POST' or not request.is_ajax():
-            raise Http404
-
-        form = ClientNoteForm(request.POST)
-
-        if not form.is_valid():
-            if 'datetime' in form.errors:
-                err_msg = _(u'Zadejte prosím platné datum a čas.')
-            elif 'text' in form.errors:
-                err_msg = _(u'Zadejte prosím neprázdný text.')
-            elif 'client' in form.errors:
-                err_msg = _(u'Zadaný klient neexistuje. (Nebyl mezitím smazán?)')
-
-            return HttpResponse(serialize({'error': err_msg}))
-
-        client_note = form.save(commit=False)
-        client_note.author = request.user
-        client_note.save()
-
-        ret = {
-            'id': client_note.pk,
-            'author': client_note.author.username,
-            'datetime': format(client_note.datetime, get_format('DATE_FORMAT')),
-            'text': client_note.text,
-        }
-
-        return HttpResponse(serialize(ret))
-
-    def delete_note(self, request, note_id):
-        if not request.is_ajax():
-            raise Http404
-
-        ClientNote.objects.filter(pk=note_id).delete()
-
-        return HttpResponse('OK')
 
 
 admin.site.register(RiskyBehavior)
