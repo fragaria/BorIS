@@ -58,18 +58,6 @@ EDUCATION_LEVELS = Choices(
     (5, 'UNIVERSITY_GRADE', u'Vysokoškolské'),
     (6, 'BASIC_NOT_COMPLETED', u'Neukončené základní')
 )
-HIV_EXAMINATION_CLASSES = Choices(
-    (1, 'TESTED', u'Testován'),
-    (2, 'NOT_TESTED', u'Netestován'),
-    (3, 'RESULT_NOT_ACCLAIMED', u'Nevyzvedl výsledek'),
-    (4, 'UNKNOWN', u'Neznámo')
-)
-HEPATITIS_EXAMINATION_CLASSES = Choices(
-    (1, 'TESTED', u'Testován'),
-    (2, 'NOT_TESTED', u'Netestován'),
-    (3, 'RESULT_NOT_ACCLAIMED', u'Nevyzvedl výsledek'),
-    (4, 'UNKNOWN', u'Neznámo')
-)
 DRUG_APPLICATION_FREQUENCY = Choices(
     (1, 'LESS_THAN_3X_A_MONTH', u'méně než 3x měsíčně'),
     (2, 'ONCE_A_WEEK', u'1x týdně'),
@@ -103,5 +91,19 @@ RISKY_BEHAVIOR_PERIODICITY = Choices(
         (1, 'OFTEN_BACK_THEN', u'Opakovaně v minulosti'),
         (1, 'ONCE_CURRENTLY', u'Jednorázově v současnosti'),
         (1, 'OFTEN_CURRENTLY', u'Opakovaně v současnosti'),
+)
+
+DISEASES = Choices(
+    (1, 'HIV', u'HIV'),
+    (2, 'VHA', u'VHA'),
+    (3, 'VHB', u'VHB'),
+    (4, 'VHC', u'VHC'),
+)
+
+DISEASE_TEST_RESULTS = Choices(
+    (1, 'TESTED', u'Testován'),
+    (2, 'NOT_TESTED', u'Netestován'),
+    (3, 'RESULT_NOT_ACCLAIMED', u'Nevyzvedl výsledek'),
+    (4, 'UNKNOWN', u'Neznámo')
 )
 

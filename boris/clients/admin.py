@@ -16,7 +16,7 @@ from django.utils.formats import get_format
 from django.utils.html import escape, escapejs
 
 from boris.clients.models import Client, Drug, Town, RiskyBehavior, Anamnesis,\
-     DrugUsage, RiskyManners, Region, District
+     DrugUsage, RiskyManners, Region, District, DiseaseTest
 from boris.clients.forms import ReadOnlyWidget
 from boris.clients.views import add_note, delete_note
 
@@ -40,6 +40,10 @@ class DrugUsageInline(admin.StackedInline):
 
 class RiskyMannersInline(admin.TabularInline):
     model = RiskyManners
+    extra = 0
+
+class DiseaseTestInline(admin.TabularInline):
+    model = DiseaseTest
     extra = 0
 
 
@@ -69,12 +73,11 @@ class AnamnesisAdmin(admin.ModelAdmin):
             ('living_condition', 'accomodation'),
             'lives_with_junkies',
             ('employment', 'education'),
-            ('hiv_examination', 'hepatitis_examination'),
             ('been_cured_before', 'been_cured_currently'),
         )}),
     )
 
-    inlines = (DrugUsageInline, RiskyMannersInline)
+    inlines = (DiseaseTestInline, DrugUsageInline, RiskyMannersInline)
 
     def client_link(self, obj):
         return '<a href="%s" style="font-weight: bold">%s</a>' % (

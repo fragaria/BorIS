@@ -12,9 +12,9 @@ from model_utils.models import TimeStampedModel
 
 from boris.clients.classification import SEXES, NATIONALITIES,\
     ETHNIC_ORIGINS, LIVING_CONDITIONS, ACCOMODATION_TYPES, EMPLOYMENT_TYPES,\
-    EDUCATION_LEVELS, HIV_EXAMINATION_CLASSES, HEPATITIS_EXAMINATION_CLASSES,\
     DRUG_APPLICATION_FREQUENCY, DRUG_APPLICATION_TYPES,\
-    PRIMARY_DRUG_APPLICATION_TYPES, RISKY_BEHAVIOR_PERIODICITY
+    PRIMARY_DRUG_APPLICATION_TYPES, RISKY_BEHAVIOR_PERIODICITY, DISEASES,\
+    DISEASE_TEST_RESULTS, EDUCATION_LEVELS
 
 
 class StringEnum(models.Model):
@@ -122,10 +122,6 @@ class Anamnesis(TimeStampedModel):
         verbose_name=_(u'Zaměstnání / škola'))
     education = models.PositiveSmallIntegerField(choices=EDUCATION_LEVELS,
         verbose_name=_(u'Vzdělání'))
-    hiv_examination = models.PositiveSmallIntegerField(choices=HIV_EXAMINATION_CLASSES,
-        verbose_name=_(u'Vyšetření HIV'))
-    hepatitis_examination = models.PositiveSmallIntegerField(
-        choices=HEPATITIS_EXAMINATION_CLASSES, verbose_name=_(u'Vyšetření hepatitidy'))
     been_cured_before = models.BooleanField(verbose_name=_(u'Dříve léčen'))
     been_cured_currently = models.BooleanField(verbose_name=_(u'Nyní léčen'))
 
@@ -217,4 +213,17 @@ class RiskyManners(models.Model):
         verbose_name = _(u'Rizikové chování')
         verbose_name = _(u'Riziková chování')
         unique_together = ('behavior', 'anamnesis')
+
+
+class DiseaseTest(models.Model):
+    anamnesis = models.ForeignKey(Anamnesis)
+    disease = models.PositiveSmallIntegerField(choices=DISEASES, verbose_name=_(u'Testované onemocnění'))
+    result = models.PositiveSmallIntegerField(choices=DISEASE_TEST_RESULTS, verbose_name=_(u'Výsledek testu'))
+
+    def __unicode__(self):
+        return unicode(self.get_display_disease)
+
+    class Meta:
+        verbose_name = _(u'Vyšetření na onemocnění')
+        verbose_name_plural = _(u'Vyšetření na onemocnění')
 
