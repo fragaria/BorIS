@@ -16,7 +16,7 @@ from django.utils.formats import get_format
 from django.utils.html import escape, escapejs
 
 from boris.clients.models import Client, Drug, Town, RiskyBehavior, Anamnesis,\
-     DrugUsage, RiskyManners
+     DrugUsage, RiskyManners, Region, District
 from boris.clients.forms import ReadOnlyWidget
 from boris.clients.views import add_note, delete_note
 
@@ -61,7 +61,6 @@ class AnamnesisAdmin(admin.ModelAdmin):
                 'fields': (
                     ('author', 'filled_when',),
                     ('filled_where',),
-                    ('district', 'region')
                 ),
             }
         ),
@@ -222,6 +221,8 @@ class ClientAdmin(admin.ModelAdmin):
 
 admin.site.register(RiskyBehavior)
 admin.site.register(Drug)
+admin.site.register(Region)
+admin.site.register(District)
 admin.site.register(Town)
 admin.site.register(Client, ClientAdmin)
 admin.site.register(Anamnesis, AnamnesisAdmin)

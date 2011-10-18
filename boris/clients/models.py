@@ -39,7 +39,23 @@ class RiskyBehavior(StringEnum):
         verbose_name_plural = _(u'Riziková chování')
 
 
+class Region(StringEnum):
+    class Meta:
+        verbose_name = _(u'Kraj')
+        verbose_name_plural = _(u'Kraje')
+
+
+class District(StringEnum):
+    region = models.ForeignKey(Region)
+
+    class Meta:
+        verbose_name = _(u'Okres')
+        verbose_name_plural = _(u'Okresy')
+
+
 class Town(StringEnum):
+    district = models.ForeignKey(District)
+
     class Meta:
         verbose_name = _(u'Město')
         verbose_name_plural = _(u'Města')
@@ -90,7 +106,7 @@ class Anamnesis(TimeStampedModel):
 
     client = models.OneToOneField(Client, verbose_name=_(u'Klient'))
     filled_when = models.DateField(verbose_name=_(u'Datum kontaktu'))
-    filled_where = models.CharField(max_length=255, verbose_name=_(u'Místo kontaktu'))
+    filled_where = models.ForeignKey(Town, verbose_name=_(u'Město kontaktu'))
     author = models.ForeignKey(User, verbose_name=_(u'Vyplnil'))
 
     nationality = models.PositiveSmallIntegerField(choices=NATIONALITIES,
@@ -112,8 +128,6 @@ class Anamnesis(TimeStampedModel):
         choices=HEPATITIS_EXAMINATION_CLASSES, verbose_name=_(u'Vyšetření hepatitidy'))
     been_cured_before = models.BooleanField(verbose_name=_(u'Dříve léčen'))
     been_cured_currently = models.BooleanField(verbose_name=_(u'Nyní léčen'))
-    district = models.CharField(max_length=100, verbose_name=_(u'Okres'))
-    region = models.CharField(max_length=100, verbose_name=_(u'Kraj'))
 
     drugs = models.ManyToManyField(Drug, through='DrugUsage',
         verbose_name=_(u'Užívané drogy'))
