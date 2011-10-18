@@ -26,12 +26,20 @@ class ReadOnlyWidget(forms.Widget):
         return self.original_value
 
 
+DATE_FORMATS = (
+    '%d.%m.%Y',
+)
+TIME_FORMATS = (
+    '%H:%M:%S',
+    '%H:%M',
+)
+
 class ClientNoteForm(forms.ModelForm):
+
+    datetime = forms.SplitDateTimeField(input_date_formats=DATE_FORMATS,
+        input_time_formats=TIME_FORMATS)
 
     class Meta:
         model = ClientNote
         fields = ('datetime', 'text', 'client')
-        widgets = {
-            'datetime': forms.SplitDateTimeWidget(),
-        }
 

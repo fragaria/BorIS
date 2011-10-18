@@ -15,8 +15,13 @@ class TestClientNote(HttpTestCase):
         self.user = get_testing_user()
 
     def post_note(self):
-        return self.client.post(reverse('admin:clients_add_note', kwargs={'object_id': self.my_client.pk}),
-            data = {'text': 'Note text.'},
+        return self.client.post(reverse('admin:clients_add_note'),
+            data = {
+                'text': u'Note text.',
+                'client': self.my_client.pk,
+                'datetime_0': u'10.10.2010',
+                'datetime_1': u'10:10',
+            },
             HTTP_X_REQUESTED_WITH='XMLHttpRequest'
         )
 
