@@ -2,6 +2,7 @@
 
 from django.http import Http404, HttpResponse
 from django.utils.formats import get_format
+from django.utils.dateformat import format
 from django.utils.translation import ugettext as _
 from anyjson import serialize
 
@@ -35,7 +36,7 @@ def add_note(request):
     ret = {
         'id': client_note.pk,
         'author': client_note.author.username,
-        'datetime': format(client_note.datetime, get_format('DATE_FORMAT')),
+        'datetime': format(client_note.datetime, get_format('DATETIME_FORMAT')),
         'text': client_note.text,
     }
 
