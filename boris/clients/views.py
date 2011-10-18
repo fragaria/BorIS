@@ -10,6 +10,9 @@ from boris.clients.forms import ClientNoteForm
 
 
 def add_note(request):
+    """
+    An ajax view for adding notes to the clients in admin.
+    """
     if not request.method == 'POST' or not request.is_ajax():
         raise Http404
 
@@ -39,6 +42,9 @@ def add_note(request):
     return HttpResponse(serialize(ret))
 
 def delete_note(request, note_id):
+    """
+    An ajax view for deleting client notes in admin.
+    """
     if not request.is_ajax():
         raise Http404
 
