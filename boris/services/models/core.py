@@ -15,6 +15,25 @@ from boris.services.forms import ServiceForm
 from boris.utils.forms import adminform_formfield
 from django.utils.encoding import force_unicode
 
+class ServiceOptions(object):
+    def __init__(self):
+        self.title = ''
+        self.description_template = None
+        self.available = lambda client: False
+        
+    def is_available(self, client):
+        return self.available(client)
+    
+    def get_title(self):
+        return self.title
+    
+    def get_description(self):
+        from django import template
+        t_list = (self.description_template, 'services/desc/default.html')
+        t = template.loader.select_template(t_list)
+        return t.render(template.Context())
+        
+
 class ClientServiceMetaclass(models.Model.__metaclass__):
     registered_services = []
     
@@ -34,7 +53,8 @@ class ClientServiceMetaclass(models.Model.__metaclass__):
         if attrs_service_meta:
             service_meta.update(attrs_service_meta.__dict__)
             
-        new_cls.service = service_meta
+        new_cls.service = ServiceOptions()
+        new_cls.service.__dict__.update(service_meta)
         
         return new_cls
     
@@ -81,17 +101,6 @@ class ClientService(TimeStampedModel):
     def class_name(cls):
         return cls.__name__
     
-    @classmethod
-    def service_title(cls):
-        return cls.service['title']
-
-    @classmethod
-    def service_description(cls):
-        from django import template
-        t_list = (cls.service['description_template'], 'services/desc/default.html')
-        t = template.loader.select_template(t_list)
-        return t.render(template.Context())
-
     
 def service_list(client, available_only=True):
     """
@@ -101,8 +110,9 @@ def service_list(client, available_only=True):
     to `client` will be listed.
     """
     if available_only:
-        return (s for s in ClientService.registered_services if s.service['available'](client))
+        return (s for s in ClientService.registered_services if s.service.is_available(client))
     return ClientService.registered_services
+
 
 def get_model_for_class_name(class_name):
     """Returns ClientService model class for given name"""

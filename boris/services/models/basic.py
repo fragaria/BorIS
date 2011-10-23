@@ -20,6 +20,6 @@ class AsistService(ClientService):
         
     def _prepare_title(self):
         return _(u'%(title)s: doprovod %(where)s') % {
-            'title': self.service['title'], 'where': self.where
+            'title': self.service.title, 'where': self.where
         }
         

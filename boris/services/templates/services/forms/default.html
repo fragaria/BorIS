@@ -1,10 +1,10 @@
 {% load i18n %}
-<h3>{{ service.service_title }}</h3>
+<h3>{{ service.service.get_title }}</h3>
 
 <div class="row cells-1 cells">
     <div class="cell">
         <div class="column span-flexible">
-            <p>{{ service.service_description }}</p>
+            {{ service.service.get_description }}
         </div>
     </div>
 </div>
