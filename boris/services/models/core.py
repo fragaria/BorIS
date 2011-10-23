@@ -27,10 +27,12 @@ class ServiceOptions(object):
     def get_title(self):
         return self.title
     
+    def get_description_template_list(self):
+        return (self.description_template, 'services/desc/default.html')
+    
     def get_description(self):
         from django import template
-        t_list = (self.description_template, 'services/desc/default.html')
-        t = template.loader.select_template(t_list)
+        t = template.loader.select_template(self.get_description_template_list())
         return t.render(template.Context())
         
 
@@ -85,7 +87,7 @@ class ClientService(TimeStampedModel):
         return self.title
     
     def _prepare_title(self):
-        return self.service_title()
+        return self.service.get_title()
     
     def clean(self):
         super(ClientService, self).clean()
