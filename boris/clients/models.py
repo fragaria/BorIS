@@ -68,7 +68,7 @@ class Client(TimeStampedModel):
     last_name= models.CharField(max_length=63, blank=True, null=True, verbose_name=_(u'Příjmení'))
     birthdate = models.DateField(verbose_name=_(u'Datum narození'), blank=True, null=True,
         help_text=_(u'Pokud znáte pouze rok, zaškrtněte políčko `Známý pouze rok`.'))
-    birthdate_year_only = models.BooleanField(default=False,
+    birthdate_year_only = models.BooleanField(default=True,
         verbose_name=_(u'Známý pouze rok'))
     town = models.ForeignKey(Town, verbose_name=_(u'Město'))
     primary_drug = models.ForeignKey(Drug, blank=True, null=True, verbose_name=_(u'Primární droga'))

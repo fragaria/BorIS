@@ -1,0 +1,15 @@
+{% extends "admin/base.html" %}
+{% load i18n grp_tags %}
+
+{% block stylesheets %}
+    {{ block.super }}
+    <link href="{{ STATIC_URL }}css/custom.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block title %}{{ title }} | {% trans 'BorIS' %}{% endblock %}
+
+{% block branding %}
+    <h1 id="site-name">{% trans 'BorIS' %}</h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

@@ -8,6 +8,8 @@ from anyjson import serialize
 
 from boris.clients.models import ClientNote
 from boris.clients.forms import ClientNoteForm
+from django.contrib.auth.decorators import permission_required
+from django.shortcuts import get_object_or_404
 
 
 def add_note(request):
@@ -42,14 +44,17 @@ def add_note(request):
 
     return HttpResponse(serialize(ret))
 
+@permission_required('clients.delete_clientnote')
 def delete_note(request, note_id):
     """
     An ajax view for deleting client notes in admin.
     """
     if not request.is_ajax():
         raise Http404
-
-    ClientNote.objects.filter(pk=note_id).delete()
-
-    return HttpResponse('OK')
+    
+    note = get_object_or_404(ClientNote, pk=note_id)
+    
+    if request.user.is_superuser() or note.author == request.user:
+        note.delete()
+        return HttpResponse('OK')
 
