@@ -87,10 +87,10 @@ PRIMARY_DRUG_APPLICATION_TYPES = Choices(
 
 RISKY_BEHAVIOR_PERIODICITY = Choices(
         (1, 'NEVER', u'Nikdy'),
-        (1, 'ONCE_BACK_THEN', u'Jednorázově v minulosti'),
-        (1, 'OFTEN_BACK_THEN', u'Opakovaně v minulosti'),
-        (1, 'ONCE_CURRENTLY', u'Jednorázově v současnosti'),
-        (1, 'OFTEN_CURRENTLY', u'Opakovaně v současnosti'),
+        (2, 'ONCE_BACK_THEN', u'Jednorázově v minulosti'),
+        (3, 'OFTEN_BACK_THEN', u'Opakovaně v minulosti'),
+        (4, 'ONCE_CURRENTLY', u'Jednorázově v současnosti'),
+        (5, 'OFTEN_CURRENTLY', u'Opakovaně v současnosti'),
 )
 
 DISEASES = Choices(
