@@ -224,7 +224,7 @@ class DiseaseTest(models.Model):
         return unicode(self.disease)
 
     class Meta:
-        verbose_name = _(u'Vyšetření na onemocnění')
-        verbose_name_plural = _(u'Vyšetření na onemocnění')
+        verbose_name = _(u'Vyšetření onemocnění')
+        verbose_name_plural = _(u'Vyšetření onemocnění')
         unique_together = ('disease', 'anamnesis')
 
