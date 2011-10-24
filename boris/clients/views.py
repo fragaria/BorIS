@@ -51,10 +51,10 @@ def delete_note(request, note_id):
     """
     if not request.is_ajax():
         raise Http404
-    
+
     note = get_object_or_404(ClientNote, pk=note_id)
-    
-    if request.user.is_superuser() or note.author == request.user:
+
+    if request.user.is_superuser or note.author == request.user:
         note.delete()
         return HttpResponse('OK')
 
