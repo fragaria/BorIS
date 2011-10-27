@@ -76,6 +76,10 @@ class AnamnesisAdmin(admin.ModelAdmin):
             ('been_cured_before', 'been_cured_currently'),
         )}),
     )
+    raw_id_fields = ('filled_where',)
+    autocomplete_lookup_fields = {
+        'fk': ['filled_where',]
+    }
 
     inlines = (DiseaseTestInline, DrugUsageInline, RiskyMannersInline)
 

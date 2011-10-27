@@ -14,7 +14,7 @@ from boris.clients.classification import SEXES, NATIONALITIES,\
     ETHNIC_ORIGINS, LIVING_CONDITIONS, ACCOMODATION_TYPES, EMPLOYMENT_TYPES,\
     DRUG_APPLICATION_FREQUENCY, DRUG_APPLICATION_TYPES,\
     PRIMARY_DRUG_APPLICATION_TYPES, RISKY_BEHAVIOR_PERIODICITY, DISEASES,\
-    DISEASE_TEST_RESULTS, EDUCATION_LEVELS
+    DISEASE_TEST_RESULTS, EDUCATION_LEVELS, DISEASE_TEST_SIGN
 
 
 class StringEnum(models.Model):
@@ -51,6 +51,9 @@ class District(StringEnum):
     class Meta:
         verbose_name = _(u'Okres')
         verbose_name_plural = _(u'Okresy')
+        
+    def __unicode__(self):
+        return u'%s, %s' % (self.title, unicode(self.region)) 
 
 
 class Town(StringEnum):
@@ -59,6 +62,9 @@ class Town(StringEnum):
     class Meta:
         verbose_name = _(u'Město')
         verbose_name_plural = _(u'Města')
+        
+    def __unicode__(self):
+        return u'%s (%s)' % (self.title, unicode(self.district)) 
 
 
 class Client(TimeStampedModel):
@@ -110,13 +116,13 @@ class Anamnesis(TimeStampedModel):
     author = models.ForeignKey(User, verbose_name=_(u'Vyplnil'))
 
     nationality = models.PositiveSmallIntegerField(choices=NATIONALITIES,
-        verbose_name=_(u'Státní příslušnost'))
+        default=NATIONALITIES.UNKNOWN, verbose_name=_(u'Státní příslušnost'))
     ethnic_origin = models.PositiveSmallIntegerField(choices=ETHNIC_ORIGINS,
-        verbose_name=_(u'Etnická příslušnost'))
+        default=ETHNIC_ORIGINS.NOT_MONITORED, verbose_name=_(u'Etnická příslušnost'))
     living_condition = models.PositiveSmallIntegerField(choices=LIVING_CONDITIONS,
-        verbose_name=_(u'Bydlení (s kým klient žije)'))
+        default=LIVING_CONDITIONS.UNKNOWN, verbose_name=_(u'Bydlení (s kým klient žije)'))
     accomodation = models.PositiveSmallIntegerField(choices=ACCOMODATION_TYPES,
-        verbose_name=_(u'Bydlení (kde klient žije)'))
+        default=ACCOMODATION_TYPES.UNKNOWN, verbose_name=_(u'Bydlení (kde klient žije)'))
     lives_with_junkies = models.NullBooleanField(verbose_name=_(u'Žije klient s osobou užívající drogy?'))
     employment = models.PositiveSmallIntegerField(choices=EMPLOYMENT_TYPES,
         verbose_name=_(u'Zaměstnání / škola'))
@@ -217,8 +223,12 @@ class RiskyManners(models.Model):
 
 class DiseaseTest(models.Model):
     anamnesis = models.ForeignKey(Anamnesis)
-    disease = models.PositiveSmallIntegerField(choices=DISEASES, verbose_name=_(u'Testované onemocnění'))
-    result = models.PositiveSmallIntegerField(choices=DISEASE_TEST_RESULTS, verbose_name=_(u'Výsledek testu'))
+    disease = models.PositiveSmallIntegerField(choices=DISEASES,
+        verbose_name=_(u'Testované onemocnění'))
+    result = models.PositiveSmallIntegerField(choices=DISEASE_TEST_RESULTS,
+        default=DISEASE_TEST_RESULTS.UNKNOWN, verbose_name=_(u'Výsledek testu'))
+    sign = models.CharField(max_length=1, choices=DISEASE_TEST_SIGN,
+        default=DISEASE_TEST_SIGN.UNKNOWN, verbose_name=_(u'Stav'))
 
     def __unicode__(self):
         return unicode(self.disease)
