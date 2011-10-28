@@ -1,21 +1,6 @@
 {% load i18n %}
 
 <div id="service-interface">
-<div class="group tabular">
-    <h2>{% trans "Provedené výkony" %}</h2>
-    <div class="table module dynamic-form">
-        <div class="module thead dynamic-form">
-            <div class="tr">
-                <div class="th">{% trans "Název" %}</div>
-                <div class="th">{% trans "Akce" %}</div>
-            </div>
-        </div>
-        <div class="module tbody dynamic-form" id="done-services">
-            
-        </div>
-    </div>
-</div>
-
 <fieldset class="module">
     <h2>{% trans "Nový výkon" %}</h2>
     
@@ -34,6 +19,21 @@
     </div>
     <div id="service-form-wrap"></div>
 </fieldset>
+
+<div class="group tabular">
+    <h2>{% trans "Provedené výkony" %}</h2>
+    <div class="table module dynamic-form">
+        <div class="module thead dynamic-form">
+            <div class="tr">
+                <div class="th">{% trans "Název" %}</div>
+                <div class="th">{% trans "Akce" %}</div>
+            </div>
+        </div>
+        <div class="module tbody dynamic-form" id="done-services">
+            
+        </div>
+    </div>
+</div>
 </div>
 
 <script type="text/javascript">
