@@ -13,10 +13,12 @@ from django.utils.translation import ugettext_lazy as _
 from model_utils.models import TimeStampedModel
 from model_utils.managers import InheritanceManager
 
+from fragapy.common.models.adminlink import AdminLinkMixin
+
 from boris.services.forms import ServiceForm
 from boris.utils.forms import adminform_formfield
 
-class Encounter(models.Model):
+class Encounter(models.Model, AdminLinkMixin):
     client = models.ForeignKey('clients.Client', related_name='encounters',
         verbose_name=_(u'Klient'))
     performed_by = models.ManyToManyField('auth.User', verbose_name=_(u'Kdo'))
@@ -29,8 +31,13 @@ class Encounter(models.Model):
         verbose_name_plural = _(u'Kontakty')
         ordering = ('-performed_on',)
         
+    def service_count(self):
+        return self.services.all().count()
+    service_count.short_description = _(u'Počet výkonů')
+
     def __unicode__(self):
         return unicode(self.client)
+        
 
 
 class ServiceOptions(object):

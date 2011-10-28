@@ -17,6 +17,7 @@ from boris.clients.models import Client, Drug, Town, RiskyBehavior, Anamnesis,\
      DrugUsage, RiskyManners, Region, District, DiseaseTest
 from boris.clients.forms import ReadOnlyWidget
 from boris.clients.views import add_note, delete_note
+from boris.services.admin import EncounterInline
 
 class DrugUsageInline(admin.StackedInline):
     model = DrugUsage
@@ -82,7 +83,7 @@ class AnamnesisAdmin(admin.ModelAdmin):
     inlines = (DiseaseTestInline, DrugUsageInline, RiskyMannersInline)
 
     def client_link(self, obj):
-        return '<a href="%s" style="font-weight: bold">%s</a>' % (
+        return u'<a href="%s" style="font-weight: bold">%s</a>' % (
             obj.client.get_admin_url(), obj.client)
     client_link.allow_tags = True
     client_link.short_description = _(u'Klient')
@@ -152,6 +153,7 @@ class ClientAdmin(admin.ModelAdmin):
         'fk': ['town',]
     }
     readonly_fields = (u'anamnesis_link', 'first_contact_verbose', 'last_contact_verbose')
+    inlines = (EncounterInline,)
 
     def change_view(self, request, object_id, extra_context=None):
         extra_context = {

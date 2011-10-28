@@ -9,6 +9,7 @@ from django.utils.formats import get_format
 from django.utils.translation import ugettext_lazy as _
 
 from model_utils.models import TimeStampedModel
+from fragapy.common.models.adminlink import AdminLinkMixin
 
 from boris.clients.classification import SEXES, NATIONALITIES,\
     ETHNIC_ORIGINS, LIVING_CONDITIONS, ACCOMODATION_TYPES, EMPLOYMENT_TYPES,\
@@ -67,7 +68,7 @@ class Town(StringEnum):
         return u'%s (%s)' % (self.title, unicode(self.district)) 
 
 
-class Client(TimeStampedModel):
+class Client(TimeStampedModel, AdminLinkMixin):
     code = models.CharField(max_length=63, unique=True, verbose_name=_(u'Kód'))
     sex = models.PositiveSmallIntegerField(choices=SEXES, verbose_name=_(u'Pohlaví'))
     first_name = models.CharField(max_length=63, blank=True, null=True, verbose_name=_(u'Jméno'))
