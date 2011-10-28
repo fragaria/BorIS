@@ -14,13 +14,13 @@ class ServiceForm(forms.ModelForm):
             'services/forms/default.html'
         )
         
-    def __init__(self, client, *args, **kwargs):
+    def __init__(self, encounter, *args, **kwargs):
         if kwargs.has_key('initial'):
-            kwargs['initial']['client'] = client
+            kwargs['initial']['encounter'] = encounter
         else:
-            kwargs['initial'] = {'client': client}
+            kwargs['initial'] = {'encounter': encounter}
             
         super(ServiceForm, self).__init__(*args, **kwargs)
-        self.client = client
+        self.encounter = encounter
         
-        self.fields['client'].widget = HiddenInput()
+        self.fields['encounter'].widget = HiddenInput()

@@ -1,0 +1,11 @@
+{% extends "admin/change_form.html" %}
+{% load i18n services %}
+
+{% block after_related_objects %}
+    {% if add %}
+        <p>{% trans "Výkony bude možné přidávat po uložení kontaktu." %}</p>
+    {% else %}
+        {% render_service_interface original %}
+    {% endif %}
+{% endblock %}
+

@@ -7,9 +7,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.forms import Textarea
 from django.forms.extras.widgets import SelectDateWidget
-
 from django.http import HttpResponse
-
 from django.utils.translation import ugettext as _
 from django.utils.dateformat import format
 from django.utils.formats import get_format

@@ -9,9 +9,9 @@ from boris.services.models.core import service_list
 register = template.Library()
 
 @register.inclusion_tag('services/interface.html')
-def render_service_interface(client):
+def render_service_interface(encounter):
     return {
-        'client': client,
-        'services_done': client.services.all(),
-        'service_list': service_list(client)
+        'encounter': encounter,
+        'services_done': encounter.services.all(),
+        'service_list': service_list(encounter.client)
     }

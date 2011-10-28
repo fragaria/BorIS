@@ -7,8 +7,6 @@
         <div class="module thead dynamic-form">
             <div class="tr">
                 <div class="th">{% trans "Název" %}</div>
-                <div class="th">{% trans "Datum" %}</div>
-                <div class="th">{% trans "Provedl" %}</div>
                 <div class="th">{% trans "Akce" %}</div>
             </div>
         </div>
@@ -42,8 +40,8 @@
     var $ = django.jQuery;
     var ui = null;
     
-    function ServiceUI(clientId) {
-        this.clientId = clientId;
+    function ServiceUI(encounterId) {
+        this.encounterId = encounterId;
         
         this.getServiceClass = function () {
             return $('#service-selector').val();
@@ -54,11 +52,11 @@
         }
         
         this.refreshServiceList = function () {
-           $('#done-services').load('{% url services_list client.pk %}'); 
+           $('#done-services').load('{% url services_list encounter.pk %}'); 
         };
         
         this.getHandlerUrl = function (serviceId) {
-            var url = '/services/handle-form/' + this.clientId + '/' + this.getServiceClass() + '/';
+            var url = '/services/handle-form/' + this.encounterId + '/' + this.getServiceClass() + '/';
             if (serviceId)
                 return url + serviceId + '/';
             return url; 
@@ -99,6 +97,6 @@
     }
     
     $(document).ready(function () {
-       ui = new ServiceUI({{ client.pk }}); 
+       ui = new ServiceUI({{ encounter.pk }}); 
     });
 </script>

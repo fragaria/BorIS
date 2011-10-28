@@ -46,7 +46,7 @@ class Region(StringEnum):
 
 
 class District(StringEnum):
-    region = models.ForeignKey(Region)
+    region = models.ForeignKey(Region, verbose_name=_(u'Kraj'))
 
     class Meta:
         verbose_name = _(u'Okres')
@@ -57,7 +57,7 @@ class District(StringEnum):
 
 
 class Town(StringEnum):
-    district = models.ForeignKey(District)
+    district = models.ForeignKey(District, verbose_name=_(u'Okres'))
 
     class Meta:
         verbose_name = _(u'Město')
@@ -84,16 +84,21 @@ class Client(TimeStampedModel):
     @property
     def first_contact_date(self):
         try:
-            return self.services.order_by('performed_on').values_list('performed_on', flat=True)[0]
+            return self.encounters.order_by('performed_on').values_list('performed_on', flat=True)[0]
         except IndexError:
             return None
 
     @property
     def last_contact_date(self):
         try:
-            return self.services.order_by('-performed_on').values_list('performed_on', flat=True)[0]
+            return self.encounters.order_by('-performed_on').values_list('performed_on', flat=True)[0]
         except IndexError:
             return None
+        
+    @property
+    def services(self):
+        from boris.services.models.core import ClientService
+        return ClientService.objects.filter(encounter__client=self)
 
     def __unicode__(self):
         return self.code

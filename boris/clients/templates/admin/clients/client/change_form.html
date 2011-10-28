@@ -1,6 +1,11 @@
 {% extends "admin/change_form.html" %}
 {% load i18n services %}
 
+{% block object-tools-items %}
+    <li><a href="{% url admin:services_encounter_add %}?client_id={{ original.pk }}">{% trans "Přidat kontakt" %}</a></li>
+    {{ block.super }}
+{% endblock %}
+
 {% block extrahead %}
     {{ block.super }}
     <link href="{{ STATIC_URL}}css/clients.css" rel="stylesheet" type="text/css" media="screen" />
@@ -46,8 +51,5 @@
 
 {% block after_related_objects %}
     {% include "admin/clients/client/note_list.html" %}
-    {% if not add %}
-        {% render_service_interface original %}
-    {% endif %}
 {% endblock %}
 
