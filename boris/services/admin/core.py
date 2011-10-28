@@ -25,11 +25,12 @@ class EncounterInline(admin.TabularInline):
     performed_by_verbose.short_description = _(u'Provedli')
     
     def service_list(self, obj):
-        return u', '.join([unicode(s) for s in obj.services.all()])
+        return u'<small>' + u'<br />'.join([unicode(s) for s in obj.services.all()]) + u'</small>'
     service_list.short_description = _(u'Provedené výkony')
+    service_list.allow_tags = True
     
     def goto_link(self, obj):
-        return u'<a href="%s">Přejít &raquo;</a>' % obj.get_admin_url()
+        return u'<a href="%s"><strong>Přejít &raquo;</strong></a>' % obj.get_admin_url()
     goto_link.short_description = _(u'Přejít')
     goto_link.allow_tags = True
 
