@@ -11,6 +11,8 @@ from boris.utils.forms import adminform_formfield
 class ServiceForm(BetterModelForm):
     @property
     def template_list(self):
+        if self._meta.model.service.form_template is not None:
+            return (self._meta.model.service.form_template,)
         return (
             'services/forms/%s.html' % self._meta.model.__name__.lower(),
             'services/forms/default.html'

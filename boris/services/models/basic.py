@@ -10,6 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 from boris.classification import DISEASES, DISEASE_TEST_SIGN
 
 from .core import ClientService
+from model_utils import Choices
 
 class HarmReduction(ClientService):
     in_count = models.PositiveSmallIntegerField(default=0, verbose_name=_(u'IN'))
@@ -41,6 +42,7 @@ class HarmReduction(ClientService):
         
     class Service:
         title = _(u'Výměnný a jiný harm reduction program')
+        form_template = 'services/forms/small_cells.html'
         fieldsets = (
             (None, {'fields': ('in_count', 'out_count', 'encounter'),
                 'classes': ('inline',)}),
@@ -56,6 +58,7 @@ class HarmReduction(ClientService):
 class IncomeExamination(ClientService):
     class Meta:
         app_label = 'services'
+        proxy = True
         verbose_name = _(u'Vstupní zhodnocení stavu klienta')
         verbose_name_plural = _(u'Vstupní zhodnocení stavu klienta')
         
@@ -78,8 +81,21 @@ class DiseaseTest(ClientService):
         }
     
 
+class ContactWork(ClientService):
+    class Meta:
+        app_label = 'services'
+        proxy = True
+        verbose_name = _(u'Kontaktní práce')
+        verbose_name_plural = _(u'Kontaktní práce')
+        
+
 class AsistService(ClientService):
-    where = models.CharField(max_length=255, verbose_name=_(u'Kam'))
+    ASIST_TYPES = Choices(
+        ('d', 'DOCTOR', _(u'lékař')),
+        ('o', 'OFFICE', _(u'úřad')),
+        ('m', 'MEDICAL_FACILITY', _(u'léčebné zařízení')),
+    )
+    where = models.CharField(max_length=1, choices=ASIST_TYPES, verbose_name=_(u'Kam'))
     note = models.TextField(null=True, blank=True, verbose_name=_(u'Poznámka'))
     
     class Meta:
@@ -89,6 +105,37 @@ class AsistService(ClientService):
         
     def _prepare_title(self):
         return _(u'%(title)s: doprovod %(where)s') % {
-            'title': self.service.title, 'where': self.where
+            'title': self.service.title, 'where': self.get_where_display()
         }
+        
+        
+class InformationService(ClientService):
+    safe_usage = models.BooleanField(default=False,
+        verbose_name=_(u'bezpečné užívání'))
+    safe_sex = models.BooleanField(default=False,
+        verbose_name=_(u'bezpečný sex'))
+    medical = models.BooleanField(default=False, verbose_name=_(u'zdravotní'))
+    socio_legal = models.BooleanField(default=False,
+        verbose_name=_(u'sociálně-právní'))
+    cure_possibilities = models.BooleanField(default=False,
+        verbose_name=_(u'možnosti léčby'))
+    literature = models.BooleanField(default=False,
+        verbose_name=_(u'literatura'))
+    other = models.BooleanField(default=False, verbose_name=_(u'ostatní'))
+        
+    class Meta:
+        app_label = 'services'
+        verbose_name = _(u'Informační služba')
+        verbose_name_plural = _(u'Informační služba')
+        
+    class Service:
+        form_template = 'services/forms/small_cells.html'
+        fieldsets = (
+            (None, {
+                'fields': ('encounter', 'safe_usage', 'safe_sex', 'medical',
+                    'socio_legal', 'cure_possibilities', 'literature', 'other'),
+                'classes': ('inline',)
+            }),
+        )
+        
         

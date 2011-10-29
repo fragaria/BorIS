@@ -45,6 +45,7 @@ class ServiceOptions(object):
         self.model = model
         self.title = ''
         self.description_template = None
+        self.form_template = None
         self.available = lambda client: False
         self.fields = None
         self.excludes = None
@@ -131,7 +132,9 @@ class ClientService(TimeStampedModel):
     def clean(self):
         super(ClientService, self).clean()
         self.title = force_unicode(self._prepare_title())
-        self.content_type = ContentType.objects.get_for_model(type(self))
+        # @attention: instead of using get_for_model which doesn't respect
+        # proxy models content types, use get_by_natural key as a workaround
+        self.content_type = ContentType.objects.get_by_natural_key(self._meta.app_label, self._meta.object_name)
         
     def cast(self):
         """
