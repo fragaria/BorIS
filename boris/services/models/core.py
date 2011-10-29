@@ -143,6 +143,10 @@ class ClientService(TimeStampedModel):
     def form(cls, *args, **kwargs):
         return serviceform_factory(cls)
     
+    def is_editable(self):
+        skip_fields = ('encounter', 'id', 'clientservice_ptr')
+        return any([f.editable for f in self._meta.fields if f.name not in skip_fields])
+    
     @classmethod
     def class_name(cls):
         return cls.__name__

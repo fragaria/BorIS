@@ -117,6 +117,7 @@ DISEASE_TEST_RESULTS = Choices(
 DISEASE_TEST_SIGN = Choices(
     ('p', 'POSITIVE', u'Pozitivní'),
     ('n', 'NEGATIVE', u'Negativní'),
-    ('u', 'UNKNOWN', u'Neznámý')
+    ('r', 'REACTIVE', u'Reaktivní'),
+    ('i', 'INCONCLUSIVE', u'Test neprůkazný')
 )
 

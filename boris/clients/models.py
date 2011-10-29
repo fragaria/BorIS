@@ -11,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from model_utils.models import TimeStampedModel
 from fragapy.common.models.adminlink import AdminLinkMixin
 
-from boris.clients.classification import SEXES, NATIONALITIES,\
+from boris.classification import SEXES, NATIONALITIES,\
     ETHNIC_ORIGINS, LIVING_CONDITIONS, ACCOMODATION_TYPES, EMPLOYMENT_TYPES,\
     DRUG_APPLICATION_FREQUENCY, DRUG_APPLICATION_TYPES,\
     PRIMARY_DRUG_APPLICATION_TYPES, RISKY_BEHAVIOR_PERIODICITY, DISEASES,\
@@ -234,7 +234,7 @@ class DiseaseTest(models.Model):
     result = models.PositiveSmallIntegerField(choices=DISEASE_TEST_RESULTS,
         default=DISEASE_TEST_RESULTS.UNKNOWN, verbose_name=_(u'Výsledek testu'))
     sign = models.CharField(max_length=1, choices=DISEASE_TEST_SIGN,
-        default=DISEASE_TEST_SIGN.UNKNOWN, verbose_name=_(u'Stav'))
+        default=DISEASE_TEST_SIGN.INCONCLUSIVE, verbose_name=_(u'Stav'))
 
     def __unicode__(self):
         return unicode(self.disease)

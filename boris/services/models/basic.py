@@ -7,6 +7,8 @@ Created on 2.10.2011
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from boris.classification import DISEASES, DISEASE_TEST_SIGN
+
 from .core import ClientService
 
 class HarmReduction(ClientService):
@@ -49,7 +51,32 @@ class HarmReduction(ClientService):
             (_(u'Ostatní'), {'fields': ('pregnancy_test', 'medical_supplies'),
                 'classes': ('inline',)})
         )
+     
         
+class IncomeExamination(ClientService):
+    class Meta:
+        app_label = 'services'
+        verbose_name = _(u'Vstupní zhodnocení stavu klienta')
+        verbose_name_plural = _(u'Vstupní zhodnocení stavu klienta')
+        
+        
+class DiseaseTest(ClientService):
+    disease = models.PositiveSmallIntegerField(choices=DISEASES,
+        verbose_name=_(u'Testované onemocnění'))
+    sign = models.CharField(max_length=1, choices=DISEASE_TEST_SIGN,
+        default=DISEASE_TEST_SIGN.INCONCLUSIVE, verbose_name=_(u'Stav'))
+    
+    class Meta:
+        app_label = 'services'
+        verbose_name = _(u'Testování infekčních nemocí')
+        verbose_name_plural = _(u'Testování infekčních nemocí')
+        
+    def _prepare_title(self):
+        return _(u'%(title)s: %(disease)s / %(sign)s') % {
+            'title': self.service.title, 'disease': self.get_disease_display(),
+            'sign': self.get_sign_display()
+        }
+    
 
 class AsistService(ClientService):
     where = models.CharField(max_length=255, verbose_name=_(u'Kam'))
