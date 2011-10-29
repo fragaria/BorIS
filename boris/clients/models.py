@@ -15,7 +15,7 @@ from boris.clients.classification import SEXES, NATIONALITIES,\
     ETHNIC_ORIGINS, LIVING_CONDITIONS, ACCOMODATION_TYPES, EMPLOYMENT_TYPES,\
     DRUG_APPLICATION_FREQUENCY, DRUG_APPLICATION_TYPES,\
     PRIMARY_DRUG_APPLICATION_TYPES, RISKY_BEHAVIOR_PERIODICITY, DISEASES,\
-    DISEASE_TEST_RESULTS, EDUCATION_LEVELS, DISEASE_TEST_SIGN
+    DISEASE_TEST_RESULTS, EDUCATION_LEVELS
 
 
 class StringEnum(models.Model):
@@ -52,9 +52,9 @@ class District(StringEnum):
     class Meta:
         verbose_name = _(u'Okres')
         verbose_name_plural = _(u'Okresy')
-        
+
     def __unicode__(self):
-        return u'%s, %s' % (self.title, unicode(self.region)) 
+        return u'%s, %s' % (self.title, unicode(self.region))
 
 
 class Town(StringEnum):
@@ -63,9 +63,9 @@ class Town(StringEnum):
     class Meta:
         verbose_name = _(u'Město')
         verbose_name_plural = _(u'Města')
-        
+
     def __unicode__(self):
-        return u'%s (%s)' % (self.title, unicode(self.district)) 
+        return u'%s (%s)' % (self.title, unicode(self.district))
 
 
 class Client(TimeStampedModel, AdminLinkMixin):
@@ -95,7 +95,7 @@ class Client(TimeStampedModel, AdminLinkMixin):
             return self.encounters.order_by('-performed_on').values_list('performed_on', flat=True)[0]
         except IndexError:
             return None
-        
+
     @property
     def services(self):
         from boris.services.models.core import ClientService
@@ -233,8 +233,6 @@ class DiseaseTest(models.Model):
         verbose_name=_(u'Testované onemocnění'))
     result = models.PositiveSmallIntegerField(choices=DISEASE_TEST_RESULTS,
         default=DISEASE_TEST_RESULTS.UNKNOWN, verbose_name=_(u'Výsledek testu'))
-    sign = models.CharField(max_length=1, choices=DISEASE_TEST_SIGN,
-        default=DISEASE_TEST_SIGN.UNKNOWN, verbose_name=_(u'Stav'))
 
     def __unicode__(self):
         return unicode(self.disease)
