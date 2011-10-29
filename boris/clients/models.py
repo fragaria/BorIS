@@ -2,7 +2,6 @@
 import datetime
 
 from django.db import models
-from django.db.models import permalink
 from django.contrib.auth.models import User
 from django.utils.dateformat import format
 from django.utils.formats import get_format
@@ -104,16 +103,12 @@ class Client(TimeStampedModel, AdminLinkMixin):
     def __unicode__(self):
         return self.code
 
-    @permalink
-    def get_admin_url(self):
-        return ('admin:clients_client_change', (str(self.pk),))
-
     class Meta:
         verbose_name = _(u'Klient')
         verbose_name_plural = _(u'Klienti')
 
 
-class Anamnesis(TimeStampedModel):
+class Anamnesis(TimeStampedModel, AdminLinkMixin):
     """ Income anamnesis. """
 
     client = models.OneToOneField(Client, verbose_name=_(u'Klient'))
@@ -156,10 +151,6 @@ class Anamnesis(TimeStampedModel):
 
     def __unicode__(self):
         return _(u'Anamnéza: %s') % self.client
-
-    @permalink
-    def get_admin_url(self):
-        return ('admin:clients_anamnesis_change', (str(self.pk),))
 
     class Meta:
         verbose_name = _(u'Anamnéza')
