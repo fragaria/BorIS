@@ -98,6 +98,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'south',
+    'form_utils',
 
     'boris.clients',
     'boris.services',

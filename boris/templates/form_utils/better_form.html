@@ -1,0 +1,36 @@
+{% load i18n %}
+{% csrf_token %}
+
+{% if form.errors %}
+    <p class="errornote" style="padding: 8px 10px !important; margin: 7px !important">
+    {% blocktrans count form.errors|length as counter %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
+    </p>
+{% endif %}
+
+{% if form.non_field_errors %}
+    {{ form.non_field_errors }}
+{% endif %}
+
+{% block fields %}
+{% for field in form %}
+    {% if field.is_hidden %}
+        {{ field.errors }}
+        {{ field }}
+    {% else %}
+        <div class="row cells-2 cells">
+            <div class="cell {% if field.errors %}errors{% endif %}">
+                <div class="column span-4">
+                    <label for="{{ field.auto_id }}" {% if field.field.required %}class="required"{% endif %}>{{ field.label }}:</label>
+                </div>
+                <div class="column span-flexible">
+                    {{ field }}
+                    {{ field.errors }}
+                    {% if field.help_text %}
+                        <p class="help">{{ field.help_text }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endfor %}
+{% endblock %}

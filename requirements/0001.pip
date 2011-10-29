@@ -6,4 +6,5 @@ django-grappelli
 djangosanetesting
 
 -e git+https://github.com/carljm/django-model-utils.git#egg=model_utils
+-e git+https://github.com/carljm/django-form-utils.git#egg=form_utils
 -e git+ssh://sources/DATA/projects/fraga-py/GIT/fragapy.git#egg=fragapy

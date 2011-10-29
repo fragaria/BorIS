@@ -13,7 +13,7 @@
                         <option value="{{ s.class_name }}">{{ s.service.title }}</option>
                     {% endfor %}
                 </select>
-                <input type="button" value="{% trans "OK" %}" onclick="ui.loadForm(); return false;" />
+                <button onclick="ui.loadForm(); return false;" style="margin-left: 20px;">{% trans "OK" %}</button>
             </div>
         </div>
     </div>
@@ -55,8 +55,11 @@
            $('#done-services').load('{% url services_list encounter.pk %}'); 
         };
         
-        this.getHandlerUrl = function (serviceId) {
-            var url = '/services/handle-form/' + this.encounterId + '/' + this.getServiceClass() + '/';
+        this.getHandlerUrl = function (serviceId, serviceClass) {
+            if (! serviceClass)
+                serviceClass = this.getServiceClass();
+            
+            var url = '/services/handle-form/' + this.encounterId + '/' + serviceClass + '/';
             if (serviceId)
                 return url + serviceId + '/';
             return url; 
@@ -67,7 +70,9 @@
             grappelli.initDateAndTimePicker();
         }
         
-        this.loadForm = function (serviceId) { $.get(this.getHandlerUrl(serviceId), this.placeForm); }
+        this.loadForm = function (serviceId, serviceClass) {
+            $.get(this.getHandlerUrl(serviceId, serviceClass), this.placeForm);
+        }
         
         this.cleanForm = function () { this.placeForm(''); }
         

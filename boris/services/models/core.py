@@ -15,8 +15,8 @@ from model_utils.managers import InheritanceManager
 
 from fragapy.common.models.adminlink import AdminLinkMixin
 
-from boris.services.forms import ServiceForm
-from boris.utils.forms import adminform_formfield
+from boris.services.forms import serviceform_factory
+from django.contrib.contenttypes.models import ContentType
 
 class Encounter(models.Model, AdminLinkMixin):
     client = models.ForeignKey('clients.Client', related_name='encounters',
@@ -41,10 +41,19 @@ class Encounter(models.Model, AdminLinkMixin):
 
 
 class ServiceOptions(object):
-    def __init__(self):
+    def __init__(self, model):
+        self.model = model
         self.title = ''
         self.description_template = None
         self.available = lambda client: False
+        self.fields = None
+        self.excludes = None
+        self.row_attrs = None
+        self.fieldsets = None
+
+    @property
+    def declared_fieldsets(self):
+        return self.fieldsets
         
     def is_available(self, client):
         return self.available(client)
@@ -59,7 +68,14 @@ class ServiceOptions(object):
         from django import template
         t = template.loader.select_template(self.get_description_template_list())
         return t.render(template.Context())
-        
+    
+    def get_fieldsets(self):
+        if self.declared_fieldsets:
+            return self.declared_fieldsets
+        else:
+            fields = [f.name for f in self.model._meta.fields if f.editable]
+            return ((None, {'fields': fields}),)
+    
 
 class ClientServiceMetaclass(models.Model.__metaclass__):
     registered_services = []
@@ -79,10 +95,10 @@ class ClientServiceMetaclass(models.Model.__metaclass__):
         
         if attrs_service_meta:
             service_meta.update(attrs_service_meta.__dict__)
-            
-        new_cls.service = ServiceOptions()
+
+        new_cls.service = ServiceOptions(new_cls)
         new_cls.service.__dict__.update(service_meta)
-        
+
         return new_cls
     
     
@@ -93,6 +109,7 @@ class ClientService(TimeStampedModel):
         verbose_name=_(u'Kontakt'))
     title = models.CharField(max_length=255, editable=False,
         verbose_name=_(u'Název'))
+    content_type = models.ForeignKey(ContentType, editable=False)
     
     objects = InheritanceManager()
     
@@ -114,12 +131,17 @@ class ClientService(TimeStampedModel):
     def clean(self):
         super(ClientService, self).clean()
         self.title = force_unicode(self._prepare_title())
+        self.content_type = ContentType.objects.get_for_model(type(self))
+        
+    def cast(self):
+        """
+        Returns ancestor.
+        """
+        return self.content_type.get_object_for_this_type(pk=self.pk)
         
     @classmethod
-    def form(cls):
-        from django.forms.models import modelform_factory
-        return modelform_factory(cls, form=ServiceForm,
-            formfield_callback=adminform_formfield)
+    def form(cls, *args, **kwargs):
+        return serviceform_factory(cls)
     
     @classmethod
     def class_name(cls):

@@ -1,11 +1,13 @@
 {% load i18n %}
 
 {% for s in services_done %}
+{% with s.cast as casted %}
 <div class="tr">
     <div class="td"><strong>{{ s.title }}</strong></div>
     <div class="td">
-        <button class="small" onclick="ui.loadForm({{ s.pk }}); return false;">{% trans "Upravit" %}</button>
+        <button class="small" onclick="ui.loadForm({{ s.pk }}, '{{ casted.class_name }}'); return false;">{% trans "Upravit" %}</button>
         <button class="small warn" onclick="ui.dropService({{ s.pk }}); return false;">{% trans "Smazat" %}</button>
     </div>
 </div>
+{% endwith %}
 {% endfor %}
