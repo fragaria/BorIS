@@ -81,14 +81,6 @@ class DiseaseTest(ClientService):
         }
     
 
-class ContactWork(ClientService):
-    class Meta:
-        app_label = 'services'
-        proxy = True
-        verbose_name = _(u'Kontaktní práce')
-        verbose_name_plural = _(u'Kontaktní práce')
-        
-
 class AsistService(ClientService):
     ASIST_TYPES = Choices(
         ('d', 'DOCTOR', _(u'lékař')),
@@ -139,3 +131,30 @@ class InformationService(ClientService):
         )
         
         
+class ContactWork(ClientService):
+    class Meta:
+        app_label = 'services'
+        proxy = True
+        verbose_name = _(u'Kontaktní práce')
+        verbose_name_plural = _(u'Kontaktní práce')
+        
+        
+class CrisisIntervention(ClientService):
+    INTERVENTION_TYPES = Choices(
+        ('d', 'DIRECT', _(u'přímá')),
+        ('p', 'OVER_THE_PHONE', _(u'po telefonu')),
+    )
+    type = models.CharField(max_length=1, choices=INTERVENTION_TYPES,
+        default=INTERVENTION_TYPES.DIRECT, verbose_name=_(u'Typ'))
+    
+    class Meta:
+        app_label = 'services'
+        verbose_name = _(u'Krizová intervence')
+        verbose_name_plural = _(u'Krizové intervence')
+        
+    def _prepare_title(self):
+        return _(u'%(title)s: %(type)s') % {
+            'title': self.service.title, 'type': self.get_type_display()
+        }
+    
+    
