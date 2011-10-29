@@ -158,3 +158,63 @@ class CrisisIntervention(ClientService):
         }
     
     
+class PhoneCounseling(ClientService):
+    class Meta:
+        app_label = 'services'
+        proxy = True
+        verbose_name = _(u'Telefonické poradenství')
+        verbose_name_plural = _(u'Telefonické poradenství')
+        
+        
+class SocialWork(ClientService):
+    socio_legal = models.BooleanField(default=False,
+        verbose_name=_(u'sociálně-právní'))
+    socio_material = models.BooleanField(default=False,
+        verbose_name=_(u'sociálně-materiální'))
+    service_mediation = models.BooleanField(default=False,
+        verbose_name=_(u'zprostředkování dalších služeb'))
+    other = models.BooleanField(default=False,
+        verbose_name=_(u'jiná'))
+    
+    class Meta:
+        app_label = 'services'
+        verbose_name = _(u'Sociální práce')
+        verbose_name_plural = _(u'Sociální práce')
+        
+    class Service:
+        fieldsets = (
+            (None, {
+                'fields': ('encounter', 'socio_legal', 'socio_material',
+                    'service_mediation', 'other'),
+                'classes': ('inline',)
+            }),
+        )
+        
+        
+class UtilityWork(ClientService):
+    class Meta:
+        app_label = 'services'
+        proxy = True
+        verbose_name = _(u'Další úkony')
+        verbose_name_plural = _(u'Další úkony')
+        
+    class Service:
+        title = _(u'Úkony potřebné pro zajištění práce s klientem')
+        
+        
+class BasicMedicalTreatment(ClientService):
+    class Meta:
+        app_label = 'services'
+        proxy = True
+        verbose_name = _(u'Základní zdravotní ošetření')
+        verbose_name_plural = _(u'Základní zdravotní ošetření')
+        
+        
+class IndividualCounseling(ClientService):
+    class Meta:
+        app_label = 'services'
+        proxy = True
+        verbose_name = _(u'Individuální poradenství')
+        verbose_name_plural = _(u'Individuální poradenství')
+        
+    
