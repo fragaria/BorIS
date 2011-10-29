@@ -4,6 +4,18 @@
 <fieldset class="module">
     <h2>{% trans "Nový výkon" %}</h2>
     
+    <div class="row" id="savemessage" style="display: none;">
+        <ul class="messagelist">
+            <li class="success">Výkon byl uložen.</li>
+        </ul>
+    </div>
+    
+    <div class="row" id="deletemessage" style="display: none;">
+        <ul class="messagelist">
+            <li class="warning">Výkon byl smazán.</li>
+        </ul>
+    </div>
+    
     <div class="row cells-2 cells">
         <div class="cell">
             <div class="column span-4"><label>{% trans "Zvolte druh výkonu:" %}</label></div>
@@ -19,6 +31,7 @@
     </div>
     <div id="service-form-wrap"></div>
 </fieldset>
+
 
 <div class="group tabular">
     <h2>{% trans "Provedené výkony" %}</h2>
@@ -67,7 +80,18 @@
         
         this.placeForm = function (html) {
             $('#service-form-wrap').html(html);
-            grappelli.initDateAndTimePicker();
+            
+            if (html != '') {
+                var allFields = $('#service-form-wrap').find('select,input');
+                var visibleFields = $('#service-form-wrap').find('select:visible,input:visible');
+                
+                if (visibleFields.length == 0 && allFields.length != 0) {
+                    ui.saveForm();
+                } else {
+                    grappelli.initDateAndTimePicker();
+                }
+            }
+            
         }
         
         this.loadForm = function (serviceId, serviceClass) {
@@ -80,6 +104,7 @@
             var data = this.getForm().serialize();
             $.post(this.getForm().attr('action'), data, function (response) {
                 if (response.ok) {
+                    ui.showSaveMessage();
                     ui.cleanForm();
                     ui.refreshServiceList();
                 } else {
@@ -91,9 +116,28 @@
             return false;
         }
         
+        this.showDelMessage = function () {
+            $('#deletemessage').show();
+            setTimeout("ui.hideDelMessage();", 1000);
+        }
+        
+        this.hideDelMessage = function () {
+            $('#deletemessage').fadeOut('slow');
+        }
+        
+        this.showSaveMessage = function () {
+            $('#savemessage').show();
+            setTimeout("ui.hideSaveMessage();", 1000);
+        }
+        
+        this.hideSaveMessage = function () {
+            $('#savemessage').fadeOut('slow');
+        }
+        
         this.dropService = function (serviceId) {
             $.post('/services/drop/' + serviceId + '/', {}, function () {
                ui.cleanForm();
+               ui.showDelMessage();
                ui.refreshServiceList(); 
             });
         }
