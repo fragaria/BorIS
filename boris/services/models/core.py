@@ -4,16 +4,41 @@ Created on 2.10.2011
 
 @author: xaralis
 '''
-from datetime import datetime
+from datetime import date
 
 from django.db import models
+from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext_lazy as _
 
 from model_utils.models import TimeStampedModel
 from model_utils.managers import InheritanceManager
+
+from fragapy.common.models.adminlink import AdminLinkMixin
+
 from boris.services.forms import ServiceForm
 from boris.utils.forms import adminform_formfield
-from django.utils.encoding import force_unicode
+
+class Encounter(models.Model, AdminLinkMixin):
+    client = models.ForeignKey('clients.Client', related_name='encounters',
+        verbose_name=_(u'Klient'))
+    performed_by = models.ManyToManyField('auth.User', verbose_name=_(u'Kdo'))
+    performed_on = models.DateField(default=date.today, verbose_name=_(u'Kdy'))
+    where = models.ForeignKey('clients.Town', verbose_name=_(u'Kde'))
+    
+    class Meta:
+        app_label = 'services'
+        verbose_name = _(u'Kontakt')
+        verbose_name_plural = _(u'Kontakty')
+        ordering = ('-performed_on',)
+        
+    def service_count(self):
+        return self.services.all().count()
+    service_count.short_description = _(u'Počet výkonů')
+
+    def __unicode__(self):
+        return unicode(self.client)
+        
+
 
 class ServiceOptions(object):
     def __init__(self):
@@ -64,11 +89,8 @@ class ClientServiceMetaclass(models.Model.__metaclass__):
 class ClientService(TimeStampedModel):
     __metaclass__ = ClientServiceMetaclass
     
-    client = models.ForeignKey('clients.Client', related_name='services',
-        verbose_name=_(u'Klient'))
-    performed_by = models.ForeignKey('auth.User', verbose_name=_(u'Vykonal'))
-    performed_on = models.DateField(default=datetime.today,
-        verbose_name=_(u'Vykonáno dne'))
+    encounter = models.ForeignKey(Encounter, related_name='services',
+        verbose_name=_(u'Kontakt'))
     title = models.CharField(max_length=255, editable=False,
         verbose_name=_(u'Název'))
     
@@ -76,7 +98,7 @@ class ClientService(TimeStampedModel):
     
     class Meta:
         app_label = 'services'
-        ordering = ('-performed_on',)
+        ordering = ('encounter',)
 
 
     class Service:

@@ -3,11 +3,9 @@
 {% for s in services_done %}
 <div class="tr">
     <div class="td"><strong>{{ s.title }}</strong></div>
-    <div class="td">{{ s.performed_on|date:"DATE_FORMAT" }}</div>
-    <div class="td">{{ s.performed_by }}</div>
     <div class="td">
-        <button onclick="ui.loadForm({{ s.pk }}); return false;">{% trans "Upravit" %}</button>
-        <button style="background: -moz-linear-gradient(center top , #D93636, #BF3030) repeat scroll 0 0 transparent;" onclick="ui.dropService({{ s.pk }}); return false;">{% trans "Smazat" %}</button>
+        <button class="small" onclick="ui.loadForm({{ s.pk }}); return false;">{% trans "Upravit" %}</button>
+        <button class="small warn" onclick="ui.dropService({{ s.pk }}); return false;">{% trans "Smazat" %}</button>
     </div>
 </div>
 {% endfor %}
