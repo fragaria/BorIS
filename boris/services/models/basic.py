@@ -7,10 +7,11 @@ Created on 2.10.2011
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from model_utils import Choices
+
 from boris.classification import DISEASES, DISEASE_TEST_SIGN
 
 from .core import ClientService
-from model_utils import Choices
 
 class HarmReduction(ClientService):
     in_count = models.PositiveSmallIntegerField(default=0, verbose_name=_(u'IN'))

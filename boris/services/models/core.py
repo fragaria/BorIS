@@ -6,6 +6,7 @@ Created on 2.10.2011
 '''
 from datetime import date
 
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext_lazy as _
@@ -16,7 +17,6 @@ from model_utils.managers import InheritanceManager
 from fragapy.common.models.adminlink import AdminLinkMixin
 
 from boris.services.forms import serviceform_factory
-from django.contrib.contenttypes.models import ContentType
 
 class Encounter(models.Model, AdminLinkMixin):
     client = models.ForeignKey('clients.Client', related_name='encounters',
@@ -37,10 +37,14 @@ class Encounter(models.Model, AdminLinkMixin):
 
     def __unicode__(self):
         return unicode(self.client)
-        
 
 
 class ServiceOptions(object):
+    """
+    This class is similar to `Options` class that Django defines for every model.
+    
+    It is used to keep settings for all ClientService subclasses. 
+    """
     def __init__(self, model):
         self.model = model
         self.title = ''
@@ -54,23 +58,38 @@ class ServiceOptions(object):
 
     @property
     def declared_fieldsets(self):
+        """
+        Fieldsets that have been stated by programmer.
+        """
         return self.fieldsets
         
     def is_available(self, client):
+        """
+        Returns True when this service is available for client.
+        """
         return self.available(client)
     
     def get_title(self):
+        """
+        Returns title of this service.
+        """
         return self.title
     
     def get_description_template_list(self):
         return (self.description_template, 'services/desc/default.html')
     
     def get_description(self):
+        """
+        Returns rendered description of this service (can contain HTML).
+        """
         from django import template
         t = template.loader.select_template(self.get_description_template_list())
         return t.render(template.Context())
     
     def get_fieldsets(self):
+        """
+        Returns fieldsets to use when rendering the edit form.
+        """
         if self.declared_fieldsets:
             return self.declared_fieldsets
         else:
@@ -104,6 +123,40 @@ class ClientServiceMetaclass(models.Model.__metaclass__):
     
     
 class ClientService(TimeStampedModel):
+    """
+    Client service is a base model for defining services which workers done in
+    some encounter with client.
+    
+    ClientService subclasses can state special `Service` nested class
+    in similar fashion to a well-known `Meta` class that Django model can
+    define.
+    
+    To register the class for editing in admin interface subclassing is
+    the only thing you need.
+    
+    `Service` nested class can have following attributes to allow for
+    customizations::
+    
+        `title`                    Title used in forms and when saving.
+                                   Defaults to verbose_name in Meta
+        
+        `description_template`     Template path to use for service description
+                                   rendering. Defaults to 'services/desc/default.html'
+        
+        `form_template`            Template to use when rendering service form.
+                                   Defaults to 'services/forms/default.html'
+                                   
+        `available`                Function to use when deciding whether 
+                                   this service should be proposed for given
+                                   client. Takes `client` argument.
+                                   Defaults to 'not model._meta.abstract'.
+                                   
+        `row_attrs`                Row attrs as defined in BetterForm implentation.
+        
+        `fieldsets`                Fieldsets to use when rendering the form.
+                                   Defaults to one fieldset with no legend and
+                                   all the fields.
+    """
     __metaclass__ = ClientServiceMetaclass
     
     encounter = models.ForeignKey(Encounter, related_name='services',
@@ -134,19 +187,28 @@ class ClientService(TimeStampedModel):
         self.title = force_unicode(self._prepare_title())
         # @attention: instead of using get_for_model which doesn't respect
         # proxy models content types, use get_by_natural key as a workaround
-        self.content_type = ContentType.objects.get_by_natural_key(self._meta.app_label, self._meta.object_name)
+        self.content_type = ContentType.objects.get_by_natural_key(
+            self._meta.app_label, self._meta.object_name)
         
     def cast(self):
         """
-        Returns ancestor.
+        When dealing with subclass that has been selected from base table,
+        this will return the corresponding subclass instance. 
         """
         return self.content_type.get_object_for_this_type(pk=self.pk)
         
     @classmethod
     def form(cls, *args, **kwargs):
+        """
+        Returns completely initialized form class for service editing.
+        """
         return serviceform_factory(cls)
     
     def is_editable(self):
+        """
+        Returns True if this service is user-editable - if it has something
+        what a user can change.
+        """
         skip_fields = ('encounter', 'id', 'clientservice_ptr')
         return any([f.editable for f in self._meta.fields if f.name not in skip_fields])
     
