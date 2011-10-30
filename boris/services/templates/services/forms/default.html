@@ -1,25 +1,26 @@
-{% load i18n %}
+{% load i18n form_utils_tags %}
 <h3>{{ service.service.get_title }}</h3>
 
+{% if service.service.get_description %}
 <div class="row cells-1 cells">
     <div class="cell">
-        <div class="column span-flexible">
+        <div class="column span-flexible service-description">
             {{ service.service.get_description }}
         </div>
     </div>
 </div>
+{% endif %}
 
 <form id="service-form" action="{{ action_link }}" method='POST'>
-    {% include "form_snippet.html" %}
+    {% block rendered_form %}
+        {{ form|render:"services/inc/inline_better_form.html" }}
+    {% endblock %}
     <div class="row cells-2 cells">
         <div class="cell">
-            <div class="column span-4">&nbsp;</div>
-            <div class="column span-flexible">
-                <button id="service-form-submit" onclick="ui.saveForm(); return false;">{% trans "Uložit výkon" %}</button>
-                {% if is_edit %}
-                <button style="background: -moz-linear-gradient(center top , #D93636, #BF3030) repeat scroll 0 0 transparent;" onclick="ui.dropService({{ obj.pk }}); return false;">{% trans "Smazat výkon" %}</button>
-                {% endif %}
-            </div>
+            <button id="service-form-submit" onclick="ui.saveForm(); return false;">{% trans "Uložit výkon" %}</button>
+            {% if is_edit and obj.is_editable %}
+            <button class="warn" onclick="ui.dropService({{ obj.pk }}); return false;">{% trans "Smazat výkon" %}</button>
+            {% endif %}
         </div>
     </div>
 </form>

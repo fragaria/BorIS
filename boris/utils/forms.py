@@ -13,6 +13,9 @@ def adminform_formfield(db_field, **kwargs):
     Enables admin form widgets when used as formfield_callback.
     Use with CAUTION as using admin widgets is at your risk :)
     """
+    if db_field.choices:
+        return db_field.formfield(**kwargs)
+    
     if isinstance(db_field, (models.ForeignKey, models.ManyToManyField)):
         if isinstance(db_field, models.ForeignKey):
             kwargs['widget'] = widgets.ForeignKeyRawIdWidget(db_field.rel)
