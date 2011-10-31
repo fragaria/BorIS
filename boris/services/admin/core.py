@@ -19,18 +19,21 @@ class EncounterInline(admin.TabularInline):
     readonly_fields = ('performed_by_verbose', 'service_count', 'service_list',
         'goto_link')
     extra = 0
-    
+
     def performed_by_verbose(self, obj):
         return u', '.join([unicode(u) for u in obj.performed_by.all()])
     performed_by_verbose.short_description = _(u'Provedli')
-    
+
     def service_list(self, obj):
         return u'<small>' + u'<br />'.join([unicode(s) for s in obj.services.all()]) + u'</small>'
     service_list.short_description = _(u'Provedené výkony')
     service_list.allow_tags = True
-    
+
     def goto_link(self, obj):
-        return u'<a href="%s"><strong>Přejít &raquo;</strong></a>' % obj.get_admin_url()
+        if obj.pk:
+            return u'<a href="%s"><strong>%s &raquo;</strong></a>' % (obj.get_admin_url(), _(u'Přejít'))
+        else:
+            return _(u'Detaily kontaktu je možné editovat až po uložení.')
     goto_link.short_description = _(u'Přejít')
     goto_link.allow_tags = True
 
@@ -50,7 +53,7 @@ class EncounterAdmin(admin.ModelAdmin):
         to be filled up.
         """
         from boris.clients.models import Client
-        
+
         request = kwargs.get('request', None)
         if request is not None and request.GET.get('client_id') and db_field.name == 'client':
             cid = request.GET.get('client_id')
