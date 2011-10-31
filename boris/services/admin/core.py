@@ -6,10 +6,13 @@ Created on 27.10.2011
 '''
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
+from django import forms
+from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
 
 from boris.services.models.core import Encounter
 from boris.clients.forms import ReadOnlyWidget
-from django import forms
+
 
 class EncounterInline(admin.TabularInline):
     model = Encounter
@@ -68,4 +71,13 @@ class EncounterAdmin(admin.ModelAdmin):
         else:
             return super(EncounterAdmin, self).formfield_for_dbfield(db_field, **kwargs)
 
+    def response_change(self, request, obj):
+        if '_continue' not in request.POST and '_addanother' not in request.POST:
+            dest = reverse('admin:clients_client_change', args=[obj.client.pk])
+            return HttpResponseRedirect(dest)
+        else:
+            return super(EncounterAdmin, self).response_change(request, obj)
+
+
 admin.site.register(Encounter, EncounterAdmin)
+
