@@ -23,7 +23,7 @@ class HandleForm(object):
             'is_edit': object_id is not None
         }
         kwargs = {}
-        
+
         if ctx['is_edit']:
             obj = get_object_or_404(cls, pk=object_id)
             ctx.update({
@@ -39,7 +39,7 @@ class HandleForm(object):
                     'encounter_id': encounter_id, 'service_cls': service_cls
                 })
             })
-            
+
         if request.method == 'POST':
             form = cls.form()(encounter, request.POST, **kwargs)
         else:
@@ -49,23 +49,22 @@ class HandleForm(object):
 
     def __call__(self, request, encounter_id, service_cls, object_id=None):
         ctx = self.get_context(request, encounter_id, service_cls, object_id)
-        
+
         if request.method == 'POST':
             form = ctx['form']
-            resp = {}
             if form.is_valid():
                 form.save()
-                resp['ok'] = True
+                resp = {'ok': True}
             else:
-                resp.update({
+                resp = {
                     'ok': False,
                     'content': render_to_string(form.template_list, ctx,
                         context_instance=RequestContext(request))
-                })
+                }
             return HttpResponse(anyjson.dumps(resp), mimetype='application/json')
         else:
             return render(request, ctx['form'].template_list, ctx)
-        
+
 handle_form = HandleForm()
 
 def services_list(request, encounter_id):
@@ -73,7 +72,7 @@ def services_list(request, encounter_id):
     services_done = ClientService.objects.filter(encounter=encounter_id)
     return render(request, 'services/list.html', {'encounter': encounter,
         'services_done': services_done})
-    
+
 def drop_service(request, service_id):
     try:
         service = ClientService.objects.select_subclasses().filter(pk=service_id)[0]
@@ -81,4 +80,4 @@ def drop_service(request, service_id):
         return HttpResponse('OK')
     except IndexError:
         raise Http404
-    
+
