@@ -50,30 +50,11 @@ class ServiceOptions(object):
         self.title = ''
         self.description_template = None
         self.form_template = None
-        self.available = lambda client: False
+        self.is_available = lambda client: False
         self.fields = None
         self.excludes = None
         self.row_attrs = None
         self.fieldsets = None
-
-    @property
-    def declared_fieldsets(self):
-        """
-        Fieldsets that have been stated by programmer.
-        """
-        return self.fieldsets
-
-    def is_available(self, client):
-        """
-        Returns True when this service is available for client.
-        """
-        return self.available(client)
-
-    def get_title(self):
-        """
-        Returns title of this service.
-        """
-        return self.title
 
     def get_description_template_list(self):
         return (self.description_template, 'services/desc/default.html')
@@ -90,8 +71,8 @@ class ServiceOptions(object):
         """
         Returns fieldsets to use when rendering the edit form.
         """
-        if self.declared_fieldsets:
-            return self.declared_fieldsets
+        if self.fieldsets:
+            return self.fieldsets
         else:
             fields = [f.name for f in self.model._meta.fields if f.editable]
             return ((None, {'fields': fields}),)
@@ -109,7 +90,7 @@ class ClientServiceMetaclass(models.Model.__metaclass__):
         service_meta = {
             'title': new_cls._meta.verbose_name,
             'description_template': 'services/desc/%s.html' % name.lower(),
-            'available': lambda client: not new_cls._meta.abstract,
+            'is_available': lambda client: not new_cls._meta.abstract,
         }
         attrs_service_meta = attrs.pop('Service', None)
 
@@ -146,7 +127,7 @@ class ClientService(TimeStampedModel):
         `form_template`            Template to use when rendering service form.
                                    Defaults to 'services/forms/default.html'
 
-        `available`                Function to use when deciding whether
+        `is_available`             Function to use when deciding whether
                                    this service should be proposed for given
                                    client. Takes `client` argument.
                                    Defaults to 'not model._meta.abstract'.
@@ -173,14 +154,14 @@ class ClientService(TimeStampedModel):
 
 
     class Service:
-        available = lambda client: False
+        is_available = lambda client: False
 
 
     def __unicode__(self):
         return self.title
 
     def _prepare_title(self):
-        return self.service.get_title()
+        return self.service.title
 
     def clean(self):
         super(ClientService, self).clean()
