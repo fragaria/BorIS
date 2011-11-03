@@ -11,18 +11,18 @@
 </div>
 {% endif %}
 
-<form id="service-form" action="{{ action_link }}" method='POST'>
+<div id="service-form" class="{{ action_link }}">
     {% block rendered_form %}
         {{ form|render:"services/inc/inline_better_form.html" }}
     {% endblock %}
     <div class="row cells-2 cells">
         <div class="cell">
             <button id="service-form-submit" onclick="ui.saveForm(); return false;">{% trans "Uložit výkon" %}</button>
-            {% if is_edit and obj.is_editable %}
+            {% if is_edit %}
             <button class="warn" onclick="ui.dropService({{ obj.pk }}); return false;">{% trans "Smazat výkon" %}</button>
             {% endif %}
         </div>
     </div>
-</form>
+</div>
 
 {{ form.media }}
