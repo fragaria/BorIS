@@ -13,5 +13,5 @@ def render_service_interface(encounter):
     return {
         'encounter': encounter,
         'services_done': encounter.services.all(),
-        'service_list': service_list(encounter.client)
+        'service_list': service_list()
     }
