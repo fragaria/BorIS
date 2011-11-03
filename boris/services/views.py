@@ -14,7 +14,11 @@ from django.template.context import RequestContext
 
 class HandleForm(object):
     def get_context(self, request, encounter_id, service_cls, object_id):
-        cls = get_model_for_class_name(service_cls)
+        try:
+            cls = get_model_for_class_name(service_cls)
+        except ValueError:
+            raise Http404
+
         encounter = get_object_or_404(Encounter, pk=encounter_id)
         ctx = {
             'encounter': encounter,
