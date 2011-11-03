@@ -188,7 +188,7 @@ class ClientService(TimeStampedModel):
         # @attention: instead of using get_for_model which doesn't respect
         # proxy models content types, use get_by_natural key as a workaround
         self.content_type = ContentType.objects.get_by_natural_key(
-            self._meta.app_label, self._meta.object_name)
+            self._meta.app_label, self._meta.object_name.lower())
         
     def cast(self):
         """
