@@ -17,6 +17,7 @@ from model_utils.managers import InheritanceManager
 from fragapy.common.models.adminlink import AdminLinkMixin
 
 from boris.services.forms import serviceform_factory
+from django.utils.functional import curry
 
 class Encounter(models.Model, AdminLinkMixin):
     person = models.ForeignKey('clients.Person', related_name='encounters',
@@ -50,6 +51,7 @@ class ServiceOptions(object):
         self.title = ''
         self.description_template = None
         self.form_template = None
+        self.limited_to = ()
         self.is_available = lambda person: False
         self.fields = None
         self.excludes = None
@@ -76,8 +78,8 @@ class ServiceOptions(object):
         else:
             fields = [f.name for f in self.model._meta.fields if f.editable]
             return ((None, {'fields': fields}),)
-
-
+        
+        
 class ClientServiceMetaclass(models.Model.__metaclass__):
     registered_services = []
 
@@ -96,7 +98,19 @@ class ClientServiceMetaclass(models.Model.__metaclass__):
 
         if attrs_service_meta:
             service_meta.update(attrs_service_meta.__dict__)
+            
+        def specific_person_passes_test(person_classes, func, person):
+            if person.cast().__class__.__name__ in person_classes:
+                return func(person)
+            return False
 
+        # If limited_to is supplied, transform the `is_available` function
+        # so that if will eventually return True only when person type given
+        # as it's parameter is in list of classes specified by `limited_to`
+        if service_meta.has_key('limited_to'):
+            service_meta['is_available'] = curry(specific_person_passes_test,
+                service_meta['limited_to'], service_meta['is_available'])
+            
         new_cls.service = ServiceOptions(new_cls)
         new_cls.service.__dict__.update(service_meta)
 
@@ -131,6 +145,12 @@ class ClientService(TimeStampedModel):
                                    this service should be proposed for given
                                    person. Takes `person` argument.
                                    Defaults to 'not model._meta.abstract'.
+                                   
+        `limited_to`               When supplied, before checking `is_available`,
+                                   check for Person type, to which encounter
+                                   is related is made. Iterable of class-names
+                                   representing Person subtypes is expected, e.g.:
+                                   limited_to = ('Client', 'Anonymous')
 
         `row_attrs`                Row attrs as defined in BetterForm implentation.
 
