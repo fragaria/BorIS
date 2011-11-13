@@ -89,14 +89,16 @@ class AnamnesisAdmin(admin.ModelAdmin):
     client_link.short_description = _(u'Klient')
 
     def client__sex(self, obj):
-        return obj.client.get_sex_display()
+        if obj.pk:
+            return obj.client.get_sex_display()
+        return _(u'(Dostupné po uložení)')
     client__sex.short_description = _(u'Pohlaví')
 
     def client__birthyear(self, obj):
-        if obj.client.birthdate:
+        if obj.pk and obj.client.birthdate:
             return obj.client.birthdate.strftime('%Y')
         else:
-            return _(u'(Zatím neznámý)')
+            return _(u'(Dostupné po uložení)')
     client__birthyear.short_description = _(u'Rok narození')
 
     def formfield_for_dbfield(self, db_field, **kwargs):
