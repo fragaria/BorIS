@@ -22,7 +22,8 @@ class EncounterInline(admin.TabularInline):
     readonly_fields = ('performed_by_verbose', 'service_count', 'service_list',
         'goto_link')
     extra = 0
-
+    max_num = 0
+    
     def performed_by_verbose(self, obj):
         return u', '.join([unicode(u) for u in obj.performed_by.all()])
     performed_by_verbose.short_description = _(u'Provedli')
