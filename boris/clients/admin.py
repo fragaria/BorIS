@@ -98,6 +98,8 @@ class AnamnesisAdmin(admin.ModelAdmin):
     def client__birthyear(self, obj):
         if obj.pk and obj.client.birthdate:
             return obj.client.birthdate.strftime('%Y')
+        elif obj.pk:
+            return _(u'(Zatím neznámý)')
         else:
             return _(u'(Dostupné po uložení)')
     client__birthyear.short_description = _(u'Rok narození')
