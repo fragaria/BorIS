@@ -16,13 +16,20 @@ from boris.clients.forms import ReadOnlyWidget
 
 class EncounterInline(admin.TabularInline):
     model = Encounter
+    classes = ('collapse closed',)
     fieldsets = (
-        (None, {'fields': ('performed_on', 'where', 'performed_by_verbose', 'service_count', 'service_list', 'goto_link')}),
+        (None, {
+            'fields': ('performed_on', 'where', 'performed_by_verbose',
+                'service_count', 'service_list', 'goto_link'),
+        }),
     )
     readonly_fields = ('performed_by_verbose', 'service_count', 'service_list',
         'goto_link')
     extra = 0
     max_num = 0
+    
+    def has_add_permission(self, request, *args, **kwargs):
+        return False
     
     def performed_by_verbose(self, obj):
         return u', '.join([unicode(u) for u in obj.performed_by.all()])

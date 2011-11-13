@@ -118,8 +118,8 @@ class InformationService(ClientService):
         
     class Meta:
         app_label = 'services'
-        verbose_name = _(u'Informační služba')
-        verbose_name_plural = _(u'Informační služba')
+        verbose_name = _(u'Informační servis')
+        verbose_name_plural = _(u'Informační servis')
         
     class Service:
         form_template = 'services/forms/small_cells.html'
