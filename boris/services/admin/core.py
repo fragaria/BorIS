@@ -7,8 +7,6 @@ Created on 27.10.2011
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 from django import forms
-from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
 
 from boris.services.models.core import Encounter
 from boris.clients.forms import ReadOnlyWidget
@@ -51,7 +49,7 @@ class EncounterInline(admin.TabularInline):
 
 class EncounterAdmin(admin.ModelAdmin):
     fieldsets = (
-        (None, {'fields': (('client', 'performed_on', 'where'), 'performed_by')}),
+        (None, {'fields': (('person', 'performed_on', 'where'), 'performed_by')}),
     )
     raw_id_fields = ('where',)
     autocomplete_lookup_fields = {
@@ -60,31 +58,27 @@ class EncounterAdmin(admin.ModelAdmin):
 
     def formfield_for_dbfield(self, db_field, **kwargs):
         """
-        When popup and client_id in GET, use special widget that doesn't need
+        When popup and person_id in GET, use special widget that doesn't need
         to be filled up.
         """
-        from boris.clients.models import Client
+        from boris.clients.models import Person
 
         request = kwargs.get('request', None)
-        if request is not None and request.GET.get('client_id') and db_field.name == 'client':
-            cid = request.GET.get('client_id')
+        if request is not None and request.GET.get('person_id') and db_field.name == 'person':
+            pid = request.GET.get('person_id')
+            person = Person.objects.get(pk=pid).cast()
             kwargs.pop('request')
-            kwargs['widget'] = ReadOnlyWidget(cid, Client.objects.get(pk=cid))
-            kwargs['initial'] = cid
+            kwargs['widget'] = ReadOnlyWidget(pid,
+                '%s %s' % (unicode(person._meta.verbose_name).lower(), person))
+            kwargs['initial'] = pid
             return db_field.formfield(**kwargs)
         elif db_field.name == 'performed_by':
             kwargs.pop('request')
             kwargs['widget'] = forms.SelectMultiple(attrs={'style': 'height: 70px;'})
+            kwargs['initial'] = (request.user,)
             return db_field.formfield(**kwargs)
         else:
             return super(EncounterAdmin, self).formfield_for_dbfield(db_field, **kwargs)
-
-    def response_change(self, request, obj):
-        if '_continue' not in request.POST and '_addanother' not in request.POST:
-            dest = reverse('admin:clients_client_change', args=[obj.client.pk])
-            return HttpResponseRedirect(dest)
-        else:
-            return super(EncounterAdmin, self).response_change(request, obj)
 
 
 admin.site.register(Encounter, EncounterAdmin)

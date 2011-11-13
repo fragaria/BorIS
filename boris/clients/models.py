@@ -15,6 +15,8 @@ from boris.classification import SEXES, NATIONALITIES,\
     DRUG_APPLICATION_FREQUENCY, DRUG_APPLICATION_TYPES,\
     PRIMARY_DRUG_APPLICATION_TYPES, RISKY_BEHAVIOR_PERIODICITY, DISEASES,\
     DISEASE_TEST_RESULTS, EDUCATION_LEVELS
+from django.contrib.contenttypes.models import ContentType
+from model_utils.managers import QueryManager
 
 
 class StringEnum(models.Model):
@@ -65,22 +67,26 @@ class Town(StringEnum):
 
     def __unicode__(self):
         return u'%s (%s)' % (self.title, unicode(self.district))
-
-
-class Client(TimeStampedModel, AdminLinkMixin):
-    code = models.CharField(max_length=63, unique=True, verbose_name=_(u'Kód'))
-    sex = models.PositiveSmallIntegerField(choices=SEXES, verbose_name=_(u'Pohlaví'))
-    first_name = models.CharField(max_length=63, blank=True, null=True, verbose_name=_(u'Jméno'))
-    last_name= models.CharField(max_length=63, blank=True, null=True, verbose_name=_(u'Příjmení'))
-    birthdate = models.DateField(verbose_name=_(u'Datum narození'), blank=True, null=True,
-        help_text=_(u'Pokud znáte pouze rok, zaškrtněte políčko `Známý pouze rok`.'))
-    birthdate_year_only = models.BooleanField(default=False,
-        verbose_name=_(u'Známý pouze rok'))
-    town = models.ForeignKey(Town, verbose_name=_(u'Město'))
-    primary_drug = models.ForeignKey(Drug, blank=True, null=True, verbose_name=_(u'Primární droga'))
-    primary_drug_usage = models.PositiveSmallIntegerField(blank=True, null=True,
-        choices=PRIMARY_DRUG_APPLICATION_TYPES, verbose_name=_(u'Způsob aplikace'))
-
+    
+    
+class Person(TimeStampedModel, AdminLinkMixin):
+    first_name = models.CharField(max_length=63, blank=True, null=True,
+        verbose_name=_(u'Jméno'))
+    last_name = models.CharField(max_length=63, blank=True, null=True,
+        verbose_name=_(u'Příjmení'))
+    title = models.CharField(max_length=255, editable=False,
+        verbose_name=_(u'Název'))
+    content_type = models.ForeignKey(ContentType, editable=False)
+    
+    class Meta:
+        verbose_name = _(u'Osoba')
+        verbose_name_plural = _(u'Osoby')
+    
+    @property
+    def services(self):
+        from boris.services.models.core import ClientService
+        return ClientService.objects.filter(encounter__person=self)
+    
     @property
     def first_contact_date(self):
         try:
@@ -94,11 +100,67 @@ class Client(TimeStampedModel, AdminLinkMixin):
             return self.encounters.order_by('-performed_on').values_list('performed_on', flat=True)[0]
         except IndexError:
             return None
+    
+    def __unicode__(self):
+        return self.title
+    
+    def clean(self):
+        self.title = unicode(self)
+        # @attention: instead of using get_for_model which doesn't respect
+        # proxy models content types, use get_by_natural key as a workaround
+        self.content_type = ContentType.objects.get_by_natural_key(
+            self._meta.app_label, self._meta.object_name.lower())
+        
+    def cast(self):
+        """
+        When dealing with subclass that has been selected from base table,
+        this will return the corresponding subclass instance.
+        """
+        return self.content_type.get_object_for_this_type(pk=self.pk)
 
-    @property
-    def services(self):
-        from boris.services.models.core import ClientService
-        return ClientService.objects.filter(encounter__client=self)
+
+class Practitioner(Person):
+    designation = models.CharField(max_length=128, verbose_name=_(u'Označení'))
+    
+    class Meta:
+        verbose_name = _(u'Odborník')
+        verbose_name_plural = _(u'Odborníci')
+        
+    def __unicode__(self):
+        if self.first_name or self.last_name:
+            return u'%s %s' % (self.first_name, self.last_name)
+        return self.designation
+
+
+class Anonymous(Person):
+    # limit the result set only on Anonymous model CT while still keeping
+    # only one table thanks to Proxy --> avoids having table with only pointer to 
+    # Person base table
+    objects = QueryManager(content_type=ContentType.objects.get_by_natural_key(
+        'clients', 'anonymous'))
+    
+    class Meta:
+        proxy = True
+        verbose_name = _(u'Anonym')
+        verbose_name_plural = _(u'Anonymové')
+
+    def __unicode__(self):
+        if self.first_name or self.last_name:
+            return u'%s %s' % (self.first_name, self.last_name)
+        return u'Anonym %s' % self.pk
+
+
+class Client(Person):
+    code = models.CharField(max_length=63, unique=True, verbose_name=_(u'Kód'))
+    sex = models.PositiveSmallIntegerField(choices=SEXES, verbose_name=_(u'Pohlaví'))
+    birthdate = models.DateField(verbose_name=_(u'Datum narození'), blank=True, null=True,
+        help_text=_(u'Pokud znáte pouze rok, zaškrtněte políčko `Známý pouze rok`.'))
+    birthdate_year_only = models.BooleanField(default=False,
+        verbose_name=_(u'Známý pouze rok'))
+    town = models.ForeignKey(Town, verbose_name=_(u'Město'))
+    primary_drug = models.ForeignKey(Drug, blank=True, null=True, verbose_name=_(u'Primární droga'))
+    primary_drug_usage = models.PositiveSmallIntegerField(blank=True, null=True,
+        choices=PRIMARY_DRUG_APPLICATION_TYPES, verbose_name=_(u'Způsob aplikace'))
 
     def __unicode__(self):
         return self.code

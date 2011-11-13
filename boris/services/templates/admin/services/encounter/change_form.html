@@ -2,7 +2,7 @@
 {% load i18n services %}
 
 {% block object-tools-items %}
-    <li><a href="{{ original.client.get_admin_url }}">{% trans "Zpět ke klientovi" %}</a></li>
+    <li><a href="{{ original.person.cast.get_admin_url }}">{% trans "Zpět k: " %} {{ original }}</a></li>
     {{ block.super }}
 {% endblock %}
 

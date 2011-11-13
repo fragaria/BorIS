@@ -14,7 +14,8 @@ from django.utils.formats import get_format
 from django.utils.html import escape, escapejs
 
 from boris.clients.models import Client, Drug, Town, RiskyBehavior, Anamnesis,\
-     DrugUsage, RiskyManners, Region, District, DiseaseTest
+     DrugUsage, RiskyManners, Region, District, DiseaseTest, Anonymous,\
+    Practitioner
 from boris.clients.forms import ReadOnlyWidget
 from boris.clients.views import add_note, delete_note
 from boris.services.admin import EncounterInline
@@ -136,6 +137,18 @@ class AnamnesisAdmin(admin.ModelAdmin):
             return super(AnamnesisAdmin, self).response_change(request, obj)
 
 
+class PersonAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'first_name', 'last_name')
+    search_fields = ('first_name', 'last_name')
+    change_form_template = 'admin/clients/person/change_form.html'
+    inlines = (EncounterInline,)
+
+
+class PractitionerAdmin(PersonAdmin):
+    list_display = PersonAdmin.list_display + ('designation',)
+    search_fields = PersonAdmin.search_fields + ('designation',)
+
+
 class ClientAdmin(admin.ModelAdmin):
     list_display = ('code', 'first_name', 'last_name', 'sex', 'town')
     list_filter = ('town', 'sex', 'primary_drug')
@@ -233,6 +246,8 @@ admin.site.register(Drug)
 admin.site.register(Region)
 admin.site.register(District)
 admin.site.register(Town)
+admin.site.register(Practitioner, PractitionerAdmin)
+admin.site.register(Anonymous, PersonAdmin)
 admin.site.register(Client, ClientAdmin)
 admin.site.register(Anamnesis, AnamnesisAdmin)
 

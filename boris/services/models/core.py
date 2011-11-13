@@ -19,8 +19,8 @@ from fragapy.common.models.adminlink import AdminLinkMixin
 from boris.services.forms import serviceform_factory
 
 class Encounter(models.Model, AdminLinkMixin):
-    client = models.ForeignKey('clients.Client', related_name='encounters',
-        verbose_name=_(u'Klient'))
+    person = models.ForeignKey('clients.Person', related_name='encounters',
+        verbose_name=_(u'Osoba'))
     performed_by = models.ManyToManyField('auth.User', verbose_name=_(u'Kdo'))
     performed_on = models.DateField(default=date.today, verbose_name=_(u'Kdy'))
     where = models.ForeignKey('clients.Town', verbose_name=_(u'Kde'))
@@ -36,7 +36,7 @@ class Encounter(models.Model, AdminLinkMixin):
     service_count.short_description = _(u'Počet výkonů')
 
     def __unicode__(self):
-        return unicode(self.client)
+        return unicode(self.person)
 
 
 class ServiceOptions(object):
@@ -50,7 +50,7 @@ class ServiceOptions(object):
         self.title = ''
         self.description_template = None
         self.form_template = None
-        self.is_available = lambda client: False
+        self.is_available = lambda person: False
         self.fields = None
         self.excludes = None
         self.row_attrs = None
@@ -90,7 +90,7 @@ class ClientServiceMetaclass(models.Model.__metaclass__):
         service_meta = {
             'title': new_cls._meta.verbose_name,
             'description_template': 'services/desc/%s.html' % name.lower(),
-            'is_available': lambda client: not new_cls._meta.abstract,
+            'is_available': lambda person: not new_cls._meta.abstract,
         }
         attrs_service_meta = attrs.pop('Service', None)
 
@@ -129,7 +129,7 @@ class ClientService(TimeStampedModel):
 
         `is_available`             Function to use when deciding whether
                                    this service should be proposed for given
-                                   client. Takes `client` argument.
+                                   person. Takes `person` argument.
                                    Defaults to 'not model._meta.abstract'.
 
         `row_attrs`                Row attrs as defined in BetterForm implentation.
@@ -154,7 +154,7 @@ class ClientService(TimeStampedModel):
 
 
     class Service:
-        is_available = lambda client: False
+        is_available = lambda person: False
 
 
     def __unicode__(self):
@@ -198,15 +198,15 @@ class ClientService(TimeStampedModel):
         return cls.__name__
 
 
-def service_list(client=None):
+def service_list(person=None):
     """
-    Returns tuple of client services registered in application.
+    Returns tuple of person's services registered in application.
 
-    When `client` parameter is used, only those that can be provided
-    to `client` will be listed.
+    When `person` parameter is used, only those that can be provided
+    to `person` will be listed.
     """
-    if client:
-        return (s for s in ClientService.registered_services if s.service.is_available(client))
+    if person:
+        return (s for s in ClientService.registered_services if s.service.is_available(person))
     return ClientService.registered_services
 
 
