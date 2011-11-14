@@ -16,7 +16,6 @@ from boris.classification import SEXES, NATIONALITIES,\
     PRIMARY_DRUG_APPLICATION_TYPES, RISKY_BEHAVIOR_PERIODICITY, DISEASES,\
     DISEASE_TEST_RESULTS, EDUCATION_LEVELS
 from django.contrib.contenttypes.models import ContentType
-from model_utils.managers import QueryManager
 
 
 class StringEnum(models.Model):
@@ -67,8 +66,8 @@ class Town(StringEnum):
 
     def __unicode__(self):
         return u'%s (%s)' % (self.title, unicode(self.district))
-    
-    
+
+
 class Person(TimeStampedModel, AdminLinkMixin):
     first_name = models.CharField(max_length=63, blank=True, null=True,
         verbose_name=_(u'Jméno'))
@@ -77,16 +76,16 @@ class Person(TimeStampedModel, AdminLinkMixin):
     title = models.CharField(max_length=255, editable=False,
         verbose_name=_(u'Název'))
     content_type = models.ForeignKey(ContentType, editable=False)
-    
+
     class Meta:
         verbose_name = _(u'Osoba')
         verbose_name_plural = _(u'Osoby')
-    
+
     @property
     def services(self):
         from boris.services.models.core import ClientService
         return ClientService.objects.filter(encounter__person=self)
-    
+
     @property
     def first_contact_date(self):
         try:
@@ -100,17 +99,17 @@ class Person(TimeStampedModel, AdminLinkMixin):
             return self.encounters.order_by('-performed_on').values_list('performed_on', flat=True)[0]
         except IndexError:
             return None
-    
+
     def __unicode__(self):
         return self.title
-    
+
     def clean(self):
         self.title = unicode(self)
         # @attention: instead of using get_for_model which doesn't respect
         # proxy models content types, use get_by_natural key as a workaround
         self.content_type = ContentType.objects.get_by_natural_key(
             self._meta.app_label, self._meta.object_name.lower())
-        
+
     def cast(self):
         """
         When dealing with subclass that has been selected from base table,
@@ -121,11 +120,11 @@ class Person(TimeStampedModel, AdminLinkMixin):
 
 class Practitioner(Person):
     designation = models.CharField(max_length=128, verbose_name=_(u'Označení'))
-    
+
     class Meta:
         verbose_name = _(u'Odborník')
         verbose_name_plural = _(u'Odborníci')
-        
+
     def __unicode__(self):
         if self.first_name or self.last_name:
             return u'%s %s' % (self.first_name, self.last_name)
@@ -140,10 +139,10 @@ class AnonymousManager(models.Manager):
 
 class Anonymous(Person):
     # limit the result set only on Anonymous model CT while still keeping
-    # only one table thanks to Proxy --> avoids having table with only pointer to 
+    # only one table thanks to Proxy --> avoids having table with only pointer to
     # Person base table
     objects = AnonymousManager()
-    
+
     class Meta:
         proxy = True
         verbose_name = _(u'Anonym')
