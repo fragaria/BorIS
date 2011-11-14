@@ -104,9 +104,9 @@ class ClientServiceMetaclass(models.Model.__metaclass__):
                 return func(person)
             return False
 
-        # If limited_to is supplied, transform the `is_available` function
-        # so that if will eventually return True only when person type given
-        # as it's parameter is in list of classes specified by `limited_to`
+        # If `limited_to` is supplied, transform the `is_available` function
+        # so that if will eventually return True only when person given
+        # as it's parameter is of type which name is listed in `limited_to`
         if service_meta.has_key('limited_to'):
             service_meta['is_available'] = curry(specific_person_passes_test,
                 service_meta['limited_to'], service_meta['is_available'])

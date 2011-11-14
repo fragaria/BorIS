@@ -132,12 +132,17 @@ class Practitioner(Person):
         return self.designation
 
 
+class AnonymousManager(models.Manager):
+    def get_query_set(self, *args, **kwargs):
+        return self.filter(content_type=ContentType.objects.get_by_natural_key(
+            'clients', 'anonymous'))
+
+
 class Anonymous(Person):
     # limit the result set only on Anonymous model CT while still keeping
     # only one table thanks to Proxy --> avoids having table with only pointer to 
     # Person base table
-    objects = QueryManager(content_type=ContentType.objects.get_by_natural_key(
-        'clients', 'anonymous'))
+    objects = AnonymousManager()
     
     class Meta:
         proxy = True
