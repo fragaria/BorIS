@@ -1,4 +1,19 @@
 {% extends 'admin/edit_inline/tabular.html' %}
-{% block add-tools %}
+{% load i18n %}
+{% block add-tools-upper %}
 	<ul class="tools"></ul>
+{% endblock %}
+
+{% block add-tools-lower %}
+	{% if not add %}
+		{% for inline_admin_form in inline_admin_formset|slice:"0" %}
+			{% if forloop.first %}{% comment %}somehow, the slice alone doesn't work{% endcomment %}
+				{% with inline_admin_form.fk_field.field.value as client_id %}
+					<a href="{% url admin:services_encounter_add %}?person_id={{ client_id }}">{% trans 'Přidat kontakt' %}</a>
+				{% endwith %}
+			{% endif %}
+		{% endfor %}
+	{% endif %}
+	<ul class="tools">
+	</ul><br clear="all" />
 {% endblock %}

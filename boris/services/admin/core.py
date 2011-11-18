@@ -24,7 +24,6 @@ class EncounterInline(admin.TabularInline):
     readonly_fields = ('performed_by_verbose', 'service_count', 'service_list',
         'goto_link')
     extra = 0
-    max_num = 0
     template = 'admin/services/encounter/encounter_inline.html'
 
     def has_add_permission(self, request, *args, **kwargs):

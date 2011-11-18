@@ -7,7 +7,7 @@ The only difference to the original grapelli template is in the addition of bloc
 <div class="group tabular{% if inline_admin_formset.opts.classes %} {{ inline_admin_formset.opts.classes|join:" " }}{% endif %}"
     id="{{ inline_admin_formset.formset.prefix }}-group" >
     <h2 class="collapse-handler">{% if inline_admin_formset.opts.title %}{{ inline_admin_formset.opts.title }}{% else %}{{ inline_admin_formset.opts.verbose_name_plural|capfirst }}{% endif %}</h2>
-    {% block add-tools %}
+    {% block add-tools-upper %}
         <ul class="tools">
             <li class="add-handler-container"><a href="javascript://" class="icon add-handler" title="{% trans 'Add Another' %}"> </a></li>
         </ul>
@@ -89,10 +89,12 @@ The only difference to the original grapelli template is in the addition of bloc
         {% endwith %}
     </div>
     <div class="module add-item">
-        <a href="javascript://" class="add-handler">{% blocktrans with inline_admin_formset.opts.verbose_name|title as verbose_name %}Add another {{ verbose_name }}{% endblocktrans %}</a>
-        <ul class="tools">
-            <li class="add-handler-container"><a href="javascript://" class="icon add-handler" title="{% trans 'Add Item' %}"> </a></li>
-        </ul><br clear="all" />
+        {% block add-tools-lower %}
+            <a href="javascript://" class="add-handler">{% blocktrans with inline_admin_formset.opts.verbose_name|title as verbose_name %}Add another {{ verbose_name }}{% endblocktrans %}</a>
+            <ul class="tools">
+                <li class="add-handler-container"><a href="javascript://" class="icon add-handler" title="{% trans 'Add Item' %}"> </a></li>
+            </ul><br clear="all" />
+        {% endblock %}
     </div>
 </div>
 
