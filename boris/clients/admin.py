@@ -187,7 +187,7 @@ class ClientAdmin(admin.ModelAdmin):
         if we did, admin would work only when web servery is just refreshed,
         on second view, it would be wasted :(
         """
-        def __init__(self, attrs=None, required=True):
+        def __init__(self, attrs=None, required=False):
             super(ClientAdmin.SelectBornDateWidget, self).__init__(
                 attrs=attrs, required=required,
                 years=reversed(range(date.today().year - 100, date.today().year + 1))
