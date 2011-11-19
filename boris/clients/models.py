@@ -73,6 +73,7 @@ class Person(TimeStampedModel, AdminLinkMixin):
         verbose_name=_(u'Jméno'))
     last_name = models.CharField(max_length=63, blank=True, null=True,
         verbose_name=_(u'Příjmení'))
+    # title enables us to easily print subclass __unicode__ values from Person
     title = models.CharField(max_length=255, editable=False,
         verbose_name=_(u'Název'))
     content_type = models.ForeignKey(ContentType, editable=False)
@@ -83,8 +84,8 @@ class Person(TimeStampedModel, AdminLinkMixin):
 
     @property
     def services(self):
-        from boris.services.models.core import ClientService
-        return ClientService.objects.filter(encounter__person=self)
+        from boris.services.models.core import Service
+        return Service.objects.filter(encounter__person=self)
 
     @property
     def first_contact_date(self):

@@ -44,7 +44,7 @@ class ServiceOptions(object):
     """
     This class is similar to `Options` class that Django defines for every model.
 
-    It is used to keep settings for all ClientService subclasses.
+    It is used to keep settings for all Service subclasses.
     """
     def __init__(self, model):
         self.model = model
@@ -78,13 +78,13 @@ class ServiceOptions(object):
         else:
             fields = [f.name for f in self.model._meta.fields if f.editable]
             return ((None, {'fields': fields}),)
-        
-        
-class ClientServiceMetaclass(models.Model.__metaclass__):
+
+
+class ServiceMetaclass(models.Model.__metaclass__):
     registered_services = []
 
     def __new__(cls, name, bases, attrs):
-        new_cls = super(ClientServiceMetaclass, cls).__new__(cls, name, bases, attrs)
+        new_cls = super(ServiceMetaclass, cls).__new__(cls, name, bases, attrs)
 
         if not new_cls._meta.abstract:
             cls.registered_services.append(new_cls)
@@ -94,11 +94,11 @@ class ClientServiceMetaclass(models.Model.__metaclass__):
             'description_template': 'services/desc/%s.html' % name.lower(),
             'is_available': lambda person: not new_cls._meta.abstract,
         }
-        attrs_service_meta = attrs.pop('Service', None)
+        attrs_service_meta = attrs.pop('Options', None)
 
         if attrs_service_meta:
             service_meta.update(attrs_service_meta.__dict__)
-            
+
         def specific_person_passes_test(person_classes, func, person):
             if person.cast().__class__.__name__ in person_classes:
                 return func(person)
@@ -110,26 +110,26 @@ class ClientServiceMetaclass(models.Model.__metaclass__):
         if service_meta.has_key('limited_to'):
             service_meta['is_available'] = curry(specific_person_passes_test,
                 service_meta['limited_to'], service_meta['is_available'])
-            
+
         new_cls.service = ServiceOptions(new_cls)
         new_cls.service.__dict__.update(service_meta)
 
         return new_cls
 
 
-class ClientService(TimeStampedModel):
+class Service(TimeStampedModel):
     """
-    Client service is a base model for defining services which workers done in
-    some encounter with client.
+    Service is a base model for defining services which workers did in
+    some encounter with a person (e.g. a client).
 
-    ClientService subclasses can state special `Service` nested class
+    Service subclasses can state special `Options` nested class
     in similar fashion to a well-known `Meta` class that Django model can
     define.
 
     To register the class for editing in admin interface subclassing is
     the only thing you need.
 
-    `Service` nested class can have following attributes to allow for
+    `Options` nested class can have following attributes to allow for
     customizations::
 
         `title`                    Title used in forms and when saving.
@@ -145,7 +145,7 @@ class ClientService(TimeStampedModel):
                                    this service should be proposed for given
                                    person. Takes `person` argument.
                                    Defaults to 'not model._meta.abstract'.
-                                   
+
         `limited_to`               When supplied, before checking `is_available`,
                                    check for Person type, to which encounter
                                    is related is made. Iterable of class-names
@@ -158,7 +158,7 @@ class ClientService(TimeStampedModel):
                                    Defaults to one fieldset with no legend and
                                    all the fields.
     """
-    __metaclass__ = ClientServiceMetaclass
+    __metaclass__ = ServiceMetaclass
 
     encounter = models.ForeignKey(Encounter, related_name='services',
         verbose_name=_(u'Kontakt'))
@@ -173,7 +173,7 @@ class ClientService(TimeStampedModel):
         ordering = ('encounter',)
 
 
-    class Service:
+    class Options:
         is_available = lambda person: False
 
 
@@ -184,7 +184,7 @@ class ClientService(TimeStampedModel):
         return self.service.title
 
     def clean(self):
-        super(ClientService, self).clean()
+        super(Service, self).clean()
         self.title = force_unicode(self._prepare_title())
         # @attention: instead of using get_for_model which doesn't respect
         # proxy models content types, use get_by_natural key as a workaround
@@ -210,7 +210,7 @@ class ClientService(TimeStampedModel):
         Returns True if this service is user-editable - if it has something
         what a user can change.
         """
-        skip_fields = ('encounter', 'id', 'clientservice_ptr')
+        skip_fields = ('encounter', 'id', 'service_ptr')
         return any([f.editable for f in self._meta.fields if f.name not in skip_fields])
 
     @classmethod
@@ -226,13 +226,13 @@ def service_list(person=None):
     to `person` will be listed.
     """
     if person:
-        return (s for s in ClientService.registered_services if s.service.is_available(person))
-    return ClientService.registered_services
+        return (s for s in Service.registered_services if s.service.is_available(person))
+    return Service.registered_services
 
 
 def get_model_for_class_name(class_name):
-    """Returns ClientService model class for given name"""
-    for s in ClientService.registered_services:
+    """Returns Service model class for given name"""
+    for s in Service.registered_services:
         if s.__name__ == class_name:
             return s
     raise ValueError('Service `%s` is not registered' % class_name)

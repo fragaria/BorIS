@@ -11,12 +11,12 @@ from model_utils import Choices
 
 from boris.classification import DISEASES, DISEASE_TEST_SIGN
 
-from .core import ClientService
+from .core import Service
 
-class HarmReduction(ClientService):
+class HarmReduction(Service):
     in_count = models.PositiveSmallIntegerField(default=0, verbose_name=_(u'IN'))
     out_count = models.PositiveSmallIntegerField(default=0, verbose_name=_(u'OUT'))
-    
+
     sterilized_water = models.BooleanField(default=False,
         verbose_name=_(u'sterilizovaná voda'))
     cotton_filters = models.BooleanField(default=False,
@@ -30,7 +30,7 @@ class HarmReduction(ClientService):
         verbose_name=_(u'želatinové kapsle'))
     stericup = models.BooleanField(default=False, verbose_name=_(u'stéricup'))
     other = models.BooleanField(default=False, verbose_name=_(u'jiné'))
-    
+
     pregnancy_test = models.BooleanField(default=False, verbose_name=_(u'těhotenský test'))
     medical_supplies = models.BooleanField(default=False, verbose_name=_(
         u'zdravotnický materiál'), help_text=_(u'náplasti, buničina, vitamíny, '
@@ -40,8 +40,8 @@ class HarmReduction(ClientService):
         app_label = 'services'
         verbose_name = _(u'Harm Reduction')
         verbose_name_plural = _(u'Harm Reduction')
-        
-    class Service:
+
+    class Options:
         title = _(u'Výměnný a jiný harm reduction program')
         form_template = 'services/forms/small_cells.html'
         fieldsets = (
@@ -54,35 +54,35 @@ class HarmReduction(ClientService):
             (_(u'Ostatní'), {'fields': ('pregnancy_test', 'medical_supplies'),
                 'classes': ('inline',)})
         )
-     
-        
-class IncomeExamination(ClientService):
+
+
+class IncomeExamination(Service):
     class Meta:
         app_label = 'services'
         proxy = True
         verbose_name = _(u'Vstupní zhodnocení stavu klienta')
         verbose_name_plural = _(u'Vstupní zhodnocení stavu klienta')
-        
-        
-class DiseaseTest(ClientService):
+
+
+class DiseaseTest(Service):
     disease = models.PositiveSmallIntegerField(choices=DISEASES,
         verbose_name=_(u'Testované onemocnění'))
     sign = models.CharField(max_length=1, choices=DISEASE_TEST_SIGN,
         default=DISEASE_TEST_SIGN.INCONCLUSIVE, verbose_name=_(u'Stav'))
-    
+
     class Meta:
         app_label = 'services'
         verbose_name = _(u'Testování infekčních nemocí')
         verbose_name_plural = _(u'Testování infekčních nemocí')
-        
+
     def _prepare_title(self):
         return _(u'%(title)s: %(disease)s / %(sign)s') % {
             'title': self.service.title, 'disease': self.get_disease_display(),
             'sign': self.get_sign_display()
         }
-    
 
-class AsistService(ClientService):
+
+class AsistService(Service):
     ASIST_TYPES = Choices(
         ('d', 'DOCTOR', _(u'lékař')),
         ('o', 'OFFICE', _(u'úřad')),
@@ -90,19 +90,19 @@ class AsistService(ClientService):
     )
     where = models.CharField(max_length=1, choices=ASIST_TYPES, verbose_name=_(u'Kam'))
     note = models.TextField(null=True, blank=True, verbose_name=_(u'Poznámka'))
-    
+
     class Meta:
         app_label = 'services'
         verbose_name = _(u'Asistenční služba')
         verbose_name_plural = _(u'Asistenční služby')
-        
+
     def _prepare_title(self):
         return _(u'%(title)s: doprovod %(where)s') % {
             'title': self.service.title, 'where': self.get_where_display()
         }
-        
-        
-class InformationService(ClientService):
+
+
+class InformationService(Service):
     safe_usage = models.BooleanField(default=False,
         verbose_name=_(u'bezpečné užívání'))
     safe_sex = models.BooleanField(default=False,
@@ -115,13 +115,13 @@ class InformationService(ClientService):
     literature = models.BooleanField(default=False,
         verbose_name=_(u'literatura'))
     other = models.BooleanField(default=False, verbose_name=_(u'ostatní'))
-        
+
     class Meta:
         app_label = 'services'
         verbose_name = _(u'Informační servis')
         verbose_name_plural = _(u'Informační servis')
-        
-    class Service:
+
+    class Options:
         form_template = 'services/forms/small_cells.html'
         fieldsets = (
             (None, {
@@ -130,44 +130,44 @@ class InformationService(ClientService):
                 'classes': ('inline',)
             }),
         )
-        
-        
-class ContactWork(ClientService):
+
+
+class ContactWork(Service):
     class Meta:
         app_label = 'services'
         proxy = True
         verbose_name = _(u'Kontaktní práce')
         verbose_name_plural = _(u'Kontaktní práce')
-        
-        
-class CrisisIntervention(ClientService):
+
+
+class CrisisIntervention(Service):
     INTERVENTION_TYPES = Choices(
         ('d', 'DIRECT', _(u'přímá')),
         ('p', 'OVER_THE_PHONE', _(u'po telefonu')),
     )
     type = models.CharField(max_length=1, choices=INTERVENTION_TYPES,
         default=INTERVENTION_TYPES.DIRECT, verbose_name=_(u'Typ'))
-    
+
     class Meta:
         app_label = 'services'
         verbose_name = _(u'Krizová intervence')
         verbose_name_plural = _(u'Krizové intervence')
-        
+
     def _prepare_title(self):
         return _(u'%(title)s: %(type)s') % {
             'title': self.service.title, 'type': self.get_type_display()
         }
-    
-    
-class PhoneCounseling(ClientService):
+
+
+class PhoneCounseling(Service):
     class Meta:
         app_label = 'services'
         proxy = True
         verbose_name = _(u'Telefonické poradenství')
         verbose_name_plural = _(u'Telefonické poradenství')
-        
-        
-class SocialWork(ClientService):
+
+
+class SocialWork(Service):
     socio_legal = models.BooleanField(default=False,
         verbose_name=_(u'sociálně-právní'))
     socio_material = models.BooleanField(default=False,
@@ -176,13 +176,13 @@ class SocialWork(ClientService):
         verbose_name=_(u'zprostředkování dalších služeb'))
     other = models.BooleanField(default=False,
         verbose_name=_(u'jiná'))
-    
+
     class Meta:
         app_label = 'services'
         verbose_name = _(u'Sociální práce')
         verbose_name_plural = _(u'Sociální práce')
-        
-    class Service:
+
+    class Options:
         fieldsets = (
             (None, {
                 'fields': ('encounter', 'socio_legal', 'socio_material',
@@ -190,32 +190,32 @@ class SocialWork(ClientService):
                 'classes': ('inline',)
             }),
         )
-        
-        
-class UtilityWork(ClientService):
+
+
+class UtilityWork(Service):
     class Meta:
         app_label = 'services'
         proxy = True
         verbose_name = _(u'Další úkony')
         verbose_name_plural = _(u'Další úkony')
-        
-    class Service:
+
+    class Options:
         title = _(u'Úkony potřebné pro zajištění práce s klientem')
-        
-        
-class BasicMedicalTreatment(ClientService):
+
+
+class BasicMedicalTreatment(Service):
     class Meta:
         app_label = 'services'
         proxy = True
         verbose_name = _(u'Základní zdravotní ošetření')
         verbose_name_plural = _(u'Základní zdravotní ošetření')
-        
-        
-class IndividualCounseling(ClientService):
+
+
+class IndividualCounseling(Service):
     class Meta:
         app_label = 'services'
         proxy = True
         verbose_name = _(u'Individuální poradenství')
         verbose_name_plural = _(u'Individuální poradenství')
-        
-    
+
+
