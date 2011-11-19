@@ -1,0 +1,105 @@
+[
+  {
+    "model": "clients.person",
+    "pk": 1,
+    "fields": {
+      "content_type": ["clients", "anonymous"],
+      "title": ""
+    }
+  },
+  {
+    "model": "clients.anonymous",
+    "pk": 1,
+    "fields": {
+      "person_ptr": 1,
+      "sex": 1,
+      "drug_user_type": 1
+    }
+  },
+  {
+    "model": "clients.person",
+    "pk": 2,
+    "fields": {
+      "content_type": ["clients", "anonymous"],
+      "title": ""
+    }
+  },
+  {
+    "model": "clients.anonymous",
+    "pk": 2,
+    "fields": {
+      "person_ptr": 2,
+      "sex": 1,
+      "drug_user_type": 2
+    }
+  },
+  {
+    "model": "clients.person",
+    "pk": 3,
+    "fields": {
+      "content_type": ["clients", "anonymous"],
+      "title": ""
+    }
+  },
+  {
+    "model": "clients.anonymous",
+    "pk": 3,
+    "fields": {
+      "person_ptr": 3,
+      "sex": 1,
+      "drug_user_type": 3
+    }
+  },
+  {
+    "model": "clients.person",
+    "pk": 4,
+    "fields": {
+      "content_type": ["clients", "anonymous"],
+      "title": ""
+    }
+  },
+  {
+    "model": "clients.anonymous",
+    "pk": 4,
+    "fields": {
+      "person_ptr": 4,
+      "sex": 2,
+      "drug_user_type": 1
+    }
+  },
+  {
+    "model": "clients.person",
+    "pk": 5,
+    "fields": {
+      "content_type": ["clients", "anonymous"],
+      "title": ""
+    }
+  },
+  {
+    "model": "clients.anonymous",
+    "pk": 5,
+    "fields": {
+      "person_ptr": 5,
+      "sex": 2,
+      "drug_user_type": 2
+    }
+  },
+  {
+    "model": "clients.person",
+    "pk": 6,
+    "fields": {
+      "content_type": ["clients", "anonymous"],
+      "title": ""
+    }
+  },
+  {
+    "model": "clients.anonymous",
+    "pk": 6,
+    "fields": {
+      "person_ptr": 6,
+      "sex": 2,
+      "drug_user_type": 3
+    }
+  }
+]
+
