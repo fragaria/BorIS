@@ -14,7 +14,7 @@ from boris.classification import SEXES, NATIONALITIES,\
     ETHNIC_ORIGINS, LIVING_CONDITIONS, ACCOMODATION_TYPES, EMPLOYMENT_TYPES,\
     DRUG_APPLICATION_FREQUENCY, DRUG_APPLICATION_TYPES,\
     PRIMARY_DRUG_APPLICATION_TYPES, RISKY_BEHAVIOR_PERIODICITY, DISEASES,\
-    DISEASE_TEST_RESULTS, EDUCATION_LEVELS
+    DISEASE_TEST_RESULTS, EDUCATION_LEVELS, ANONYMOUS_TYPES
 from django.contrib.contenttypes.models import ContentType
 
 
@@ -69,10 +69,6 @@ class Town(StringEnum):
 
 
 class Person(TimeStampedModel, AdminLinkMixin):
-    first_name = models.CharField(max_length=63, blank=True, null=True,
-        verbose_name=_(u'Jméno'))
-    last_name = models.CharField(max_length=63, blank=True, null=True,
-        verbose_name=_(u'Příjmení'))
     # title enables us to easily print subclass __unicode__ values from Person
     title = models.CharField(max_length=255, editable=False,
         verbose_name=_(u'Název'))
@@ -124,6 +120,12 @@ class Person(TimeStampedModel, AdminLinkMixin):
 
 class Practitioner(Person):
     designation = models.CharField(max_length=128, verbose_name=_(u'Označení'))
+    first_name = models.CharField(max_length=63, blank=True, null=True,
+        verbose_name=_(u'Jméno'))
+    last_name = models.CharField(max_length=63, verbose_name=_(u'Příjmení'))
+    note = models.TextField(blank=True, null=True)
+    sex = models.PositiveSmallIntegerField(choices=SEXES, verbose_name=_(u'Pohlaví'))
+    town = models.ForeignKey(Town, verbose_name=_(u'Město'))
 
     class Meta:
         verbose_name = _(u'Odborník')
@@ -135,34 +137,27 @@ class Practitioner(Person):
         return self.designation
 
 
-class AnonymousManager(models.Manager):
-    def get_query_set(self, *args, **kwargs):
-        qs = super(AnonymousManager, self).get_query_set()
-
-        return qs.filter(content_type=ContentType.objects.get_by_natural_key(
-            'clients', 'anonymous'))
-
-
 class Anonymous(Person):
-    # limit the result set only on Anonymous model CT while still keeping
-    # only one table thanks to Proxy --> avoids having table with only pointer to
-    # Person base table
-    objects = AnonymousManager()
+    drug_user_type = models.PositiveSmallIntegerField(
+        choices=ANONYMOUS_TYPES, verbose_name=_(u'Typ'))
+    sex = models.PositiveSmallIntegerField(choices=SEXES, verbose_name=_(u'Pohlaví'))
 
     class Meta:
-        proxy = True
         verbose_name = _(u'Anonym')
         verbose_name_plural = _(u'Anonymové')
+        unique_together = ('sex', 'drug_user_type')
 
     def __unicode__(self):
-        if self.first_name or self.last_name:
-            return u'%s %s' % (self.first_name, self.last_name)
-        return u'Anonym %s' % self.pk
+        return u'%s - %s' % (self.drug_user_type, self.sex)
 
 
 class Client(Person):
     code = models.CharField(max_length=63, unique=True, verbose_name=_(u'Kód'))
     sex = models.PositiveSmallIntegerField(choices=SEXES, verbose_name=_(u'Pohlaví'))
+    first_name = models.CharField(max_length=63, blank=True, null=True,
+        verbose_name=_(u'Jméno'))
+    last_name = models.CharField(max_length=63, blank=True, null=True,
+        verbose_name=_(u'Příjmení'))
     birthdate = models.DateField(verbose_name=_(u'Datum narození'), blank=True, null=True,
         help_text=_(u'Pokud znáte pouze rok, zaškrtněte políčko `Známý pouze rok`.'))
     birthdate_year_only = models.BooleanField(default=False,
