@@ -116,7 +116,10 @@ class Person(TimeStampedModel, AdminLinkMixin):
         When dealing with subclass that has been selected from base table,
         this will return the corresponding subclass instance.
         """
-        return self.content_type.get_object_for_this_type(pk=self.pk)
+        try:
+            return self.content_type.get_object_for_this_type(pk=self.pk)
+        except ContentType.DoesNotExist: # E.g. mock objects or some not-yet-saved objects.
+            return self
 
 
 class Practitioner(Person):
