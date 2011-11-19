@@ -73,8 +73,6 @@ class Person(TimeStampedModel, AdminLinkMixin):
         verbose_name=_(u'Jméno'))
     last_name = models.CharField(max_length=63, blank=True, null=True,
         verbose_name=_(u'Příjmení'))
-    title = models.CharField(max_length=255, editable=False,
-        verbose_name=_(u'Název'))
     content_type = models.ForeignKey(ContentType, editable=False)
 
     class Meta:
@@ -100,11 +98,15 @@ class Person(TimeStampedModel, AdminLinkMixin):
         except IndexError:
             return None
 
+    def get_unicode(self):
+        if self.first_name or self.last_name:
+            return u'%s %s' % (self.first_name, self.last_name)
+        return u'Person %s' % self.pk
+
     def __unicode__(self):
-        return self.title
+        return self.get_unicode()
 
     def clean(self):
-        self.title = unicode(self)
         # @attention: instead of using get_for_model which doesn't respect
         # proxy models content types, use get_by_natural key as a workaround
         self.content_type = ContentType.objects.get_by_natural_key(
@@ -125,7 +127,7 @@ class Practitioner(Person):
         verbose_name = _(u'Odborník')
         verbose_name_plural = _(u'Odborníci')
 
-    def __unicode__(self):
+    def get_unicode(self):
         if self.first_name or self.last_name:
             return u'%s %s' % (self.first_name, self.last_name)
         return self.designation
@@ -150,7 +152,7 @@ class Anonymous(Person):
         verbose_name = _(u'Anonym')
         verbose_name_plural = _(u'Anonymové')
 
-    def __unicode__(self):
+    def get_unicode(self):
         if self.first_name or self.last_name:
             return u'%s %s' % (self.first_name, self.last_name)
         return u'Anonym %s' % self.pk
@@ -168,7 +170,7 @@ class Client(Person):
     primary_drug_usage = models.PositiveSmallIntegerField(blank=True, null=True,
         choices=PRIMARY_DRUG_APPLICATION_TYPES, verbose_name=_(u'Způsob aplikace'))
 
-    def __unicode__(self):
+    def get_unicode(self):
         return self.code
 
     class Meta:
