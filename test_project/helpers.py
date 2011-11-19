@@ -1,8 +1,10 @@
 from django.contrib.auth.models import User
+from django.utils.functional import curry
+from django.contrib.contenttypes.models import ContentType
 
 from boris.clients.models import Client, Town, Region, District
 from boris.clients.classification import SEXES
-from django.utils.functional import curry
+
 
 def get_testing_string_enum(ModelClass, title, *args, **kwargs):
     return ModelClass.objects.create(title=title, **kwargs)
@@ -17,8 +19,9 @@ def get_testing_client(code='borivoj22'):
          'sex': SEXES.MALE,
          'birthdate': '1980-10-10',
          'town': get_testing_town(),
+         'content_type': ContentType.objects.get_for_model(Client)
     }
-    
+
     return Client.objects.create(**client_data)
 
 
