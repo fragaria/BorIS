@@ -6,7 +6,7 @@ Created on 22.10.2011
 from djangosanetesting.cases import UnitTestCase
 from boris.services.models.core import Service, service_list,\
     get_model_for_class_name
-from boris.clients.models import Client
+from boris.clients.models import Client, Anonymous
 from django.db.models.base import Model
 from nose.tools import raises
 
@@ -40,7 +40,13 @@ class TestServiceOptions(UnitTestCase):
                 description_template = 'services/desc/aaa.html'
                 is_available = lambda client: True if client == 1 else False
 
+        class DummyLimitedServiceClass(Service):
+            class Options:
+                limited_to = ('Client', )
+                is_available = lambda client: not hasattr(client, 'failme')
+
         self.subcls = DummyServiceClass
+        self.subcls_limited = DummyLimitedServiceClass
 
     def test_description_template_fallback(self):
         self.assert_true(
@@ -51,6 +57,17 @@ class TestServiceOptions(UnitTestCase):
     def test_is_available_uses_defined_callback(self):
         self.assert_true(self.subcls.service.is_available(1))
         self.assert_false(self.subcls.service.is_available(2))
+
+    def test_limited_to_passes(self):
+        self.assert_true(self.subcls_limited.service.is_available(Client()))
+
+    def test_limited_to_blocks(self):
+        self.assert_false(self.subcls_limited.service.is_available(Anonymous()))
+
+    def test_is_available_works_with_limited_to(self):
+        c = Client()
+        c.failme = True
+        self.assert_false(self.subcls_limited.service.is_available(c))
 
 
 class TestUtilityMethods(UnitTestCase):
