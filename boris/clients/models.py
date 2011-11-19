@@ -133,7 +133,9 @@ class Practitioner(Person):
 
 class AnonymousManager(models.Manager):
     def get_query_set(self, *args, **kwargs):
-        return self.filter(content_type=ContentType.objects.get_by_natural_key(
+        qs = super(AnonymousManager, self).get_query_set()
+
+        return qs.filter(content_type=ContentType.objects.get_by_natural_key(
             'clients', 'anonymous'))
 
 
