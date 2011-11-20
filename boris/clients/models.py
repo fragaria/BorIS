@@ -148,7 +148,7 @@ class Anonymous(Person):
         unique_together = ('sex', 'drug_user_type')
 
     def __unicode__(self):
-        return u'%s - %s' % (self.drug_user_type, self.sex)
+        return u'%s - %s' % (self.get_sex_display(), self.get_drug_user_type_display())
 
 
 class Client(Person):
