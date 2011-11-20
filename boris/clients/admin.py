@@ -147,6 +147,18 @@ class AnonymousAdmin(admin.ModelAdmin):
 class PractitionerAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'designation')
     search_fields = ('first_name', 'last_name', 'designation')
+    fieldsets = (
+        (_(u'Základní informace'), {'fields': (
+            ('first_name', 'last_name',),
+            ('sex', 'town'),
+            'designation',
+            'note',
+            )}),
+    )
+    raw_id_fields = ('town',)
+    autocomplete_lookup_fields = {
+        'fk': ['town',]
+    }
     change_form_template = 'admin/clients/person/change_form.html'
     inlines = (EncounterInline,)
 
