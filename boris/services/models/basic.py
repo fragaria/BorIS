@@ -44,6 +44,7 @@ class HarmReduction(Service):
     class Options:
         title = _(u'Výměnný a jiný harm reduction program')
         form_template = 'services/forms/small_cells.html'
+        limited_to = ('Client',)
         fieldsets = (
             (None, {'fields': ('in_count', 'out_count', 'encounter'),
                 'classes': ('inline',)}),
@@ -63,6 +64,9 @@ class IncomeExamination(Service):
         verbose_name = _(u'Vstupní zhodnocení stavu klienta')
         verbose_name_plural = _(u'Vstupní zhodnocení stavu klienta')
 
+    class Options:
+        limited_to = ('Client',)
+
 
 class DiseaseTest(Service):
     disease = models.PositiveSmallIntegerField(choices=DISEASES,
@@ -74,6 +78,9 @@ class DiseaseTest(Service):
         app_label = 'services'
         verbose_name = _(u'Testování infekčních nemocí')
         verbose_name_plural = _(u'Testování infekčních nemocí')
+
+    class Options:
+        limited_to = ('Client',)
 
     def _prepare_title(self):
         return _(u'%(title)s: %(disease)s / %(sign)s') % {
@@ -95,6 +102,9 @@ class AsistService(Service):
         app_label = 'services'
         verbose_name = _(u'Asistenční služba')
         verbose_name_plural = _(u'Asistenční služby')
+
+    class Options:
+        limited_to = ('Client',)
 
     def _prepare_title(self):
         return _(u'%(title)s: doprovod %(where)s') % {
@@ -139,6 +149,9 @@ class ContactWork(Service):
         verbose_name = _(u'Kontaktní práce')
         verbose_name_plural = _(u'Kontaktní práce')
 
+    class Options:
+        limited_to = ('Client',)
+
 
 class CrisisIntervention(Service):
     INTERVENTION_TYPES = Choices(
@@ -152,6 +165,9 @@ class CrisisIntervention(Service):
         app_label = 'services'
         verbose_name = _(u'Krizová intervence')
         verbose_name_plural = _(u'Krizové intervence')
+
+    class Options:
+        limited_to = ('Client',)
 
     def _prepare_title(self):
         return _(u'%(title)s: %(type)s') % {
@@ -183,6 +199,7 @@ class SocialWork(Service):
         verbose_name_plural = _(u'Sociální práce')
 
     class Options:
+        limited_to = ('Client',)
         fieldsets = (
             (None, {
                 'fields': ('encounter', 'socio_legal', 'socio_material',
@@ -201,6 +218,7 @@ class UtilityWork(Service):
 
     class Options:
         title = _(u'Úkony potřebné pro zajištění práce s klientem')
+        limited_to = ('Client', 'Practitioner')
 
 
 class BasicMedicalTreatment(Service):
@@ -210,6 +228,9 @@ class BasicMedicalTreatment(Service):
         verbose_name = _(u'Základní zdravotní ošetření')
         verbose_name_plural = _(u'Základní zdravotní ošetření')
 
+    class Options:
+        limited_to = ('Client',)
+
 
 class IndividualCounseling(Service):
     class Meta:
@@ -218,4 +239,13 @@ class IndividualCounseling(Service):
         verbose_name = _(u'Individuální poradenství')
         verbose_name_plural = _(u'Individuální poradenství')
 
+    class Options:
+        limited_to = ('Client',)
 
+
+class Address(Service):
+    class Meta:
+        app_label = 'services'
+        proxy = True
+        verbose_name = _(u'Oslovení')
+        verbose_name_plural = _(u'Oslovení')

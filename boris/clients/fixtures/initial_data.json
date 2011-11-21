@@ -4,7 +4,7 @@
     "pk": 1,
     "fields": {
       "content_type": ["clients", "anonymous"],
-      "title": ""
+      "title": "žena - neuživatel"
     }
   },
   {
@@ -21,7 +21,7 @@
     "pk": 2,
     "fields": {
       "content_type": ["clients", "anonymous"],
-      "title": ""
+      "title": "žena - neIV"
     }
   },
   {
@@ -38,7 +38,7 @@
     "pk": 3,
     "fields": {
       "content_type": ["clients", "anonymous"],
-      "title": ""
+      "title": "žena - IV"
     }
   },
   {
@@ -55,7 +55,7 @@
     "pk": 4,
     "fields": {
       "content_type": ["clients", "anonymous"],
-      "title": ""
+      "title": "muž - neuživatel"
     }
   },
   {
@@ -72,7 +72,7 @@
     "pk": 5,
     "fields": {
       "content_type": ["clients", "anonymous"],
-      "title": ""
+      "title": "muž - neIV"
     }
   },
   {
@@ -89,7 +89,7 @@
     "pk": 6,
     "fields": {
       "content_type": ["clients", "anonymous"],
-      "title": ""
+      "title": "muž - IV"
     }
   },
   {
