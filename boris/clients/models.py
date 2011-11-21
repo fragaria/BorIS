@@ -119,11 +119,10 @@ class Person(TimeStampedModel, AdminLinkMixin):
 
 
 class Practitioner(Person):
-    designation = models.CharField(max_length=128, verbose_name=_(u'Označení'))
     first_name = models.CharField(max_length=63, blank=True, null=True,
         verbose_name=_(u'Jméno'))
     last_name = models.CharField(max_length=63, verbose_name=_(u'Příjmení'))
-    note = models.TextField(blank=True, null=True)
+    note = models.CharField(max_length=255, blank=True, null=True, verbose_name=_(u'Poznámka'))
     sex = models.PositiveSmallIntegerField(choices=SEXES, verbose_name=_(u'Pohlaví'))
     town = models.ForeignKey(Town, verbose_name=_(u'Město'))
 
@@ -132,9 +131,10 @@ class Practitioner(Person):
         verbose_name_plural = _(u'Odborníci')
 
     def __unicode__(self):
-        if self.first_name or self.last_name:
-            return u'%s %s' % (self.first_name, self.last_name)
-        return self.designation
+        if self.first_name:
+            return u'%s, %s' % (self.last_name, self.first_name)
+        else:
+            return u'%s' % self.last_name
 
 
 class Anonymous(Person):

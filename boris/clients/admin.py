@@ -145,13 +145,11 @@ class AnonymousAdmin(admin.ModelAdmin):
 
 
 class PractitionerAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'designation')
-    search_fields = ('first_name', 'last_name', 'designation')
+    search_fields = ('first_name', 'last_name',)
     fieldsets = (
         (_(u'Základní informace'), {'fields': (
             ('first_name', 'last_name',),
             ('sex', 'town'),
-            'designation',
             'note',
             )}),
     )
@@ -159,6 +157,7 @@ class PractitionerAdmin(admin.ModelAdmin):
     autocomplete_lookup_fields = {
         'fk': ['town',]
     }
+    ordering = ('last_name', )
     change_form_template = 'admin/clients/person/change_form.html'
     inlines = (EncounterInline,)
 
