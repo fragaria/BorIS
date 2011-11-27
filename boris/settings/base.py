@@ -102,6 +102,7 @@ INSTALLED_APPS = (
 
     'boris.clients',
     'boris.services',
+    'boris.reporting',
 )
 
 # always freeze south migrations

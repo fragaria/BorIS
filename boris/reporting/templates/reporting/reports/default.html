@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf8">
+        <title>{{ report }}</title>
+    </head>
+    <body>
+        <table>
+            <tr>
+                <th></th>
+                {% for column in report.columns %}
+                <th>{{ column }}</th>
+                {% endfor %}
+            </tr>
+            {% for row in report.rows %}
+            <tr>
+                <td>{{ row }}</td>
+                {% for value in row.itervalues %}
+                <td>{{ value }}</td>        
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table> 
+    </body>
+</html>
