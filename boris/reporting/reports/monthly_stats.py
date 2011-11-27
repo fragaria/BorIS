@@ -11,7 +11,7 @@ from boris.reporting.core import AggregationRow, QuerySetReport,\
 from boris.reporting.models import SearchEncounter
 
 class PersonBasedRow(AggregationRow):
-    distinct_val = 'person'
+    aggregation_dbcol = 'person'
 
 
 class AllEncounters(PersonBasedRow):
@@ -45,7 +45,7 @@ class Practitioners(PersonBasedRow):
     
 class Addresses(SumAggregationRow):
     title = u'Počet oslovených'
-    distinct_val = 'nr_of_addresses' 
+    aggregation_dbcol = 'nr_of_addresses' 
     
 
 class NonDrugUserAddresses(Addresses):
@@ -55,7 +55,7 @@ class NonDrugUserAddresses(Addresses):
     
 class IncomeExaminations(SumAggregationRow):
     title = u'Počet prvních kontaktů'
-    distinct_val = 'nr_of_incomeexaminations'
+    aggregation_dbcol = 'nr_of_incomeexaminations'
     
     
 class MonthlyStats(QuerySetReport):

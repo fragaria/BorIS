@@ -122,7 +122,7 @@ class AggregationRow(Row):
     additional_filtering = {}
     additional_excludes = {}
     grouping = ()
-    distinct_val = 'id'
+    aggregation_dbcol = 'id'
     
     def set_base_qset(self, base_qset):
         self.base_qset = base_qset 
@@ -149,7 +149,7 @@ class AggregationRow(Row):
         Function to create reporting on. Defaults to COUNT.
         """
         from django.db.models import Count
-        return Count(self.distinct_val, distinct=True)
+        return Count(self.aggregation_dbcol, distinct=True)
     
     def itervalues(self):
         """
@@ -176,6 +176,6 @@ class SumAggregationRow(AggregationRow):
     """
     def _annotation_func(self):
         from django.db.models import Sum
-        return Sum(self.distinct_val)
+        return Sum(self.aggregation_dbcol)
     
     
