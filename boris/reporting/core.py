@@ -8,12 +8,20 @@ from django.template import loader
 
 
 class ReportResponse(HttpResponse):
+    """
+    Ancestor of HttpRespose which takes report class and its args and kwargs
+    that renders itself.
+    """
     def __init__(self, report_class, *args, **kwargs):
         report = report_class(*args, **kwargs)
         super(ReportResponse, self).__init__(content=report.render(), mimetype=report.mime)
 
 
 class Report(object):
+    """
+    Base class for reporting output. It's supposed to act as table so it
+    has columns and rows.
+    """
     title = None
     columns = None
     rows = None
@@ -65,10 +73,16 @@ class Row(object):
         return unicode(self.title)
     
     def get_val(self, column):
+        """
+        Returns value of cell for current row and given column.
+        """
         return NotImplementedError
     
     
 class QuerySetReport(Report):
+    """
+    Report with dynamically generated rows and columns based on queryset.
+    """
     row_classes = ()
     column_class = Column
     column_keys = ()
@@ -97,6 +111,13 @@ class QuerySetReport(Report):
     
     
 class AggregationRow(Row):
+    """
+    Main reporting logic lives in AggregationRow. It does aggregation 
+    on queryset specified by report.
+    
+    Subclasses can supply filtering/excluding, grouping and column, which 
+    should be treated as distinct (the one to report on).
+    """
     base_qset = None
     additional_filtering = {}
     additional_excludes = {}
@@ -110,7 +131,6 @@ class AggregationRow(Row):
         self.grouping = grouping
     
     def _values(self):
-        from django.db.models import Count
         if not hasattr(self, '__values'):
             qset = self.report.base_qset
             
@@ -125,14 +145,23 @@ class AggregationRow(Row):
         return self.__values
     
     def _annotation_func(self):
+        """
+        Function to create reporting on. Defaults to COUNT.
+        """
         from django.db.models import Count
         return Count(self.distinct_val, distinct=True)
     
     def itervalues(self):
+        """
+        Iterate over values for all columns in report.
+        """
         for column in self.report.columns:
             yield self.get_val(column)
     
     def get_val(self, column):
+        """
+        Return value for given column.
+        """
         def entry_ok(entry):
             for key in column.get_key():
                 if entry[key] != column.get_key()[key]:
@@ -142,6 +171,9 @@ class AggregationRow(Row):
         return sum(val['total'] for val in self._values() if entry_ok(val))
         
 class SumAggregationRow(AggregationRow):
+    """
+    Row that uses SUM instead of COUNT to aggregate.
+    """
     def _annotation_func(self):
         from django.db.models import Sum
         return Sum(self.distinct_val)

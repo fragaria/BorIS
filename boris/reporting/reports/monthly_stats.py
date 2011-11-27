@@ -16,7 +16,6 @@ class PersonBasedRow(AggregationRow):
 
 class AllEncounters(PersonBasedRow):
     title = u'Počet klientů'
-    additional_filtering = {'client_is_drug_user': False}
 
 
 class MaleEncounters(PersonBasedRow):
@@ -63,7 +62,8 @@ class MonthlyStats(QuerySetReport):
     title = u'Měsíční statistiky'
     grouping = ('month', 'town')
     row_classes = (AllEncounters, MaleEncounters, NonUserEncounters,
-        IvEncounters, NonClients, Practitioners, Addresses, IncomeExaminations)
+        IvEncounters, NonClients, Practitioners, Addresses, NonDrugUserAddresses,
+        IncomeExaminations)
     
     def _column_keys(self):
         return ({'month': month, 'town': town.pk} for town in Town.objects.all()
