@@ -6,6 +6,10 @@ Created on 20.11.2011
 from django.http import HttpResponse
 from django.template import loader
 
+class hashdict(dict):
+    def __hash__(self):
+        return hash(tuple(sorted(self.items())))
+
 
 class ReportResponse(HttpResponse):
     """
@@ -140,8 +144,14 @@ class AggregationRow(Row):
             if self.additional_excludes:
                 qset = qset.exclude(**self.additional_excludes)
             
-            self.__values = qset.values(*self.report.grouping).order_by().annotate(
+            self.__values = {}
+            vals = qset.values(*self.report.grouping).order_by().annotate(
                     total=self._annotation_func())
+            
+            for value in vals:
+                key = hashdict((k, value[k]) for k in self.report.grouping)
+                self.__values[key] = self.__values.get(key, 0) + value['total']
+            
         return self.__values
     
     def _annotation_func(self):
@@ -162,13 +172,7 @@ class AggregationRow(Row):
         """
         Return value for given column.
         """
-        def entry_ok(entry):
-            for key in column.get_key():
-                if entry[key] != column.get_key()[key]:
-                    return False
-            return True
-
-        return sum(val['total'] for val in self._values() if entry_ok(val))
+        return self._values().get(column.get_key(), 0)
         
 class SumAggregationRow(AggregationRow):
     """

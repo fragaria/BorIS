@@ -7,7 +7,7 @@ Created on 27.11.2011
 from boris.classification import SEXES
 from boris.clients.models import Town
 from boris.reporting.core import AggregationRow, QuerySetReport,\
-    SumAggregationRow
+    SumAggregationRow, hashdict
 from boris.reporting.models import SearchEncounter
 
 class PersonBasedRow(AggregationRow):
@@ -66,7 +66,7 @@ class MonthlyStats(QuerySetReport):
         IncomeExaminations)
     
     def _column_keys(self):
-        return ({'month': month, 'town': town.pk} for town in Town.objects.all()
+        return (hashdict((('month', month), ('town', town.pk)),) for town in Town.objects.all()
             for month in xrange(1, 13))
     column_keys = property(_column_keys)
     
