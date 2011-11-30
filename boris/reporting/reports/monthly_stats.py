@@ -10,67 +10,63 @@ from boris.reporting.core import AggregationRow, QuerySetReport,\
     SumAggregationRow, hashdict
 from boris.reporting.models import SearchEncounter
 
-class PersonBasedRow(AggregationRow):
+class AllEncounters(AggregationRow):
+    title = u'Počet klientů'
+    model = SearchEncounter
     aggregation_dbcol = 'person'
 
 
-class AllEncounters(PersonBasedRow):
-    title = u'Počet klientů'
-    model = SearchEncounter
-
-
-class MaleEncounters(PersonBasedRow):
+class MaleEncounters(AllEncounters):
     title = u'Z toho mužů'
     filtering = {'client_sex': SEXES.MALE}
-    model = SearchEncounter
 
 
-class NonUserEncounters(PersonBasedRow):
+class NonUserEncounters(AllEncounters):
     title = u'Z toho osob blízkých'
     filtering = {'client_is_drug_user': False}
-    model = SearchEncounter
 
 
-class IvEncounters(PersonBasedRow):
+class IvEncounters(AllEncounters):
     title = u'z toho IV uživatelů'
     filtering = {'client_iv': True}
-    model = SearchEncounter
 
 
-class NonClients(PersonBasedRow):
+class NonClients(AggregationRow):
     title = u'Počet neuživatelů'
+    aggregation_dbcol = 'person'
     excludes = {'person_model': 'client'}
     model = SearchEncounter
 
 
-class Practitioners(PersonBasedRow):
+class Practitioners(AggregationRow):
     title = u'Počet neuživatelů'
-    filtering = {'person_model': 'practitioner'}
     model = SearchEncounter
+    aggregation_dbcol = 'person'
+    filtering = {'person_model': 'practitioner'}
 
 
-class Addresses(SumAggregationRow):
+class AllAddresses(SumAggregationRow):
     title = u'Počet oslovených'
     aggregation_dbcol = 'nr_of_addresses'
     model = SearchEncounter
 
 
-class NonDrugUserAddresses(Addresses):
+class NonDrugUserAddresses(AllAddresses):
     title = 'Z toho neUD'
     filtering = {'client_is_drug_user': False}
 
 
 class IncomeExaminations(SumAggregationRow):
     title = u'Počet prvních kontaktů'
-    aggregation_dbcol = 'nr_of_incomeexaminations'
     model = SearchEncounter
+    aggregation_dbcol = 'nr_of_incomeexaminations'
 
 
 class MonthlyStats(QuerySetReport):
     title = u'Měsíční statistiky'
     grouping = ('month', 'town')
     row_classes = (AllEncounters, MaleEncounters, NonUserEncounters,
-        IvEncounters, NonClients, Practitioners, Addresses, NonDrugUserAddresses,
+        IvEncounters, NonClients, Practitioners, AllAddresses, NonDrugUserAddresses,
         IncomeExaminations)
 
     def _column_keys(self):
