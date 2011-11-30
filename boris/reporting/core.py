@@ -108,12 +108,6 @@ class QuerySetReport(Report):
         return self.__rows
     rows = property(_rows)
 
-    def __init__(self, *args, **kwargs):
-        self.base_qset = self.get_base_qset()
-
-    def get_base_qset(self):
-        return None
-
 
 class AggregationRow(Row):
     """
@@ -123,34 +117,35 @@ class AggregationRow(Row):
     Subclasses can supply filtering/excluding, grouping and column, which
     should be treated as distinct (the one to report on).
     """
-    base_qset = None
-    additional_filtering = {}
-    additional_excludes = {}
-    grouping = ()
+    filtering = {}
+    excludes = {}
     aggregation_dbcol = 'id'
+    model = None
 
-    def set_base_qset(self, base_qset):
-        self.base_qset = base_qset
-
-    def set_grouping(self, grouping):
-        self.grouping = grouping
+    def __init__(self, *args, **kwargs):
+        super(AggregationRow, self).__init__(*args, **kwargs)
+        if hasattr(self.report, 'additional_filtering'):
+            self.filtering.update(self.report.additional_filtering)
+        if hasattr(self.report, 'additional_excludes'):
+            self.filtering.update(self.report.additional_excludes)
+        self.grouping = self.report.grouping
 
     def _values(self):
         if not hasattr(self, '__values'):
-            qset = self.report.base_qset
+            qset = self.model.objects.all()
 
-            if self.additional_filtering:
-                qset = qset.filter(**self.additional_filtering)
+            if self.filtering:
+                qset = qset.filter(**self.filtering)
 
-            if self.additional_excludes:
-                qset = qset.exclude(**self.additional_excludes)
+            if self.excludes:
+                qset = qset.exclude(**self.excludes)
 
             self.__values = {}
-            vals = qset.values(*self.report.grouping).order_by().annotate(
+            vals = qset.values(*self.grouping).order_by().annotate(
                     total=self._annotation_func())
 
             for value in vals:
-                key = hashdict((k, value[k]) for k in self.report.grouping)
+                key = hashdict((k, value[k]) for k in self.grouping)
                 self.__values[key] = self.__values.get(key, 0) + value['total']
 
         return self.__values
@@ -182,5 +177,3 @@ class SumAggregationRow(AggregationRow):
     def _annotation_func(self):
         from django.db.models import Sum
         return Sum(self.aggregation_dbcol)
-
-
