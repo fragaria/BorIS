@@ -69,7 +69,6 @@ class Report(object):
     columns = None
     rows = None
     row_classes = ()
-    column_class = Column
     column_keys = ()
 
     def __unicode__(self):
@@ -92,21 +91,21 @@ class Report(object):
     def render(self):
         return loader.render_to_string(self.template, self.get_context())
 
-    def _columns(self):
-        if not hasattr(self, '__columns'):
-            self.__columns =  [self.column_class(key, title=self.column_title(key))
+    @property
+    def columns(self):
+        if not hasattr(self, '_columns'):
+            self._columns = [Column(key, title=self.column_title(key))
                 for key in self.column_keys]
-        return self.__columns
-    columns = property(_columns)
+        return self._columns
 
     def column_title(self, key):
         return unicode(key)
 
-    def _rows(self):
-        if not hasattr(self, '__rows'):
-            self.__rows = [RowClass(self) for RowClass in self.row_classes]
-        return self.__rows
-    rows = property(_rows)
+    @property
+    def rows(self):
+        if not hasattr(self, '_rows'):
+            self._rows = [RowClass(self) for RowClass in self.row_classes]
+        return self._rows
 
 
 class AggregationRow(Row):
