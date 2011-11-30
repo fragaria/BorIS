@@ -128,7 +128,7 @@ class AggregationRow(Row):
         if hasattr(self.report, 'additional_filtering'):
             self.filtering.update(self.report.additional_filtering)
         if hasattr(self.report, 'additional_excludes'):
-            self.filtering.update(self.report.additional_excludes)
+            self.excludes.update(self.report.additional_excludes)
         self.grouping = self.report.grouping
 
     def _values(self):
