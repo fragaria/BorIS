@@ -22,36 +22,6 @@ class ReportResponse(HttpResponse):
         self['Content-Disposition'] = 'attachment; filename=report.csv'
 
 
-class Report(object):
-    """
-    Base class for reporting output. It's supposed to act as table so it
-    has columns and rows.
-    """
-    title = None
-    columns = None
-    rows = None
-
-    @property
-    def mime(self):
-        return 'application/vnd.ms-excel'
-
-    @property
-    def template(self):
-        return (
-            'reporting/reports/%s.html' % self.__class__.__name__.lower(),
-            'reporting/reports/default.html'
-        )
-
-    def __unicode__(self):
-        return self.title
-
-    def get_context(self):
-        return {'report': self}
-
-    def render(self):
-        return loader.render_to_string(self.template, self.get_context())
-
-
 class Column(object):
     def __init__(self, report, key, title=None):
         self.report = report
@@ -84,13 +54,44 @@ class Row(object):
         return NotImplementedError
 
 
-class QuerySetReport(Report):
+class Report(object):
     """
-    Report with dynamically generated rows and columns based on queryset.
+    Base class for reporting output. It's supposed to act as table so it
+    has dynamically generated columns and rows based on queryset.
+
+    When using with AggregationRows, subclasses might (or must) specify
+    the following attributes:
+
+    - grouping (required)
+    - additional_filtering (optional)
+    - additional_excludes (optional)
     """
+    title = None
+    columns = None
+    rows = None
     row_classes = ()
     column_class = Column
     column_keys = ()
+
+    def __unicode__(self):
+        return self.title
+
+    @property
+    def mime(self):
+        return 'application/vnd.ms-excel'
+
+    @property
+    def template(self):
+        return (
+            'reporting/reports/%s.html' % self.__class__.__name__.lower(),
+            'reporting/reports/default.html'
+        )
+
+    def get_context(self):
+        return {'report': self}
+
+    def render(self):
+        return loader.render_to_string(self.template, self.get_context())
 
     def _columns(self):
         if not hasattr(self, '__columns'):

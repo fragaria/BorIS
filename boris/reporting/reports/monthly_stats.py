@@ -6,7 +6,7 @@ Created on 27.11.2011
 '''
 from boris.classification import SEXES
 from boris.clients.models import Town
-from boris.reporting.core import AggregationRow, QuerySetReport,\
+from boris.reporting.core import AggregationRow, Report,\
     SumAggregationRow, hashdict
 from boris.reporting.models import SearchEncounter
 
@@ -62,7 +62,7 @@ class IncomeExaminations(SumAggregationRow):
     aggregation_dbcol = 'nr_of_incomeexaminations'
 
 
-class MonthlyStats(QuerySetReport):
+class MonthlyStats(Report):
     title = u'Měsíční statistiky'
     grouping = ('month', 'town')
     row_classes = (AllEncounters, MaleEncounters, NonUserEncounters,
