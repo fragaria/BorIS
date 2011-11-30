@@ -3,8 +3,11 @@ Created on 20.11.2011
 
 @author: xaralis
 '''
+from collections import defaultdict
+
 from django.http import HttpResponse
 from django.template import loader
+
 
 class hashdict(dict):
     def __hash__(self):
@@ -139,13 +142,13 @@ class AggregationRow(Row):
             if self.excludes:
                 qset = qset.exclude(**self.excludes)
 
-            self.__values = {}
+            self.__values = defaultdict(int)
             vals = qset.values(*self.grouping).order_by().annotate(
                     total=self._annotation_func())
 
             for value in vals:
                 key = hashdict((k, value[k]) for k in self.grouping)
-                self.__values[key] = self.__values.get(key, 0) + value['total']
+                self.__values[key] += value['total']
 
         return self.__values
 
@@ -167,7 +170,7 @@ class AggregationRow(Row):
         """
         Return value for given column.
         """
-        return self._values().get(column.get_key(), 0)
+        return self._values()[column.get_key()]
 
 class SumAggregationRow(AggregationRow):
     """
