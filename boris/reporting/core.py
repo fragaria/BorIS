@@ -1,8 +1,3 @@
-'''
-Created on 20.11.2011
-
-@author: xaralis
-'''
 from collections import defaultdict
 
 from django.http import HttpResponse
@@ -25,54 +20,24 @@ class ReportResponse(HttpResponse):
         self['Content-Disposition'] = 'attachment; filename=report.csv'
 
 
-class Column(object):
-    def __init__(self, key, title=None):
-        self.key = key
-        if title is None:
-            self.title = unicode(self.key)
-        else:
-            self.title = title
-
-    def __unicode__(self):
-        return  self.title
-
-    def get_key(self):
-        return self.key
-
-
-class Row(object):
-    def __init__(self, report, title=None):
-        self.report = report
-        if title is not None:
-            self.title = title
-
-    def __unicode__(self):
-        return unicode(self.title)
-
-    def get_val(self, column):
-        """
-        Returns value of cell for current row and given column.
-        """
-        return NotImplementedError
-
-
 class Report(object):
     """
-    Base class for reporting output. It's supposed to act as table so it
-    has dynamically generated columns and rows based on queryset.
+    Base class for reporting output.
 
-    When using with AggregationRows, subclasses might (or must) specify
-    the following attributes:
+    Subclasses might (or must) specify the following attributes:
 
+    - columns (required) - column titles for the rendered tables
     - grouping (required)
     - additional_filtering (optional)
     - additional_excludes (optional)
+
+    and methods:
+
+    - get_data (required) - returns the data to be used in the template
     """
     title = None
     columns = None
-    rows = None
-    row_classes = ()
-    column_keys = ()
+    aggregation_classes = ()
 
     def __unicode__(self):
         return self.title
@@ -85,7 +50,6 @@ class Report(object):
     def template(self):
         return (
             'reporting/reports/%s.html' % self.__class__.__name__.lower(),
-            'reporting/reports/default.html'
         )
 
     def get_context(self):
@@ -95,23 +59,13 @@ class Report(object):
         return loader.render_to_string(self.template, self.get_context())
 
     @property
-    def columns(self):
-        if not hasattr(self, '_columns'):
-            self._columns = [Column(key, title=self.column_title(key))
-                for key in self.column_keys]
-        return self._columns
-
-    def column_title(self, key):
-        return unicode(key)
-
-    @property
-    def rows(self):
-        if not hasattr(self, '_rows'):
-            self._rows = [RowClass(self) for RowClass in self.row_classes]
-        return self._rows
+    def aggregations(self):
+        if not hasattr(self, '_aggregations'):
+            self._aggregations = [aggregation_class(self) for aggregation_class in self.aggregation_classes]
+        return self._aggregations
 
 
-class AggregationRow(Row):
+class Aggregation(object):
     """
     Main reporting logic lives in AggregationRow. It does aggregation
     on queryset specified by report.
@@ -124,13 +78,13 @@ class AggregationRow(Row):
     aggregation_dbcol = 'id'
     model = None
 
-    def __init__(self, *args, **kwargs):
-        super(AggregationRow, self).__init__(*args, **kwargs)
-        if hasattr(self.report, 'additional_filtering'):
-            self.filtering.update(self.report.additional_filtering)
-        if hasattr(self.report, 'additional_excludes'):
-            self.excludes.update(self.report.additional_excludes)
-        self.grouping = self.report.grouping
+    def __init__(self, report):
+        if hasattr(report, 'additional_filtering'):
+            self.filtering.update(report.additional_filtering)
+        if hasattr(report, 'additional_excludes'):
+            self.excludes.update(report.additional_excludes)
+        self.report = report
+        self.grouping = report.grouping
 
     def _values(self):
         if not hasattr(self, '__values'):
@@ -159,20 +113,13 @@ class AggregationRow(Row):
         from django.db.models import Count
         return Count(self.aggregation_dbcol, distinct=True)
 
-    def itervalues(self):
-        """
-        Iterate over values for all columns in report.
-        """
-        for column in self.report.columns:
-            yield self.get_val(column)
-
-    def get_val(self, column):
+    def get_val(self, key):
         """
         Return value for given column.
         """
-        return self._values()[column.get_key()]
+        return self._values()[key]
 
-class SumAggregationRow(AggregationRow):
+class SumAggregation(Aggregation):
     """
     Row that uses SUM instead of COUNT to aggregate.
     """

@@ -6,11 +6,11 @@ Created on 27.11.2011
 '''
 from boris.classification import SEXES
 from boris.clients.models import Town
-from boris.reporting.core import AggregationRow, Report,\
-    SumAggregationRow, hashdict
+from boris.reporting.core import Aggregation, Report,\
+    SumAggregation, hashdict
 from boris.reporting.models import SearchEncounter
 
-class AllEncounters(AggregationRow):
+class AllEncounters(Aggregation):
     title = u'Počet klientů'
     model = SearchEncounter
     aggregation_dbcol = 'person'
@@ -31,21 +31,21 @@ class IvEncounters(AllEncounters):
     filtering = {'client_iv': True}
 
 
-class NonClients(AggregationRow):
+class NonClients(Aggregation):
     title = u'Počet neuživatelů'
     aggregation_dbcol = 'person'
     excludes = {'person_model': 'client'}
     model = SearchEncounter
 
 
-class Practitioners(AggregationRow):
+class Practitioners(Aggregation):
     title = u'Počet neuživatelů'
     model = SearchEncounter
     aggregation_dbcol = 'person'
     filtering = {'person_model': 'practitioner'}
 
 
-class AllAddresses(SumAggregationRow):
+class AllAddresses(SumAggregation):
     title = u'Počet oslovených'
     aggregation_dbcol = 'nr_of_addresses'
     model = SearchEncounter
@@ -56,7 +56,7 @@ class NonDrugUserAddresses(AllAddresses):
     filtering = {'client_is_drug_user': False}
 
 
-class IncomeExaminations(SumAggregationRow):
+class IncomeExaminations(SumAggregation):
     title = u'Počet prvních kontaktů'
     model = SearchEncounter
     aggregation_dbcol = 'nr_of_incomeexaminations'
@@ -65,18 +65,23 @@ class IncomeExaminations(SumAggregationRow):
 class MonthlyStats(Report):
     title = u'Měsíční statistiky'
     grouping = ('month', 'town')
-    row_classes = (AllEncounters, MaleEncounters, NonUserEncounters,
+    columns = [town for town in Town.objects.all()]
+    aggregation_classes = (AllEncounters, MaleEncounters, NonUserEncounters,
         IvEncounters, NonClients, Practitioners, AllAddresses, NonDrugUserAddresses,
         IncomeExaminations)
 
-    def _column_keys(self):
-        return (hashdict((('month', month), ('town', town.pk)),) for town in Town.objects.all()
-            for month in xrange(1, 13))
-    column_keys = property(_column_keys)
-
-    def column_title(self, key):
-        return u'%s/%s' % (key['month'], key['town'])
-
     def __init__(self, year, *args, **kwargs):
+        self.year = year
         self.additional_filtering = {'year': year}
         super(MonthlyStats, self).__init__(*args, **kwargs)
+
+    def get_data(self):
+        return [
+            (month, [
+                (aggregation.title, [
+                    aggregation.get_val(
+                        hashdict((('month', month), ('town', town.pk)),)
+                    ) for town in Town.objects.all()
+                ]) for aggregation in self.aggregations
+            ]) for month in xrange(1, 13)
+        ]
