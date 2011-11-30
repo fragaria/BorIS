@@ -23,8 +23,7 @@ class ReportResponse(HttpResponse):
 
 
 class Column(object):
-    def __init__(self, report, key, title=None):
-        self.report = report
+    def __init__(self, key, title=None):
         self.key = key
         if title is None:
             self.title = unicode(self.key)
@@ -95,7 +94,7 @@ class Report(object):
 
     def _columns(self):
         if not hasattr(self, '__columns'):
-            self.__columns =  [self.column_class(self, key, title=self.column_title(key))
+            self.__columns =  [self.column_class(key, title=self.column_title(key))
                 for key in self.column_keys]
         return self.__columns
     columns = property(_columns)
