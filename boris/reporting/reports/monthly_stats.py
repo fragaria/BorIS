@@ -46,7 +46,7 @@ class Practitioners(Aggregation):
     filtering = {'is_practitioner': True}
 
 
-class AllAddresses(SumAggregation):
+class AllAddresses(Aggregation):
     title = u'Počet oslovených'
     model = SearchService
     aggregation_dbcol = 'id'
