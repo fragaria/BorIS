@@ -7,6 +7,9 @@ from django.http import HttpResponse
 from django.template import loader
 
 class hashdict(dict):
+    """
+    A dict that is hashable. BEWARE not to mutate it..
+    """
     def __hash__(self):
         return hash(tuple(sorted(self.items())))
 
