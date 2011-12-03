@@ -190,8 +190,9 @@ class MonthlyStats(Report):
     ]
     
     def _columns(self):
-        for town in Town.objects.all():
-            yield town
+        if not hasattr(self, '_cols'):
+            self._cols = [town for town in Town.objects.all()]
+        return self._cols
     columns = property(_columns)
 
     def __init__(self, year, *args, **kwargs):
@@ -205,7 +206,7 @@ class MonthlyStats(Report):
                 (aggregation.title, [
                     aggregation.get_val(
                         make_key((('month', month), ('town', town.pk)),)
-                    ) for town in Town.objects.all()
+                    ) for town in self.columns
                 ]) for aggregation in self.aggregations
             ]) for month in xrange(1, 13)
         ]

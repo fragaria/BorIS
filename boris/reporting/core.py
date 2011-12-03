@@ -98,7 +98,7 @@ class Aggregation(object):
         self.report = report
         
     def _values(self):
-        if not hasattr(self, '__values'):
+        if not hasattr(self, '_vals'):
             qset = self.model.objects.all()
 
             if self.filtering:
@@ -107,16 +107,16 @@ class Aggregation(object):
             if self.excludes:
                 qset = qset.exclude(self._excludes)
 
-            self.__values = defaultdict(int)
+            self._vals = defaultdict(int)
             
             vals = qset.values(*self.get_grouping()).order_by().annotate(
                     total=self.get_annotation_func())
 
             for value in vals:
                 key = make_key((k, value[k]) for k in self.get_grouping())
-                self.__values[key] += value['total'] or 0
-
-        return self.__values
+                self._vals[key] += value['total'] or 0
+                
+        return self._vals
     
     def _prepare_expression(self, qset_expression):
         from django.db.models import Q
