@@ -2,7 +2,6 @@ from django.db import models
 
 from boris.clients.models import Person, Town, Drug
 
-
 class SearchEncounter(models.Model):
     """
     An augmented model corresponding to a database view.
@@ -31,3 +30,5 @@ class SearchService(models.Model):
 
     class Meta:
         managed = False
+
+
