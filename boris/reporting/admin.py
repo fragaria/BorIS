@@ -14,6 +14,12 @@ from django.shortcuts import render
 
 
 class ReportingInterfaceTab(object):
+    """
+    One tab of the interface. Requires 3 attributes to be set:
+        `title`        Tab's title
+        `report`       Report subclass
+        `form`         Form used to get parameters for report initiation
+    """
     title = _(u'Výkaz')
     report = None
     form = None
@@ -33,6 +39,15 @@ class MonthlyStatsTab(ReportingInterfaceTab):
 
 
 class ReportingInterface(object):
+    """
+    Class-based view for showing reporting interface.
+    
+    Separate report forms are splitted to tabs in admin, this
+    class handles management of these forms.
+    
+    Tabs are defined as ReportInterfaceTab subclasses listed in 
+    `tabs` attribute.
+    """
     tabs = (
         MonthlyStatsTab,
     )
@@ -51,6 +66,9 @@ class ReportingInterface(object):
         return render(request, 'reporting/interface.html', ctx)
     
     def get_urls(self):
+        """
+        Returns all urls for interface. Each tab has it's own POST URL.
+        """
         urlpatterns = patterns('boris.reporting.admin',
             url('^$', 'interface', name='reporting_base')
         )
