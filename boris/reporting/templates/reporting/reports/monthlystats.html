@@ -1,0 +1,27 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf8">
+        <title>{{ report }}</title>
+    </head>
+    <body>
+        {% for month in report.get_data %}
+            <table>
+                <tr>
+                    <th>{{ month.0 }}/{{ report.year }}</th>
+                    {% for column in report.columns %}
+                        <th>{{ column }}</th>
+                    {% endfor %}
+                </tr>
+                {% for aggregation in month.1 %}
+                    <tr>
+                        <td>{{ aggregation.0 }}</td>
+                        {% for town_val in aggregation.1 %}
+                            <td>{{ town_val }}</td>        
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </table> 
+            <br />
+        {% endfor %}
+    </body>
+</html>

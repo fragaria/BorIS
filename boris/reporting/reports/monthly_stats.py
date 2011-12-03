@@ -4,80 +4,86 @@ Created on 27.11.2011
 
 @author: xaralis
 '''
-from boris.classification import SEXES
+from boris.classification import SEXES, PRIMARY_DRUG_APPLICATION_TYPES
 from boris.clients.models import Town
-from boris.reporting.core import AggregationRow, QuerySetReport,\
-    SumAggregationRow, hashdict
-from boris.reporting.models import SearchEncounter
+from boris.reporting.core import Aggregation, Report,\
+    SumAggregation, make_key
+from boris.reporting.models import SearchEncounter, SearchService
 
-class PersonBasedRow(AggregationRow):
-    aggregation_dbcol = 'person'
-
-
-class AllEncounters(PersonBasedRow):
+class AllClientEncounters(Aggregation):
     title = u'Počet klientů'
+    model = SearchEncounter
+    aggregation_dbcol = 'person'
+    filtering = {'is_client': True}
 
 
-class MaleEncounters(PersonBasedRow):
-    title = u'Z toho mužů' 
-    additional_filtering = {'client_sex': SEXES.MALE}
-    
-    
-class NonUserEncounters(PersonBasedRow):
+class MaleClientEncounters(AllClientEncounters):
+    title = u'Z toho mužů'
+    filtering = {'is_client': True, 'client_sex': SEXES.MALE}
+
+
+class NonUserClientEncounters(AllClientEncounters):
     title = u'Z toho osob blízkých'
-    additional_filtering = {'client_is_drug_user': False}
-    
-    
-class IvEncounters(PersonBasedRow):
-    title = u'z toho IV uživatelů'
-    additional_filtering = {'client_iv': True}
-    
-    
-class NonClients(PersonBasedRow):
-    title = u'Počet neuživatelů'
-    additional_excludes = {'person_model': 'client'}
-    
-    
-class Practitioners(PersonBasedRow):
-    title = u'Počet neuživatelů'
-    additional_filtering = {'person_model': 'practitioner'}
-    
-    
-class Addresses(SumAggregationRow):
-    title = u'Počet oslovených'
-    aggregation_dbcol = 'nr_of_addresses' 
-    
+    filtering = {'is_client': True, 'primary_drug__isnull': True}
 
-class NonDrugUserAddresses(Addresses):
-    title = 'Z toho neUD'
-    additional_filtering = {'client_is_drug_user': False}
-    
-    
-class IncomeExaminations(SumAggregationRow):
+
+class IvClientEncounters(AllClientEncounters):
+    title = u'z toho IV uživatelů'
+    filtering = {'is_client': True, 'primary_drug_usage': PRIMARY_DRUG_APPLICATION_TYPES.IV}
+
+
+class NonClients(Aggregation):
+    title = u'Počet neuživatelů'
+    aggregation_dbcol = 'person'
+    excludes = {'is_client': False}
+    model = SearchEncounter
+
+
+class Practitioners(Aggregation):
+    title = u'Počet neuživatelů'
+    model = SearchEncounter
+    aggregation_dbcol = 'person'
+    filtering = {'is_practitioner': True}
+
+
+class AllAddresses(Aggregation):
+    title = u'Počet oslovených'
+    model = SearchService
+    aggregation_dbcol = 'id'
+    filtering = {'content_type_model': 'address'}
+
+
+#class NonDrugUserAddresses(AllAddresses):
+#    title = 'Z toho neUD'
+#    filtering = {'client_is_drug_user': False}
+
+
+class IncomeExaminations(Aggregation):
     title = u'Počet prvních kontaktů'
-    aggregation_dbcol = 'nr_of_incomeexaminations'
-    
-    
-class MonthlyStats(QuerySetReport):
+    model = SearchService
+    aggregation_dbcol = 'id'
+    filtering = {'content_type_model': 'incomeexamination'}
+
+
+class MonthlyStats(Report):
     title = u'Měsíční statistiky'
     grouping = ('month', 'town')
-    row_classes = (AllEncounters, MaleEncounters, NonUserEncounters,
-        IvEncounters, NonClients, Practitioners, Addresses, NonDrugUserAddresses,
-        IncomeExaminations)
-    
-    def _column_keys(self):
-        return (hashdict((('month', month), ('town', town.pk)),) for town in Town.objects.all()
-            for month in xrange(1, 13))
-    column_keys = property(_column_keys)
-    
-    def column_title(self, key):
-        return u'%s/%s' % (key['month'], key['town'])
-    
-    def get_base_qset(self):
-        return SearchEncounter.objects.filter(year=self.year)
-    
+    columns = [town for town in Town.objects.all()]
+    aggregation_classes = (AllClientEncounters, MaleClientEncounters, NonUserClientEncounters,
+        IvClientEncounters, NonClients, Practitioners, AllAddresses, IncomeExaminations)
+
     def __init__(self, year, *args, **kwargs):
         self.year = year
+        self.additional_filtering = {'year': year}
         super(MonthlyStats, self).__init__(*args, **kwargs)
-            
-            
+
+    def get_data(self):
+        return [
+            (month, [
+                (aggregation.title, [
+                    aggregation.get_val(
+                        make_key((('month', month), ('town', town.pk)),)
+                    ) for town in Town.objects.all()
+                ]) for aggregation in self.aggregations
+            ]) for month in xrange(1, 13)
+        ]
