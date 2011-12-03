@@ -56,6 +56,7 @@ MIDDLEWARE_CLASSES = (
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
+    'django.contrib.messages.context_processors.messages',
     'django.core.context_processors.i18n',
     'django.core.context_processors.request',
     'django.core.context_processors.media',
@@ -85,6 +86,7 @@ STATICFILES_DIRS = (
 STATIC_URL = '/static/'
 
 INSTALLED_APPS = (
+    'grappelli.dashboard',
     'grappelli',
     # core django apps
     'django.contrib.admin',
@@ -114,5 +116,7 @@ SKIP_SOUTH_TESTS = True
 # logout the user on browser close
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-GRAPPELLI_ADMIN_TITLE = gettext(u'Informační systém BorIS - Elektronická databáze pro evidenci výkonů v sociálních službách')
+# GRAPPELLI RELATED ------------------------------------------------------------
 
+GRAPPELLI_ADMIN_TITLE = gettext(u'Informační systém BorIS - Elektronická databáze pro evidenci výkonů v sociálních službách')
+GRAPPELLI_INDEX_DASHBOARD = 'boris.dashboard.CustomIndexDashboard'

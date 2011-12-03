@@ -1,0 +1,42 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Výkazy" %}{% endblock %}
+
+<!-- BREADCRUMBS -->
+{% block breadcrumbs %}
+        <div id="breadcrumbs">
+             <a href="../">{% trans "Home" %}</a> &rsaquo;
+             <a href=".">{% trans "Výkazy" %}</a>
+        </div>
+{% endblock %}
+
+<!-- CONTENT -->
+{% block content %}
+    <div class="container-flexible" id="tabs">
+        <ul>
+            {% for tab, form in tabs.items %}
+            <li><a href="#tabs-{{ forloop.counter }}">{{ tab.title }}</a></li> 
+            {% endfor %}
+        </ul>
+        {% for tab, form in tabs.items %}
+        <div class="form-container" id="tabs-{{ forloop.counter }}">
+            <form method="POST" action="{{ tab.get_absolute_url }}">
+                {% include "form_snippet.html" %}
+                <div class="module footer">
+                    <ul class="submit-row">
+                        <li class="submit-button-container"><input type="submit" value="{% trans 'Save' %}" name="_continue" /></li>
+                    </ul><br clear="all" />
+                </div>
+
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <script type="text/javascript">
+        django.jQuery(document).ready(function () {
+            django.jQuery('#tabs').tabs(); 
+        });
+    </script>
+{% endblock %}

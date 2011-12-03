@@ -113,7 +113,6 @@ class Aggregation(object):
                     total=self.get_annotation_func())
 
             for value in vals:
-                print value
                 key = make_key((k, value[k]) for k in self.get_grouping())
                 self.__values[key] += value['total'] or 0
 

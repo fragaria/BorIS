@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime, date
+from datetime import datetime
 
 from django.conf.urls.defaults import patterns, url
 from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.forms import Textarea
-from django.forms.extras.widgets import SelectDateWidget
 from django.http import HttpResponse
 from django.utils.translation import ugettext as _
 from django.utils.dateformat import format
@@ -19,6 +18,7 @@ from boris.clients.models import Client, Drug, Town, RiskyBehavior, Anamnesis,\
 from boris.clients.forms import ReadOnlyWidget
 from boris.clients.views import add_note, delete_note
 from boris.services.admin import EncounterInline
+from boris.utils.widgets import SplitDateWidget
 
 class DrugUsageInline(admin.StackedInline):
     model = DrugUsage
@@ -192,19 +192,8 @@ class ClientAdmin(admin.ModelAdmin):
             extra_context=extra_context)
 
 
-    class SelectBornDateWidget(SelectDateWidget):
-        """
-        Extend to avoid passing attrs to formfield_overrides - because
-        if we did, admin would work only when web servery is just refreshed,
-        on second view, it would be wasted :(
-        """
-        def __init__(self, attrs=None, required=False):
-            super(ClientAdmin.SelectBornDateWidget, self).__init__(
-                attrs=attrs, required=required,
-                years=reversed(range(date.today().year - 100, date.today().year + 1))
-            )
     formfield_overrides = {
-        models.DateField: {'widget': SelectBornDateWidget},
+        models.DateField: {'widget': SplitDateWidget},
     }
 
     def get_urls(self):
