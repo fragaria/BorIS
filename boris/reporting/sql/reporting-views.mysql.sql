@@ -23,8 +23,11 @@ CREATE OR REPLACE VIEW reporting_searchservice AS
 (
 SELECT
 	services_service.id,
+	services_service.id as service_id,
+	services_encounter.id as encounter_id,
 	django_content_type.model AS content_type_model,
 	services_encounter.where_id AS town_id,
+	services_encounter.person_id AS person_id,
 	YEAR(services_encounter.performed_on) AS year,
 	MONTH(services_encounter.performed_on) AS month
 FROM

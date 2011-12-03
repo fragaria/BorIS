@@ -1,12 +1,13 @@
 from django.db import models
 
 from boris.clients.models import Person, Town, Drug
+from boris.services.models.core import Service, Encounter
 
 class SearchEncounter(models.Model):
     """
     An augmented model corresponding to a database view.
     """
-    person = models.ForeignKey(Person, related_name='+')
+    person = models.ForeignKey(Person, related_name='+se')
     performed_on = models.DateField()
     town = models.ForeignKey(Town, related_name='+')
     is_client = models.BooleanField()
@@ -22,6 +23,9 @@ class SearchEncounter(models.Model):
         managed = False
 
 class SearchService(models.Model):
+    service = models.ForeignKey(Service, related_name='+ss')
+    person = models.ForeignKey(Person, related_name='+ss')
+    encounter = models.ForeignKey(Encounter, related_name='+ss')
     content_type_model = models.CharField(max_length=255)
     performed_on = models.DateField()
     town = models.ForeignKey(Town, related_name='+')

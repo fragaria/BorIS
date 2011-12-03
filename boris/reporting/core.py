@@ -88,10 +88,13 @@ class Aggregation(object):
     model = None
 
     def __init__(self, report):
+        self._filtering = self._prepare_expression(self.filtering)
+        self._excludes = self._prepare_expression(self.excludes)
+        
         if hasattr(report, 'additional_filtering'):
-            self.filtering.update(report.additional_filtering)
+            self._filtering = self._filtering & self._prepare_expression(report.additional_filtering)
         if hasattr(report, 'additional_excludes'):
-            self.excludes.update(report.additional_excludes)
+            self._excludes = self._excludes & self._prepare_expression(report.additional_excludes)
         self.report = report
         
     def _values(self):
@@ -99,20 +102,29 @@ class Aggregation(object):
             qset = self.model.objects.all()
 
             if self.filtering:
-                qset = qset.filter(**self.filtering)
+                qset = qset.filter(self._filtering)
 
             if self.excludes:
-                qset = qset.exclude(**self.excludes)
+                qset = qset.exclude(self._excludes)
 
             self.__values = defaultdict(int)
+            
             vals = qset.values(*self.get_grouping()).order_by().annotate(
                     total=self.get_annotation_func())
 
             for value in vals:
+                print value
                 key = make_key((k, value[k]) for k in self.get_grouping())
-                self.__values[key] += value['total']
+                self.__values[key] += value['total'] or 0
 
         return self.__values
+    
+    def _prepare_expression(self, qset_expression):
+        from django.db.models import Q
+        if isinstance(qset_expression, dict):
+            return Q(**qset_expression)
+        else:
+            return qset_expression
 
     def get_annotation_func(self):
         """
@@ -133,6 +145,7 @@ class Aggregation(object):
         Return value for given column.
         """
         return self._values()[key]
+    
 
 class SumAggregation(Aggregation):
     """

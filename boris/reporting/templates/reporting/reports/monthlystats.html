@@ -9,7 +9,7 @@
                 <tr>
                     <th>{{ month.0 }}/{{ report.year }}</th>
                     {% for column in report.columns %}
-                        <th>{{ column }}</th>
+                        <th>{{ column.title }}</th>
                     {% endfor %}
                 </tr>
                 {% for aggregation in month.1 %}
