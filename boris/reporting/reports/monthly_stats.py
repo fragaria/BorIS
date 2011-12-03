@@ -7,7 +7,7 @@ Created on 27.11.2011
 from boris.classification import SEXES, PRIMARY_DRUG_APPLICATION_TYPES
 from boris.clients.models import Town
 from boris.reporting.core import Aggregation, Report,\
-    SumAggregation, hashdict
+    SumAggregation, make_key
 from boris.reporting.models import SearchEncounter, SearchService
 
 class AllClientEncounters(Aggregation):
@@ -82,7 +82,7 @@ class MonthlyStats(Report):
             (month, [
                 (aggregation.title, [
                     aggregation.get_val(
-                        hashdict((('month', month), ('town', town.pk)),)
+                        make_key((('month', month), ('town', town.pk)),)
                     ) for town in Town.objects.all()
                 ]) for aggregation in self.aggregations
             ]) for month in xrange(1, 13)

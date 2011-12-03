@@ -8,6 +8,9 @@ class hashdict(dict):
     def __hash__(self):
         return hash(tuple(sorted(self.items())))
 
+def make_key(expression):
+    return hashdict(expression)
+
 
 class ReportResponse(HttpResponse):
     """
@@ -17,7 +20,7 @@ class ReportResponse(HttpResponse):
     def __init__(self, report_class, *args, **kwargs):
         report = report_class(*args, **kwargs)
         super(ReportResponse, self).__init__(content=report.render(), mimetype=report.mime)
-        self['Content-Disposition'] = 'attachment; filename=report.csv'
+        self['Content-Disposition'] = 'attachment; filename=report.xls'
 
 
 class Report(object):
@@ -63,6 +66,9 @@ class Report(object):
         if not hasattr(self, '_aggregations'):
             self._aggregations = [aggregation_class(self) for aggregation_class in self.aggregation_classes]
         return self._aggregations
+    
+    def get_data(self, *args, **kwargs):
+        raise NotImplementedError
 
 
 class Aggregation(object):
@@ -84,8 +90,7 @@ class Aggregation(object):
         if hasattr(report, 'additional_excludes'):
             self.excludes.update(report.additional_excludes)
         self.report = report
-        self.grouping = report.grouping
-
+        
     def _values(self):
         if not hasattr(self, '__values'):
             qset = self.model.objects.all()
@@ -97,21 +102,28 @@ class Aggregation(object):
                 qset = qset.exclude(**self.excludes)
 
             self.__values = defaultdict(int)
-            vals = qset.values(*self.grouping).order_by().annotate(
-                    total=self._annotation_func())
+            vals = qset.values(*self.get_grouping()).order_by().annotate(
+                    total=self.get_annotation_func())
 
             for value in vals:
-                key = hashdict((k, value[k]) for k in self.grouping)
+                key = make_key((k, value[k]) for k in self.get_grouping())
                 self.__values[key] += value['total']
 
         return self.__values
 
-    def _annotation_func(self):
+    def get_annotation_func(self):
         """
         Function to create reporting on. Defaults to COUNT.
         """
         from django.db.models import Count
         return Count(self.aggregation_dbcol, distinct=True)
+    
+    def get_grouping(self):
+        """
+        Overload this to enable custom grouping (different from report's) for
+        Aggregation subclass
+        """
+        return self.report.grouping
 
     def get_val(self, key):
         """
@@ -123,6 +135,6 @@ class SumAggregation(Aggregation):
     """
     Row that uses SUM instead of COUNT to aggregate.
     """
-    def _annotation_func(self):
+    def get_annotation_func(self):
         from django.db.models import Sum
         return Sum(self.aggregation_dbcol)
