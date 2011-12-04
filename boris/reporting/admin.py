@@ -4,7 +4,8 @@ from django.conf.urls.defaults import url, patterns
 
 from django.utils.translation import ugettext_lazy as _
 
-from boris.reporting.reports.monthly_stats import MonthlyStats
+from boris.reporting.reports.monthly_stats import MonthlyStatsByTown,\
+    MonthlyStatsByDistrict
 from boris.reporting.core import ReportResponse
 from boris.reporting.forms import MonthlyStatsForm
 
@@ -20,21 +21,26 @@ class ReportingInterfaceTab(object):
         `report`       Report subclass
         `form`         Form used to get parameters for report initiation
     """
-    title = _(u'Výkaz')
     report = None
     form = None
-    
+
     @classmethod
     def get_urlname(cls):
         return 'reporting_%s' % cls.__name__.lower()
+
+    def get_title(self):
+        return self.report.title
     
     def get_absolute_url(self):
         return reverse(self.get_urlname())
     
 
-class MonthlyStatsTab(ReportingInterfaceTab):
-    title = _(u'Měsíční statistiky')
-    report = MonthlyStats
+class MonthlyStatsByTownTab(ReportingInterfaceTab):
+    report = MonthlyStatsByTown
+    form = MonthlyStatsForm
+
+class MonthlyStatsByDistrictTab(ReportingInterfaceTab):
+    report = MonthlyStatsByDistrict
     form = MonthlyStatsForm
 
 
@@ -49,7 +55,8 @@ class ReportingInterface(object):
     `tabs` attribute.
     """
     tabs = (
-        MonthlyStatsTab,
+        MonthlyStatsByTownTab,
+        MonthlyStatsByDistrictTab,
     )
     
     def __call__(self, request, tab_class=None):
@@ -61,7 +68,7 @@ class ReportingInterface(object):
                     return ReportResponse(t.report, **form.cleaned_data)
             else:
                 form = t.form()
-            ctx['tabs'][t] = form
+            ctx['tabs'][t()] = form
         
         return render(request, 'reporting/interface.html', ctx)
     

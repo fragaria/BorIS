@@ -8,7 +8,7 @@ from django.db.models import Q
 
 from boris.classification import SEXES, PRIMARY_DRUG_APPLICATION_TYPES, ANONYMOUS_TYPES,\
     DISEASES
-from boris.clients.models import Town
+from boris.clients.models import Town, District
 from boris.reporting.core import Aggregation, Report,\
     SumAggregation, make_key
 from boris.reporting.models import SearchEncounter, SearchService
@@ -165,8 +165,8 @@ class IssuedSyringes(SumAggregation, ServiceAggregation):
     aggregation_dbcol = 'service__harmreduction__out_count'
 
 
-class MonthlyStats(Report):
-    title = u'Měsíční statistiky'
+class MonthlyStatsByTown(Report):
+    title = u'Měsíční statistiky podle města'
     grouping = ('month', 'town')
     aggregation_classes = [
         AllClientEncounters,
@@ -198,16 +198,39 @@ class MonthlyStats(Report):
     def __init__(self, year, *args, **kwargs):
         self.year = year
         self.additional_filtering = {'year': year}
-        super(MonthlyStats, self).__init__(*args, **kwargs)
+        super(MonthlyStatsByTown, self).__init__(*args, **kwargs)
+        
+    def months(self):
+        return (month for month in xrange(1, 13))
 
     def get_data(self):
-        data = [
+        return [
             (month, [
                 (aggregation.title, [
                     aggregation.get_val(
                         make_key((('month', month), ('town', town.pk)),)
                     ) for town in self.columns
                 ]) for aggregation in self.aggregations
-            ]) for month in xrange(1, 13)
+            ]) for month in self.months()
         ]
-        return data 
+    
+class MonthlyStatsByDistrict(MonthlyStatsByTown):
+    title = u'Měsíční statistiky podle okresu'
+    grouping = ('month', 'town__district')
+    
+    def _columns(self):
+        if not hasattr(self, '_cols'):
+            self._cols = [district for district in District.objects.all()]
+        return self._cols
+    columns = property(_columns)
+    
+    def get_data(self):
+        return [
+            (month, [
+                (aggregation.title, [
+                    aggregation.get_val(
+                        make_key((('month', month), ('town__district', district.pk)),)
+                    ) for district in self.columns
+                ]) for aggregation in self.aggregations
+            ]) for month in self.months()
+        ]

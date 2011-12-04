@@ -17,7 +17,7 @@
         <h1>{% trans "Výkazy" %}</h1>
         <ul>
             {% for tab, form in tabs.items %}
-            <li><a href="#tabs-{{ forloop.counter }}">{{ tab.title }}</a></li> 
+            <li><a href="#tabs-{{ forloop.counter }}">{{ tab.get_title }}</a></li> 
             {% endfor %}
         </ul>
         {% for tab, form in tabs.items %}
