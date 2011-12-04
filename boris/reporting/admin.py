@@ -1,23 +1,18 @@
-# -*- coding: utf-8 -*-
-
 from django.conf.urls.defaults import url, patterns
-
-from django.utils.translation import ugettext_lazy as _
+from django.contrib import admin
+from django.core.urlresolvers import reverse
+from django.shortcuts import render
+from django.template.defaultfilters import slugify
+from django.utils.functional import update_wrapper
 
 from boris.reporting.reports.monthly_stats import MonthlyStatsByTown,\
     MonthlyStatsByDistrict
 from boris.reporting.core import ReportResponse
 from boris.reporting.forms import MonthlyStatsForm
 
-from django.core.urlresolvers import reverse
-from django.template.defaultfilters import slugify
-from django.shortcuts import render
-
-
 class ReportingInterfaceTab(object):
     """
-    One tab of the interface. Requires 3 attributes to be set:
-        `title`        Tab's title
+    One tab of the interface. Requires 2 attributes to be set:
         `report`       Report subclass
         `form`         Form used to get parameters for report initiation
     """
@@ -35,19 +30,12 @@ class ReportingInterfaceTab(object):
         return reverse(self.get_urlname())
     
 
-class MonthlyStatsByTownTab(ReportingInterfaceTab):
-    report = MonthlyStatsByTown
-    form = MonthlyStatsForm
-
-class MonthlyStatsByDistrictTab(ReportingInterfaceTab):
-    report = MonthlyStatsByDistrict
-    form = MonthlyStatsForm
-
+def interfacetab_factory(ReportClass, FormClass):
+    return type(ReportClass.__name__ + 'Tab', (ReportingInterfaceTab,), {
+        'report': ReportClass, 'form': FormClass})
 
 class ReportingInterface(object):
     """
-    Class-based view for showing reporting interface.
-    
     Separate report forms are splitted to tabs in admin, this
     class handles management of these forms.
     
@@ -55,39 +43,60 @@ class ReportingInterface(object):
     `tabs` attribute.
     """
     tabs = (
-        MonthlyStatsByTownTab,
-        MonthlyStatsByDistrictTab,
+        interfacetab_factory(MonthlyStatsByTown, MonthlyStatsForm),
+        interfacetab_factory(MonthlyStatsByDistrict, MonthlyStatsForm)
     )
+
+
+class ReportingInterfaceHandler(object):
+    """Class-based view for showing reporting interface."""
     
     def __call__(self, request, tab_class=None):
-        ctx = {'tabs': {}}
-        for t in self.tabs:
-            if tab_class == t and request.method == 'POST':
-                form = t.form(request.POST)
-                if form.is_valid():
-                    return ReportResponse(t.report, **form.cleaned_data)
-            else:
-                form = t.form()
-            ctx['tabs'][t()] = form
+        interface = ReportingInterface()
+        tabs = {}
         
+        for t in interface.tabs:
+            tab = t()
+            if tab_class == t and request.method == 'POST':
+                form = tab.form(request.POST)
+                if form.is_valid():
+                    return ReportResponse(tab.report, **form.cleaned_data)
+            else:
+                form = tab.form()
+            tabs[tab] = form
+            
+        ctx = {'tabs': tabs, 'interface': interface}
         return render(request, 'reporting/interface.html', ctx)
     
     def get_urls(self):
         """
-        Returns all urls for interface. Each tab has it's own POST URL.
+        Returns all urls for interface. Each tab has it's own POST URL plus
+        there is one extra URL for base view.
         """
-        urlpatterns = patterns('boris.reporting.admin',
-            url('^$', 'interface', name='reporting_base')
+        def wrap(view, cacheable=False):
+            """
+            Utility to make our functions look like ModelAdmin bound ones.
+            This ensures that log-in related stuff will work as expected
+            and only admin users will be able to call our views.
+            """
+            def wrapper(*args, **kwargs):
+                return admin.site.admin_view(view, cacheable)(*args, **kwargs)
+            return update_wrapper(wrapper, view)
+        
+        interface = ReportingInterface()
+        
+        urlpatterns = patterns('',
+            url('^$', wrap(self.__call__, cacheable=True), name='reporting_base')
         )
         
-        for t in self.tabs:
-            urlpatterns += patterns('boris.reporting.admin',
-                url(r'^%s/$' % slugify(t.__name__), 'interface',
+        for t in interface.tabs:
+            urlpatterns += patterns('',
+                url(r'^%s/$' % slugify(t.__name__), wrap(self.__call__, cacheable=False),
                     kwargs={'tab_class': t}, name=t.get_urlname())
             )
         
         return urlpatterns, 'reporting', None
     urls = property(get_urls)
 
-interface = ReportingInterface()
+interface = ReportingInterfaceHandler()
 

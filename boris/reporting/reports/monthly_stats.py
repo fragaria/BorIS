@@ -5,6 +5,7 @@ Created on 27.11.2011
 @author: xaralis
 '''
 from django.db.models import Q
+from django.utils.translation import ugettext as _
 
 from boris.classification import SEXES, PRIMARY_DRUG_APPLICATION_TYPES, ANONYMOUS_TYPES,\
     DISEASES
@@ -18,34 +19,34 @@ class ServiceAggregation(Aggregation):   model = SearchService
 
 
 class AllClientEncounters(EncounterAggregation):
-    title = u'Počet klientů'
+    title = _(u'Počet klientů')
     aggregation_dbcol = 'person'
     filtering = {'is_client': True}
 
 
 class IvClientEncounters(AllClientEncounters):
-    title = u'z toho injekčních uživatelů drog'
+    title = _(u'z toho injekčních uživatelů drog')
     filtering = {'is_client': True, 'primary_drug_usage': PRIMARY_DRUG_APPLICATION_TYPES.IV}
 
 
 class MaleClientEncounters(AllClientEncounters):
-    title = u'Z toho mužů'
+    title = _(u'Z toho mužů')
     filtering = {'is_client': True, 'client_sex': SEXES.MALE}
 
 
 class NonUserClientEncounters(AllClientEncounters):
-    title = u'Z toho osob blízkých (sex. partneři)'
+    title = _(u'Z toho osob blízkých (sex. partneři)')
     filtering = {'is_client': True, 'primary_drug__isnull': True}
 
 
 class NonClients(EncounterAggregation):
-    title = u'Počet neuživatelů, kteří využili alespoň jednou služeb programu'
+    title = _(u'Počet neuživatelů, kteří využili alespoň jednou služeb programu')
     aggregation_dbcol = 'person'
     excludes = {'is_client': False}
     
 
 class Parents(NonClients):
-    title = u'Z toho rodiče'
+    title = _(u'Z toho rodiče')
     filtering = {
         'person__anonymous__drug_user_type': ANONYMOUS_TYPES.NON_USER_PARENT,
         'is_anonymous': True
@@ -53,18 +54,18 @@ class Parents(NonClients):
 
 
 class Practitioners(NonClients):
-    title = u'Z toho odborná veřejnost'
+    title = _(u'Z toho odborná veřejnost')
     filtering = {'is_practitioner': True}
 
 
 class AllAddresses(ServiceAggregation):
-    title = u'Počet oslovených'
+    title = _(u'Počet oslovených')
     aggregation_dbcol = 'id'
     filtering = {'content_type_model': 'address'}
 
 
 class AddressesDU(AllAddresses):
-    title = u'Z toho UD'
+    title = _(u'Z toho UD')
     filtering = {
         'content_type_model': 'address',
         'person__client__primary_drug__isnull': False
@@ -72,7 +73,7 @@ class AddressesDU(AllAddresses):
 
 
 class AddressesNonDU(AllAddresses):
-    title = 'Z toho neUD'
+    title = _('Z toho neUD')
     filtering = {
         'content_type_model': 'address',
         'person__client__primary_drug__isnull': True
@@ -80,7 +81,7 @@ class AddressesNonDU(AllAddresses):
 
 
 class DiseaseTestBase(ServiceAggregation):
-    title = u'Počet testů VHC'
+    title = _(u'Počet testů VHC')
     filtering = {
         'content_type_model': 'diseasetest',
         'service__diseasetest__disease': DISEASES.VHC 
@@ -90,7 +91,7 @@ disease_tests = []
 
 for key, title in DISEASES:
     attrs = {
-        'title': u'Počet testů %s' % title,
+        'title': _(u'Počet testů %s') % title,
         'filtering': {
             'content_type_model': 'diseasetest',
             'service__diseasetest__disease': key
@@ -101,35 +102,35 @@ for key, title in DISEASES:
     
     
 class EncounterCount(EncounterAggregation):
-    title = u'Počet kontaktů celkem'
+    title = _(u'Počet kontaktů celkem')
     
     
 class ClientEncounterCount(ServiceAggregation):
-    title = u'z toho s klienty, uživateli drog, přímý'
+    title = _(u'z toho s klienty, uživateli drog, přímý')
     aggregation_dbcol = 'encounter'
     filtering = {'person__client__pk__isnull': False}
     excludes = {'content_type_model': 'phonecounseling'}
     
     
 class PractitionerEncounterCount(EncounterCount):
-    title = u'z toho s odbornou veřejností'
+    title = _(u'z toho s odbornou veřejností')
     filtering = {'is_practitioner': True}
     
     
 class PhoneEncounterCount(EncounterCount):
-    title = u'z toho telefonický kontakt'
+    title = _(u'z toho telefonický kontakt')
     model = SearchService
     filtering = {'content_type_model': 'phonecounseling'}
     aggregation_dbcol = 'encounter'
     
     
 class FirstContactCount(ServiceAggregation):
-    title = u'Počet prvních kontaktů'
+    title = _(u'Počet prvních kontaktů')
     filtering = Q(content_type_model='incomeexamination') | Q(content_type_model='address')
     
 
 class FirstContactCountDU(FirstContactCount):
-    title = u'z toho s UD'
+    title = _(u'z toho s UD')
     filtering = (
         Q(person__client__primary_drug__isnull=False) &
         Q(content_type_model='incomeexamination')
@@ -140,7 +141,7 @@ class FirstContactCountDU(FirstContactCount):
     
     
 class FirstContactCountIV(FirstContactCount):
-    title = u'z toho nitrožilních UD'
+    title = _(u'z toho nitrožilních UD')
     filtering = (
         Q(person__client__primary_drug__isnull=False) &
         Q(content_type_model='incomeexamination')
@@ -151,22 +152,22 @@ class FirstContactCountIV(FirstContactCount):
     
     
 class HarmReductionCount(ServiceAggregation):
-    title = u'Počet výměn'
+    title = _(u'Počet výměn')
     filtering = {'content_type_model': 'harmreduction'}
     
 
 class GatheredSyringes(SumAggregation, ServiceAggregation):
-    title = u'Počet přijatého inj. materiálu'
+    title = _(u'Počet přijatého inj. materiálu')
     aggregation_dbcol = 'service__harmreduction__in_count'
     
     
 class IssuedSyringes(SumAggregation, ServiceAggregation):
-    title = u'Počet vydaného inj. materiálu'
+    title = _(u'Počet vydaného inj. materiálu')
     aggregation_dbcol = 'service__harmreduction__out_count'
 
 
 class MonthlyStatsByTown(Report):
-    title = u'Měsíční statistiky podle města'
+    title = _(u'Měsíční statistiky podle města')
     grouping = ('month', 'town')
     aggregation_classes = [
         AllClientEncounters,
@@ -215,7 +216,7 @@ class MonthlyStatsByTown(Report):
         ]
     
 class MonthlyStatsByDistrict(MonthlyStatsByTown):
-    title = u'Měsíční statistiky podle okresu'
+    title = _(u'Měsíční statistiky podle okresu')
     grouping = ('month', 'town__district')
     
     def _columns(self):
