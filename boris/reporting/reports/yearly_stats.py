@@ -18,11 +18,14 @@ class YearlyStatsByMonth(MonthlyStatsByTown):
         return self.months()
     columns = property(_columns)
     
+    def get_sum(self, aggregation):
+        return sum(aggregation.get_val(make_key((('month', month),))) for month in self.columns)
+    
     def get_data(self):
         return [
             (aggregation.title, [
                 aggregation.get_val(
                     make_key((('month', month),))
                 ) for month in self.columns
-            ]) for aggregation in self.aggregations
+            ] + [self.get_sum(aggregation)]) for aggregation in self.aggregations
         ]
