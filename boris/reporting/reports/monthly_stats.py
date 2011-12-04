@@ -225,6 +225,12 @@ class MonthlyStatsByDistrict(MonthlyStatsByTown):
         return self._cols
     columns = property(_columns)
     
+    def get_sum(self, aggregation, month):
+        return sum(
+            aggregation.get_val(make_key((('month', month), ('town__district', district.pk)),))
+            for district in self.columns
+        )
+    
     def get_data(self):
         return [
             (month, [
@@ -232,6 +238,6 @@ class MonthlyStatsByDistrict(MonthlyStatsByTown):
                     aggregation.get_val(
                         make_key((('month', month), ('town__district', district.pk)),)
                     ) for district in self.columns
-                ]) for aggregation in self.aggregations
+                ] + [self.get_sum(aggregation, month)]) for aggregation in self.aggregations
             ]) for month in self.months()
         ]
