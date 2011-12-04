@@ -7,6 +7,7 @@
             {% for column in report.columns %}
                 <th>{{ column }}</th>
             {% endfor %}
+            <th>Celkem</th>
         </tr>
         {% for title, values in report.get_data %}
             <tr>

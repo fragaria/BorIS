@@ -203,6 +203,13 @@ class MonthlyStatsByTown(Report):
         
     def months(self):
         return (month for month in xrange(1, 13))
+    
+    def get_sum(self, aggregation, month):
+        return sum(
+            aggregation.get_val(make_key((('month', month), ('town', town.pk)),))
+            for town in self.columns
+        )
+        
 
     def get_data(self):
         return [
@@ -211,7 +218,7 @@ class MonthlyStatsByTown(Report):
                     aggregation.get_val(
                         make_key((('month', month), ('town', town.pk)),)
                     ) for town in self.columns
-                ]) for aggregation in self.aggregations
+                ] + [self.get_sum(aggregation, month)]) for aggregation in self.aggregations
             ]) for month in self.months()
         ]
     
