@@ -10,17 +10,19 @@ from boris.reporting.core import make_key
 
 from .monthly_stats import MonthlyStatsByTown
 
-class YearlyStatsByTown(MonthlyStatsByTown):
-    title = _(u'Roční statistiky podle města')
-    grouping = ('year', 'town')
+class YearlyStatsByMonth(MonthlyStatsByTown):
+    title = _(u'Roční statistiky po měsících')
+    grouping = ('month',)
+    
+    def _columns(self):
+        return self.months()
+    columns = property(_columns)
     
     def get_data(self):
         return [
-            (year, [
-                (aggregation.title, [
-                    aggregation.get_val(
-                        make_key((('year', year), ('town', town.pk)),)
-                    ) for town in self.columns
-                ]) for aggregation in self.aggregations
-            ]) for year in [self.year,]
+            (aggregation.title, [
+                aggregation.get_val(
+                    make_key((('month', month),))
+                ) for month in self.columns
+            ]) for aggregation in self.aggregations
         ]

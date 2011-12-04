@@ -1,0 +1,20 @@
+{% extends "reporting/reports/monthlystatsbytown.html" %}
+
+{% block body %}
+    <table>
+        <tr>
+            <th>{% block col_title %}{{ report.year }}{% endblock %}</th>
+            {% for column in report.columns %}
+                <th>{{ column }}</th>
+            {% endfor %}
+        </tr>
+        {% for title, values in report.get_data %}
+            <tr>
+                <td>{{ title }}</td>
+                {% for val in values %}
+                    <td>{{ val }}</td>        
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

@@ -4,6 +4,7 @@
         <title>{{ report }}</title>
     </head>
     <body>
+        {% block body %}
         {% for month in report.get_data %}
             <table>
                 <tr>
@@ -23,5 +24,6 @@
             </table> 
             <br />
         {% endfor %}
+        {% endblock %}
     </body>
 </html>
