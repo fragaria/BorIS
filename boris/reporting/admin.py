@@ -5,10 +5,11 @@ from django.shortcuts import render
 from django.template.defaultfilters import slugify
 from django.utils.functional import update_wrapper
 
-from boris.reporting.reports.monthly_stats import MonthlyStatsByTown,\
-    MonthlyStatsByDistrict
 from boris.reporting.core import ReportResponse
 from boris.reporting.forms import MonthlyStatsForm
+from boris.reporting.reports.monthly_stats import MonthlyStatsByTown,\
+    MonthlyStatsByDistrict
+from boris.reporting.reports.yearly_stats import YearlyStatsByTown
 
 class ReportingInterfaceTab(object):
     """
@@ -44,7 +45,8 @@ class ReportingInterface(object):
     """
     tabs = (
         interfacetab_factory(MonthlyStatsByTown, MonthlyStatsForm),
-        interfacetab_factory(MonthlyStatsByDistrict, MonthlyStatsForm)
+        interfacetab_factory(MonthlyStatsByDistrict, MonthlyStatsForm),
+        interfacetab_factory(YearlyStatsByTown, MonthlyStatsForm)
     )
 
 

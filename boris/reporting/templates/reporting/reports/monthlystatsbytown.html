@@ -7,7 +7,7 @@
         {% for month in report.get_data %}
             <table>
                 <tr>
-                    <th>{{ month.0 }}/{{ report.year }}</th>
+                    <th>{% block col_title %}{{ month.0 }}/{{ report.year }}{% endblock %}</th>
                     {% for column in report.columns %}
                         <th>{{ column.title }}</th>
                     {% endfor %}
