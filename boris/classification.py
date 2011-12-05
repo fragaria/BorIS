@@ -127,6 +127,6 @@ ANONYMOUS_TYPES = Choices(
     (1, 'NON_USER', u'neuživatel'),
     (2, 'NON_IV', u'neIV'),
     (3, 'IV', u'IV'),
-    (4, 'NON_USER_PARENT', u'neuživatel - rodič')
+    (4, 'NON_USER_PARENT', u'rodič')
 )
 

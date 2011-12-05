@@ -21,7 +21,7 @@
     "pk": 2,
     "fields": {
       "content_type": ["clients", "anonymous"],
-      "title": "žena - neIV"
+      "title": "žena - rodič"
     }
   },
   {
@@ -30,7 +30,7 @@
     "fields": {
       "person_ptr": 2,
       "sex": 1,
-      "drug_user_type": 2
+      "drug_user_type": 4
     }
   },
   {
@@ -38,7 +38,7 @@
     "pk": 3,
     "fields": {
       "content_type": ["clients", "anonymous"],
-      "title": "žena - IV"
+      "title": "žena - neIV"
     }
   },
   {
@@ -47,7 +47,7 @@
     "fields": {
       "person_ptr": 3,
       "sex": 1,
-      "drug_user_type": 3
+      "drug_user_type": 2
     }
   },
   {
@@ -55,7 +55,7 @@
     "pk": 4,
     "fields": {
       "content_type": ["clients", "anonymous"],
-      "title": "muž - neuživatel"
+      "title": "žena - IV"
     }
   },
   {
@@ -63,8 +63,8 @@
     "pk": 4,
     "fields": {
       "person_ptr": 4,
-      "sex": 2,
-      "drug_user_type": 1
+      "sex": 1,
+      "drug_user_type": 3
     }
   },
   {
@@ -72,7 +72,7 @@
     "pk": 5,
     "fields": {
       "content_type": ["clients", "anonymous"],
-      "title": "muž - neIV"
+      "title": "muž - neuživatel"
     }
   },
   {
@@ -81,7 +81,7 @@
     "fields": {
       "person_ptr": 5,
       "sex": 2,
-      "drug_user_type": 2
+      "drug_user_type": 1
     }
   },
   {
@@ -89,7 +89,7 @@
     "pk": 6,
     "fields": {
       "content_type": ["clients", "anonymous"],
-      "title": "muž - IV"
+      "title": "muž - rodič"
     }
   },
   {
@@ -97,6 +97,40 @@
     "pk": 6,
     "fields": {
       "person_ptr": 6,
+      "sex": 2,
+      "drug_user_type": 4
+    }
+  },
+  {
+    "model": "clients.person",
+    "pk": 7,
+    "fields": {
+      "content_type": ["clients", "anonymous"],
+      "title": "muž - neIV"
+    }
+  },
+  {
+    "model": "clients.anonymous",
+    "pk": 7,
+    "fields": {
+      "person_ptr": 7,
+      "sex": 2,
+      "drug_user_type": 2
+    }
+  },
+  {
+    "model": "clients.person",
+    "pk": 8,
+    "fields": {
+      "content_type": ["clients", "anonymous"],
+      "title": "muž - IV"
+    }
+  },
+  {
+    "model": "clients.anonymous",
+    "pk": 8,
+    "fields": {
+      "person_ptr": 8,
       "sex": 2,
       "drug_user_type": 3
     }
