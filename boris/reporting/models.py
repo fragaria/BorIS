@@ -7,8 +7,7 @@ class SearchEncounter(models.Model):
     """
     An augmented model corresponding to a database view.
     """
-    person = models.ForeignKey(Person, related_name='+se')
-    performed_on = models.DateField()
+    person = models.ForeignKey(Person, related_name='+')
     town = models.ForeignKey(Town, related_name='+')
     is_client = models.BooleanField()
     is_anonymous = models.BooleanField()
@@ -23,16 +22,13 @@ class SearchEncounter(models.Model):
         managed = False
 
 class SearchService(models.Model):
-    service = models.ForeignKey(Service, related_name='+ss')
-    person = models.ForeignKey(Person, related_name='+ss')
-    encounter = models.ForeignKey(Encounter, related_name='+ss')
+    service = models.ForeignKey(Service, related_name='+')
+    person = models.ForeignKey(Person, related_name='+')
+    encounter = models.ForeignKey(Encounter, related_name='+')
     content_type_model = models.CharField(max_length=255)
-    performed_on = models.DateField()
     town = models.ForeignKey(Town, related_name='+')
     month = models.SmallIntegerField()
     year = models.SmallIntegerField()
 
     class Meta:
         managed = False
-
-
