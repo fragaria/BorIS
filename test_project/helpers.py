@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.utils.functional import curry
 from django.contrib.contenttypes.models import ContentType
 
-from boris.clients.models import Client, Town, Region, District
+from boris.clients.models import Client, Town, Region, District, Drug
 from boris.clients.classification import SEXES
 
 
@@ -12,8 +12,9 @@ def get_testing_string_enum(ModelClass, title, *args, **kwargs):
 get_testing_region = curry(get_testing_string_enum, Region, 'Stredocesky')
 get_testing_district = curry(get_testing_string_enum, District, 'Rakovnik', region=get_testing_region())
 get_testing_town = curry(get_testing_string_enum, Town, 'Rakovnik', district=get_testing_district())
+get_testing_drug = curry(get_testing_string_enum, Drug, 'Piko')
 
-def get_testing_client(code='borivoj22'):
+def get_testing_client(code='borivoj22', cdata=None):
     client_data = {
          'code': code,
          'sex': SEXES.MALE,
@@ -21,6 +22,9 @@ def get_testing_client(code='borivoj22'):
          'town': get_testing_town(),
          'content_type': ContentType.objects.get_for_model(Client)
     }
+
+    if cdata:
+        client_data.update(cdata)
 
     return Client.objects.create(**client_data)
 
