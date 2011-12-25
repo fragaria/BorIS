@@ -66,18 +66,29 @@ class AllAddresses(ServiceAggregation):
 
 class AddressesDU(AllAddresses):
     title = _(u'Z toho UD')
-    filtering = {
-        'content_type_model': 'address',
-        'person__client__primary_drug__isnull': False
-    }
+    filtering = (
+        Q(content_type_model='address')
+    ) & (
+        Q(person__client__primary_drug__isnull=False) |
+        Q(person__anonymous__drug_user_type__in=(ANONYMOUS_TYPES.IV,
+            ANONYMOUS_TYPES.NON_IV))
+    )
 
 
 class AddressesNonDU(AllAddresses):
     title = _('Z toho neUD')
-    filtering = {
-        'content_type_model': 'address',
-        'person__client__primary_drug__isnull': True
-    }
+    filtering = (
+        Q(content_type_model='address')
+    ) & (
+        (
+            # The second literal is true for all anonyms and practitioners,
+            # hence the first one.
+            Q(person__client__code__isnull=False) &
+            Q(person__client__primary_drug__isnull=True)
+        ) |
+        Q(person__anonymous__drug_user_type__in=(ANONYMOUS_TYPES.NON_USER,
+            ANONYMOUS_TYPES.NON_USER_PARENT))
+    )
 
 
 class DiseaseTestBase(ServiceAggregation):
