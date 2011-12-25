@@ -137,7 +137,13 @@ class PhoneEncounterCount(EncounterCount):
 
 class FirstContactCount(ServiceAggregation):
     title = _(u'Počet prvních kontaktů')
-    filtering = Q(content_type_model='incomeexamination') | Q(content_type_model='address')
+    filtering = (
+        Q(person__client__code__isnull=False) &
+        Q(content_type_model='incomeexamination')
+    ) | (
+        Q(person__anonymous__drug_user_type__isnull=False) &
+        Q(content_type_model='address')
+    )
 
 
 class FirstContactCountDU(FirstContactCount):
@@ -154,7 +160,7 @@ class FirstContactCountDU(FirstContactCount):
 class FirstContactCountIV(FirstContactCount):
     title = _(u'z toho nitrožilních UD')
     filtering = (
-        Q(person__client__primary_drug__isnull=False) &
+        Q(person__client__primary_drug_usage=PRIMARY_DRUG_APPLICATION_TYPES.IV) &
         Q(content_type_model='incomeexamination')
     ) | (
         Q(person__anonymous__drug_user_type=ANONYMOUS_TYPES.IV) &
