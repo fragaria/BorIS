@@ -18,7 +18,6 @@ from boris.reporting.reports.monthly_stats import AllClientEncounters,\
         FirstContactCountDU, FirstContactCountIV, HarmReductionCount,\
         GatheredSyringes, IssuedSyringes, disease_tests
 from boris.reporting.core import make_key
-from boris.reporting.management import install_views
 
 from test_project.helpers import get_testing_town, get_testing_client,\
         get_testing_drug, get_testing_practitioner
@@ -49,7 +48,6 @@ class TestEncounterAggregations(DestructiveDatabaseTestCase):
     """ Mostly encounter aggregations are tested here. """
 
     def setUp(self):
-        install_views(None, None, 1) # TODO: find out why this is not done automatically
         self.town1 = get_testing_town()
         self.town2 = get_testing_town()
         self.drug = get_testing_drug()
@@ -141,7 +139,6 @@ class TestServiceAggregations(DestructiveDatabaseTestCase):
     """ Mostly service aggregations are tested here. """
 
     def setUp(self):
-        install_views(None, None, 1) # TODO: find out why this is not done automatically
         self.town1 = get_testing_town()
         self.town2 = get_testing_town()
         self.drug = get_testing_drug()
@@ -250,7 +247,6 @@ class TestMixedAggregations(DestructiveDatabaseTestCase):
     """
 
     def setUp(self):
-        install_views(None, None, 1)
         self.town1 = get_testing_town()
         self.town2 = get_testing_town()
 
