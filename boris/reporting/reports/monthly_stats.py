@@ -42,8 +42,8 @@ class NonUserClientEncounters(AllClientEncounters):
 class NonClients(EncounterAggregation):
     title = _(u'Počet neuživatelů, kteří využili alespoň jednou služeb programu')
     aggregation_dbcol = 'person'
-    excludes = {'is_client': False}
-    
+    filtering = {'is_client': False}
+
 
 class Parents(NonClients):
     title = _(u'Z toho rodiče')
@@ -84,7 +84,7 @@ class DiseaseTestBase(ServiceAggregation):
     title = _(u'Počet testů VHC')
     filtering = {
         'content_type_model': 'diseasetest',
-        'service__diseasetest__disease': DISEASES.VHC 
+        'service__diseasetest__disease': DISEASES.VHC
     }
 
 disease_tests = []
@@ -99,35 +99,35 @@ for key, title in DISEASES:
     }
     DiseaseTestClass = type(str('DiseaseTest%s' % title), (DiseaseTestBase,), attrs)
     disease_tests.append(DiseaseTestClass)
-    
-    
+
+
 class EncounterCount(EncounterAggregation):
     title = _(u'Počet kontaktů celkem')
-    
-    
+
+
 class ClientEncounterCount(ServiceAggregation):
     title = _(u'z toho s klienty, uživateli drog, přímý')
     aggregation_dbcol = 'encounter'
     filtering = {'person__client__pk__isnull': False}
     excludes = {'content_type_model': 'phonecounseling'}
-    
-    
+
+
 class PractitionerEncounterCount(EncounterCount):
     title = _(u'z toho s odbornou veřejností')
     filtering = {'is_practitioner': True}
-    
-    
+
+
 class PhoneEncounterCount(EncounterCount):
     title = _(u'z toho telefonický kontakt')
     model = SearchService
     filtering = {'content_type_model': 'phonecounseling'}
     aggregation_dbcol = 'encounter'
-    
-    
+
+
 class FirstContactCount(ServiceAggregation):
     title = _(u'Počet prvních kontaktů')
     filtering = Q(content_type_model='incomeexamination') | Q(content_type_model='address')
-    
+
 
 class FirstContactCountDU(FirstContactCount):
     title = _(u'z toho s UD')
@@ -138,8 +138,8 @@ class FirstContactCountDU(FirstContactCount):
         Q(person__anonymous__drug_user_type__in=(ANONYMOUS_TYPES.IV, ANONYMOUS_TYPES.NON_IV)) &
         Q(content_type_model='address')
     )
-    
-    
+
+
 class FirstContactCountIV(FirstContactCount):
     title = _(u'z toho nitrožilních UD')
     filtering = (
@@ -149,18 +149,18 @@ class FirstContactCountIV(FirstContactCount):
         Q(person__anonymous__drug_user_type=ANONYMOUS_TYPES.IV) &
         Q(content_type_model='address')
     )
-    
-    
+
+
 class HarmReductionCount(ServiceAggregation):
     title = _(u'Počet výměn')
     filtering = {'content_type_model': 'harmreduction'}
-    
+
 
 class GatheredSyringes(SumAggregation, ServiceAggregation):
     title = _(u'Počet přijatého inj. materiálu')
     aggregation_dbcol = 'service__harmreduction__in_count'
-    
-    
+
+
 class IssuedSyringes(SumAggregation, ServiceAggregation):
     title = _(u'Počet vydaného inj. materiálu')
     aggregation_dbcol = 'service__harmreduction__out_count'
@@ -189,7 +189,7 @@ class MonthlyStatsByTown(Report):
         GatheredSyringes,
         IssuedSyringes
     ]
-    
+
     def _columns(self):
         if not hasattr(self, '_cols'):
             self._cols = [town for town in Town.objects.all()]
@@ -200,16 +200,16 @@ class MonthlyStatsByTown(Report):
         self.year = year
         self.additional_filtering = {'year': year}
         super(MonthlyStatsByTown, self).__init__(*args, **kwargs)
-        
+
     def months(self):
         return (month for month in xrange(1, 13))
-    
+
     def get_sum(self, aggregation, month):
         return sum(
             aggregation.get_val(make_key((('month', month), ('town', town.pk)),))
             for town in self.columns
         )
-        
+
 
     def get_data(self):
         return [
@@ -221,23 +221,23 @@ class MonthlyStatsByTown(Report):
                 ] + [self.get_sum(aggregation, month)]) for aggregation in self.aggregations
             ]) for month in self.months()
         ]
-    
+
 class MonthlyStatsByDistrict(MonthlyStatsByTown):
     title = _(u'Měsíční statistiky podle okresu')
     grouping = ('month', 'town__district')
-    
+
     def _columns(self):
         if not hasattr(self, '_cols'):
             self._cols = [district for district in District.objects.all()]
         return self._cols
     columns = property(_columns)
-    
+
     def get_sum(self, aggregation, month):
         return sum(
             aggregation.get_val(make_key((('month', month), ('town__district', district.pk)),))
             for district in self.columns
         )
-    
+
     def get_data(self):
         return [
             (month, [
