@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.utils.functional import curry
 from django.contrib.contenttypes.models import ContentType
 
-from boris.clients.models import Client, Town, Region, District, Drug
+from boris.clients.models import Client, Town, Region, District, Drug, Practitioner
 from boris.clients.classification import SEXES
 
 
@@ -28,6 +28,15 @@ def get_testing_client(code='borivoj22', cdata=None):
 
     return Client.objects.create(**client_data)
 
+def get_testing_practitioner(last_name='Sroubek'):
+    practitioner_data = {
+         'last_name': last_name,
+         'sex': SEXES.MALE,
+         'town': get_testing_town(),
+         'content_type': ContentType.objects.get_for_model(Practitioner)
+    }
+
+    return Practitioner.objects.create(**practitioner_data)
 
 def get_testing_user(username='strachkvas'):
     user_data = {
