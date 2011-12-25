@@ -1,13 +1,16 @@
-from random import choice, randint
+from random import choice, randint, random
 from datetime import datetime, timedelta
 
 from django.contrib.contenttypes.models import ContentType
 
-from boris.classification import SEXES
-from boris.clients.models import Anonymous, Client, Town, District, Region
+from boris.classification import SEXES, PRIMARY_DRUG_APPLICATION_TYPES,\
+        EMPLOYMENT_TYPES, EDUCATION_LEVELS, DISEASES
+from boris.clients.models import Anonymous, Client, Town, District, Region,\
+        Drug, Practitioner
 from boris.services.models import Encounter, Service
 from boris.services.models import HarmReduction, IncomeExamination,\
-        InformationService, ContactWork, IndividualCounseling, Address
+        InformationService, ContactWork, IndividualCounseling, Address,\
+        PhoneCounseling, DiseaseTest
 
 """
 Fills the database with the amount of data as expected in production.
@@ -18,22 +21,26 @@ and then run reset() and/or generate().
 """
 
 CLIENT_CNT = 400
+PRACTITIONER_CNT = 20
 TOWN_CNT = 14
 DISTRICT_CNT = 6
 REGION_CNT = 3
 CLIENT_ENCOUNTERS_CNT = 4000
 ANONYMOUS_ENCOUNTERS_CNT = 1000
+PRACTITIONER_ENCOUNTERS_CNT = 1000
 BASE_YEAR = datetime(year=2011, month=1, day=1)
 SERVICE_CNT = 1000 # number of times each service is performed
 
 def reset():
     print "Cleaning up the database..."
+    Drug.objects.all().delete()
     Client.objects.all().delete()
     Town.objects.all().delete()
     District.objects.all().delete()
     Region.objects.all().delete()
     Encounter.objects.all().delete()
     Service.objects.all().delete()
+    Practitioner.objects.all().delete()
 
 def generate():
     print "Generating Regions..."
@@ -65,21 +72,42 @@ def generate():
         t.save()
 
     print "Generating Clients..."
+    drug = Drug.objects.create(title='hero')
     towns = list(Town.objects.all())
     ctype = ContentType.objects.get_by_natural_key('clients', 'client')
     for i in xrange(1, CLIENT_CNT + 1):
+        client_drug = choice([None, drug])
         fields = {
             "code": "CODE%s" % i,
             "sex": choice([SEXES.FEMALE, SEXES.MALE]),
             "town": choice(towns),
             "title": 'Client%i' % i,
             "content_type": ctype,
+            "primary_drug": client_drug,
+            "primary_drug_usage": choice([
+                PRIMARY_DRUG_APPLICATION_TYPES.IV,
+                PRIMARY_DRUG_APPLICATION_TYPES.NON_IV,
+            ]),
         }
         c = Client(**fields)
         c.save()
 
+    print "Generating Practitioners..."
+    towns = list(Town.objects.all())
+    ctype = ContentType.objects.get_by_natural_key('clients', 'practitioner')
+    for i in xrange(1, PRACTITIONER_CNT + 1):
+        fields = {
+            "sex": choice([SEXES.FEMALE, SEXES.MALE]),
+            "town": choice(towns),
+            "last_name": 'sroubek%i' % i,
+            "content_type": ctype,
+        }
+        p = Practitioner(**fields)
+        p.save()
+
     clients = list(Client.objects.all())
     anonyms = list(Anonymous.objects.all())
+    practitioners = list(Practitioner.objects.all())
     days = [BASE_YEAR + timedelta(days=i) for i in xrange(1, 350)]
 
     print "Generating Encounters..."
@@ -106,10 +134,24 @@ def generate():
         anonymous_encounters.append(e)
     person_encounters = client_encounters + anonymous_encounters
 
+    practitioner_encounters = []
+    for i in xrange(1, PRACTITIONER_ENCOUNTERS_CNT + 1):
+        fields = {
+            "person": choice(practitioners),
+            "performed_on": choice(days),
+            "where": choice(towns),
+        }
+        e = Encounter(**fields)
+        e.save()
+        practitioner_encounters.append(e)
+
+    person_encounters = client_encounters + anonymous_encounters + practitioner_encounters
+
     print "Generating Services..."
     ctypes = {}
     for model in ('harmreduction', 'incomeexamination',
-            'informationservice', 'contactwork', 'individualcounseling', 'address'):
+            'informationservice', 'contactwork', 'individualcounseling',
+            'phonecounseling', 'address', 'diseasetest'):
         ctypes[model] = ContentType.objects.get_by_natural_key('services', model)
     for i in xrange(1, SERVICE_CNT + 1):
         fields = {
@@ -161,4 +203,19 @@ def generate():
             "encounter": choice(person_encounters),
         }
         s = Address(**fields)
+        s.save()
+
+        fields = {
+            "content_type": ctypes['phonecounseling'],
+            "encounter": choice(person_encounters),
+        }
+        s = PhoneCounseling(**fields)
+        s.save()
+
+        fields = {
+            "content_type": ctypes['diseasetest'],
+            "encounter": choice(person_encounters),
+            "disease": choice(list(DISEASES))[0],
+        }
+        s = DiseaseTest(**fields)
         s.save()
