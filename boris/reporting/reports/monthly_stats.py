@@ -11,7 +11,7 @@ from boris.classification import SEXES, PRIMARY_DRUG_APPLICATION_TYPES, ANONYMOU
     DISEASES
 from boris.clients.models import Town, District
 from boris.reporting.core import Aggregation, Report,\
-    SumAggregation, make_key
+    SumAggregation, make_key, SuperAggregation, NonDistinctCountAggregation
 from boris.reporting.models import SearchEncounter, SearchService
 
 class EncounterAggregation(Aggregation): model = SearchEncounter
@@ -39,13 +39,22 @@ class NonUserClientEncounters(AllClientEncounters):
     filtering = {'is_client': True, 'primary_drug__isnull': True}
 
 
-class NonClients(EncounterAggregation):
+class NonClients(SuperAggregation):
     title = _(u'Počet neuživatelů, kteří využili alespoň jednou služeb programu')
+
+    class AnonymousAggregation(NonDistinctCountAggregation, EncounterAggregation):
+        aggregation_dbcol = 'person'
+        filtering = {'is_anonymous': True}
+
+    class PractitionerAggregation(EncounterAggregation):
+        aggregation_dbcol = 'person'
+        filtering = {'is_practitioner': True}
+
+    aggregation_classes = (AnonymousAggregation, PractitionerAggregation)
+
+
+class Parents(EncounterAggregation):
     aggregation_dbcol = 'person'
-    filtering = {'is_client': False}
-
-
-class Parents(NonClients):
     title = _(u'Z toho rodiče')
     filtering = {
         'person__anonymous__drug_user_type': ANONYMOUS_TYPES.NON_USER_PARENT,
@@ -53,7 +62,8 @@ class Parents(NonClients):
     }
 
 
-class Practitioners(NonClients):
+class Practitioners(EncounterAggregation):
+    aggregation_dbcol = 'person'
     title = _(u'Z toho odborná veřejnost')
     filtering = {'is_practitioner': True}
 

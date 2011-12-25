@@ -69,7 +69,7 @@ class Report(object):
         if not hasattr(self, '_aggregations'):
             self._aggregations = [aggregation_class(self) for aggregation_class in self.aggregation_classes]
         return self._aggregations
-    
+
     def get_data(self, *args, **kwargs):
         raise NotImplementedError
 
@@ -90,13 +90,13 @@ class Aggregation(object):
     def __init__(self, report):
         self._filtering = self._prepare_expression(self.filtering)
         self._excludes = self._prepare_expression(self.excludes)
-        
+
         if hasattr(report, 'additional_filtering'):
             self._filtering = self._filtering & self._prepare_expression(report.additional_filtering)
         if hasattr(report, 'additional_excludes'):
             self._excludes = self._excludes & self._prepare_expression(report.additional_excludes)
         self.report = report
-        
+
     def _values(self):
         if not hasattr(self, '_vals'):
             qset = self.model.objects.all()
@@ -108,16 +108,16 @@ class Aggregation(object):
                 qset = qset.exclude(self._excludes)
 
             self._vals = defaultdict(int)
-            
+
             vals = qset.values(*self.get_grouping()).order_by().annotate(
                     total=self.get_annotation_func())
 
             for value in vals:
                 key = make_key((k, value[k]) for k in self.get_grouping())
                 self._vals[key] += value['total'] or 0
-                
+
         return self._vals
-    
+
     def _prepare_expression(self, qset_expression):
         from django.db.models import Q
         if isinstance(qset_expression, dict):
@@ -131,7 +131,7 @@ class Aggregation(object):
         """
         from django.db.models import Count
         return Count(self.aggregation_dbcol, distinct=True)
-    
+
     def get_grouping(self):
         """
         Overload this to enable custom grouping (different from report's) for
@@ -144,7 +144,7 @@ class Aggregation(object):
         Return value for given column.
         """
         return self._values()[key]
-    
+
 
 class SumAggregation(Aggregation):
     """
@@ -153,3 +153,23 @@ class SumAggregation(Aggregation):
     def get_annotation_func(self):
         from django.db.models import Sum
         return Sum(self.aggregation_dbcol)
+
+class NonDistinctCountAggregation(Aggregation):
+    """
+    Row that uses COUNT without distinct to annotate.
+    """
+    def get_annotation_func(self):
+        from django.db.models import Count
+        return Count(self.aggregation_dbcol, distinct=False)
+
+class SuperAggregation(Aggregation):
+    """ Provides an 'aggregation' (sum) over aggregations. """
+    aggregation_classes = []
+
+    def __init__(self, report):
+        self.aggregations = [
+            aggr_class(report) for aggr_class in self.aggregation_classes
+        ]
+
+    def get_val(self, key):
+        return sum(aggregation.get_val(key) for aggregation in self.aggregations)
