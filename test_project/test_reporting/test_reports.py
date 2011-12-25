@@ -4,13 +4,19 @@ from copy import copy
 
 from django.contrib.contenttypes.models import ContentType
 
-from boris.classification import SEXES, PRIMARY_DRUG_APPLICATION_TYPES, ANONYMOUS_TYPES
+from boris.classification import SEXES, PRIMARY_DRUG_APPLICATION_TYPES,\
+        ANONYMOUS_TYPES, DISEASES
 from boris.clients.models import Client, Town, Anonymous, Practitioner
 from boris.services.models.core import Encounter, Service
+from boris.services.models.basic import Address, PhoneCounseling,\
+        HarmReduction, IncomeExamination, DiseaseTest
 from boris.reporting.reports.monthly_stats import AllClientEncounters,\
         MaleClientEncounters, IvClientEncounters, NonUserClientEncounters,\
         NonClients, Parents, Practitioners, AllAddresses, AddressesDU,\
-        AddressesNonDU
+        AddressesNonDU, EncounterCount, ClientEncounterCount,\
+        PractitionerEncounterCount, PhoneEncounterCount, FirstContactCount,\
+        FirstContactCountDU, FirstContactCountIV, HarmReductionCount,\
+        GatheredSyringes, IssuedSyringes, disease_tests
 from boris.reporting.core import make_key
 from boris.reporting.management import install_views
 
@@ -23,16 +29,16 @@ def create_encounter(person, date, town=None):
 
     return Encounter.objects.create(person=person, performed_on=date, where=town)
 
-def create_service(service_class_name, person, date, town, kwargs_dict={}):
+def create_service(service_class, person, date, town, kwargs_dict={}):
     e = Encounter.objects.create(person=person, performed_on=date, where=town)
     service_kwargs = copy(kwargs_dict)
     service_kwargs.update({
         'encounter': e,
         'content_type': ContentType.objects.get_by_natural_key('services',
-            service_class_name),
+            service_class.__name__),
     })
 
-    return Service.objects.create(**service_kwargs)
+    return service_class.objects.create(**service_kwargs)
 
 
 class MockMonthlyReport(object):
@@ -40,6 +46,7 @@ class MockMonthlyReport(object):
     additional_filtering = {'year': 2011}
 
 class TestEncounterAggregations(DatabaseTestCase):
+  """ Mostly encounter aggregations are tested here. """
 
   def setUp(self):
       install_views(None, None, 1) # TODO: find out why this is not done automatically
@@ -92,8 +99,6 @@ class TestEncounterAggregations(DatabaseTestCase):
       create_encounter(self.practitioner2, date(2011, 11, 1), self.town1)
       create_encounter(self.practitioner2, date(2011, 12, 1), self.town1)
 
-      # services
-
       self.report = MockMonthlyReport()
 
 
@@ -140,7 +145,10 @@ class TestEncounterAggregations(DatabaseTestCase):
       self.assert_equals(aggregation.get_val(key), 2)
 
 
+
 class TestServiceAggregations(DatabaseTestCase):
+    """ Mostly service aggregations are tested here. """
+
     def setUp(self):
         install_views(None, None, 1) # TODO: find out why this is not done automatically
         self.town1 = get_testing_town()
@@ -158,13 +166,35 @@ class TestServiceAggregations(DatabaseTestCase):
         self.practitioner1 = get_testing_practitioner('sroubek')
 
         # services - addresses
-        create_service('Address', self.client1, date(2011, 11, 1), self.town1)
-        create_service('Address', self.client1, date(2011, 11, 1), self.town2)
-        create_service('Address', self.client1, date(2011, 12, 1), self.town2)
-        create_service('Address', self.client3, date(2011, 11, 1), self.town1)
-        create_service('Address', self.anonym1, date(2011, 11, 1), self.town1)
-        create_service('Address', self.anonym1, date(2011, 11, 1), self.town1)
-        create_service('Address', self.anonym2, date(2011, 11, 1), self.town1)
+        create_service(Address, self.client1, date(2011, 11, 1), self.town1)
+        create_service(Address, self.client1, date(2011, 11, 1), self.town2)
+        create_service(Address, self.client1, date(2011, 12, 1), self.town2)
+        create_service(Address, self.client3, date(2011, 11, 1), self.town1)
+        create_service(Address, self.anonym1, date(2011, 11, 1), self.town1)
+        create_service(Address, self.anonym1, date(2011, 11, 1), self.town1)
+        create_service(Address, self.anonym2, date(2011, 11, 1), self.town1)
+
+        # services - income examinations
+        create_service(IncomeExamination, self.client1, date(2011, 11, 1), self.town1)
+        create_service(IncomeExamination, self.client3, date(2011, 11, 1), self.town1)
+        create_service(IncomeExamination, self.client2, date(2011, 12, 1), self.town1)
+
+        # services - harm reduction
+        hr_kwargs = {
+            'in_count': 5,
+            'out_count': 10,
+        }
+        create_service(HarmReduction, self.client1, date(2011, 11, 1), self.town1, hr_kwargs)
+        create_service(HarmReduction, self.client2, date(2011, 11, 1), self.town1, hr_kwargs)
+        create_service(HarmReduction, self.client2, date(2011, 11, 1), self.town1, hr_kwargs)
+        create_service(HarmReduction, self.client1, date(2011, 12, 1), self.town1, hr_kwargs)
+        create_service(HarmReduction, self.client1, date(2011, 11, 1), self.town2, hr_kwargs)
+
+        # services - disease tests
+        create_service(DiseaseTest, self.client1, date(2011, 11, 1), self.town1, {'disease': DISEASES.VHC})
+        create_service(DiseaseTest, self.client1, date(2011, 12, 1), self.town1, {'disease': DISEASES.VHC})
+        create_service(DiseaseTest, self.client1, date(2011, 11, 1), self.town2, {'disease': DISEASES.VHC})
+        create_service(DiseaseTest, self.client1, date(2011, 11, 1), self.town2, {'disease': DISEASES.HIV})
 
         self.report = MockMonthlyReport()
 
@@ -190,3 +220,100 @@ class TestServiceAggregations(DatabaseTestCase):
         key = make_key({'month': 11, 'town': self.town1.pk})
         self.assert_equals(aggregation.get_val(key), 2)
 
+    def test_first_contact_count(self):
+        aggregation = FirstContactCount(self.report)
+        key = make_key({'month': 11, 'town': self.town1.pk})
+        self.assert_equals(aggregation.get_val(key), 5)
+
+    def test_first_contact_count_du(self):
+        aggregation = FirstContactCountDU(self.report)
+        key = make_key({'month': 11, 'town': self.town1.pk})
+        self.assert_equals(aggregation.get_val(key), 3)
+
+    def test_first_contact_count_iv(self):
+        aggregation = FirstContactCountIV(self.report)
+        key = make_key({'month': 11, 'town': self.town1.pk})
+        self.assert_equals(aggregation.get_val(key), 2)
+
+    def test_harm_reduction_count(self):
+        aggregation = HarmReductionCount(self.report)
+        key = make_key({'month': 11, 'town': self.town1.pk})
+        self.assert_equals(aggregation.get_val(key), 3)
+
+    def test_gathered_syringes(self):
+        aggregation = GatheredSyringes(self.report)
+        key = make_key({'month': 11, 'town': self.town1.pk})
+        self.assert_equals(aggregation.get_val(key), 15)
+
+    def test_issued_syringes(self):
+        aggregation = IssuedSyringes(self.report)
+        key = make_key({'month': 11, 'town': self.town1.pk})
+        self.assert_equals(aggregation.get_val(key), 30)
+
+    def test_disease_vhc(self):
+        self.assert_in('DiseaseTestVHC', (dtest.__name__ for dtest in disease_tests))
+        for disease_test in disease_tests:
+            if disease_test.__name__ == 'DiseaseTestVHC':
+                aggregation = disease_test(self.report)
+                break
+        key = make_key({'month': 11, 'town': self.town1.pk})
+        self.assert_equals(aggregation.get_val(key), 1)
+
+
+class TestMixedAggregations(DatabaseTestCase):
+    """
+    In these aggregations, both encounters and services are taken into account.
+    """
+
+    def setUp(self):
+        install_views(None, None, 1)
+        self.town1 = get_testing_town()
+        self.town2 = get_testing_town()
+
+        # persons
+        self.client1 = get_testing_client('c1', {'town': self.town1})
+        self.client2 = get_testing_client('c2', {'town': self.town1})
+        self.anonym = Anonymous.objects.get(sex=SEXES.MALE,
+            drug_user_type=ANONYMOUS_TYPES.IV)
+        self.practitioner = get_testing_practitioner('sroubek1')
+
+        # services
+        create_service(Address, self.client1, date(2011, 11, 1), self.town1)
+        create_service(Address, self.client2, date(2011, 11, 1), self.town1)
+        create_service(Address, self.client1, date(2011, 12, 1), self.town1)
+        create_service(Address, self.client1, date(2011, 11, 1), self.town2)
+        create_service(Address, self.anonym, date(2011, 11, 1), self.town1)
+        create_service(Address, self.practitioner, date(2011, 11, 1), self.town1)
+        create_service(Address, self.practitioner, date(2011, 11, 1), self.town2)
+        create_service(PhoneCounseling, self.practitioner, date(2011, 11, 1), self.town1)
+        create_service(PhoneCounseling, self.client1, date(2011, 11, 1), self.town1)
+        create_service(PhoneCounseling, self.anonym, date(2011, 11, 1), self.town1)
+
+        self.report = MockMonthlyReport()
+
+    def tearDown(self):
+        Client.objects.all().delete()
+        Town.objects.all().delete()
+        Encounter.objects.all().delete()
+        Practitioner.objects.all().delete()
+        Service.objects.all().delete()
+
+    def test_encounter_count(self):
+        aggregation = EncounterCount(self.report)
+        key = make_key({'month': 11, 'town': self.town1.pk})
+        self.assert_equals(aggregation.get_val(key), 7)
+
+    def test_client_encounter_count(self):
+        aggregation = ClientEncounterCount(self.report)
+        key = make_key({'month': 11, 'town': self.town1.pk})
+        self.assert_equals(aggregation.get_val(key), 4)
+
+    def test_practitioner_encounter_count(self):
+        aggregation = PractitionerEncounterCount(self.report)
+        key = make_key({'month': 11, 'town': self.town1.pk})
+        self.assert_equals(aggregation.get_val(key), 2)
+
+    def test_phone_encounter_count(self):
+        aggregation = PhoneEncounterCount(self.report)
+        key = make_key({'month': 11, 'town': self.town1.pk})
+        self.assert_equals(aggregation.get_val(key), 3)
