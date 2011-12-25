@@ -91,9 +91,7 @@ class AddressesNonDU(AllAddresses):
         Q(content_type_model='address')
     ) & (
         (
-            # The second literal is true for all anonyms and practitioners,
-            # hence the first one.
-            Q(person__client__code__isnull=False) &
+            Q(is_client=True) & # the next atom is always True for anonyms
             Q(person__client__primary_drug__isnull=True)
         ) |
         Q(person__anonymous__drug_user_type__in=(ANONYMOUS_TYPES.NON_USER,
@@ -151,7 +149,7 @@ class FirstContactCount(ServiceAggregation):
         Q(person__client__code__isnull=False) &
         Q(content_type_model='incomeexamination')
     ) | (
-        Q(person__anonymous__drug_user_type__isnull=False) &
+        Q(is_anonymous=True) &
         Q(content_type_model='address')
     )
 

@@ -31,6 +31,9 @@ class SearchService(models.Model):
     town = models.ForeignKey(Town, related_name='+', on_delete=DO_NOTHING)
     month = models.SmallIntegerField()
     year = models.SmallIntegerField()
+    is_client = models.BooleanField()
+    is_anonymous = models.BooleanField()
+    is_practitioner = models.BooleanField()
 
     class Meta:
         managed = False
