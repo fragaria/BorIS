@@ -1,13 +1,13 @@
 from datetime import date
-from djangosanetesting.cases import DatabaseTestCase
+from djangosanetesting.cases import DestructiveDatabaseTestCase
 from copy import copy
 
 from django.contrib.contenttypes.models import ContentType
 
 from boris.classification import SEXES, PRIMARY_DRUG_APPLICATION_TYPES,\
         ANONYMOUS_TYPES, DISEASES
-from boris.clients.models import Client, Town, Anonymous, Practitioner
-from boris.services.models.core import Encounter, Service
+from boris.clients.models import Anonymous
+from boris.services.models.core import Encounter
 from boris.services.models.basic import Address, PhoneCounseling,\
         HarmReduction, IncomeExamination, DiseaseTest
 from boris.reporting.reports.monthly_stats import AllClientEncounters,\
@@ -45,7 +45,7 @@ class MockMonthlyReport(object):
     grouping = ('month', 'town')
     additional_filtering = {'year': 2011}
 
-class TestEncounterAggregations(DatabaseTestCase):
+class TestEncounterAggregations(DestructiveDatabaseTestCase):
     """ Mostly encounter aggregations are tested here. """
 
     def setUp(self):
@@ -101,14 +101,6 @@ class TestEncounterAggregations(DatabaseTestCase):
 
         self.report = MockMonthlyReport()
 
-
-    def tearDown(self): # TODO: why is this necessary? (NOTE: it is still faster than DestructiveDatabaseTestCase)
-        Client.objects.all().delete()
-        Town.objects.all().delete()
-        Encounter.objects.all().delete()
-        Practitioner.objects.all().delete()
-        Service.objects.all().delete()
-
     def test_all_client_encounters(self):
         aggregation = AllClientEncounters(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
@@ -145,7 +137,7 @@ class TestEncounterAggregations(DatabaseTestCase):
         self.assert_equals(aggregation.get_val(key), 2)
 
 
-class TestServiceAggregations(DatabaseTestCase):
+class TestServiceAggregations(DestructiveDatabaseTestCase):
     """ Mostly service aggregations are tested here. """
 
     def setUp(self):
@@ -196,13 +188,6 @@ class TestServiceAggregations(DatabaseTestCase):
         create_service(DiseaseTest, self.client1, date(2011, 11, 1), self.town2, {'disease': DISEASES.HIV})
 
         self.report = MockMonthlyReport()
-
-    def tearDown(self):
-        Client.objects.all().delete()
-        Town.objects.all().delete()
-        Encounter.objects.all().delete()
-        Practitioner.objects.all().delete()
-        Service.objects.all().delete()
 
     def test_all_addresses(self):
         aggregation = AllAddresses(self.report)
@@ -259,7 +244,7 @@ class TestServiceAggregations(DatabaseTestCase):
         self.assert_equals(aggregation.get_val(key), 1)
 
 
-class TestMixedAggregations(DatabaseTestCase):
+class TestMixedAggregations(DestructiveDatabaseTestCase):
     """
     In these aggregations, both encounters and services are taken into account.
     """
@@ -289,13 +274,6 @@ class TestMixedAggregations(DatabaseTestCase):
         create_service(PhoneCounseling, self.anonym, date(2011, 11, 1), self.town1)
 
         self.report = MockMonthlyReport()
-
-    def tearDown(self):
-        Client.objects.all().delete()
-        Town.objects.all().delete()
-        Encounter.objects.all().delete()
-        Practitioner.objects.all().delete()
-        Service.objects.all().delete()
 
     def test_encounter_count(self):
         aggregation = EncounterCount(self.report)
