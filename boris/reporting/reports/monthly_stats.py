@@ -58,7 +58,6 @@ class Parents(EncounterAggregation):
     title = _(u'Z toho rodiče')
     filtering = {
         'person__anonymous__drug_user_type': ANONYMOUS_TYPES.NON_USER_PARENT,
-        'is_anonymous': True
     }
 
 
@@ -127,7 +126,7 @@ class EncounterCount(EncounterAggregation):
 class ClientEncounterCount(ServiceAggregation):
     title = _(u'z toho s klienty, uživateli drog, přímý')
     aggregation_dbcol = 'encounter'
-    filtering = {'person__client__pk__isnull': False}
+    filtering = {'is_client': True}
     excludes = {'content_type_model': 'phonecounseling'}
 
 
@@ -136,9 +135,8 @@ class PractitionerEncounterCount(EncounterCount):
     filtering = {'is_practitioner': True}
 
 
-class PhoneEncounterCount(EncounterCount):
+class PhoneEncounterCount(ServiceAggregation):
     title = _(u'z toho telefonický kontakt')
-    model = SearchService
     filtering = {'content_type_model': 'phonecounseling'}
     aggregation_dbcol = 'encounter'
 
@@ -146,7 +144,7 @@ class PhoneEncounterCount(EncounterCount):
 class FirstContactCount(ServiceAggregation):
     title = _(u'Počet prvních kontaktů')
     filtering = (
-        Q(person__client__code__isnull=False) &
+        Q(is_client=True) &
         Q(content_type_model='incomeexamination')
     ) | (
         Q(is_anonymous=True) &
@@ -200,8 +198,11 @@ class MonthlyStatsByTown(Report):
         NonUserClientEncounters,
         IvClientEncounters,
         NonClients,
+        Parents,
         Practitioners,
         AllAddresses,
+        AddressesDU,
+        AddressesNonDU,
     ] + disease_tests + [
         EncounterCount,
         ClientEncounterCount,
@@ -227,14 +228,13 @@ class MonthlyStatsByTown(Report):
         super(MonthlyStatsByTown, self).__init__(*args, **kwargs)
 
     def months(self):
-        return (month for month in xrange(1, 13))
+        return xrange(1, 13)
 
     def get_sum(self, aggregation, month):
         return sum(
             aggregation.get_val(make_key((('month', month), ('town', town.pk)),))
             for town in self.columns
         )
-
 
     def get_data(self):
         return [

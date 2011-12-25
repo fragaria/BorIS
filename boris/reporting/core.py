@@ -101,10 +101,10 @@ class Aggregation(object):
         if not hasattr(self, '_vals'):
             qset = self.model.objects.all()
 
-            if self.filtering:
+            if self._filtering:
                 qset = qset.filter(self._filtering)
 
-            if self.excludes:
+            if self._excludes:
                 qset = qset.exclude(self._excludes)
 
             self._vals = defaultdict(int)
@@ -114,6 +114,7 @@ class Aggregation(object):
 
             for value in vals:
                 key = make_key((k, value[k]) for k in self.get_grouping())
+                # non-existent entries return None, hence "or 0"
                 self._vals[key] += value['total'] or 0
 
         return self._vals

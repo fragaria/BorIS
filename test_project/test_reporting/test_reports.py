@@ -279,7 +279,7 @@ class TestMixedAggregations(DestructiveDatabaseTestCase):
     def test_client_encounter_count(self):
         aggregation = ClientEncounterCount(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
-        self.assert_equals(aggregation.get_val(key), 4)
+        self.assert_equals(aggregation.get_val(key), 2)
 
     def test_practitioner_encounter_count(self):
         aggregation = PractitionerEncounterCount(self.report)
