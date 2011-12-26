@@ -16,11 +16,11 @@
     <div class="container-flexible" id="tabs">
         <h1>{% trans "Výkazy" %}</h1>
         <ul>
-            {% for tab, form in tabs.items %}
+            {% for tab, form in tabs %}
             <li><a href="#tabs-{{ forloop.counter }}">{{ tab.get_title }}</a></li> 
             {% endfor %}
         </ul>
-        {% for tab, form in tabs.items %}
+        {% for tab, form in tabs %}
         <div class="form-container" id="tabs-{{ forloop.counter }}">
             <form method="POST" action="{{ tab.get_absolute_url }}">
                 {% include "form_snippet.html" %}

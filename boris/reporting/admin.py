@@ -67,7 +67,7 @@ class ReportingInterfaceHandler(object):
                 form = tab.form()
             tabs[tab] = form
 
-        ctx = {'tabs': tabs, 'interface': interface}
+        ctx = {'tabs': sorted(tabs.items()), 'interface': interface}
         return render(request, 'reporting/interface.html', ctx)
 
     def get_urls(self):
