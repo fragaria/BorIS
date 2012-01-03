@@ -64,8 +64,12 @@ class Town(StringEnum):
         verbose_name = _(u'Město')
         verbose_name_plural = _(u'Města')
 
+    @staticmethod
+    def autocomplete_search_fields():
+        return ['title__istartswith',]
+
     def __unicode__(self):
-        return u'%s (%s)' % (self.title, unicode(self.district))
+        return u'%s (%s)' % (self.title, unicode(self.district.title))
 
 
 class Person(TimeStampedModel, AdminLinkMixin):
