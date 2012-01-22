@@ -51,9 +51,9 @@ class EncounterAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {'fields': (('person', 'performed_on', 'where'), 'performed_by')}),
     )
-    raw_id_fields = ('where',)
+    raw_id_fields = ('where', 'person')
     autocomplete_lookup_fields = {
-        'fk': ['where',]
+        'fk': ['where', 'person']
     }
 
     def formfield_for_dbfield(self, db_field, **kwargs):

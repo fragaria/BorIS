@@ -12,8 +12,8 @@ from django.utils.dateformat import format
 from django.utils.formats import get_format
 from django.utils.html import escape, escapejs
 
-from boris.clients.models import Client, Drug, Town, RiskyBehavior, Anamnesis,\
-     DrugUsage, RiskyManners, Region, District, DiseaseTest, Anonymous,\
+from boris.clients.models import Client, Drug, Town, RiskyBehavior, Anamnesis, \
+     DrugUsage, RiskyManners, Region, District, DiseaseTest, Anonymous, \
     Practitioner
 from boris.clients.forms import ReadOnlyWidget
 from boris.clients.views import add_note, delete_note
@@ -26,9 +26,9 @@ class DrugUsageInline(admin.StackedInline):
     fieldsets = (
         (None, {'fields': (
             ('drug', 'application', 'is_primary'),
-            ('frequency', ),
+            ('frequency',),
             ('first_try_age', 'first_try_iv_age', 'first_try_application'),
-            ('was_first_illegal', ),
+            ('was_first_illegal',),
             ('note')
         )}),
     )
@@ -76,9 +76,9 @@ class AnamnesisAdmin(admin.ModelAdmin):
             ('been_cured_before', 'been_cured_currently'),
         )}),
     )
-    raw_id_fields = ('filled_where',)
+    raw_id_fields = ('filled_where', 'client')
     autocomplete_lookup_fields = {
-        'fk': ['filled_where',]
+        'fk': ['filled_where', 'client']
     }
 
     inlines = (DiseaseTestInline, DrugUsageInline, RiskyMannersInline)
@@ -116,8 +116,7 @@ class AnamnesisAdmin(admin.ModelAdmin):
             kwargs['widget'] = ReadOnlyWidget(cid, Client.objects.get(pk=cid))
             kwargs['initial'] = cid
             return db_field.formfield(**kwargs)
-        else:
-            return super(AnamnesisAdmin, self).formfield_for_dbfield(db_field, **kwargs)
+        return super(AnamnesisAdmin, self).formfield_for_dbfield(db_field, **kwargs)
 
     def response_add(self, request, obj, post_url_continue='../%s/'):
         """
@@ -155,9 +154,9 @@ class PractitionerAdmin(admin.ModelAdmin):
     )
     raw_id_fields = ('town',)
     autocomplete_lookup_fields = {
-        'fk': ['town',]
+        'fk': ['town', ]
     }
-    ordering = ('last_name', )
+    ordering = ('last_name',)
     change_form_template = 'admin/clients/person/change_form.html'
     inlines = (EncounterInline,)
 
@@ -178,7 +177,7 @@ class ClientAdmin(admin.ModelAdmin):
     )
     raw_id_fields = ('town',)
     autocomplete_lookup_fields = {
-        'fk': ['town',]
+        'fk': ['town', ]
     }
     readonly_fields = (u'anamnesis_link', 'first_contact_verbose', 'last_contact_verbose')
     inlines = (EncounterInline,)
