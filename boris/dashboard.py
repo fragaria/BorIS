@@ -11,40 +11,52 @@ class CustomIndexDashboard(Dashboard):
     """
     Custom index dashboard for www.
     """
-    
+
     def init_with_context(self, context):
         site_name = get_admin_site_name(context)
-        
-        # append an app list module for "Applications"
-        self.children.append(modules.AppList(
-            _(u'Hlavní'),
+        user = context['request'].user
+
+        self.children.append(modules.ModelList(
+            _(u'Databáze osob'),
             collapsible=False,
             column=1,
-            exclude=('django.contrib.*',),
+            models=('boris.clients.models.Client', 'boris.clients.models.Practitioner'),
         ))
-        
-        # append an app list module for "Administration"
+
         self.children.append(modules.ModelList(
-            _(u'Administrace'),
+            _(u'Rychlé akce'),
+            collapsible=False,
             column=1,
-            collapsible=True,
-            css_classes=('collapse closed',),
-            models=('django.contrib.*',),
+            models=(
+                'boris.services.models.core.Encounter',
+                'boris.clients.models.Anamnesis',
+                'boris.other.models.SyringeCollection'
+            ),
         ))
-        
+
+        if user.is_superuser:
+            # append an app list module for "Administration"
+            self.children.append(modules.ModelList(
+                _(u'Administrace'),
+                column=1,
+                collapsible=True,
+                css_classes=('collapse closed',),
+        ))
+
         # append another link list module for "support".
         self.children.append(modules.LinkList(
-            _(u'Výkazy'),
+            _(u'Výstupy'),
             column=2,
+            collapsible=False,
             children=[
                 {
-                    'title': _(u'Základní rozhraní'),
+                    'title': _(u'Vytvořit výkaz'),
                     'url': reverse('reporting_base'),
                     'external': False,
                 },
             ]
         ))
-        
+
         # append a recent actions module
         self.children.append(modules.RecentActions(
             _('Recent Actions'),
