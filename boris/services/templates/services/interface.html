@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n services %}
 
 <div id="service-interface">
 <fieldset class="module">
@@ -22,7 +22,7 @@
             <div class="column span-flexible">
                 <select id="service-selector">
                     {% for s in service_list %}
-                        <option value="{{ s.class_name }}">{{ s.service.title }}</option>
+                        {% render_service_option s encounter %}
                     {% endfor %}
                 </select>
                 <button onclick="ui.loadForm(); return false;" style="margin-left: 20px;">{% trans "OK" %}</button>

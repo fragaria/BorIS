@@ -121,6 +121,10 @@ class Person(TimeStampedModel, AdminLinkMixin):
         except ContentType.DoesNotExist: # E.g. mock objects or some not-yet-saved objects.
             return self
 
+    def is_default_service(self, service):
+        """Returns True if ``service`` is default for this person, False otherwise"""
+        return False
+
 
 class Practitioner(Person):
     first_name = models.CharField(max_length=63, blank=True, null=True,
@@ -154,6 +158,10 @@ class Anonymous(Person):
     def __unicode__(self):
         return u'%s - %s' % (self.get_sex_display(), self.get_drug_user_type_display())
 
+    def is_default_service(self, service):
+        """Returns True if ``service`` is default for this person, False otherwise"""
+        return service.__class__.__name__ == 'Address'
+
 
 class Client(Person):
     code = models.CharField(max_length=63, unique=True, verbose_name=_(u'Kód'))
@@ -171,12 +179,16 @@ class Client(Person):
     primary_drug_usage = models.PositiveSmallIntegerField(blank=True, null=True,
         choices=PRIMARY_DRUG_APPLICATION_TYPES, verbose_name=_(u'Způsob aplikace'))
 
-    def __unicode__(self):
-        return self.code
-
     class Meta:
         verbose_name = _(u'Klient')
         verbose_name_plural = _(u'Klienti')
+
+    def __unicode__(self):
+        return self.code
+
+    def is_default_service(self, service):
+        """Returns True if ``service`` is default for this person, False otherwise"""
+        return service.__class__.__name__ == 'HarmReduction'
 
 
 class Anamnesis(TimeStampedModel, AdminLinkMixin):
