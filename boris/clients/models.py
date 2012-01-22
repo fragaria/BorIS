@@ -10,16 +10,16 @@ from django.utils.translation import ugettext_lazy as _
 from model_utils.models import TimeStampedModel
 from fragapy.common.models.adminlink import AdminLinkMixin
 
-from boris.classification import SEXES, NATIONALITIES,\
-    ETHNIC_ORIGINS, LIVING_CONDITIONS, ACCOMODATION_TYPES, EMPLOYMENT_TYPES,\
-    DRUG_APPLICATION_FREQUENCY, DRUG_APPLICATION_TYPES,\
-    PRIMARY_DRUG_APPLICATION_TYPES, RISKY_BEHAVIOR_PERIODICITY, DISEASES,\
+from boris.classification import SEXES, NATIONALITIES, \
+    ETHNIC_ORIGINS, LIVING_CONDITIONS, ACCOMODATION_TYPES, EMPLOYMENT_TYPES, \
+    DRUG_APPLICATION_FREQUENCY, DRUG_APPLICATION_TYPES, \
+    PRIMARY_DRUG_APPLICATION_TYPES, RISKY_BEHAVIOR_PERIODICITY, DISEASES, \
     DISEASE_TEST_RESULTS, EDUCATION_LEVELS, ANONYMOUS_TYPES
 from django.contrib.contenttypes.models import ContentType
 
 
-class StringEnum(models.Model):
-    title = models.CharField(max_length=100, verbose_name=_(u'Název'))
+class IndexedStringEnum(models.Model):
+    title = models.CharField(max_length=100, verbose_name=_(u'Název'), db_index=True)
 
     def __unicode__(self):
         return self.title
@@ -28,25 +28,25 @@ class StringEnum(models.Model):
         abstract = True
 
 
-class Drug(StringEnum):
+class Drug(IndexedStringEnum):
     class Meta:
         verbose_name = _(u'Droga')
         verbose_name_plural = _(u'Drogy')
 
 
-class RiskyBehavior(StringEnum):
+class RiskyBehavior(IndexedStringEnum):
     class Meta:
         verbose_name = _(u'Rizikové chování')
         verbose_name_plural = _(u'Riziková chování')
 
 
-class Region(StringEnum):
+class Region(IndexedStringEnum):
     class Meta:
         verbose_name = _(u'Kraj')
         verbose_name_plural = _(u'Kraje')
 
 
-class District(StringEnum):
+class District(IndexedStringEnum):
     region = models.ForeignKey(Region, verbose_name=_(u'Kraj'))
 
     class Meta:
@@ -57,7 +57,7 @@ class District(StringEnum):
         return u'%s, %s' % (self.title, unicode(self.region))
 
 
-class Town(StringEnum):
+class Town(IndexedStringEnum):
     district = models.ForeignKey(District, verbose_name=_(u'Okres'))
 
     class Meta:
@@ -66,7 +66,7 @@ class Town(StringEnum):
 
     @staticmethod
     def autocomplete_search_fields():
-        return ['title__istartswith',]
+        return ['title__istartswith', ]
 
     def __unicode__(self):
         return u'%s (%s)' % (self.title, unicode(self.district.title))
