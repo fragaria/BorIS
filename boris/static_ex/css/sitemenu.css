@@ -1,16 +1,26 @@
 #nav {
+    position: fixed;
+    left: 0;
+    top: 40px;
+    height: 33px;
+    width: 100%;
+    z-index: 1000;
     margin: 0;
     padding: 0 20px;
     line-height: 100%;
+    
+    font-size: 11px;
+    font-weight: bold;
 
     -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, .4);
     -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, .4);
 
-    background: #8b8b8b; /* for non-css3 browsers */
+    background: #444444; /* for non-css3 browsers */
     color: #59AFCC;
+    background-image: -o-linear-gradient(top , #444444, #333333); /* for opera */
     background: -moz-linear-gradient(center top , #444444, #333333) repeat scroll 0 0 transparent;
+    background: -webkit-gradient(linear, left top, left bottom, from(#444444), to(#333333)); /* for webkit browsers */
     filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#444444', endColorstr='#333333'); /* for IE */
-    background: -webkit-gradient(linear, center, top, from(#444444), to(#333333)); /* for webkit browsers */
 }
 #nav li {
     float: left;
@@ -33,6 +43,7 @@
 #nav .current a, #nav li:hover > a {
     background: #d1d1d1; /* for non-css3 browsers */
     filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ebebeb', endColorstr='#a1a1a1'); /* for IE */
+    background-image: -o-linear-gradient(top, #ebebeb,  #a1a1a1); /* for opera */
     background: -webkit-gradient(linear, left top, left bottom, from(#ebebeb), to(#a1a1a1)); /* for webkit browsers */
     background: -moz-linear-gradient(top,  #ebebeb,  #a1a1a1); /* for firefox 3.6+ */
 
@@ -54,7 +65,8 @@
 #nav ul a:hover {
     background: #0399d4 !important; /* for non-css3 browsers */
     filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#A1D4E5', endColorstr='#BCDFEB'); /* for IE */
-    background: -webkit-gradient(linear, center top, left bottom, from(#A1D4E5), to(#BCDFEB)) !important; /* for webkit browsers */
+    background-image: -o-linear-gradient(top, #A1D4E5, #BCDFEB) !important; /* for opera */
+    background: -webkit-gradient(linear, left top, left bottom, from(#A1D4E5), to(#BCDFEB)) !important; /* for webkit browsers */
     background: -moz-linear-gradient(center top,  #A1D4E5,  #BCDFEB) !important; /* for firefox 3.6+ */
 
     border-bottom-left-radius: 4px;
@@ -64,6 +76,7 @@
 #nav ul {
     background: #ddd; /* for non-css3 browsers */
     filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#cfcfcf'); /* for IE */
+    background-image: -o-linear-gradient(top,  #fff,  #cfcfcf); /* for opera */
     background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#cfcfcf)); /* for webkit browsers */
     background: -moz-linear-gradient(top,  #fff,  #cfcfcf); /* for firefox 3.6+ */
 

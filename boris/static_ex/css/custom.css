@@ -8,21 +8,8 @@ button.small { font-size: 11px; font-weight: bold; padding: 0 2px; line-height:2
 .service-description ul { margin-left: 30px; }
 .saveinfo { width: auto; margin: auto; }
 
-#nav {
-    position: fixed;
-    left: 0;
-    top: 40px;
-    height: 33px;
-    width: 100%;
-    z-index: 1000;
-    
-    font-size: 11px;
-    font-weight: bold;
-    line-height: 14px;
-}
-
 #header li.search {
-    width: auto;
+    width: 300px;
 }
 #header li.search span {
     display: block;
@@ -31,7 +18,7 @@ button.small { font-size: 11px; font-weight: bold; padding: 0 2px; line-height:2
 }
 #header li.search input {
     float: left;
-    width: 200px;
+    width: 160px;
     height: 25px;
 }
 

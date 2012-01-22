@@ -39,12 +39,14 @@
             
             <li class="search">
                 <span>Vyhledat klienta:</span>
+                <form>
                 <div class="autocomplete-wrapper-fk">
                     <input id="id_globalsearch_client" class="vForeignKeyRawIdAdminField" type="text" value="" name="globalsearch_client">
                     <a id="lookup_id_globalsearch_client" class="related-lookup" href="{% url admin:clients_client_changelist %}?t=id">
                         <img width="16" height="16" alt="Hledat" src="/static/grappelli/img/admin/selector-search.gif">
                     </a>
                 </div>
+                </form>
             </li>
         </ul>
     {% endif %}
@@ -65,11 +67,13 @@
             autocomplete_lookup_url:"/grappelli/lookup/autocomplete/"
         });
         
-        $('#lookup_id_globalsearch_client').unbind('click').click(function () {
+        var goToClient = function () {
             if (searchElem.val()) {
                 document.location = '/clients/client/' + searchElem.val() + '/';    
             }; 
             return false;
-        });
+        };
+
+        $('#lookup_id_globalsearch_client').unbind('click').click(goToClient);
     })(django.jQuery);
 </script>
