@@ -1,0 +1,17 @@
+{% load i18n %}
+<ul id="nav">
+    <li><a href="/">{% trans "Nástěnka" %}</a></li>
+    <li><a href="{% url admin:clients_client_changelist %}">{% trans "Klienti" %}</a></li>
+    <li><a href="{% url admin:services_encounter_changelist %}">{% trans "Kontakty" %}</a></li>
+    <li><a href="{% url admin:other_syringecollection_changelist %}">{% trans "Sběr stříkaček" %}</a></li>
+    <li>
+        <a href="#">{% trans "Nastavení" %}</a>
+        <ul>
+            <li><a href="{% url admin:clients_town_changelist %}">{% trans "Města" %}</a></li>
+            <li><a href="{% url admin:clients_district_changelist %}">{% trans "Okresy" %}</a></li>
+            <li><a href="{% url admin:clients_region_changelist %}">{% trans "Kraje" %}</a></li>
+            <li><a href="{% url admin:clients_drug_changelist %}">{% trans "Drogy" %}</a></li>
+            <li><a href="{% url admin:clients_riskybehavior_changelist %}">{% trans "Riziková chování" %}</a></li>
+        </ul>
+    </li>
+</ul>
