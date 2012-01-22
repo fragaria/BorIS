@@ -75,7 +75,7 @@ class Town(IndexedStringEnum):
 class Person(TimeStampedModel, AdminLinkMixin):
     # title enables us to easily print subclass __unicode__ values from Person
     title = models.CharField(max_length=255, editable=False,
-        verbose_name=_(u'Název'))
+        verbose_name=_(u'Název'), db_index=True)
     content_type = models.ForeignKey(ContentType, editable=False)
 
     class Meta:
