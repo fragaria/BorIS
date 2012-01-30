@@ -23,13 +23,17 @@
         {% for tab, form in tabs %}
         <div class="form-container" id="tabs-{{ forloop.counter }}">
             <form method="POST" action="{{ tab.get_absolute_url }}">
-                {% include "form_snippet.html" %}
-                <div class="module footer">
-                    <ul class="submit-row">
-                        <li class="submit-button-container"><input type="submit" value="{% trans 'Zobrazit výkaz' %}" name="_continue" /></li>
-                    </ul><br clear="all" />
-                </div>
-
+                <fieldset class="module">
+                    <div class="row cells cells-1"><div class="cell">
+                        {% autoescape off %}
+                        {{ tab.get_description }}
+                        {% endautoescape %}
+                    </div></div>
+                    {% include "form_snippet.html" %}
+                    <div class="row cells cells-2"><div class="cell">
+                        <button onclick="django.jQuery(this).closest('form').submit();">Zobrazit výkaz</button>
+                    </div></div>
+                </fieldset>
             </form>
         </div>
         {% endfor %}

@@ -7,10 +7,10 @@ Created on 27.11.2011
 from django.db.models import Q
 from django.utils.translation import ugettext as _
 
-from boris.classification import SEXES, PRIMARY_DRUG_APPLICATION_TYPES, ANONYMOUS_TYPES,\
+from boris.classification import SEXES, PRIMARY_DRUG_APPLICATION_TYPES, ANONYMOUS_TYPES, \
     DISEASES
 from boris.clients.models import Town, District
-from boris.reporting.core import Aggregation, Report,\
+from boris.reporting.core import Aggregation, Report, \
     SumAggregation, make_key, SuperAggregation, NonDistinctCountAggregation
 from boris.reporting.models import SearchEncounter, SearchService
 
@@ -191,6 +191,8 @@ class IssuedSyringes(SumAggregation, ServiceAggregation):
 
 class MonthlyStatsByTown(Report):
     title = _(u'Měsíční statistiky podle města')
+    description = _(u'Statistika rozdělená <strong>podle měsíců</strong>. Pro '
+        u'každý měsíc zobrazuje sledované informace pro jednotlivá <strong>města</strong>.')
     grouping = ('month', 'town')
     aggregation_classes = [
         AllClientEncounters,
@@ -249,6 +251,8 @@ class MonthlyStatsByTown(Report):
 
 class MonthlyStatsByDistrict(MonthlyStatsByTown):
     title = _(u'Měsíční statistiky podle okresu')
+    description = _(u'Statistika rozdělená <strong>podle měsíců</strong>. Pro '
+        u'každý měsíc zobrazuje sledované informace pro jednotlivé <strong>okresy</strong>.')
     grouping = ('month', 'town__district')
 
     def _columns(self):
