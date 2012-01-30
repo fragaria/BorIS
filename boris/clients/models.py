@@ -27,6 +27,10 @@ class IndexedStringEnum(models.Model):
     class Meta:
         abstract = True
 
+    @staticmethod
+    def autocomplete_search_fields():
+        return ('title__icontains',)
+
 
 class Drug(IndexedStringEnum):
     class Meta:
@@ -124,6 +128,10 @@ class Person(TimeStampedModel, AdminLinkMixin):
     def is_default_service(self, service):
         """Returns True if ``service`` is default for this person, False otherwise"""
         return False
+
+    @staticmethod
+    def autocomplete_search_fields():
+        return ('title__icontains',)
 
 
 class Practitioner(Person):
