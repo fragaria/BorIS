@@ -3,42 +3,40 @@
 
 {% block fields %}
 {% for fieldset in form.fieldsets %}
-    <fieldset class="module">
-        {% block fieldset %}
-            {% if fieldset.legend %}<div class="row"><legend><strong>{{ fieldset.legend }}</strong></legend></div>{% endif %}
-            {% if "inline" in fieldset.classes %}
-                <div class="row cells-2 cells">
-            {% endif %}
-            {% for field in fieldset %}
-                {% if field.is_hidden %}
-                    {{ field.errors }}
-                    {{ field }}
-                {% else %}
-                    {% if not "inline" in fieldset.classes %}
-                        <div class="row cells-2 cells">
-                    {% endif %}
-                    <div class="cell{% if field.errors %} errors{% endif %}">
-                        <div class="column {% block fieldclasses %}span-4{% endblock %}">
-                            <label for="{{ field.auto_id }}" {% if field.field.required %}class="required"{% endif %}>{{ field.label }}:</label>
-                        </div>
-                        <div class="column span-flexible">
-                            {{ field }}
-                            {{ field.errors }}
-                            {% if field.help_text %}
-                                <p class="help">{{ field.help_text }}</p>
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% if not "inline" in fieldset.classes %}
-                        </div>
-                    {% endif %}
+    {% block fieldset %}
+        {% if fieldset.legend %}<div class="row"><legend><strong>{{ fieldset.legend }}</strong></legend></div>{% endif %}
+        {% if "inline" in fieldset.classes %}
+            <div class="row cells-2 cells">
+        {% endif %}
+        {% for field in fieldset %}
+            {% if field.is_hidden %}
+                {{ field.errors }}
+                {{ field }}
+            {% else %}
+                {% if not "inline" in fieldset.classes %}
+                    <div class="row cells-2 cells">
                 {% endif %}
-            {% endfor %}
-            {% if "inline" in fieldset.classes %}
+                <div class="cell{% if field.errors %} errors{% endif %}">
+                    <div class="column {% block fieldclasses %}span-4{% endblock %}">
+                        <label for="{{ field.auto_id }}" {% if field.field.required %}class="required"{% endif %}>{{ field.label }}:</label>
+                    </div>
+                    <div class="column span-flexible">
+                        {{ field }}
+                        {{ field.errors }}
+                        {% if field.help_text %}
+                            <p class="help">{{ field.help_text }}</p>
+                        {% endif %}
+                    </div>
                 </div>
+                {% if not "inline" in fieldset.classes %}
+                    </div>
+                {% endif %}
             {% endif %}
-        {% endblock %}
-    </fieldset>
+        {% endfor %}
+        {% if "inline" in fieldset.classes %}
+            </div>
+        {% endif %}
+    {% endblock %}
 {% endfor %}
 {% endblock %}
 

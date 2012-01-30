@@ -48,11 +48,14 @@
     </div>
 </div>
 </div>
+<script>
+    var $ = django.jQuery;
+    var jQuery = django.jQuery;
+    var ui = null;
+</script>
+<link rel="stylesheet" href="{{ STATIC_URL }}css/tipsy.css" />
 <script src="{{ STATIC_URL }}js/jquery.tipsy.js" type="text/javascript"></script>
 <script type="text/javascript">
-    var $ = django.jQuery;
-    var ui = null;
-    
     function ServiceUI(encounterId) {
         this.encounterId = encounterId;
         
@@ -79,9 +82,8 @@
         }
         
         this.placeForm = function (html) {
-            
         	$('#service-form-wrap').html(html);
-        	$('.infoText [rel]').tipsy({trigger: 'focus', gravity: 'w', html: true});            
+            
             if (html != '') {
                 var allFields = $('#service-form-wrap').find('select,input');
                 var visibleFields = $('#service-form-wrap').find('select:visible,input:visible');
@@ -90,9 +92,9 @@
                     ui.saveForm();
                 } else {
                     grappelli.initDateAndTimePicker();
+                    $('#service-form-wrap h3 span').tipsy({gravity: 'w', html: true});
                 }
             }
-            
         }
         
         this.loadForm = function (serviceId, serviceClass) {

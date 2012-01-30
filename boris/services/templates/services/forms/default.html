@@ -1,11 +1,5 @@
 {% load i18n form_utils_tags %}
-<h3>{{ service.service.title }}</h3>
-
-{% if service.service.get_description %}
-
-<a class="infoText" rel="{{ service.service.get_description }}">i</a> 
-
-{% endif %}
+<h3><span title="{% if service.service.get_description %}{{ service.service.get_description }}{% endif %}">{{ service.service.title }}</span></h3>
 
 <div id="service-form" class="{{ action_link }}">
     {% block rendered_form %}

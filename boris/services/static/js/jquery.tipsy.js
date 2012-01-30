@@ -21,7 +21,6 @@
             var title = this.getTitle();
             if (title && this.enabled) {
                 var $tip = this.tip();
-                
                 $tip.find('.tipsy-inner')[this.options.html ? 'html' : 'text'](title);
                 $tip[0].className = 'tipsy'; // reset classname in case of dynamic gravity
                 $tip.remove().css({top: 0, left: 0, visibility: 'hidden', display: 'block'}).prependTo(document.body);
