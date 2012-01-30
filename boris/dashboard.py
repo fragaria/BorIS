@@ -50,7 +50,7 @@ class CustomIndexDashboard(Dashboard):
             collapsible=False,
             children=[
                 {
-                    'title': _(u'Vytvořit výkaz'),
+                    'title': _(u'Vytvořit výstup'),
                     'url': reverse('reporting_base'),
                     'external': False,
                 },
