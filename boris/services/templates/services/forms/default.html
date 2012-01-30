@@ -2,13 +2,9 @@
 <h3>{{ service.service.title }}</h3>
 
 {% if service.service.get_description %}
-<div class="row cells-1 cells">
-    <div class="cell">
-        <div class="column span-flexible service-description">
-            {{ service.service.get_description }}
-        </div>
-    </div>
-</div>
+
+<a class="infoText" rel="{{ service.service.get_description }}">i</a> 
+
 {% endif %}
 
 <div id="service-form" class="{{ action_link }}">

@@ -48,7 +48,7 @@
     </div>
 </div>
 </div>
-
+<script src="{{ STATIC_URL }}js/jquery.tipsy.js" type="text/javascript"></script>
 <script type="text/javascript">
     var $ = django.jQuery;
     var ui = null;
@@ -79,8 +79,9 @@
         }
         
         this.placeForm = function (html) {
-            $('#service-form-wrap').html(html);
             
+        	$('#service-form-wrap').html(html);
+        	$('.infoText [rel]').tipsy({trigger: 'focus', gravity: 'w', html: true});            
             if (html != '') {
                 var allFields = $('#service-form-wrap').find('select,input');
                 var visibleFields = $('#service-form-wrap').find('select:visible,input:visible');
