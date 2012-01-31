@@ -68,10 +68,6 @@ class Town(IndexedStringEnum):
         verbose_name = _(u'Město')
         verbose_name_plural = _(u'Města')
 
-    @staticmethod
-    def autocomplete_search_fields():
-        return ['title__istartswith', ]
-
     def __unicode__(self):
         return u'%s (%s)' % (self.title, unicode(self.district.title))
 
