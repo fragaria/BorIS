@@ -41,3 +41,16 @@ FROM
 	LEFT OUTER JOIN clients_anonymous ON (services_encounter.person_id = clients_anonymous.person_ptr_id)
 	LEFT OUTER JOIN clients_practitioner ON (services_encounter.person_id = clients_practitioner.person_ptr_id)
 );
+
+
+CREATE OR REPLACE VIEW reporting_searchsyringecollection AS
+(
+SELECT
+    id as id,
+    count as count,
+	town_id,
+	MONTH(`date`) AS month,
+	YEAR(`date`) AS year
+FROM
+    other_syringecollection syringecollection
+);
