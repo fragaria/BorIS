@@ -12,18 +12,19 @@ from .monthly_stats import MonthlyStatsByTown
 
 class YearlyStatsByMonth(MonthlyStatsByTown):
     title = _(u'Roční statistiky po měsících')
+    description = _(u'Statistika zobrazuje data agregovaná za všechny města po měsících.')
     grouping = ('month',)
-    
+
     def _columns(self):
         return self.months()
     columns = property(_columns)
-    
+
     def get_sum(self, aggregation):
         return sum(
             aggregation.get_val(make_key((('month', month),)))
             for month in self.columns
         )
-    
+
     def get_data(self):
         return [
             (aggregation.title, [

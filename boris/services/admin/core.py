@@ -11,6 +11,10 @@ from django import forms
 from boris.services.models.core import Encounter
 from boris.clients.forms import ReadOnlyWidget
 
+def service_list(self, obj):
+    return u'<small>' + u'<br />'.join([unicode(s) for s in obj.services.all()]) + u'</small>'
+service_list.short_description = _(u'Provedené výkony')
+service_list.allow_tags = True
 
 class EncounterInline(admin.TabularInline):
     model = Encounter
@@ -33,11 +37,6 @@ class EncounterInline(admin.TabularInline):
         return u', '.join([unicode(u) for u in obj.performed_by.all()])
     performed_by_verbose.short_description = _(u'Provedli')
 
-    def service_list(self, obj):
-        return u'<small>' + u'<br />'.join([unicode(s) for s in obj.services.all()]) + u'</small>'
-    service_list.short_description = _(u'Provedené výkony')
-    service_list.allow_tags = True
-
     def goto_link(self, obj):
         if obj.pk:
             return u'<a href="%s"><strong>%s &raquo;</strong></a>' % (obj.get_admin_url(), _(u'Přejít'))
@@ -46,8 +45,12 @@ class EncounterInline(admin.TabularInline):
     goto_link.short_description = _(u'Přejít')
     goto_link.allow_tags = True
 
+EncounterInline.service_list = service_list
+
 
 class EncounterAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'person', 'performed_on', 'where', 'service_list')
+    list_filter = ('performed_on', 'where')
     fieldsets = (
         (None, {'fields': (('person', 'performed_on', 'where'), 'performed_by')}),
     )
@@ -80,6 +83,7 @@ class EncounterAdmin(admin.ModelAdmin):
         else:
             return super(EncounterAdmin, self).formfield_for_dbfield(db_field, **kwargs)
 
+EncounterAdmin.service_list = service_list
 
 admin.site.register(Encounter, EncounterAdmin)
 

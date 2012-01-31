@@ -19,15 +19,30 @@
         (function ($) {
             
             $(document).ready(function () {
+                var e = $('<input type="checkbox" id="id_close_person" style="margin-left: 20px;" /><label class="vCheckboxLabel">Osoba blízká</label>');
+                $('#id_primary_drug').parent().append(e);
+                $('#id_close_person').change(function () {
+                    if ($(this).attr('checked') == 'checked') {
+                        $('#id_primary_drug option[value=""]').show();
+                        $('#id_primary_drug').val('');
+                    } else {
+                        $('#id_primary_drug option[value=""]').hide();
+                        $('#id_primary_drug').val($('#id_primary_drug option[value!=]:first').val());
+                    }
+                    $('#id_primary_drug').change();
+                    return true;
+                });
                 $('#id_primary_drug').change(function () {
                     if ($(this).val() == '') {
                         $('#id_primary_drug_usage option[value!=]').hide();
                         $('#id_primary_drug_usage').val('');
-                    } else
+                    } else {
                         $('#id_primary_drug_usage option[value!=]').show();
+                        $('#id_primary_drug_usage').val($('#id_primary_drug_usage option[value!=]:first').val());
+                    }
                     return true; 
                 });
-                $('#id_primary_drug').change();
+                $('#id_close_person').change();
                 
                 $('#id_birthdate_year_only').change(function () {
                     if ($(this).attr('checked') == 'checked') {

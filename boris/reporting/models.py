@@ -1,5 +1,6 @@
 from django.db import models
 
+from django.contrib.auth.models import User
 from boris.clients.models import Person, Town, Drug
 from boris.services.models.core import Service, Encounter
 
@@ -34,6 +35,17 @@ class SearchService(models.Model):
     is_client = models.BooleanField()
     is_anonymous = models.BooleanField()
     is_practitioner = models.BooleanField()
+
+    class Meta:
+        managed = False
+
+class SearchSyringeCollection(models.Model):
+
+    count = models.SmallIntegerField()
+    person = models.ForeignKey(User, related_name='+', on_delete=DO_NOTHING)
+    town = models.ForeignKey(Town, related_name='+', on_delete=DO_NOTHING)
+    month = models.SmallIntegerField()
+    year = models.SmallIntegerField()
 
     class Meta:
         managed = False

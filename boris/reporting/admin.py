@@ -7,7 +7,7 @@ from django.utils.functional import update_wrapper
 
 from boris.reporting.core import ReportResponse
 from boris.reporting.forms import MonthlyStatsForm
-from boris.reporting.reports.monthly_stats import MonthlyStatsByTown,\
+from boris.reporting.reports.monthly_stats import MonthlyStatsByTown, \
     MonthlyStatsByDistrict
 from boris.reporting.reports.yearly_stats import YearlyStatsByMonth
 
@@ -26,6 +26,9 @@ class ReportingInterfaceTab(object):
 
     def get_title(self):
         return self.report.title
+
+    def get_description(self):
+        return self.report.description
 
     def get_absolute_url(self):
         return reverse(self.get_urlname())
