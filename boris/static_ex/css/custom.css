@@ -28,3 +28,5 @@ body { padding: 98px 20px 0; }
 #header { height: 40px; line-height: 24px; }
 
 div#breadcrumbs { top: 73px; z-index: 999; }
+
+fieldset.module .cell {float:left}
