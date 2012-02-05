@@ -22,7 +22,7 @@ class ReportResponse(HttpResponse):
     """
     def __init__(self, report_class, *args, **kwargs):
         report = report_class(*args, **kwargs)
-        super(ReportResponse, self).__init__(content=report.render(), mimetype=report.mime)
+        super(ReportResponse, self).__init__(content=report.render(), content_type=report.contenttype)
         self['Content-Disposition'] = 'attachment; filename=report.xls'
 
 
@@ -49,8 +49,8 @@ class Report(object):
         return self.title
 
     @property
-    def mime(self):
-        return 'application/vnd.ms-excel'
+    def contenttype(self):
+        return 'application/vnd.ms-excel; charset=utf-8'
 
     @property
     def template(self):
