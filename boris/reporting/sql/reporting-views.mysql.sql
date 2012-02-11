@@ -46,11 +46,11 @@ FROM
 CREATE OR REPLACE VIEW reporting_searchsyringecollection AS
 (
 SELECT
-    id as id,
-    count as count,
+	id as id,
+	count as count,
 	town_id,
 	MONTH(`date`) AS month,
 	YEAR(`date`) AS year
 FROM
-    other_syringecollection syringecollection
+	other_syringecollection
 );
