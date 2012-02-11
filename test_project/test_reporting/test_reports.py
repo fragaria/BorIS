@@ -7,6 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 from boris.classification import SEXES, PRIMARY_DRUG_APPLICATION_TYPES,\
         ANONYMOUS_TYPES, DISEASES
 from boris.clients.models import Anonymous
+from boris.other.models import SyringeCollection
 from boris.services.models.core import Encounter
 from boris.services.models.basic import Address, PhoneCounseling,\
         HarmReduction, IncomeExamination, DiseaseTest
@@ -16,7 +17,7 @@ from boris.reporting.reports.monthly_stats import AllClientEncounters,\
         AddressesNonDU, EncounterCount, ClientEncounterCount,\
         PractitionerEncounterCount, PhoneEncounterCount, FirstContactCount,\
         FirstContactCountDU, FirstContactCountIV, HarmReductionCount,\
-        GatheredSyringes, IssuedSyringes, disease_tests
+        GatheredSyringes, IssuedSyringes, SyringeCollectionCount, disease_tests
 from boris.reporting.core import make_key
 
 from test_project.helpers import get_testing_town, get_testing_client,\
@@ -38,6 +39,10 @@ def create_service(service_class, person, date, town, kwargs_dict={}):
     })
 
     return service_class.objects.create(**service_kwargs)
+
+def create_syringe_collection(town, date, count):
+    return SyringeCollection.objects.create(date=date, town=town, count=count,
+            location='')
 
 
 class MockMonthlyReport(object):
@@ -384,3 +389,22 @@ class TestServiceTotals(DestructiveDatabaseTestCase):
         aggregation = GatheredSyringes(self.yearly_report)
         key = make_key({'year': 2011})
         self.assert_equals(aggregation.get_val(key), 20)
+
+
+class TestSyringeCollection(DestructiveDatabaseTestCase):
+    def setUp(self):
+        self.town1 = get_testing_town()
+        self.town2 = get_testing_town()
+
+        create_syringe_collection(self.town1, date(2011, 11, 1), 10)
+        create_syringe_collection(self.town1, date(2011, 11, 1), 10)
+        create_syringe_collection(self.town1, date(2011, 11, 1), 10)
+        create_syringe_collection(self.town1, date(2011, 12, 1), 17)
+        create_syringe_collection(self.town2, date(2011, 11, 1), 10)
+
+        self.monthly_report = MockMonthlyReport()
+
+    def test_syringe_collection(self):
+        aggregation = SyringeCollectionCount(self.monthly_report)
+        key = make_key({'month': 11, 'town': self.town1.pk})
+        self.assert_equals(aggregation.get_val(key), 30)
