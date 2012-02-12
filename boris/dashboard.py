@@ -13,14 +13,17 @@ class CustomIndexDashboard(Dashboard):
     """
 
     def init_with_context(self, context):
-        site_name = get_admin_site_name(context)
         user = context['request'].user
 
         self.children.append(modules.ModelList(
             _(u'Databáze osob'),
             collapsible=False,
             column=1,
-            models=('boris.clients.models.Client', 'boris.clients.models.Practitioner'),
+            models=(
+                'boris.clients.models.Client',
+                'boris.clients.models.Anonymous',
+                'boris.clients.models.Practitioner'
+            ),
         ))
 
         self.children.append(modules.ModelList(
