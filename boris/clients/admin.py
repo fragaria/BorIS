@@ -111,12 +111,15 @@ class AnamnesisAdmin(BorisBaseAdmin):
         to be filled up.
         """
         request = kwargs.get('request', None)
-        if request is not None and request.GET.get('_popup', False) and request.GET.get('client_id') and db_field.name == 'client':
-            cid = request.GET.get('client_id')
-            kwargs.pop('request')
-            kwargs['widget'] = ReadOnlyWidget(cid, Client.objects.get(pk=cid))
-            kwargs['initial'] = cid
-            return db_field.formfield(**kwargs)
+        if request is not None:
+            if request.GET.get('_popup', False) and request.GET.get('client_id') and db_field.name == 'client':
+                cid = request.GET.get('client_id')
+                kwargs['widget'] = ReadOnlyWidget(cid, Client.objects.get(pk=cid))
+                kwargs['initial'] = cid
+                kwargs.pop('request')
+                return db_field.formfield(**kwargs)
+            if db_field.name == 'author':
+                kwargs['initial'] = request.user.pk
         return super(AnamnesisAdmin, self).formfield_for_dbfield(db_field, **kwargs)
 
     def response_add(self, request, obj, post_url_continue='../%s/'):
@@ -253,10 +256,10 @@ class ClientAdmin(BorisBaseAdmin):
         if anamnesis == -1:
             return _(u'(Nejdřív prosím uložte klienta)')
         elif anamnesis:
-            return u'<a href="%s?client_id=%s" onclick="return showAddAnotherPopup(this);">%s</a>' % (
-                obj.anamnesis.get_admin_url(), obj.pk, _(u'Zobrazit &raquo;'))
+            return u'<a class="cbutton" href="%s?client_id=%s" onclick="return showAddAnotherPopup(this);">%s</a>' % (
+                obj.anamnesis.get_admin_url(), obj.pk, _(u'Zobrazit'))
         else:
-            return '<a href="%s?client_id=%s" id="add_id_anamnesis" onclick="return showAddAnotherPopup(this);">%s</a>' % (
+            return '<a class="cbutton" href="%s?client_id=%s" id="add_id_anamnesis" onclick="return showAddAnotherPopup(this);">%s</a>' % (
                 reverse('admin:clients_anamnesis_add'), obj.pk, _(u'Přidat anamnézu'))
     anamnesis_link.allow_tags = True
     anamnesis_link.short_description = _(u'Anamnéza')

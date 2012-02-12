@@ -8,7 +8,7 @@
     <script type="text/javascript">
         function dismissAddAnamnesisPopup(win, newId, newRepr) {
             django.jQuery('#add_id_anamnesis').attr('href', '/clients/anamnesis/' + newId + '/');
-            django.jQuery('#add_id_anamnesis').html('{% trans "Zobrazit &raquo;" %}');
+            django.jQuery('#add_id_anamnesis').html('{% trans "Zobrazit" %}');
             win.close();
             return false;
         }
