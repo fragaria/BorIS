@@ -147,6 +147,10 @@ class Practitioner(Person):
             return u'%s, %s' % (self.last_name, self.first_name)
         else:
             return u'%s' % self.last_name
+            
+    def is_default_service(self, service):
+        """Returns True if ``service`` is default for this person, False otherwise"""
+        return service.__class__.__name__ == 'UtilityWork'
 
 
 class Anonymous(Person):
