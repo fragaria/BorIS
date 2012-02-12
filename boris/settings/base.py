@@ -7,7 +7,7 @@ import boris
 
 PROJECT_ROOT = abspath(dirname(boris.__file__))
 
-gettext = lambda s: s 
+gettext = lambda s: s
 
 ADMINS = (
     ('Filip Varecha', 'filip.varecha@fragaria.cz'),
@@ -106,6 +106,7 @@ INSTALLED_APPS = (
     'boris.services',
     'boris.reporting',
     'boris.other',
+    'boris.utils', # loads django patches in models.py
 )
 
 # always freeze south migrations
