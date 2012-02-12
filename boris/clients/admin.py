@@ -141,6 +141,13 @@ class AnamnesisAdmin(admin.ModelAdmin):
 class AnonymousAdmin(admin.ModelAdmin):
     change_form_template = 'admin/clients/person/change_form.html'
     inlines = (EncounterInline,)
+    readonly_fields = ('drug_user_type', 'sex')
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 class PractitionerAdmin(admin.ModelAdmin):
