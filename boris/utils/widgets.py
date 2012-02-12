@@ -19,11 +19,11 @@ class SplitDateWidget(SelectDateWidget):
                 attrs=attrs, required=required,
                 years=reversed(range(date.today().year - 100, date.today().year + 1))
             )
-            
+
 class SelectYearWidget(Select):
-    def __init__(self, attrs=None):
-            r = range(date.today().year - 100, date.today().year + 1)
+    def __init__(self, history=100, attrs=None):
+            r = range(date.today().year - history, date.today().year + 1)
             super(SelectYearWidget, self).__init__(
-                attrs=attrs, 
+                attrs=attrs,
                 choices=reversed(zip(r, r))
             )
