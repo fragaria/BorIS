@@ -6,22 +6,24 @@
     <body>
         {% block body %}
         {% for month in report.get_data %}
-            <table>
+            <table cellpadding="50" cellspacing="0" border="1">
+                <tbody>
                 <tr>
-                    <th>{% block col_title %}{{ month.0 }}/{{ report.year }}{% endblock %}</th>
+                    <th width=200>{% block col_title %}{{ month.0 }}/{{ report.year }}{% endblock %}</th>
                     {% for column in report.columns %}
-                        <th>{{ column.title }}</th>
+                        <th width=100>{{ column.title }}</th>
                     {% endfor %}
                     <th>Celkem</th>
                 </tr>
                 {% for aggregation in month.1 %}
                     <tr>
-                        <td>{{ aggregation.0 }}</td>
+                        <td width=200>{{ aggregation.0 }}</td>
                         {% for town_val in aggregation.1 %}
-                            <td>{{ town_val }}</td>        
+                            <td width=100>{{ town_val }}</td>        
                         {% endfor %}
                     </tr>
                 {% endfor %}
+                </tbody>
             </table> 
             <br />
         {% endfor %}
