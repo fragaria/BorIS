@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from fragapy.common.models.adminlink import AdminLinkMixin
+from django.utils.formats import date_format
 
 class SyringeCollection(models.Model, AdminLinkMixin):
     '''
@@ -19,4 +20,6 @@ class SyringeCollection(models.Model, AdminLinkMixin):
         verbose_name_plural = _('syringe collections')
 
     def __unicode__(self):
-        return u'%s - %s (%d Ks %s)' % (','.join([unicode(p) for p in self.persons.all()]), self.date, self.count, self.location)
+        return _(u'%(count)sks v %(town)s, %(date)s') % {
+            'count': self.count, 'town': self.town, 'date': date_format(self.date)
+        }

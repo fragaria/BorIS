@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext_lazy as _
 
 from grappelli.dashboard import modules, Dashboard
-from grappelli.dashboard.utils import get_admin_site_name
+from grappelli.dashboard.modules import ModelList
 
+class PersonModelList(ModelList):
+    template = 'dashboard/person_model_list.html'
 
 class CustomIndexDashboard(Dashboard):
     """
@@ -15,7 +17,7 @@ class CustomIndexDashboard(Dashboard):
     def init_with_context(self, context):
         user = context['request'].user
 
-        self.children.append(modules.ModelList(
+        self.children.append(PersonModelList(
             _(u'Databáze osob'),
             collapsible=False,
             column=1,

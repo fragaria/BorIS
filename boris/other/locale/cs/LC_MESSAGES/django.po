@@ -44,16 +44,5 @@ msgstr "sběr stříkaček"
 
 #: models.py:21
 msgid "syringe collections"
-msgstr "sběry stříkaček"
+msgstr "sběr stříkaček"
 
-#~ msgid "count"
-#~ msgstr "počet"
-
-#~ msgid "pieces"
-#~ msgstr "kusů"
-
-#~ msgid "Other"
-#~ msgstr "Další"
-
-#~ msgid "other"
-#~ msgstr "další"
