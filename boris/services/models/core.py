@@ -119,44 +119,48 @@ class ServiceMetaclass(models.Model.__metaclass__):
 
 class Service(TimeStampedModel):
     """
-    Service is a base model for defining services which workers did in
+    ``Service`` is a base model for defining services which workers did in
     some encounter with a person (e.g. a client).
 
-    Service subclasses can state special `Options` nested class
+    ``Service`` subclasses can state special ``Options`` nested class
     in similar fashion to a well-known `Meta` class that Django model can
     define.
 
     To register the class for editing in admin interface subclassing is
     the only thing you need.
 
-    `Options` nested class can have following attributes to allow for
+    ``Options`` nested class can have following attributes to allow for
     customizations::
 
-        `title`                    Title used in forms and when saving.
+        ========================== =============================================
+        Attribute                  Description
+        ========================== =============================================
+        ``title``                  Title used in forms and when saving.
                                    Defaults to verbose_name in Meta
 
-        `description_template`     Template path to use for service description
+        ``description_template``   Template path to use for service description
                                    rendering. Defaults to 'services/desc/default.html'
 
-        `form_template`            Template to use when rendering service form.
+        ``form_template``          Template to use when rendering service form.
                                    Defaults to 'services/forms/default.html'
 
-        `is_available`             Function to use when deciding whether
+        ``is_available``           Function to use when deciding whether
                                    this service should be proposed for given
                                    person. Takes `person` argument.
                                    Defaults to 'not model._meta.abstract'.
 
-        `limited_to`               When supplied, before checking `is_available`,
+        ``limited_to``             When supplied, before checking `is_available`,
                                    check for Person type, to which encounter
                                    is related is made. Iterable of class-names
                                    representing Person subtypes is expected, e.g.:
                                    limited_to = ('Client', 'Anonymous')
 
-        `row_attrs`                Row attrs as defined in BetterForm implentation.
+        ``row_attrs``              Row attrs as defined in BetterForm implentation.
 
-        `fieldsets`                Fieldsets to use when rendering the form.
+        ``fieldsets``              Fieldsets to use when rendering the form.
                                    Defaults to one fieldset with no legend and
                                    all the fields.
+        ========================== =============================================
     """
     __metaclass__ = ServiceMetaclass
 

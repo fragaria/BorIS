@@ -18,6 +18,7 @@ from boris.clients.models import Client, Drug, Town, RiskyBehavior, Anamnesis, \
 from boris.clients.forms import ReadOnlyWidget
 from boris.clients.views import add_note, delete_note
 from boris.services.admin import EncounterInline
+from boris.utils.admin import BorisBaseAdmin
 from boris.utils.widgets import SplitDateWidget
 
 class DrugUsageInline(admin.StackedInline):
@@ -47,7 +48,7 @@ class DiseaseTestInline(admin.TabularInline):
     extra = 0
 
 
-class AnamnesisAdmin(admin.ModelAdmin):
+class AnamnesisAdmin(BorisBaseAdmin):
     list_display = ('__unicode__', 'client_link')
     search_fields = ('client__code', 'client__first_name', 'client__last_name')
     readonly_fields = ('client__sex', 'client__birthyear')
@@ -138,7 +139,7 @@ class AnamnesisAdmin(admin.ModelAdmin):
             return super(AnamnesisAdmin, self).response_change(request, obj)
 
 
-class AnonymousAdmin(admin.ModelAdmin):
+class AnonymousAdmin(BorisBaseAdmin):
     change_form_template = 'admin/clients/person/change_form.html'
     inlines = (EncounterInline,)
     readonly_fields = ('drug_user_type', 'sex')
@@ -150,7 +151,7 @@ class AnonymousAdmin(admin.ModelAdmin):
         return False
 
 
-class PractitionerAdmin(admin.ModelAdmin):
+class PractitionerAdmin(BorisBaseAdmin):
     search_fields = ('first_name', 'last_name',)
     fieldsets = (
         (_(u'Základní informace'), {'fields': (
@@ -168,7 +169,7 @@ class PractitionerAdmin(admin.ModelAdmin):
     inlines = (EncounterInline,)
 
 
-class ClientAdmin(admin.ModelAdmin):
+class ClientAdmin(BorisBaseAdmin):
     list_display = ('code', 'first_name', 'last_name', 'sex', 'town')
     list_filter = ('town', 'sex', 'primary_drug')
     search_fields = ('code', 'first_name', 'last_name')
@@ -249,11 +250,11 @@ class ClientAdmin(admin.ModelAdmin):
 
 
 
-admin.site.register(RiskyBehavior)
-admin.site.register(Drug)
-admin.site.register(Region)
-admin.site.register(District)
-admin.site.register(Town)
+admin.site.register(RiskyBehavior, BorisBaseAdmin)
+admin.site.register(Drug, BorisBaseAdmin)
+admin.site.register(Region, BorisBaseAdmin)
+admin.site.register(District, BorisBaseAdmin)
+admin.site.register(Town, BorisBaseAdmin)
 admin.site.register(Practitioner, PractitionerAdmin)
 admin.site.register(Anonymous, AnonymousAdmin)
 admin.site.register(Client, ClientAdmin)

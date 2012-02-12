@@ -18,7 +18,7 @@ from boris.classification import SEXES, NATIONALITIES, \
 from django.contrib.contenttypes.models import ContentType
 
 
-class IndexedStringEnum(models.Model):
+class IndexedStringEnum(models.Model, AdminLinkMixin):
     title = models.CharField(max_length=100, verbose_name=_(u'Název'), db_index=True)
 
     def __unicode__(self):
@@ -147,7 +147,7 @@ class Practitioner(Person):
             return u'%s, %s' % (self.last_name, self.first_name)
         else:
             return u'%s' % self.last_name
-            
+
     def is_default_service(self, service):
         """Returns True if ``service`` is default for this person, False otherwise"""
         return service.__class__.__name__ == 'UtilityWork'

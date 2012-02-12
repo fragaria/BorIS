@@ -2,11 +2,13 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
+from fragapy.common.models.adminlink import AdminLinkMixin
+
 # add autocomplete fields list to django User to be able to use grappelli
 # autocomplete lookup
-User.autocomplete_search_fields = staticmethod(lambda : ['username__istartswith',])
+User.autocomplete_search_fields = staticmethod(lambda : ['username__istartswith', ])
 
-class SyringeCollection(models.Model):
+class SyringeCollection(models.Model, AdminLinkMixin):
     '''
     Simple model to record collecting of syringes
     '''

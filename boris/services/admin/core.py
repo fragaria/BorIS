@@ -10,9 +10,10 @@ from django import forms
 
 from boris.services.models.core import Encounter
 from boris.clients.forms import ReadOnlyWidget
+from boris.utils.admin import BorisBaseAdmin
 
 def service_list(self, obj):
-    return u'<small>' + u'<br />'.join([unicode(s) for s in obj.services.all()]) + u'</small>'
+    return u'<br />'.join([u'<small>%s</small>' % unicode(s) for s in obj.services.all()])
 service_list.short_description = _(u'Provedené výkony')
 service_list.allow_tags = True
 
@@ -48,8 +49,8 @@ class EncounterInline(admin.TabularInline):
 EncounterInline.service_list = service_list
 
 
-class EncounterAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'person', 'performed_on', 'where', 'service_list')
+class EncounterAdmin(BorisBaseAdmin):
+    list_display = ('person', 'performed_on', 'where', 'service_list')
     list_filter = ('performed_on', 'where')
     fieldsets = (
         (None, {'fields': (('person', 'performed_on', 'where'), 'performed_by')}),

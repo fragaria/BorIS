@@ -1,6 +1,23 @@
 button.warn { background: -moz-linear-gradient(center top , #D93636, #BF3030) repeat scroll 0 0 transparent; }
 button.small { font-size: 11px; font-weight: bold; padding: 0 2px; line-height:20px; height: 21px; vertical-align: middle; }
 
+a.cbutton {
+    padding: 4px 8px;
+    height: 25px;
+    -moz-box-sizing: border-box;
+    border-radius: 5px 5px 5px 5px;
+    color: #fff;
+    background: -moz-linear-gradient(center top , #33A6CC, #309BBF) repeat scroll 0 0 #309BBF;
+    border: 0;
+    font-weight: bold;
+}
+a.cbutton.warn { background: -moz-linear-gradient(center top , #D93636, #BF3030) repeat scroll 0 0 transparent; }
+a.cbutton:hover {
+    background: -moz-linear-gradient(center top , #555555, #444444) repeat scroll 0 0 #666666;
+}
+
+#changelist table a.cbutton { margin: 0 10px; }
+
 .service-description * { white-space: normal; font-size: 90%; }
 .service-description p { margin: 0 0 5px !important; }
 .service-description p:last-child { margin: 0 !important; }
@@ -24,7 +41,10 @@ button.small { font-size: 11px; font-weight: bold; padding: 0 2px; line-height:2
 
 /* GRAPPELLI OVERRIDES */
 body { padding: 68px 20px 0; }
+fieldset.module .cell { float:left; }
+ul.messagelist { top: 5px; }
 
 #header { height: 40px; line-height: 24px; }
 
-fieldset.module .cell {float:left}
+#changelist .changelist-results table td { padding: 10px 30px 10px 10px; } 
+
