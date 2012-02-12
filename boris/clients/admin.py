@@ -18,7 +18,7 @@ from boris.clients.models import Client, Drug, Town, RiskyBehavior, Anamnesis, \
 from boris.clients.forms import ReadOnlyWidget
 from boris.clients.views import add_note, delete_note
 from boris.services.admin import EncounterInline
-from boris.utils.admin import BorisBaseAdmin
+from boris.utils.admin import BorisBaseAdmin, textual
 from boris.utils.widgets import SplitDateWidget
 
 class DrugUsageInline(admin.StackedInline):
@@ -170,7 +170,7 @@ class PractitionerAdmin(BorisBaseAdmin):
 
 
 class ClientAdmin(BorisBaseAdmin):
-    list_display = ('code', 'first_name', 'last_name', 'sex', 'town')
+    list_display = ('code', 'first_name_display', 'last_name_display', 'sex', 'town')
     list_filter = ('town', 'sex', 'primary_drug')
     search_fields = ('code', 'first_name', 'last_name')
     fieldsets = (
@@ -189,6 +189,14 @@ class ClientAdmin(BorisBaseAdmin):
     }
     readonly_fields = (u'anamnesis_link', 'first_contact_verbose', 'last_contact_verbose')
     inlines = (EncounterInline,)
+
+    @textual(_(u'Jméno'), 'first_name')
+    def first_name_display(self, obj):
+        return obj.first_name
+
+    @textual(_(u'Příjmení'), 'first_name')
+    def last_name_display(self, obj):
+        return obj.last_name
 
     def change_view(self, request, object_id, extra_context=None):
         extra_context = {
