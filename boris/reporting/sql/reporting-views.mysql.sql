@@ -10,6 +10,7 @@ SELECT
 	clients_client.sex AS client_sex,
 	clients_client.primary_drug_id,
 	clients_client.primary_drug_usage,
+	clients_client.close_person as is_close_person,
 	clients_anonymous.person_ptr_id IS NOT NULL AS is_anonymous,
 	clients_practitioner.person_ptr_id IS NOT NULL AS is_practitioner
 FROM

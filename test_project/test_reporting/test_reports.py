@@ -4,23 +4,23 @@ from copy import copy
 
 from django.contrib.contenttypes.models import ContentType
 
-from boris.classification import SEXES, PRIMARY_DRUG_APPLICATION_TYPES,\
+from boris.classification import SEXES, PRIMARY_DRUG_APPLICATION_TYPES, \
         ANONYMOUS_TYPES, DISEASES
 from boris.clients.models import Anonymous
 from boris.other.models import SyringeCollection
 from boris.services.models.core import Encounter
-from boris.services.models.basic import Address, PhoneCounseling,\
+from boris.services.models.basic import Address, PhoneCounseling, \
         HarmReduction, IncomeExamination, DiseaseTest
-from boris.reporting.reports.monthly_stats import AllClientEncounters,\
-        MaleClientEncounters, IvClientEncounters, NonUserClientEncounters,\
-        NonClients, Parents, Practitioners, AllAddresses, AddressesDU,\
-        AddressesNonDU, EncounterCount, ClientEncounterCount,\
-        PractitionerEncounterCount, PhoneEncounterCount, FirstContactCount,\
-        FirstContactCountDU, FirstContactCountIV, HarmReductionCount,\
+from boris.reporting.reports.monthly_stats import AllClientEncounters, \
+        MaleClientEncounters, IvClientEncounters, NonUserClientEncounters, \
+        NonClients, Parents, Practitioners, AllAddresses, AddressesDU, \
+        AddressesNonDU, EncounterCount, ClientEncounterCount, \
+        PractitionerEncounterCount, PhoneEncounterCount, FirstContactCount, \
+        FirstContactCountDU, FirstContactCountIV, HarmReductionCount, \
         GatheredSyringes, IssuedSyringes, SyringeCollectionCount, disease_tests
 from boris.reporting.core import make_key
 
-from test_project.helpers import get_testing_town, get_testing_client,\
+from test_project.helpers import get_testing_town, get_testing_client, \
         get_testing_drug, get_testing_practitioner
 
 def create_encounter(person, date, town=None):
@@ -66,7 +66,7 @@ class TestEncounterAggregations(DestructiveDatabaseTestCase):
         # clients
         self.client1 = get_testing_client('c1', {'town': self.town1, 'primary_drug': self.drug})
         self.client2 = get_testing_client('c2', {'town': self.town1, 'primary_drug': self.drug, 'primary_drug_usage': PRIMARY_DRUG_APPLICATION_TYPES.IV})
-        self.client3 = get_testing_client('c3', {'town': self.town1, 'sex': SEXES.FEMALE})
+        self.client3 = get_testing_client('c3', {'town': self.town1, 'sex': SEXES.FEMALE, 'close_person': True})
         self.client4 = get_testing_client('c4', {'town': self.town1})
         self.client5 = get_testing_client('c5', {'town': self.town2})
         self.client6 = get_testing_client('c6', {'town': self.town2})
@@ -310,8 +310,8 @@ class TestEncounterTotals(DestructiveDatabaseTestCase):
         self.town2 = get_testing_town()
 
         # clients
-        self.client1 = get_testing_client('c1', {'town': self.town1,})
-        self.client2 = get_testing_client('c2', {'town': self.town1,})
+        self.client1 = get_testing_client('c1', {'town': self.town1, })
+        self.client2 = get_testing_client('c2', {'town': self.town1, })
 
         create_encounter(self.client1, date(2011, 11, 1))
         create_encounter(self.client1, date(2011, 11, 1), self.town2)
@@ -365,8 +365,8 @@ class TestServiceTotals(DestructiveDatabaseTestCase):
         self.town2 = get_testing_town()
 
         # clients
-        self.client1 = get_testing_client('c1', {'town': self.town1,})
-        self.client2 = get_testing_client('c2', {'town': self.town1,})
+        self.client1 = get_testing_client('c1', {'town': self.town1, })
+        self.client2 = get_testing_client('c2', {'town': self.town1, })
 
         hr_kwargs = {
             'in_count': 5,

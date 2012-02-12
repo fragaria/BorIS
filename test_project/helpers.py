@@ -3,7 +3,7 @@ from django.utils.functional import curry
 from django.contrib.contenttypes.models import ContentType
 
 from boris.clients.models import Client, Town, Region, District, Drug, Practitioner
-from boris.clients.classification import SEXES
+from boris.classification import SEXES
 
 
 def get_testing_string_enum(ModelClass, title, *args, **kwargs):

@@ -15,6 +15,7 @@ class SearchEncounter(models.Model):
     is_client = models.BooleanField()
     is_anonymous = models.BooleanField()
     is_practitioner = models.BooleanField()
+    is_close_person = models.BooleanField()
     client_sex = models.PositiveSmallIntegerField()
     primary_drug = models.ForeignKey(Drug, related_name='+', on_delete=DO_NOTHING)
     primary_drug_usage = models.PositiveSmallIntegerField()
@@ -40,7 +41,6 @@ class SearchService(models.Model):
         managed = False
 
 class SearchSyringeCollection(models.Model):
-
     count = models.SmallIntegerField()
     town = models.ForeignKey(Town, related_name='+', on_delete=DO_NOTHING)
     month = models.SmallIntegerField()

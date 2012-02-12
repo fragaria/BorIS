@@ -36,7 +36,7 @@ class MaleClientEncounters(AllClientEncounters):
 
 class NonUserClientEncounters(AllClientEncounters):
     title = _(u'Z toho osob blízkých (sex. partneři)')
-    filtering = {'is_client': True, 'primary_drug__isnull': True}
+    filtering = {'is_close_person': True}
 
 
 class NonClients(SuperAggregation):

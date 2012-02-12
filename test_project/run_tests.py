@@ -16,16 +16,16 @@ import nose
 DJANGO_SETTINGS_MODULE = '%s.%s' % (split(abspath(dirname(__file__)))[1], 'settings')
 
 # pythonpath dirs
-PYTHONPATH = [
-    abspath(join(dirname(__file__), pardir, pardir)),
-    abspath(join(dirname(__file__), pardir)),
-]
-
-
-# inject few paths to pythonpath
-for p in PYTHONPATH:
-    if p not in sys.path:
-        sys.path.insert(0, p)
+#PYTHONPATH = [
+#    abspath(join(dirname(__file__), pardir, pardir)),
+#    abspath(join(dirname(__file__), pardir)),
+#]
+#
+#
+## inject few paths to pythonpath
+#for p in PYTHONPATH:
+#    if p not in sys.path:
+#        sys.path.insert(0, p)
 
 # django needs this env variable
 os.environ['DJANGO_SETTINGS_MODULE'] = DJANGO_SETTINGS_MODULE
