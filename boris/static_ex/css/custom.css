@@ -23,10 +23,8 @@ button.small { font-size: 11px; font-weight: bold; padding: 0 2px; line-height:2
 }
 
 /* GRAPPELLI OVERRIDES */
-body { padding: 98px 20px 0; }
+body { padding: 68px 20px 0; }
 
 #header { height: 40px; line-height: 24px; }
-
-div#breadcrumbs { top: 73px; z-index: 999; }
 
 fieldset.module .cell {float:left}

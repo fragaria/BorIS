@@ -55,10 +55,6 @@
             {% block sitemenu %}
                 {% include "sitemenu.html" %}
             {% endblock %}
-            <!-- BREADCRUMBS -->
-            {% block breadcrumbs %}
-                <div id="breadcrumbs"><a href="/">{% trans 'Home' %}</a>{% if title %} &rsaquo; {{ title }}{% endif %}</div>
-            {% endblock %}
         {% endif %}
         <!-- MESSAGES -->
         {% if messages %}
