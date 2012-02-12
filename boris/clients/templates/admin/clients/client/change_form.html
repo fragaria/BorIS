@@ -19,8 +19,6 @@
         (function ($) {
             
             $(document).ready(function () {
-                var e = $('<input type="checkbox" id="id_close_person" style="margin-left: 20px;" /><label class="vCheckboxLabel">Osoba blízká</label>');
-                $('#id_primary_drug').parent().append(e);
                 $('#id_close_person').change(function () {
                     if ($(this).attr('checked') == 'checked') {
                         $('#id_primary_drug option[value=""]').show();

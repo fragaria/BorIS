@@ -183,7 +183,7 @@ class ClientAdmin(BorisBaseAdmin):
             ('code', 'sex', 'town'),
             ('first_name', 'last_name'),
             ('birthdate', 'birthdate_year_only'),
-            ('primary_drug', 'primary_drug_usage'),
+            ('primary_drug', 'close_person', 'primary_drug_usage'),
             ('first_contact_verbose', 'last_contact_verbose'),
             'anamnesis_link',
             )}),

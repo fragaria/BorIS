@@ -186,6 +186,8 @@ class Client(Person):
     primary_drug = models.ForeignKey(Drug, blank=True, null=True, verbose_name=_(u'Primární droga'))
     primary_drug_usage = models.PositiveSmallIntegerField(blank=True, null=True,
         choices=PRIMARY_DRUG_APPLICATION_TYPES, verbose_name=_(u'Způsob aplikace'))
+    close_person = models.BooleanField(default=False,
+        verbose_name=_(u'Osoba blízká'))
 
     class Meta:
         verbose_name = _(u'Klient')

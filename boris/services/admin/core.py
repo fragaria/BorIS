@@ -56,6 +56,7 @@ class EncounterAdmin(BorisBaseAdmin):
         (None, {'fields': (('person', 'performed_on', 'where'), 'performed_by')}),
     )
     raw_id_fields = ('where', 'person')
+    date_hierarchy = 'performed_on'
     autocomplete_lookup_fields = {
         'fk': ['where', 'person']
     }
