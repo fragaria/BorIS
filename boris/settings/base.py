@@ -120,5 +120,5 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # GRAPPELLI RELATED ------------------------------------------------------------
 
-GRAPPELLI_ADMIN_TITLE = gettext(u'Informační systém BorIS - Elektronická databáze pro evidenci výkonů v sociálních službách')
+GRAPPELLI_ADMIN_TITLE = gettext(u'<span class="highlight">Informační systém BorIS</span> - Elektronická databáze pro evidenci výkonů v sociálních službách')
 GRAPPELLI_INDEX_DASHBOARD = 'boris.dashboard.CustomIndexDashboard'

@@ -63,6 +63,8 @@ a.cbutton:hover {
     height: 25px;
 }
 
+#header .admin-title .highlight { color: #7DD6ED; }
+
 /* GRAPPELLI OVERRIDES */
 body { padding: 68px 20px 0; }
 fieldset.module .cell { float:left; }
