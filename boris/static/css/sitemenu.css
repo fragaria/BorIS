@@ -1,0 +1,133 @@
+#nav {
+    position: fixed;
+    left: 0;
+    top: 40px;
+    height: 33px;
+    width: 100%;
+    z-index: 1000;
+    margin: 0;
+    padding: 0 20px;
+    line-height: 100%;
+    
+    font-size: 11px;
+    font-weight: bold;
+
+    -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, .4);
+    -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, .4);
+
+    background: #444444; /* for non-css3 browsers */
+    color: #59AFCC;
+    background-image: -o-linear-gradient(top , #444444, #333333); /* for opera */
+    background: -moz-linear-gradient(center top , #444444, #333333) repeat scroll 0 0 transparent;
+    background: -webkit-gradient(linear, left top, left bottom, from(#444444), to(#333333)); /* for webkit browsers */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#444444', endColorstr='#333333'); /* for IE */
+}
+#nav li {
+    float: left;
+    position: relative;
+    list-style: none;
+}
+/* main level link */
+#nav a {
+    font-weight: bold;
+    color: #e7e5e5;
+    text-decoration: none;
+    display: block;
+    padding:  10px 30px;
+    margin: 0;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, .3);
+    border-left: 1px solid #404040;
+    border-right: 1px solid #303030;
+}
+/* main level link hover */
+#nav .current a, #nav li:hover > a {
+    background: #d1d1d1; /* for non-css3 browsers */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ebebeb', endColorstr='#a1a1a1'); /* for IE */
+    background-image: -o-linear-gradient(top, #ebebeb,  #a1a1a1); /* for opera */
+    background: -webkit-gradient(linear, left top, left bottom, from(#ebebeb), to(#a1a1a1)); /* for webkit browsers */
+    background: -moz-linear-gradient(top,  #ebebeb,  #a1a1a1); /* for firefox 3.6+ */
+
+    color: #444;
+    border-top: solid 1px #f8f8f8;
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .2);
+    -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, .2);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .2);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .8);
+}
+/* sub levels link hover */
+#nav ul li:hover a, #nav li:hover li a {
+    background: none;
+    border: none;
+    color: #666;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+}
+#nav ul a:hover {
+    background: #0399d4 !important; /* for non-css3 browsers */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#A1D4E5', endColorstr='#BCDFEB'); /* for IE */
+    background-image: -o-linear-gradient(top, #A1D4E5, #BCDFEB) !important; /* for opera */
+    background: -webkit-gradient(linear, left top, left bottom, from(#A1D4E5), to(#BCDFEB)) !important; /* for webkit browsers */
+    background: -moz-linear-gradient(center top,  #A1D4E5,  #BCDFEB) !important; /* for firefox 3.6+ */
+
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+/* level 2 list */
+#nav ul {
+    background: #ddd; /* for non-css3 browsers */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#cfcfcf'); /* for IE */
+    background-image: -o-linear-gradient(top,  #fff,  #cfcfcf); /* for opera */
+    background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#cfcfcf)); /* for webkit browsers */
+    background: -moz-linear-gradient(top,  #fff,  #cfcfcf); /* for firefox 3.6+ */
+
+    display: none;
+    margin: 0;
+    padding: 0;
+    width: 185px;
+    position: absolute;
+    top: 33px;
+    left: 0;
+    border: solid 1px #b4b4b4;
+    -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, .3);
+    -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, .3);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .3);
+    
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+/* dropdown */
+#nav li:hover > ul {
+    display: block;
+}
+#nav ul li {
+    float: none;
+    margin: 0;
+    padding: 0;
+}
+#nav ul a {
+    font-weight: bold;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, .9);
+}
+/* level 3+ list */
+#nav ul ul {
+    left: 181px;
+    top: -3px;
+}
+/* clearfix */
+#nav:after {
+    content: ".";
+    display: block;
+    clear: both;
+    visibility: hidden;
+    line-height: 0;
+    height: 0;
+}
+#nav {
+    display: inline-block;
+}
+html[xmlns] #nav {
+    display: block;
+}
+* html #nav {
+    height: 1%;
+}
