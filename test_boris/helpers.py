@@ -11,15 +11,15 @@ def get_testing_string_enum(ModelClass, title, *args, **kwargs):
 
 get_testing_region = curry(get_testing_string_enum, Region, 'Stredocesky')
 get_testing_district = curry(get_testing_string_enum, District, 'Rakovnik', region=get_testing_region())
-get_testing_town = curry(get_testing_string_enum, Town, 'Rakovnik', district=get_testing_district())
-get_testing_drug = curry(get_testing_string_enum, Drug, 'Piko')
+get_tst_town = curry(get_testing_string_enum, Town, 'Rakovnik', district=get_testing_district())
+get_tst_drug = curry(get_testing_string_enum, Drug, 'Piko')
 
-def get_testing_client(code='borivoj22', cdata=None):
+def get_tst_client(code='borivoj22', cdata=None):
     client_data = {
          'code': code,
          'sex': SEXES.MALE,
          'birthdate': '1980-10-10',
-         'town': get_testing_town(),
+         'town': get_tst_town(),
          'content_type': ContentType.objects.get_for_model(Client)
     }
 
@@ -28,17 +28,17 @@ def get_testing_client(code='borivoj22', cdata=None):
 
     return Client.objects.create(**client_data)
 
-def get_testing_practitioner(last_name='Sroubek'):
+def get_tst_practitioner(last_name='Sroubek'):
     practitioner_data = {
          'last_name': last_name,
          'sex': SEXES.MALE,
-         'town': get_testing_town(),
+         'town': get_tst_town(),
          'content_type': ContentType.objects.get_for_model(Practitioner)
     }
 
     return Practitioner.objects.create(**practitioner_data)
 
-def get_testing_user(username='strachkvas'):
+def get_tst_usr(username='strachkvas'):
     user_data = {
         'username': username,
         'is_staff': True,

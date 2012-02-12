@@ -1,8 +1,10 @@
 from datetime import date
-from djangosanetesting.cases import DestructiveDatabaseTestCase
 from copy import copy
 
+from django.test import TestCase
 from django.contrib.contenttypes.models import ContentType
+
+from nose import tools
 
 from boris.classification import SEXES, PRIMARY_DRUG_APPLICATION_TYPES, \
         ANONYMOUS_TYPES, DISEASES
@@ -20,8 +22,8 @@ from boris.reporting.reports.monthly_stats import AllClientEncounters, \
         GatheredSyringes, IssuedSyringes, SyringeCollectionCount, disease_tests
 from boris.reporting.core import make_key
 
-from test_project.helpers import get_testing_town, get_testing_client, \
-        get_testing_drug, get_testing_practitioner
+from test_boris.helpers import get_tst_town, get_tst_client, \
+        get_tst_drug, get_tst_practitioner
 
 def create_encounter(person, date, town=None):
     if not town:
@@ -55,22 +57,22 @@ class MockYearlyReport(object):
     grouping_total = ('year',)
     additional_filtering = {'year': 2011}
 
-class TestEncounterAggregations(DestructiveDatabaseTestCase):
+class TestEncounterAggregations(TestCase):
     """ Mostly encounter aggregations are tested here. """
 
     def setUp(self):
-        self.town1 = get_testing_town()
-        self.town2 = get_testing_town()
-        self.drug = get_testing_drug()
+        self.town1 = get_tst_town()
+        self.town2 = get_tst_town()
+        self.drug = get_tst_drug()
 
         # clients
-        self.client1 = get_testing_client('c1', {'town': self.town1, 'primary_drug': self.drug})
-        self.client2 = get_testing_client('c2', {'town': self.town1, 'primary_drug': self.drug, 'primary_drug_usage': PRIMARY_DRUG_APPLICATION_TYPES.IV})
-        self.client3 = get_testing_client('c3', {'town': self.town1, 'sex': SEXES.FEMALE, 'close_person': True})
-        self.client4 = get_testing_client('c4', {'town': self.town1})
-        self.client5 = get_testing_client('c5', {'town': self.town2})
-        self.client6 = get_testing_client('c6', {'town': self.town2})
-        self.client7 = get_testing_client('c7', {'town': self.town2})
+        self.client1 = get_tst_client('c1', {'town': self.town1, 'primary_drug': self.drug})
+        self.client2 = get_tst_client('c2', {'town': self.town1, 'primary_drug': self.drug, 'primary_drug_usage': PRIMARY_DRUG_APPLICATION_TYPES.IV})
+        self.client3 = get_tst_client('c3', {'town': self.town1, 'sex': SEXES.FEMALE, 'close_person': True})
+        self.client4 = get_tst_client('c4', {'town': self.town1})
+        self.client5 = get_tst_client('c5', {'town': self.town2})
+        self.client6 = get_tst_client('c6', {'town': self.town2})
+        self.client7 = get_tst_client('c7', {'town': self.town2})
 
         create_encounter(self.client1, date(2011, 11, 1))
         create_encounter(self.client1, date(2011, 11, 1))
@@ -101,8 +103,8 @@ class TestEncounterAggregations(DestructiveDatabaseTestCase):
         create_encounter(self.anonym1, date(2011, 11, 1), self.town2)
 
         # practitioners
-        self.practitioner1 = get_testing_practitioner('sroubek1')
-        self.practitioner2 = get_testing_practitioner('sroubek2')
+        self.practitioner1 = get_tst_practitioner('sroubek1')
+        self.practitioner2 = get_tst_practitioner('sroubek2')
         create_encounter(self.practitioner1, date(2011, 11, 1), self.town1)
         create_encounter(self.practitioner1, date(2011, 11, 1), self.town1)
         create_encounter(self.practitioner2, date(2011, 11, 1), self.town1)
@@ -113,56 +115,56 @@ class TestEncounterAggregations(DestructiveDatabaseTestCase):
     def test_all_client_encounters(self):
         aggregation = AllClientEncounters(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
-        self.assert_equals(aggregation.get_val(key), 3)
+        tools.assert_equals(aggregation.get_val(key), 3)
 
     def test_male_client_encounters(self):
         aggregation = MaleClientEncounters(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
-        self.assert_equals(aggregation.get_val(key), 2)
+        tools.assert_equals(aggregation.get_val(key), 2)
 
     def test_iv_client_encounters(self):
         aggregation = IvClientEncounters(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
-        self.assert_equals(aggregation.get_val(key), 1)
+        tools.assert_equals(aggregation.get_val(key), 1)
 
     def test_nonuser_client_encounters(self):
         aggregation = NonUserClientEncounters(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
-        self.assert_equals(aggregation.get_val(key), 1)
+        tools.assert_equals(aggregation.get_val(key), 1)
 
     def test_nonclient_encounters(self):
         aggregation = NonClients(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
-        self.assert_equals(aggregation.get_val(key), 6)
+        tools.assert_equals(aggregation.get_val(key), 6)
 
     def test_parents(self):
         aggregation = Parents(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
-        self.assert_equals(aggregation.get_val(key), 1)
+        tools.assert_equals(aggregation.get_val(key), 1)
 
     def test_practitioners(self):
         aggregation = Practitioners(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
-        self.assert_equals(aggregation.get_val(key), 2)
+        tools.assert_equals(aggregation.get_val(key), 2)
 
 
-class TestServiceAggregations(DestructiveDatabaseTestCase):
+class TestServiceAggregations(TestCase):
     """ Mostly service aggregations are tested here. """
 
     def setUp(self):
-        self.town1 = get_testing_town()
-        self.town2 = get_testing_town()
-        self.drug = get_testing_drug()
+        self.town1 = get_tst_town()
+        self.town2 = get_tst_town()
+        self.drug = get_tst_drug()
 
         # persons
-        self.client1 = get_testing_client('c1', {'town': self.town1, 'primary_drug': self.drug})
-        self.client2 = get_testing_client('c2', {'town': self.town2, 'primary_drug': self.drug})
-        self.client3 = get_testing_client('c3', {'town': self.town1})
+        self.client1 = get_tst_client('c1', {'town': self.town1, 'primary_drug': self.drug})
+        self.client2 = get_tst_client('c2', {'town': self.town2, 'primary_drug': self.drug})
+        self.client3 = get_tst_client('c3', {'town': self.town1})
         self.anonym1 = Anonymous.objects.get(sex=SEXES.MALE,
                 drug_user_type=ANONYMOUS_TYPES.IV)
         self.anonym2 = Anonymous.objects.get(sex=SEXES.MALE,
                 drug_user_type=ANONYMOUS_TYPES.NON_USER)
-        self.practitioner1 = get_testing_practitioner('sroubek')
+        self.practitioner1 = get_tst_practitioner('sroubek')
 
         # services - addresses
         create_service(Address, self.client1, date(2011, 11, 1), self.town1)
@@ -200,73 +202,73 @@ class TestServiceAggregations(DestructiveDatabaseTestCase):
     def test_all_addresses(self):
         aggregation = AllAddresses(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
-        self.assert_equals(aggregation.get_val(key), 5)
+        tools.assert_equals(aggregation.get_val(key), 5)
 
     def test_all_addresses_du(self):
         aggregation = AddressesDU(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
-        self.assert_equals(aggregation.get_val(key), 3)
+        tools.assert_equals(aggregation.get_val(key), 3)
 
     def test_all_addresses_non_du(self):
         aggregation = AddressesNonDU(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
-        self.assert_equals(aggregation.get_val(key), 2)
+        tools.assert_equals(aggregation.get_val(key), 2)
 
     def test_first_contact_count(self):
         aggregation = FirstContactCount(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
-        self.assert_equals(aggregation.get_val(key), 5)
+        tools.assert_equals(aggregation.get_val(key), 5)
 
     def test_first_contact_count_du(self):
         aggregation = FirstContactCountDU(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
-        self.assert_equals(aggregation.get_val(key), 3)
+        tools.assert_equals(aggregation.get_val(key), 3)
 
     def test_first_contact_count_iv(self):
         aggregation = FirstContactCountIV(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
-        self.assert_equals(aggregation.get_val(key), 2)
+        tools.assert_equals(aggregation.get_val(key), 2)
 
     def test_harm_reduction_count(self):
         aggregation = HarmReductionCount(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
-        self.assert_equals(aggregation.get_val(key), 3)
+        tools.assert_equals(aggregation.get_val(key), 3)
 
     def test_gathered_syringes(self):
         aggregation = GatheredSyringes(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
-        self.assert_equals(aggregation.get_val(key), 15)
+        tools.assert_equals(aggregation.get_val(key), 15)
 
     def test_issued_syringes(self):
         aggregation = IssuedSyringes(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
-        self.assert_equals(aggregation.get_val(key), 30)
+        tools.assert_equals(aggregation.get_val(key), 30)
 
     def test_disease_vhc(self):
-        self.assert_in('DiseaseTestVHC', (dtest.__name__ for dtest in disease_tests))
+        tools.assert_in('DiseaseTestVHC', (dtest.__name__ for dtest in disease_tests))
         for disease_test in disease_tests:
             if disease_test.__name__ == 'DiseaseTestVHC':
                 aggregation = disease_test(self.report)
                 break
         key = make_key({'month': 11, 'town': self.town1.pk})
-        self.assert_equals(aggregation.get_val(key), 1)
+        tools.assert_equals(aggregation.get_val(key), 1)
 
 
-class TestMixedAggregations(DestructiveDatabaseTestCase):
+class TestMixedAggregations(TestCase):
     """
     In these aggregations, both encounters and services are taken into account.
     """
 
     def setUp(self):
-        self.town1 = get_testing_town()
-        self.town2 = get_testing_town()
+        self.town1 = get_tst_town()
+        self.town2 = get_tst_town()
 
         # persons
-        self.client1 = get_testing_client('c1', {'town': self.town1})
-        self.client2 = get_testing_client('c2', {'town': self.town1})
+        self.client1 = get_tst_client('c1', {'town': self.town1})
+        self.client2 = get_tst_client('c2', {'town': self.town1})
         self.anonym = Anonymous.objects.get(sex=SEXES.MALE,
             drug_user_type=ANONYMOUS_TYPES.IV)
-        self.practitioner = get_testing_practitioner('sroubek1')
+        self.practitioner = get_tst_practitioner('sroubek1')
 
         # services
         create_service(Address, self.client1, date(2011, 11, 1), self.town1)
@@ -285,33 +287,33 @@ class TestMixedAggregations(DestructiveDatabaseTestCase):
     def test_encounter_count(self):
         aggregation = EncounterCount(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
-        self.assert_equals(aggregation.get_val(key), 7)
+        tools.assert_equals(aggregation.get_val(key), 7)
 
     def test_client_encounter_count(self):
         aggregation = ClientEncounterCount(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
-        self.assert_equals(aggregation.get_val(key), 2)
+        tools.assert_equals(aggregation.get_val(key), 2)
 
     def test_practitioner_encounter_count(self):
         aggregation = PractitionerEncounterCount(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
-        self.assert_equals(aggregation.get_val(key), 2)
+        tools.assert_equals(aggregation.get_val(key), 2)
 
     def test_phone_encounter_count(self):
         aggregation = PhoneEncounterCount(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
-        self.assert_equals(aggregation.get_val(key), 3)
+        tools.assert_equals(aggregation.get_val(key), 3)
 
 
-class TestEncounterTotals(DestructiveDatabaseTestCase):
+class TestEncounterTotals(TestCase):
 
     def setUp(self):
-        self.town1 = get_testing_town()
-        self.town2 = get_testing_town()
+        self.town1 = get_tst_town()
+        self.town2 = get_tst_town()
 
         # clients
-        self.client1 = get_testing_client('c1', {'town': self.town1, })
-        self.client2 = get_testing_client('c2', {'town': self.town1, })
+        self.client1 = get_tst_client('c1', {'town': self.town1, })
+        self.client2 = get_tst_client('c2', {'town': self.town1, })
 
         create_encounter(self.client1, date(2011, 11, 1))
         create_encounter(self.client1, date(2011, 11, 1), self.town2)
@@ -327,8 +329,8 @@ class TestEncounterTotals(DestructiveDatabaseTestCase):
         create_encounter(self.anonym1, date(2011, 11, 1), self.town2)
 
         # practitioners
-        self.practitioner1 = get_testing_practitioner('sroubek1')
-        self.practitioner2 = get_testing_practitioner('sroubek2')
+        self.practitioner1 = get_tst_practitioner('sroubek1')
+        self.practitioner2 = get_tst_practitioner('sroubek2')
         create_encounter(self.practitioner1, date(2011, 11, 1), self.town1)
         create_encounter(self.practitioner1, date(2011, 11, 1), self.town1)
         create_encounter(self.practitioner2, date(2011, 11, 1), self.town2)
@@ -340,33 +342,33 @@ class TestEncounterTotals(DestructiveDatabaseTestCase):
     def test_all_client_encounters_total_monthly(self):
         aggregation = AllClientEncounters(self.monthly_report)
         key = make_key({'month': 11})
-        self.assert_equals(aggregation.get_val(key), 2)
+        tools.assert_equals(aggregation.get_val(key), 2)
 
     def test_all_client_encounters_total_yearly(self):
         aggregation = AllClientEncounters(self.yearly_report)
         key = make_key({'year': 2011})
-        self.assert_equals(aggregation.get_val(key), 2)
+        tools.assert_equals(aggregation.get_val(key), 2)
 
     def test_nonclient_encounters_monthly(self):
         aggregation = NonClients(self.monthly_report)
         key = make_key({'month': 11})
-        self.assert_equals(aggregation.get_val(key), 5)
+        tools.assert_equals(aggregation.get_val(key), 5)
 
     def test_nonclient_encounters_yearly(self):
         aggregation = NonClients(self.yearly_report)
         key = make_key({'year': 2011})
-        self.assert_equals(aggregation.get_val(key), 5)
+        tools.assert_equals(aggregation.get_val(key), 5)
 
 
-class TestServiceTotals(DestructiveDatabaseTestCase):
+class TestServiceTotals(TestCase):
 
     def setUp(self):
-        self.town1 = get_testing_town()
-        self.town2 = get_testing_town()
+        self.town1 = get_tst_town()
+        self.town2 = get_tst_town()
 
         # clients
-        self.client1 = get_testing_client('c1', {'town': self.town1, })
-        self.client2 = get_testing_client('c2', {'town': self.town1, })
+        self.client1 = get_tst_client('c1', {'town': self.town1, })
+        self.client2 = get_tst_client('c2', {'town': self.town1, })
 
         hr_kwargs = {
             'in_count': 5,
@@ -383,18 +385,18 @@ class TestServiceTotals(DestructiveDatabaseTestCase):
     def test_gathered_syringes_monthly(self):
         aggregation = GatheredSyringes(self.monthly_report)
         key = make_key({'month': 11})
-        self.assert_equals(aggregation.get_val(key), 15)
+        tools.assert_equals(aggregation.get_val(key), 15)
 
     def test_gathered_syringes_yearly(self):
         aggregation = GatheredSyringes(self.yearly_report)
         key = make_key({'year': 2011})
-        self.assert_equals(aggregation.get_val(key), 20)
+        tools.assert_equals(aggregation.get_val(key), 20)
 
 
-class TestSyringeCollection(DestructiveDatabaseTestCase):
+class TestSyringeCollection(TestCase):
     def setUp(self):
-        self.town1 = get_testing_town()
-        self.town2 = get_testing_town()
+        self.town1 = get_tst_town()
+        self.town2 = get_tst_town()
 
         create_syringe_collection(self.town1, date(2011, 11, 1), 10)
         create_syringe_collection(self.town1, date(2011, 11, 1), 10)
@@ -407,4 +409,4 @@ class TestSyringeCollection(DestructiveDatabaseTestCase):
     def test_syringe_collection(self):
         aggregation = SyringeCollectionCount(self.monthly_report)
         key = make_key({'month': 11, 'town': self.town1.pk})
-        self.assert_equals(aggregation.get_val(key), 30)
+        tools.assert_equals(aggregation.get_val(key), 30)

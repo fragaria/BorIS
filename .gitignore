@@ -8,3 +8,4 @@
 boris/settings/local.py
 test_project/settings/local.py
 boris.db
+.coverage
