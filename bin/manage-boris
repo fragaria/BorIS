@@ -1,5 +1,0 @@
-#!/bin/bash
-
-source /etc/boris/manage-boris
-
-django-admin.py "$@"
