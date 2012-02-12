@@ -60,7 +60,7 @@ function delete_note(link, note_id) {
     <div class="td"><p><strong>${author}</strong></p></div>
     <div class="td"><p>${datetime}</p></div>
     <div class="td wrap_lines"><p>${text}</p></div>
-    <div class="td"><p><button onclick="delete_note(this, ${id}); return false;" class="warn small">{% trans "Smazat" %}</a></p></div>
+    <div class="td"><p><a onclick="delete_note(this, ${id}); return false;" class="cbutton warn">{% trans "Smazat" %}</a></p></div>
 </div>
 </script>
     
@@ -81,7 +81,7 @@ function delete_note(link, note_id) {
                     <input value="{{ current_date }}" class="vDateField" type="text" id="new_note_date" size="10" name="datetime_0" />
                     <input value="{{ current_time }}" class="vTimeField" type="text" id="new_note_time" size="5" name="datetime_1" />
                 </div>
-                <div class="td"><textarea id="new_note_text" style="width: 50%; margin-right: 20px;"></textarea><button onclick="add_new_note(); return false;">{% trans "Přidat poznámku" %}</button></div>
+                <div class="td"><textarea id="new_note_text" style="width: 50%; margin-right: 20px;"></textarea><a class="cbutton" onclick="add_new_note(); return false;">{% trans "Přidat poznámku" %}</a></div>
                 <div class="td">&nbsp;</div>
             </div>
             {% for note in original.notes.all %}
@@ -89,7 +89,7 @@ function delete_note(link, note_id) {
                 <div class="td"><p><strong>{{ note.author }}</strong></p></div>
                 <div class="td"><p>{{ note.datetime|date:"DATETIME_FORMAT" }}</p></div>
                 <div class="td wrap_lines"><p>{{ note.text }}</p></div>
-                <div class="td">{% if note.author == request.user or request.user.is_superuser %}<p><button onclick="delete_note(this, {{ note.pk }}); return false;" class="warn small">{% trans "Smazat" %}</a></p>{% endif %}</div>
+                <div class="td">{% if note.author == request.user or request.user.is_superuser %}<p><a onclick="delete_note(this, {{ note.pk }}); return false;" class="cbutton warn">{% trans "Smazat" %}</a></p>{% endif %}</div>
             </div>
             {% endfor %}
         </div>

@@ -5,10 +5,10 @@
 
 <!-- BREADCRUMBS -->
 {% block breadcrumbs %}
-        <div id="breadcrumbs">
-             <a href="../">{% trans "Home" %}</a> &rsaquo;
-             <a href=".">{% trans "Výkazy" %}</a>
-        </div>
+    <div id="breadcrumbs">
+         <a href="../">{% trans "Home" %}</a> &rsaquo;
+         <a href=".">{% trans "Výkazy" %}</a>
+    </div>
 {% endblock %}
 
 <!-- CONTENT -->
@@ -20,23 +20,25 @@
             <li><a href="#tabs-{{ forloop.counter }}">{{ tab.get_title }}</a></li> 
             {% endfor %}
         </ul>
-        {% for tab, form in tabs %}
-        <div class="form-container" id="tabs-{{ forloop.counter }}">
-            <form method="POST" action="{{ tab.get_absolute_url }}">
-                <fieldset class="module">
-                    <div class="row cells cells-1"><div class="cell">
-                        {% autoescape off %}
-                        {{ tab.get_description }}
-                        {% endautoescape %}
-                    </div></div>
-                    {% include "form_snippet.html" %}
-                    <div class="row cells cells-2"><div class="cell">
-                        <button onclick="django.jQuery(this).closest('form').submit();">Zobrazit výkaz</button>
-                    </div></div>
-                </fieldset>
-            </form>
+        <div class="form-container">
+            {% for tab, form in tabs %}
+            <div id="tabs-{{ forloop.counter }}">
+                <form method="POST" action="{{ tab.get_absolute_url }}">
+                    <fieldset class="module">
+                        <div class="row cells cells-1"><div class="cell">
+                            {% autoescape off %}
+                            {{ tab.get_description }}
+                            {% endautoescape %}
+                        </div></div>
+                        {% include "form_snippet.html" %}
+                        <div class="row cells cells-2 submit-right"><div class="cell">
+                            <a onclick="django.jQuery(this).closest('form').submit();" class="cbutton">Zobrazit výkaz</a>
+                        </div></div>
+                    </fieldset>
+                </form>
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
     
     <script type="text/javascript">

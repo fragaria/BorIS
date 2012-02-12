@@ -7,9 +7,9 @@
     {% endblock %}
     <div class="row cells-2 cells">
         <div class="cell">
-            <button id="service-form-submit" onclick="ui.saveForm(); return false;">{% trans "Uložit výkon" %}</button>
+            <a id="service-form-submit" onclick="ui.saveForm(); return false;" class="cbutton">{% trans "Uložit výkon" %}</a>
             {% if is_edit %}
-            <button class="warn" onclick="ui.dropService({{ obj.pk }}); return false;">{% trans "Smazat výkon" %}</button>
+            <a class="cbutton warn" onclick="ui.dropService({{ obj.pk }}); return false;">{% trans "Smazat výkon" %}</a>
             {% endif %}
         </div>
     </div>

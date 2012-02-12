@@ -6,9 +6,9 @@
     <div class="td"><strong>{{ s.title }}</strong></div>
     <div class="td">
         {% if casted.is_editable %}
-        <button class="small" onclick="ui.loadForm({{ s.pk }}, '{{ casted.class_name }}'); return false;">{% trans "Upravit" %}</button>
+        <a class="cbutton" onclick="ui.loadForm({{ s.pk }}, '{{ casted.class_name }}'); return false;">{% trans "Upravit" %}</a>
         {% endif %}
-        <button class="small warn" onclick="ui.dropService({{ s.pk }}); return false;">{% trans "Smazat" %}</button>
+        <a class="cbutton  warn" onclick="ui.dropService({{ s.pk }}); return false;">{% trans "Smazat" %}</a>
     </div>
 </div>
 {% endwith %}

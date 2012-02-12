@@ -1,20 +1,38 @@
-button.warn { background: -moz-linear-gradient(center top , #D93636, #BF3030) repeat scroll 0 0 transparent; }
-button.small { font-size: 11px; font-weight: bold; padding: 0 2px; line-height:20px; height: 21px; vertical-align: middle; }
+button.warn {
+    background: -moz-linear-gradient(center top , #D93636, #BF3030) repeat scroll 0 0 transparent;
+}
+button.small {
+    font-size: 11px;
+    font-weight: bold;
+    padding: 0 2px;
+    line-height: 20px;
+    height: 21px;
+    vertical-align: middle;
+}
 
 a.cbutton {
+    display: inline-block;
     padding: 4px 8px;
-    height: 25px;
     -moz-box-sizing: border-box;
     border-radius: 5px 5px 5px 5px;
     color: #fff;
-    background: -moz-linear-gradient(center top , #33A6CC, #309BBF) repeat scroll 0 0 #309BBF;
     border: 0;
     font-weight: bold;
+    background: -moz-linear-gradient(center top , #33A6CC, #309BBF) repeat scroll 0 0 #309BBF;
+    background: -webkit-linear-gradient(top , #33A6CC, #309BBF) repeat scroll 0 0 #309BBF;
+    background: -o-linear-gradient(top , #33A6CC, #309BBF) repeat scroll 0 0 #309BBF;
 }
-a.cbutton.warn { background: -moz-linear-gradient(center top , #D93636, #BF3030) repeat scroll 0 0 transparent; }
+a.cbutton.warn {
+    background: -moz-linear-gradient(center top , #D93636, #BF3030) repeat scroll 0 0 transparent;
+    background: -webkit-linear-gradient(top , #D93636, #BF3030) repeat scroll 0 0 transparent;
+    background: -o-linear-gradient(top , #D93636, #BF3030) repeat scroll 0 0 transparent;
+}
 a.cbutton:hover {
     background: -moz-linear-gradient(center top , #555555, #444444) repeat scroll 0 0 #666666;
+    background: -webkit-linear-gradient(top , #555555, #444444) repeat scroll 0 0 #666666;
+    background: -o-linear-gradient(top , #555555, #444444) repeat scroll 0 0 #666666;
 }
+.row.cells.submit-right .cell { float: right; }
 
 #changelist table a.cbutton { margin: 0 10px; }
 
@@ -46,5 +64,9 @@ ul.messagelist { top: 5px; }
 
 #header { height: 40px; line-height: 24px; }
 
-#changelist .changelist-results table td { padding: 10px 30px 10px 10px; } 
+#changelist .changelist-results table td, #changelist .changelist-results table th { padding: 5px 30px 5px 10px; } 
 
+/* TAB fix */
+.ui-tabs-nav { border: 0 !important; }
+.ui-tabs-panel.ui-widget-content { border: 0 !important; }
+.ui-tabs-panel fieldset.module { border-radius: 0 5px 5px 5px; }
