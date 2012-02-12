@@ -147,7 +147,16 @@ class PersonAdmin(BorisBaseAdmin):
     search_fields = ('title',)
 
 
-class AnonymousAdmin(BorisBaseAdmin):
+class AddContactAdmin(BorisBaseAdmin):
+    list_actions = ('change_link', 'add_contact_link')
+
+    def add_contact_link(self, obj):
+        return u'<a href="%s" class="changelink cbutton high1">%s</button>' % (
+            reverse('admin:services_encounter_add') + '?person_id=%s' % obj.pk,
+            _(u'přidat kontakt'))
+
+
+class AnonymousAdmin(AddContactAdmin):
     change_form_template = 'admin/clients/person/change_form.html'
     inlines = (EncounterInline,)
     readonly_fields = ('drug_user_type', 'sex')
@@ -159,7 +168,7 @@ class AnonymousAdmin(BorisBaseAdmin):
         return False
 
 
-class PractitionerAdmin(BorisBaseAdmin):
+class PractitionerAdmin(AddContactAdmin):
     search_fields = ('first_name', 'last_name',)
     fieldsets = (
         (_(u'Základní informace'), {'fields': (
@@ -177,7 +186,7 @@ class PractitionerAdmin(BorisBaseAdmin):
     inlines = (EncounterInline,)
 
 
-class ClientAdmin(BorisBaseAdmin):
+class ClientAdmin(AddContactAdmin):
     list_display = ('code', 'first_name_display', 'last_name_display', 'sex', 'town')
     list_filter = ('town', 'sex', 'primary_drug')
     search_fields = ('code', 'first_name', 'last_name')

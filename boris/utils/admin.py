@@ -30,15 +30,19 @@ def textual(title, ordering_field=None):
 
 class BorisBaseAdmin(ModelAdmin):
     """
-    Adds change button as last column in change list. 
+    Adds ``list_actions`` to simplify addition of actions to changelist rows. 
     """
+    list_actions = ('change_link',)
+
     def __init__(self, *args, **kwargs):
-        self.list_display += ('change_link',)
+        self.list_display += ('actions_display',)
         super(BorisBaseAdmin, self).__init__(*args, **kwargs)
-        self.list_display_links += ('change_link',)
+
+    def actions_display(self, obj):
+        return ''.join(getattr(self, a)(obj) for a in self.list_actions)
+    actions_display.allow_tags = True
+    actions_display.short_description = _(u'Akce')
 
     def change_link(self, obj):
         return u'<a href="%s" class="changelink cbutton">%s</button>' % (
             obj.get_admin_url(), _('upravit'))
-    change_link.allow_tags = True
-    change_link.short_description = _('Upravit')

@@ -27,6 +27,11 @@ a.cbutton.warn {
     background: -webkit-linear-gradient(top , #D93636, #BF3030) repeat scroll 0 0 transparent;
     background: -o-linear-gradient(top , #D93636, #BF3030) repeat scroll 0 0 transparent;
 }
+a.cbutton.high1 {
+    background: -moz-linear-gradient(center top , #7553D1, #734EC4) repeat scroll 0 0 transparent;
+    background: -webkit-linear-gradient(top , #7553D1, #734EC4) repeat scroll 0 0 transparent;
+    background: -o-linear-gradient(top , #7553D1, #734EC4) repeat scroll 0 0 transparent;
+}
 a.cbutton:hover {
     background: -moz-linear-gradient(center top , #555555, #444444) repeat scroll 0 0 #666666;
     background: -webkit-linear-gradient(top , #555555, #444444) repeat scroll 0 0 #666666;
@@ -34,7 +39,8 @@ a.cbutton:hover {
 }
 .row.cells.submit-right .cell { float: right; }
 
-#changelist table a.cbutton { margin: 0 10px; }
+#changelist table a.cbutton { margin: 0 5px 0 0; }
+#changelist table:last-child { margin: 0; }
 
 .service-description * { white-space: normal; font-size: 90%; }
 .service-description p { margin: 0 0 5px !important; }
