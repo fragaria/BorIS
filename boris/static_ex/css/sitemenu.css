@@ -40,6 +40,11 @@
     border-right: 1px solid #303030;
 }
 /* main level link hover */
+#nav .active a {
+    background: -moz-linear-gradient(center top , #33A6CC, #275E96) repeat scroll 0 0 #275E96;
+    background: -webkit-linear-gradient(top , #33A6CC, #3890D8) repeat scroll 0 0 #3890D8;
+    background: -o-linear-gradient(top , #33A6CC, #309BBF) repeat scroll 0 0 #309BBF;    
+}
 #nav .current a, #nav li:hover > a {
     background: #d1d1d1; /* for non-css3 browsers */
     filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ebebeb', endColorstr='#a1a1a1'); /* for IE */

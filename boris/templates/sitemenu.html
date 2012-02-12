@@ -1,19 +1,28 @@
-{% load i18n %}
+{% load i18n adminnav %}
 {% if user.is_authenticated %}
 <ul id="nav">
-    <li><a href="/">{% trans "Nástěnka" %}</a></li>
-    <li><a href="{% url admin:clients_client_changelist %}">{% trans "Klienti" %}</a></li>
-    <li><a href="{% url admin:services_encounter_changelist %}">{% trans "Kontakty" %}</a></li>
-    <li><a href="{% url admin:other_syringecollection_changelist %}">{% trans "Sběr stříkaček" %}</a></li>
+    {% url admin:clients_client_changelist as clients %}
+    {% url admin:services_encounter_changelist as contacts %}
+    {% url admin:other_syringecollection_changelist as syringecollection %}
+    {% url admin:clients_town_changelist as towns %}
+    {% url admin:clients_district_changelist as districts %}
+    {% url admin:clients_region_changelist as regions %}
+    {% url admin:clients_drug_changelist as drugs %}
+    {% url admin:clients_riskybehavior_changelist as riskybehavior %}
+    
+    <li class="{% active "/" %}"><a href="/">{% trans "Nástěnka" %}</a></li>
+    <li class="{% active clients %}"><a href="{{ clients }}">{% trans "Klienti" %}</a></li>
+    <li class="{% active contacts %}"><a href="{{ contacts }}">{% trans "Kontakty" %}</a></li>
+    <li class="{% active syringecollection %}"><a href="{{ syringecollection }}">{% trans "Sběr stříkaček" %}</a></li>
     {% if request.user.is_superuser %}
-    <li>
+    <li class="{% active towns districts regions drugs riskybehavior %}">
         <a href="#">{% trans "Nastavení" %}</a>
         <ul>
-            <li><a href="{% url admin:clients_town_changelist %}">{% trans "Města" %}</a></li>
-            <li><a href="{% url admin:clients_district_changelist %}">{% trans "Okresy" %}</a></li>
-            <li><a href="{% url admin:clients_region_changelist %}">{% trans "Kraje" %}</a></li>
-            <li><a href="{% url admin:clients_drug_changelist %}">{% trans "Drogy" %}</a></li>
-            <li><a href="{% url admin:clients_riskybehavior_changelist %}">{% trans "Riziková chování" %}</a></li>
+            <li><a href="{{ towns }}">{% trans "Města" %}</a></li>
+            <li><a href="{{ districts }}">{% trans "Okresy" %}</a></li>
+            <li><a href="{{ regions }}">{% trans "Kraje" %}</a></li>
+            <li><a href="{{ drugs }}">{% trans "Drogy" %}</a></li>
+            <li><a href="{{ riskybehavior }}">{% trans "Riziková chování" %}</a></li>
         </ul>
     </li>
     {% endif %}
