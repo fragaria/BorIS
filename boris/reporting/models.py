@@ -42,7 +42,6 @@ class SearchService(models.Model):
 class SearchSyringeCollection(models.Model):
 
     count = models.SmallIntegerField()
-    person = models.ForeignKey(User, related_name='+', on_delete=DO_NOTHING)
     town = models.ForeignKey(Town, related_name='+', on_delete=DO_NOTHING)
     month = models.SmallIntegerField()
     year = models.SmallIntegerField()

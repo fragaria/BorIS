@@ -31,5 +31,6 @@ INSTALLED_APPS = (
     'boris.clients',
     'boris.services',
     'boris.reporting',
+    'boris.other',
 )
 

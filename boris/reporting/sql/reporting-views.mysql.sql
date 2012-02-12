@@ -35,7 +35,7 @@ SELECT
 	clients_practitioner.person_ptr_id IS NOT NULL AS is_practitioner
 FROM
 	services_service
-	JOIN services_encounter ON (services_service.id = services_encounter.id)
+	JOIN services_encounter ON (services_service.encounter_id = services_encounter.id)
 	JOIN django_content_type ON (services_service.content_type_id = django_content_type.id)
 	LEFT OUTER JOIN clients_client ON (services_encounter.person_id = clients_client.person_ptr_id)
 	LEFT OUTER JOIN clients_anonymous ON (services_encounter.person_id = clients_anonymous.person_ptr_id)
@@ -46,11 +46,11 @@ FROM
 CREATE OR REPLACE VIEW reporting_searchsyringecollection AS
 (
 SELECT
-    id as id,
-    count as count,
+	id as id,
+	count as count,
 	town_id,
 	MONTH(`date`) AS month,
 	YEAR(`date`) AS year
 FROM
-    other_syringecollection syringecollection
+	other_syringecollection
 );

@@ -22,7 +22,7 @@ class ReportResponse(HttpResponse):
     """
     def __init__(self, report_class, *args, **kwargs):
         report = report_class(*args, **kwargs)
-        super(ReportResponse, self).__init__(content=report.render(), mimetype=report.mime)
+        super(ReportResponse, self).__init__(content=report.render(), content_type=report.contenttype)
         self['Content-Disposition'] = 'attachment; filename=report.xls'
 
 
@@ -34,6 +34,7 @@ class Report(object):
 
     - columns (required) - column titles for the rendered tables
     - grouping (required)
+    - grouping_total (required) - grouping for the last report column ("Total")
     - additional_filtering (optional)
     - additional_excludes (optional)
 
@@ -49,8 +50,8 @@ class Report(object):
         return self.title
 
     @property
-    def mime(self):
-        return 'application/vnd.ms-excel'
+    def contenttype(self):
+        return 'application/vnd.ms-excel; charset=utf-8'
 
     @property
     def template(self):
@@ -109,13 +110,14 @@ class Aggregation(object):
 
             self._vals = defaultdict(int)
 
-            vals = qset.values(*self.get_grouping()).order_by().annotate(
-                    total=self.get_annotation_func())
+            for grouping in (self.report.grouping, self.report.grouping_total):
+                vals = qset.values(*grouping).order_by().annotate(
+                        total=self.get_annotation_func())
 
-            for value in vals:
-                key = make_key((k, value[k]) for k in self.get_grouping())
-                # non-existent entries return None, hence "or 0"
-                self._vals[key] += value['total'] or 0
+                for value in vals:
+                    key = make_key((k, value[k]) for k in grouping)
+                    # non-existent entries return None, hence "or 0"
+                    self._vals[key] += value['total'] or 0
 
         return self._vals
 
@@ -132,13 +134,6 @@ class Aggregation(object):
         """
         from django.db.models import Count
         return Count(self.aggregation_dbcol, distinct=True)
-
-    def get_grouping(self):
-        """
-        Overload this to enable custom grouping (different from report's) for
-        Aggregation subclass
-        """
-        return self.report.grouping
 
     def get_val(self, key):
         """

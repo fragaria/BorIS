@@ -199,6 +199,7 @@ class MonthlyStatsByTown(Report):
     description = _(u'Statistika rozdělená <strong>podle měsíců</strong>. Pro '
         u'každý měsíc zobrazuje sledované informace pro jednotlivá <strong>města</strong>.')
     grouping = ('month', 'town')
+    grouping_total = ('month',)
     aggregation_classes = [
         AllClientEncounters,
         MaleClientEncounters,
@@ -239,17 +240,14 @@ class MonthlyStatsByTown(Report):
         return xrange(1, 13)
 
     def get_sum(self, aggregation, month):
-        return sum(
-            aggregation.get_val(make_key((('month', month), ('town', town.pk)),))
-            for town in self.columns
-        )
+        return aggregation.get_val(make_key((('month', month),)))
 
     def get_data(self):
         return [
             (month, [
                 (aggregation.title, [
                     aggregation.get_val(
-                        make_key((('month', month), ('town', town.pk)),)
+                        make_key((('month', month), ('town', town.pk)))
                     ) for town in self.columns
                 ] + [self.get_sum(aggregation, month)]) for aggregation in self.aggregations
             ]) for month in self.months()
@@ -260,6 +258,7 @@ class MonthlyStatsByDistrict(MonthlyStatsByTown):
     description = _(u'Statistika rozdělená <strong>podle měsíců</strong>. Pro '
         u'každý měsíc zobrazuje sledované informace pro jednotlivé <strong>okresy</strong>.')
     grouping = ('month', 'town__district')
+    grouping_total = ('month',)
 
     def _columns(self):
         if not hasattr(self, '_cols'):
@@ -268,17 +267,14 @@ class MonthlyStatsByDistrict(MonthlyStatsByTown):
     columns = property(_columns)
 
     def get_sum(self, aggregation, month):
-        return sum(
-            aggregation.get_val(make_key((('month', month), ('town__district', district.pk)),))
-            for district in self.columns
-        )
+        return aggregation.get_val(make_key((('month', month),)))
 
     def get_data(self):
         return [
             (month, [
                 (aggregation.title, [
                     aggregation.get_val(
-                        make_key((('month', month), ('town__district', district.pk)),)
+                        make_key((('month', month), ('town__district', district.pk)))
                     ) for district in self.columns
                 ] + [self.get_sum(aggregation, month)]) for aggregation in self.aggregations
             ]) for month in self.months()

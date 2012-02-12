@@ -14,7 +14,7 @@ from django.utils.html import escape, escapejs
 
 from boris.clients.models import Client, Drug, Town, RiskyBehavior, Anamnesis, \
      DrugUsage, RiskyManners, Region, District, DiseaseTest, Anonymous, \
-    Practitioner
+    Practitioner, Person
 from boris.clients.forms import ReadOnlyWidget
 from boris.clients.views import add_note, delete_note
 from boris.services.admin import EncounterInline
@@ -137,6 +137,11 @@ class AnamnesisAdmin(BorisBaseAdmin):
             return HttpResponse('<script type="text/javascript">window.close();</script>')
         else:
             return super(AnamnesisAdmin, self).response_change(request, obj)
+
+
+class PersonAdmin(BorisBaseAdmin):
+    list_display = ('title',)
+    search_fields = ('title',)
 
 
 class AnonymousAdmin(BorisBaseAdmin):
@@ -263,6 +268,7 @@ admin.site.register(Drug, BorisBaseAdmin)
 admin.site.register(Region, BorisBaseAdmin)
 admin.site.register(District, BorisBaseAdmin)
 admin.site.register(Town, BorisBaseAdmin)
+admin.site.register(Person, PersonAdmin)
 admin.site.register(Practitioner, PractitionerAdmin)
 admin.site.register(Anonymous, AnonymousAdmin)
 admin.site.register(Client, ClientAdmin)
