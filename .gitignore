@@ -6,6 +6,6 @@
 /.pydevproject
 /.settings
 boris/settings/local.py
-test_project/settings/local.py
+test_boris/settings/local.py
 boris.db
 .coverage
