@@ -1,7 +1,7 @@
 
 mkvirtualenv boris
 add2virtualenv [repo_path]
-pip install -r [repo_path]/requirements/0001.pip
+pip install -r [repo_path]/requirements.pip
 django-admin.py syncdb
 django-admin.py runserver
 UP AND RUNNING :)
