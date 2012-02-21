@@ -245,7 +245,7 @@ class TestServiceAggregations(TestCase):
         tools.assert_equals(aggregation.get_val(key), 30)
 
     def test_disease_vhc(self):
-        tools.assert_in('DiseaseTestVHC', (dtest.__name__ for dtest in disease_tests))
+        tools.assert_true('DiseaseTestVHC' in (dtest.__name__ for dtest in disease_tests))
         for disease_test in disease_tests:
             if disease_test.__name__ == 'DiseaseTestVHC':
                 aggregation = disease_test(self.report)
