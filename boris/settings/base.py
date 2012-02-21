@@ -105,7 +105,7 @@ INSTALLED_APPS = (
     'boris.clients',
     'boris.services',
     'boris.reporting',
-    'boris.other',
+    'boris.syringes',
     'boris.utils', # loads django patches in models.py
 )
 

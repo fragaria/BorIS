@@ -53,5 +53,5 @@ SELECT
 	MONTH(`date`) AS month,
 	YEAR(`date`) AS year
 FROM
-	other_syringecollection
+	syringes_syringecollection
 );

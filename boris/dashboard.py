@@ -35,7 +35,7 @@ class CustomIndexDashboard(Dashboard):
             models=(
                 'boris.services.models.core.Encounter',
                 'boris.clients.models.Anamnesis',
-                'boris.other.models.SyringeCollection'
+                'boris.syringes.models.SyringeCollection'
             ),
         ))
 

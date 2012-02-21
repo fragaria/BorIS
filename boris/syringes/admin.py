@@ -2,7 +2,7 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
-from boris.other.models import SyringeCollection
+from boris.syringes.models import SyringeCollection
 from boris.utils.admin import BorisBaseAdmin, textual
 
 

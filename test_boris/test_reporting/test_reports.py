@@ -9,7 +9,7 @@ from nose import tools
 from boris.classification import SEXES, PRIMARY_DRUG_APPLICATION_TYPES, \
         ANONYMOUS_TYPES, DISEASES
 from boris.clients.models import Anonymous
-from boris.other.models import SyringeCollection
+from boris.syringes.models import SyringeCollection
 from boris.services.models.core import Encounter
 from boris.services.models.basic import Address, PhoneCounseling, \
         HarmReduction, IncomeExamination, DiseaseTest
