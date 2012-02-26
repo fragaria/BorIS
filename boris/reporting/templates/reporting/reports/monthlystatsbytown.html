@@ -9,17 +9,17 @@
             <table cellpadding="50" cellspacing="0" border="1">
                 <tbody>
                 <tr>
-                    <th width=200>{% block col_title %}{{ month.0 }}/{{ report.year }}{% endblock %}</th>
+                    <th>{% block col_title %}{{ month.0 }}/{{ report.year }}{% endblock %}</th>
                     {% for column in report.columns %}
-                        <th width=100>{{ column.title }}</th>
+                        <th>{{ column.title }}</th>
                     {% endfor %}
                     <th>Celkem</th>
                 </tr>
                 {% for aggregation in month.1 %}
                     <tr>
-                        <td width=200>{{ aggregation.0 }}</td>
+                        <td>{{ aggregation.0 }}</td>
                         {% for town_val in aggregation.1 %}
-                            <td width=100>{{ town_val }}</td>        
+                            <td>{{ town_val }}</td>
                         {% endfor %}
                     </tr>
                 {% endfor %}

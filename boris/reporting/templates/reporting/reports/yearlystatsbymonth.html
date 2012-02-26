@@ -4,17 +4,17 @@
     <table cellpadding="50" cellspacing="0" border="1">
         <tbody>
         <tr>
-            <th width=200>{% block col_title %}{{ report.year }}{% endblock %}</th>
+            <th>{% block col_title %}{{ report.year }}{% endblock %}</th>
             {% for column in report.columns %}
-                <th width=100>{{ column }}</th>
+                <th>{{ column }}</th>
             {% endfor %}
             <th>Celkem</th>
         </tr>
         {% for title, values in report.get_data %}
             <tr>
-                <td width=200>{{ title }}</td>
+                <td>{{ title }}</td>
                 {% for val in values %}
-                    <td width=100>{{ val }}</td>        
+                    <td>{{ val }}</td>
                 {% endfor %}
             </tr>
         {% endfor %}
