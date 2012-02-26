@@ -2,6 +2,7 @@
 
 {% block body %}
     <table cellpadding="50" cellspacing="0" border="1">
+        <tbody>
         <tr>
             <th width=200>{% block col_title %}{{ report.year }}{% endblock %}</th>
             {% for column in report.columns %}
@@ -17,5 +18,6 @@
                 {% endfor %}
             </tr>
         {% endfor %}
+        </tbody>
     </table>
 {% endblock %}
