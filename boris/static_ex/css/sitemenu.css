@@ -2,7 +2,7 @@
     position: fixed;
     left: 0;
     top: 40px;
-    height: 33px;
+    height: 31px;
     width: 100%;
     z-index: 1000;
     margin: 0;
@@ -35,15 +35,16 @@
     display: block;
     padding:  10px 30px;
     margin: 0;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, .3);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, .5);
     border-left: 1px solid #404040;
     border-right: 1px solid #303030;
 }
 /* main level link hover */
 #nav .active a {
-    background: -moz-linear-gradient(center top , #33A6CC, #275E96) repeat scroll 0 0 #275E96;
-    background: -webkit-linear-gradient(top , #33A6CC, #275E96) repeat scroll 0 0 #275E96;
-    background: -o-linear-gradient(top , #33A6CC, #275E96) repeat scroll 0 0 #275E96;    
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#39bae5', endColorstr='#098FBC'); /* for IE */
+    background-image: -o-linear-gradient(top, #39bae5, #098FBC) !important; /* for opera */
+    background: -webkit-gradient(linear, left top, left bottom, from(#39bae5), to(#098FBC)) !important; /* for webkit browsers */
+    background: -moz-linear-gradient(center top,  #39bae5,  #098FBC) !important; /* for firefox 3.6+ */    
 }
 #nav .current a, #nav li:hover > a {
     background: #d1d1d1; /* for non-css3 browsers */
@@ -53,11 +54,11 @@
     background: -moz-linear-gradient(top,  #ebebeb,  #a1a1a1); /* for firefox 3.6+ */
 
     color: #444;
-    border-top: solid 1px #f8f8f8;
-    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .2);
-    -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, .2);
-    box-shadow: 0 1px 1px rgba(0, 0, 0, .2);
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .8);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .2);
+}
+#nav li:hover.active > a {
+    color: #e7e5e5;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .5);
 }
 /* sub levels link hover */
 #nav ul li:hover a, #nav li:hover li a {
@@ -90,7 +91,7 @@
     padding: 0;
     width: 185px;
     position: absolute;
-    top: 33px;
+    top: 31px;
     left: 0;
     border: solid 1px #b4b4b4;
     -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, .3);
