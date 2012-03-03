@@ -42,9 +42,9 @@
 /* main level link hover */
 #nav .active a {
     filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#39bae5', endColorstr='#098FBC'); /* for IE */
-    background-image: -o-linear-gradient(top, #39bae5, #098FBC) !important; /* for opera */
-    background: -webkit-gradient(linear, left top, left bottom, from(#39bae5), to(#098FBC)) !important; /* for webkit browsers */
-    background: -moz-linear-gradient(center top,  #39bae5,  #098FBC) !important; /* for firefox 3.6+ */    
+    background-image: -o-linear-gradient(top, #39bae5, #098FBC); /* for opera */
+    background: -webkit-gradient(linear, left top, left bottom, from(#39bae5), to(#098FBC)); /* for webkit browsers */
+    background: -moz-linear-gradient(center top,  #39bae5,  #098FBC); /* for firefox 3.6+ */    
 }
 #nav .current a, #nav li:hover > a {
     background: #d1d1d1; /* for non-css3 browsers */
@@ -57,8 +57,8 @@
     text-shadow: 0 1px 0 rgba(255, 255, 255, .2);
 }
 #nav li:hover.active > a {
-    color: #e7e5e5;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, .5);
+    color: #444;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .2);
 }
 /* sub levels link hover */
 #nav ul li:hover a, #nav li:hover li a {
