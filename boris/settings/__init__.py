@@ -15,15 +15,7 @@ Thus, we're changing module into package:
 
 from base import *
 from config import *
-
-# try to import some settings from /etc/
-import sys
-sys.path.insert(0, '/etc/boris')
-try:
-    from boris_config import *
-except ImportError:
-    pass
-del sys.path[0]
+from logging import *
 
 # load any settings for local development
 try:

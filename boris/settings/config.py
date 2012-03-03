@@ -12,13 +12,19 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': 'boris.db',
         'USER': '',
-        'PASSWORD': '',    },
+        'PASSWORD': '',
+    },
 }
 
 STATIC_ROOT = p('static')
 
-# logging conf
-LOGGING_CONFIG_FILE = p(os.path.join('settings', 'logger.conf'))
-
 ADMIN_MEDIA_PREFIX = STATIC_URL + "grappelli/"
+
+# List of callables that know how to import templates from various sources.
+TEMPLATE_LOADERS = (
+    ('django.template.loaders.cached.Loader', (
+        'django.template.loaders.filesystem.Loader',
+        'django.template.loaders.app_directories.Loader',
+    )),
+)
 

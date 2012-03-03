@@ -88,7 +88,7 @@ STATIC_URL = '/static/'
 INSTALLED_APPS = (
     'grappelli.dashboard',
     'grappelli',
-    # core django apps
+
     'django.contrib.admin',
     'django.contrib.admindocs',
     'django.contrib.auth',
@@ -118,7 +118,14 @@ SKIP_SOUTH_TESTS = True
 # logout the user on browser close
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-# GRAPPELLI RELATED ------------------------------------------------------------
+# store session data in cache if possible
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+# GRAPPELLI RELATED ------------------------------------------------------------
 GRAPPELLI_ADMIN_TITLE = gettext(u'<span class="highlight">Informační systém BorIS</span> - Elektronická databáze pro evidenci výkonů v sociálních službách')
 GRAPPELLI_INDEX_DASHBOARD = 'boris.dashboard.CustomIndexDashboard'
+
+# SENTRY -----------------------------------------------------------------------
+SENTRY_DSN = 'http://87bf37873f4948a9b12d1ebe2ef2ffd0:e5e5c63ba3ce4e43bf1c38ebee61ab74@sentry_web/3'
