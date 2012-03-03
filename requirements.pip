@@ -4,6 +4,7 @@ south
 django-grappelli==2.3.7
 raven==1.4.6
 fragapy==1.2.3
+gunicorn
 
 -e git+https://github.com/carljm/django-model-utils.git#egg=model_utils
 -e git+https://github.com/carljm/django-form-utils.git#egg=form_utils
