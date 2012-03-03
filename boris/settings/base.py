@@ -9,11 +9,14 @@ PROJECT_ROOT = abspath(dirname(boris.__file__))
 
 gettext = lambda s: s
 
+# suppressed -- emails sent by sentry instead
 ADMINS = (
-    ('Filip Varecha', 'filip.varecha@fragaria.cz'),
-    ('Hynek Urban', 'hynek.urban@fragaria.cz'),
+#    ('Filip Varecha', 'filip.varecha@fragaria.cz'),
+#    ('Hynek Urban', 'hynek.urban@fragaria.cz'),
 )
 MANAGERS = ADMINS
+
+EMAIL_SUBJECT_PREFIX = '[BORIS] '
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -129,3 +132,4 @@ GRAPPELLI_INDEX_DASHBOARD = 'boris.dashboard.CustomIndexDashboard'
 
 # SENTRY -----------------------------------------------------------------------
 SENTRY_DSN = 'http://87bf37873f4948a9b12d1ebe2ef2ffd0:e5e5c63ba3ce4e43bf1c38ebee61ab74@sentry1-lan.vsh.fragaria.cz/3'
+SENTRY_SITE = 'BorIS'
