@@ -41,7 +41,7 @@ setup(
         'django-grappelli>=2.3.7',
         'django-model-utils',
         'django-form-utils',
-        'raven==1.4.6'
+        'raven==1.4.6',
         'fragapy==1.2.3'
     ],
     setup_requires=[
