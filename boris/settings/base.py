@@ -128,4 +128,4 @@ GRAPPELLI_ADMIN_TITLE = gettext(u'<span class="highlight">Informační systém B
 GRAPPELLI_INDEX_DASHBOARD = 'boris.dashboard.CustomIndexDashboard'
 
 # SENTRY -----------------------------------------------------------------------
-SENTRY_DSN = 'http://87bf37873f4948a9b12d1ebe2ef2ffd0:e5e5c63ba3ce4e43bf1c38ebee61ab74@sentry_web/3'
+SENTRY_DSN = 'http://87bf37873f4948a9b12d1ebe2ef2ffd0:e5e5c63ba3ce4e43bf1c38ebee61ab74@sentry1-lan.vsh.fragaria.cz/3'
