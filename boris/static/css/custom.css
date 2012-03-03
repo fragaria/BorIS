@@ -28,9 +28,9 @@ a.cbutton.warn {
     background: -o-linear-gradient(top , #D93636, #BF3030) repeat scroll 0 0 transparent;
 }
 a.cbutton.high1 {
-    background: -moz-linear-gradient(center top , #7553D1, #734EC4) repeat scroll 0 0 transparent;
-    background: -webkit-linear-gradient(top , #7553D1, #734EC4) repeat scroll 0 0 transparent;
-    background: -o-linear-gradient(top , #7553D1, #734EC4) repeat scroll 0 0 transparent;
+    background: -moz-linear-gradient(center top , #12C9AD, #10BC9D) repeat scroll 0 0 transparent;
+    background: -webkit-linear-gradient(top , #12C9AD, #10BC9D) repeat scroll 0 0 transparent;
+    background: -o-linear-gradient(top , #12C9AD, #10BC9D) repeat scroll 0 0 transparent;
 }
 a.cbutton:hover {
     background: -moz-linear-gradient(center top , #555555, #444444) repeat scroll 0 0 #666666;
@@ -63,14 +63,15 @@ a.cbutton:hover {
     height: 25px;
 }
 
-#header .admin-title .highlight { color: #A1D4E5; }
+#header .admin-title .highlight { color: #39bae5; }
 
 /* GRAPPELLI OVERRIDES */
-body { padding: 68px 20px 0; }
+body { padding: 66px 20px 0; }
 fieldset.module .cell { float:left; }
 ul.messagelist { top: 5px; }
 
 #header { height: 40px; line-height: 24px; }
+#header a:link { color: #39bae5; }
 
 #changelist .changelist-results table td, #changelist .changelist-results table th { padding: 5px 30px 5px 10px; } 
 
