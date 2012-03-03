@@ -1,8 +1,6 @@
 from setuptools import setup, find_packages
 import boris
 
-from test_boris.run_tests import run_all
-
 setup(
     name='boris',
     version=boris.__versionstr__,
@@ -48,5 +46,4 @@ setup(
     setup_requires=[
         'setuptools_dummy',
     ],
-    test_suite=run_all
 )
