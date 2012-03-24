@@ -56,24 +56,41 @@
 
 <script type="text/javascript" charset="utf-8">
     (function($) {
+        function ClientSearch() {
+            var self = this;
+
+            self.searchElement = $('#id_globalsearch_client');
+            self.lookupElement = $('#lookup_id_globalsearch_client');
+            
+            self.init = function () {
+                self.searchElement.grp_autocomplete_fk({
+                    lookup_url:"/grappelli/lookup/related/",
+                    autocomplete_lookup_url:"/grappelli/lookup/autocomplete/"
+                });
+                
+                self.lookupElement.unbind('click').click(function () {
+                    if (self.searchElement.val()) {
+                        document.location = '/clients/client/' + self.searchElement.val() + '/';    
+                    }; 
+                    return false;
+                });
+                
+                /* autocomplete creates this field */
+                $('#id_globalsearch_client-autocomplete').bind('autocompleteselect', function (event, ui) {
+                    self.goToClient(ui.item.value);
+                    return true;
+                });
+            };
+            
+            self.goToClient = function (id) {
+                document.location = '/clients/client/' + id + '/';
+            };
+        };
+        
+
         $(document).ready(function() {
             $("div#header .collapse").grp_collapsible();
+            (new ClientSearch()).init();
         });
-        
-        var searchElem = $('#id_globalsearch_client');
-        
-        searchElem.grp_autocomplete_fk({
-            lookup_url:"/grappelli/lookup/related/",
-            autocomplete_lookup_url:"/grappelli/lookup/autocomplete/"
-        });
-        
-        var goToClient = function () {
-            if (searchElem.val()) {
-                document.location = '/clients/client/' + searchElem.val() + '/';    
-            }; 
-            return false;
-        };
-
-        $('#lookup_id_globalsearch_client').unbind('click').click(goToClient);
     })(django.jQuery);
 </script>
