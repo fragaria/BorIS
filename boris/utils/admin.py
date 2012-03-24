@@ -40,6 +40,7 @@ class BorisChangeList(ChangeList):
 
         # do not display the action buttons in popups
         if 'pop' in request.GET:
+            self.list_display.insert(0, 'select_link')
             self.list_display = filter(lambda x: x not in self.remove_in_popup,
                 self.list_display)
 
@@ -65,3 +66,13 @@ class BorisBaseAdmin(ModelAdmin):
     def change_link(self, obj):
         return u'<a href="%s" class="changelink cbutton">%s</button>' % (
             obj.get_admin_url(), _('upravit'))
+
+    def select_link(self, obj):
+        return u'<a href="%s" ' \
+                   'class="changelink cbutton" ' \
+                   'onclick="opener.dismissRelatedLookupPopup(window, \'%s\');' \
+                            'return false;"' \
+                '>%s</button>' % (
+            '%s/' % obj.pk, obj.pk, _('vybrat'))
+    select_link.allow_tags = True
+    select_link.short_description = ''
