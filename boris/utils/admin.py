@@ -3,8 +3,9 @@ Created on 12.2.2012
 
 @author: xaralis
 '''
-from django.contrib.admin.options import ModelAdmin
+from django.contrib.admin.options import ModelAdmin, csrf_protect_m
 from django.contrib.admin.views.main import ChangeList
+from django.db import transaction
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -76,3 +77,41 @@ class BorisBaseAdmin(ModelAdmin):
             '%s/' % obj.pk, obj.pk, _('vybrat'))
     select_link.allow_tags = True
     select_link.short_description = ''
+
+    def show_save(self, obj):
+        return False
+
+    def show_save_as_new(self, obj):
+        return False
+
+    def show_save_and_continue(self, obj):
+        return True
+
+    def show_save_and_add_another(self, obj):
+        return False
+
+    @csrf_protect_m
+    @transaction.commit_on_success
+    def change_view(self, request, object_id, extra_context=None):
+        obj = self.get_object(request, object_id)
+        extra_context = {
+            'BO_SHOW_SAVE': self.show_save(obj),
+            'BO_SHOW_SAVE_AS_NEW': self.show_save_as_new(obj),
+            'BO_SHOW_SAVE_AND_CONT': self.show_save_and_continue(obj),
+            'BO_SHOW_SAVE_AND_ADD_ANOTHER': self.show_save_and_add_another(obj)
+        }
+        return super(BorisBaseAdmin, self).change_view(request, object_id,
+            extra_context)
+
+    @csrf_protect_m
+    @transaction.commit_on_success
+    def add_view(self, request, form_url='', extra_context=None):
+        extra_context = {
+            'BO_SHOW_SAVE': self.show_save(self.model()),
+            'BO_SHOW_SAVE_AS_NEW': self.show_save_as_new(self.model()),
+            'BO_SHOW_SAVE_AND_CONT': self.show_save_and_continue(self.model()),
+            'BO_SHOW_SAVE_AND_ADD_ANOTHER': self.show_save_and_add_another(
+                self.model())
+        }
+        return super(BorisBaseAdmin, self).add_view(request, form_url,
+            extra_context)

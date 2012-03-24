@@ -24,4 +24,7 @@ class SyringeCollectionAdmin(BorisBaseAdmin):
     def location_display(self, obj):
         return unicode(obj.location)
 
+    def show_save_as_new(self, obj): return False
+    def show_save_and_add_another(self, obj): return bool(obj.pk)
+
 admin.site.register(SyringeCollection, SyringeCollectionAdmin)

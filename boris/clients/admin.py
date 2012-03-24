@@ -21,6 +21,7 @@ from boris.services.admin import EncounterInline
 from boris.utils.admin import BorisBaseAdmin, textual
 from boris.utils.widgets import SplitDateWidget
 
+
 class DrugUsageInline(admin.StackedInline):
     model = DrugUsage
     extra = 0
@@ -35,7 +36,7 @@ class DrugUsageInline(admin.StackedInline):
     )
 
     formfield_overrides = {
-        models.TextField: {'widget': Textarea(attrs={'rows':4, 'cols':40})},
+        models.TextField: {'widget': Textarea(attrs={'rows': 4, 'cols': 40})},
     }
 
 
@@ -43,9 +44,16 @@ class RiskyMannersInline(admin.TabularInline):
     model = RiskyManners
     extra = 0
 
+
 class DiseaseTestInline(admin.TabularInline):
     model = DiseaseTest
     extra = 0
+
+
+class EnumAdmin(BorisBaseAdmin):
+    def show_save(self, obj): return True
+    def show_save_and_continue(self, obj): return False
+    def show_save_and_add_another(self, obj): return True
 
 
 class AnamnesisAdmin(BorisBaseAdmin):
@@ -275,11 +283,11 @@ class ClientAdmin(AddContactAdmin):
 
 
 
-admin.site.register(RiskyBehavior, BorisBaseAdmin)
-admin.site.register(Drug, BorisBaseAdmin)
-admin.site.register(Region, BorisBaseAdmin)
-admin.site.register(District, BorisBaseAdmin)
-admin.site.register(Town, BorisBaseAdmin)
+admin.site.register(RiskyBehavior, EnumAdmin)
+admin.site.register(Drug, EnumAdmin)
+admin.site.register(Region, EnumAdmin)
+admin.site.register(District, EnumAdmin)
+admin.site.register(Town, EnumAdmin)
 admin.site.register(Person, PersonAdmin)
 admin.site.register(Practitioner, PractitionerAdmin)
 admin.site.register(Anonymous, AnonymousAdmin)

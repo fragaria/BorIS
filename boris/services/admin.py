@@ -12,10 +12,12 @@ from boris.services.models.core import Encounter
 from boris.clients.forms import ReadOnlyWidget
 from boris.utils.admin import BorisBaseAdmin
 
+
 def service_list(self, obj):
     return u'<br />'.join([u'<small>%s</small>' % unicode(s) for s in obj.services.all()])
 service_list.short_description = _(u'Provedené výkony')
 service_list.allow_tags = True
+
 
 class EncounterInline(admin.TabularInline):
     model = Encounter
@@ -87,6 +89,9 @@ class EncounterAdmin(BorisBaseAdmin):
             return db_field.formfield(**kwargs)
         else:
             return super(EncounterAdmin, self).formfield_for_dbfield(db_field, **kwargs)
+
+    def show_save_as_new(self, obj): return False
+    def show_save_and_add_another(self, obj): return bool(obj.pk)
 
 EncounterAdmin.service_list = service_list
 
