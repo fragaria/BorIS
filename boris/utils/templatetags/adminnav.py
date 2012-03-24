@@ -7,6 +7,7 @@ from django import template
 
 register = template.Library()
 
+
 @register.tag
 def active(parser, token):
     args = token.split_contents()
@@ -14,6 +15,7 @@ def active(parser, token):
     if len(args) < 2:
         raise template.TemplateSyntaxError, "%r tag requires at least one argument" % template_tag
     return NavSelectedNode(args[1:])
+
 
 class NavSelectedNode(template.Node):
     def __init__(self, urls):

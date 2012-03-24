@@ -109,7 +109,8 @@ INSTALLED_APPS = (
     'boris.services',
     'boris.reporting',
     'boris.syringes',
-    'boris.utils', # loads django patches in models.py
+    'boris.users',
+    'boris.utils'
 )
 
 # always freeze south migrations

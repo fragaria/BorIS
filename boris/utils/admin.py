@@ -7,6 +7,7 @@ from django.contrib.admin.options import ModelAdmin
 from django.contrib.admin.views.main import ChangeList
 from django.utils.translation import ugettext_lazy as _
 
+
 def textual(title, ordering_field=None):
     """
     Fallbacks textual field to '---' instead of (None) in admin.
@@ -36,7 +37,9 @@ class BorisChangeList(ChangeList):
 
     def __init__(self, request, *args, **kwargs):
         super(BorisChangeList, self).__init__(request, *args, **kwargs)
-        if 'pop' in request.GET: # do not display the action buttons in popups
+
+        # do not display the action buttons in popups
+        if 'pop' in request.GET:
             self.list_display = filter(lambda x: x not in self.remove_in_popup,
                 self.list_display)
 
