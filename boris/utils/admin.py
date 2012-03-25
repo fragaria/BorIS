@@ -39,7 +39,7 @@ class BorisChangeList(ChangeList):
     def __init__(self, request, *args, **kwargs):
         super(BorisChangeList, self).__init__(request, *args, **kwargs)
 
-        # do not display the action buttons in popups
+        # Display different buttons based on whether we render a pop-up window.
         if 'pop' in request.GET:
             self.list_display.insert(0, 'select_link')
             self.list_display = filter(lambda x: x not in self.remove_in_popup,
