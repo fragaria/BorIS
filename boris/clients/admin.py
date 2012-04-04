@@ -53,7 +53,6 @@ class DiseaseTestInline(admin.TabularInline):
 class EnumAdmin(BorisBaseAdmin):
     def show_save(self, obj): return True
     def show_save_and_continue(self, obj): return False
-    def show_save_and_add_another(self, obj): return True
 
 
 class AnamnesisAdmin(BorisBaseAdmin):
