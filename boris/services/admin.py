@@ -90,7 +90,6 @@ class EncounterAdmin(BorisBaseAdmin):
         else:
             return super(EncounterAdmin, self).formfield_for_dbfield(db_field, **kwargs)
 
-    def show_save_as_new(self, obj): return False
     def show_save_and_add_another(self, obj): return bool(obj.pk)
 
 EncounterAdmin.service_list = service_list
