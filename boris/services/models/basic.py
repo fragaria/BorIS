@@ -13,6 +13,7 @@ from boris.classification import DISEASES, DISEASE_TEST_SIGN
 
 from .core import Service
 
+
 class HarmReduction(Service):
     in_count = models.PositiveSmallIntegerField(default=0, verbose_name=_(u'IN'))
     out_count = models.PositiveSmallIntegerField(default=0, verbose_name=_(u'OUT'))
@@ -55,6 +56,11 @@ class HarmReduction(Service):
             (_(u'Ostatní'), {'fields': ('pregnancy_test', 'medical_supplies'),
                 'classes': ('inline',)})
         )
+
+    def _prepare_title(self):
+        return u'%s (%s / %s)' % (self.service.title,
+                                       self.in_count,
+                                       self.out_count)
 
 
 class IncomeExamination(Service):
