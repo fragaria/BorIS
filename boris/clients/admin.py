@@ -185,6 +185,7 @@ class PractitionerAdmin(AddContactAdmin):
             'note',
             )}),
     )
+    list_filter = ('town', 'sex')
     raw_id_fields = ('town',)
     autocomplete_lookup_fields = {
         'fk': ['town', ]
