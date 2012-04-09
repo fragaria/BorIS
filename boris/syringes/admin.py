@@ -7,10 +7,9 @@ from boris.utils.admin import BorisBaseAdmin, textual
 
 
 class SyringeCollectionAdmin(BorisBaseAdmin):
-    raw_id_fields = ('town', 'persons',)
+    raw_id_fields = ('town',)
     autocomplete_lookup_fields = {
         'fk': ('town',),
-        'm2m': ('persons',),
     }
     list_display = ('date', 'town', 'location_display', 'count', 'user_list')
     list_filter = ('date', 'town', 'persons')
