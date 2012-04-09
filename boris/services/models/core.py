@@ -19,6 +19,7 @@ from fragapy.common.models.adminlink import AdminLinkMixin
 from boris.services.forms import serviceform_factory
 from django.utils.functional import curry
 
+
 class Encounter(models.Model, AdminLinkMixin):
     person = models.ForeignKey('clients.Person', related_name='encounters',
         verbose_name=_(u'Osoba'))
