@@ -37,6 +37,14 @@ a.cbutton:hover {
     background: -webkit-linear-gradient(top , #555555, #444444) repeat scroll 0 0 #666666;
     background: -o-linear-gradient(top , #555555, #444444) repeat scroll 0 0 #666666;
 }
+.cbutton.placeholder {
+    display: inline-block;
+    border-radius: 5px 5px 5px 5px;
+    padding: 4px 8px;
+    font-weight: bold;
+    color: #e2e2e2;
+    background: #b6b6b6;
+}
 .row.cells.submit-right .cell { float: right; }
 
 #changelist table a.cbutton { margin: 0 5px 0 0; }
