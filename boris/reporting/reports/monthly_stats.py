@@ -7,8 +7,9 @@ Created on 27.11.2011
 from django.db.models import Q
 from django.utils.translation import ugettext as _
 
-from boris.classification import SEXES, PRIMARY_DRUG_APPLICATION_TYPES, ANONYMOUS_TYPES, \
-    DISEASES
+from boris.classification import SEXES, ANONYMOUS_TYPES, DISEASES, \
+    DRUG_APPLICATION_TYPES
+
 from boris.clients.models import Town, District
 from boris.reporting.core import Aggregation, Report, \
     SumAggregation, make_key, SuperAggregation, NonDistinctCountAggregation
@@ -26,7 +27,7 @@ class AllClientEncounters(EncounterAggregation):
 
 class IvClientEncounters(AllClientEncounters):
     title = _(u'z toho injekčních uživatelů drog')
-    filtering = {'is_client': True, 'primary_drug_usage': PRIMARY_DRUG_APPLICATION_TYPES.IV}
+    filtering = {'is_client': True, 'primary_drug_usage': DRUG_APPLICATION_TYPES.VEIN_INJECTION}
 
 
 class MaleClientEncounters(AllClientEncounters):
@@ -166,7 +167,7 @@ class FirstContactCountDU(FirstContactCount):
 class FirstContactCountIV(FirstContactCount):
     title = _(u'z toho nitrožilních UD')
     filtering = (
-        Q(person__client__primary_drug_usage=PRIMARY_DRUG_APPLICATION_TYPES.IV) &
+        Q(person__client__primary_drug_usage=DRUG_APPLICATION_TYPES.VEIN_INJECTION) &
         Q(content_type_model='incomeexamination')
     ) | (
         Q(person__anonymous__drug_user_type=ANONYMOUS_TYPES.IV) &

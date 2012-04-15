@@ -82,11 +82,6 @@ DRUG_APPLICATION_TYPES = Choices(
     (7, 'UNKNOWN', u'Není známo')
 )
 
-PRIMARY_DRUG_APPLICATION_TYPES = Choices(
-    (1, 'IV', u'intravenózní (IV)'),
-    (2, 'NON_IV', u'jiná (neIV)'),
-)
-
 RISKY_BEHAVIOR_PERIODICITY = Choices(
     (1, 'NEVER', u'Nikdy'),
     (2, 'ONCE_BACK_THEN', u'Jednorázově v minulosti'),

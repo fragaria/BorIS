@@ -6,7 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from nose import tools
 
-from boris.classification import SEXES, PRIMARY_DRUG_APPLICATION_TYPES, \
+from boris.classification import SEXES, DRUG_APPLICATION_TYPES, \
         ANONYMOUS_TYPES, DISEASES
 from boris.clients.models import Anonymous
 from boris.syringes.models import SyringeCollection
@@ -67,7 +67,7 @@ class TestEncounterAggregations(TestCase):
 
         # clients
         self.client1 = get_tst_client('c1', {'town': self.town1, 'primary_drug': self.drug})
-        self.client2 = get_tst_client('c2', {'town': self.town1, 'primary_drug': self.drug, 'primary_drug_usage': PRIMARY_DRUG_APPLICATION_TYPES.IV})
+        self.client2 = get_tst_client('c2', {'town': self.town1, 'primary_drug': self.drug, 'primary_drug_usage': DRUG_APPLICATION_TYPES.VEIN_INJECTION})
         self.client3 = get_tst_client('c3', {'town': self.town1, 'sex': SEXES.FEMALE, 'close_person': True})
         self.client4 = get_tst_client('c4', {'town': self.town1})
         self.client5 = get_tst_client('c5', {'town': self.town2})
