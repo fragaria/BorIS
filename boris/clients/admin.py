@@ -157,6 +157,18 @@ class PersonAdmin(BorisBaseAdmin):
 class AddContactAdmin(BorisBaseAdmin):
     list_actions = ('change_link', 'add_contact_link')
 
+    def queryset(self, request):
+        return super(AddContactAdmin, self).queryset(request).extra(
+            select={
+                'ecnt': 'SELECT COUNT(*) FROM services_encounter '
+                        'WHERE services_encounter.person_id = clients_person.id'
+            }
+        )
+
+    def encounter_count(self, obj):
+        return obj.ecnt
+    encounter_count.short_description = _(u'Počet kontaktů')
+
     def add_contact_link(self, obj):
         return u'<a href="%s" class="changelink cbutton high1">%s</button>' % (
             reverse('admin:services_encounter_add') + '?person_id=%s' % obj.pk,
@@ -176,7 +188,8 @@ class AnonymousAdmin(AddContactAdmin):
 
 
 class PractitionerAdmin(AddContactAdmin):
-    search_fields = ('first_name', 'last_name',)
+    list_display = ('first_name', 'last_name', 'town', 'encounter_count')
+    search_fields = ('first_name', 'last_name')
     fieldsets = (
         (_(u'Základní informace'), {'fields': (
             ('first_name', 'last_name',),
@@ -184,6 +197,7 @@ class PractitionerAdmin(AddContactAdmin):
             'note',
             )}),
     )
+    list_filter = ('town', 'sex')
     raw_id_fields = ('town',)
     autocomplete_lookup_fields = {
         'fk': ['town', ]
@@ -194,7 +208,8 @@ class PractitionerAdmin(AddContactAdmin):
 
 
 class ClientAdmin(AddContactAdmin):
-    list_display = ('code', 'first_name_display', 'last_name_display', 'sex', 'town')
+    list_display = ('code', 'first_name_display', 'last_name_display', 'sex',
+                    'town', 'encounter_count')
     list_filter = ('town', 'sex', 'primary_drug')
     search_fields = ('code', 'first_name', 'last_name')
     fieldsets = (

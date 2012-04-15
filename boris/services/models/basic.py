@@ -13,9 +13,12 @@ from boris.classification import DISEASES, DISEASE_TEST_SIGN
 
 from .core import Service
 
+
 class HarmReduction(Service):
     in_count = models.PositiveSmallIntegerField(default=0, verbose_name=_(u'IN'))
     out_count = models.PositiveSmallIntegerField(default=0, verbose_name=_(u'OUT'))
+    svip = models.PositiveIntegerField(blank=True, null=True,
+        verbose_name=_(u'pro počet osob (SVIP)'))
 
     sterilized_water = models.BooleanField(default=False,
         verbose_name=_(u'sterilizovaná voda'))
@@ -46,7 +49,7 @@ class HarmReduction(Service):
         form_template = 'services/forms/small_cells.html'
         limited_to = ('Client',)
         fieldsets = (
-            (None, {'fields': ('in_count', 'out_count', 'encounter'),
+            (None, {'fields': ('in_count', 'out_count', 'svip', 'encounter'),
                 'classes': ('inline',)}),
             (_(u'Harm Reduction'), {'fields': (
                 'sterilized_water', 'cotton_filters', 'alcohol_swabs', 'acid',
@@ -55,6 +58,11 @@ class HarmReduction(Service):
             (_(u'Ostatní'), {'fields': ('pregnancy_test', 'medical_supplies'),
                 'classes': ('inline',)})
         )
+
+    def _prepare_title(self):
+        return u'%s (%s / %s)' % (self.service.title,
+                                  self.in_count,
+                                  self.out_count)
 
 
 class IncomeExamination(Service):
