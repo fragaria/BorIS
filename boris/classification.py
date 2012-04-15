@@ -10,10 +10,6 @@ SEXES = Choices(
     (1, 'FEMALE', u'žena'),
     (2, 'MALE', u'muž')
 )
-APPLICATIONS = Choices(
-    (1, 'IV', u'IV'),
-    (2, 'NO_IV', 'neIV')
-)
 NATIONALITIES = Choices(
     (1, 'CZ', u'Česká republika'),
     (2, 'EU', u'Jiné - EU'),
