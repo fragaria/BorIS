@@ -216,7 +216,8 @@ class ClientAdmin(AddContactAdmin):
     search_fields = ('code', 'first_name', 'last_name')
     fieldsets = (
         (_(u'Základní informace'), {'fields': (
-            ('code', 'sex', 'town'),
+            ('code', 'sex'),
+            ('town',),
             ('first_name', 'last_name'),
             ('birthdate', 'birthdate_year_only'),
             ('primary_drug', 'close_person', 'primary_drug_usage'),

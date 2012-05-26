@@ -58,7 +58,7 @@ class EncounterAdmin(BorisBaseAdmin):
         'performed_by__username', 'performed_by__first_name',
         'performed_by__last_name')
     fieldsets = (
-        (None, {'fields': (('person', 'performed_on', 'where'), 'performed_by')}),
+        (None, {'fields': (('person', 'performed_on'), 'where', 'performed_by')}),
     )
     raw_id_fields = ('where', 'person')
     date_hierarchy = 'performed_on'
