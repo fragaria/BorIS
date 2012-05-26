@@ -158,7 +158,7 @@ class ContactWork(Service):
         verbose_name_plural = _(u'Kontaktní práce')
 
     class Options:
-        limited_to = ('Client',)
+        limited_to = ('Client', 'Anonymous')
 
 
 class CrisisIntervention(Service):
