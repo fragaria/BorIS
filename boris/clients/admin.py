@@ -148,6 +148,8 @@ class AnamnesisAdmin(BorisBaseAdmin):
         else:
             return super(AnamnesisAdmin, self).response_change(request, obj)
 
+    def show_save(self, obj): return True
+
 
 class PersonAdmin(BorisBaseAdmin):
     list_display = ('title',)
