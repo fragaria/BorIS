@@ -100,7 +100,7 @@ class AnamnesisAdmin(BorisBaseAdmin):
     def client__sex(self, obj):
         if obj.pk:
             return obj.client.get_sex_display()
-        return _(u'(Dostupné po uložení)')
+        return _(u'(Dostupné po uložení anamnézy)')
     client__sex.short_description = _(u'Pohlaví')
 
     def client__birthyear(self, obj):
@@ -109,7 +109,7 @@ class AnamnesisAdmin(BorisBaseAdmin):
         elif obj.pk:
             return _(u'(Zatím neznámý)')
         else:
-            return _(u'(Dostupné po uložení)')
+            return _(u'(Dostupné po uložení anamnézy)')
     client__birthyear.short_description = _(u'Rok narození')
 
     def formfield_for_dbfield(self, db_field, **kwargs):
