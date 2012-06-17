@@ -20,23 +20,20 @@ class HarmReduction(Service):
     svip = models.PositiveIntegerField(blank=True, null=True,
         verbose_name=_(u'pro počet osob (SVIP)'))
 
-    sterilized_water = models.BooleanField(default=False,
-        verbose_name=_(u'sterilizovaná voda'))
-    cotton_filters = models.BooleanField(default=False,
-        verbose_name=_(u'bavlněné filtry'))
-    alcohol_swabs = models.BooleanField(default=False,
-        verbose_name=_(u'alkoholové tampony'))
+    standard = models.BooleanField(default=False,
+        verbose_name=_(u'standard'),
+        help_text=_(u'sterilní voda, filtry, alkoholové tampony'))
     acid = models.BooleanField(default=False, verbose_name=_(u'kyselina'))
-    alu_foil = models.BooleanField(default=False, verbose_name=_(u'alobal'))
-    condoms = models.BooleanField(default=False, verbose_name=_(u'kondomy'))
-    jelly_capsules = models.BooleanField(default=False,
-        verbose_name=_(u'želatinové kapsle'))
-    stericup = models.BooleanField(default=False, verbose_name=_(u'stéricup'))
-    other = models.BooleanField(default=False, verbose_name=_(u'jiné'))
+    alternatives = models.BooleanField(default=False,
+            verbose_name=_(u'alternativy'),
+            help_text=_(u'alobal, kapsle, šňupátka'))
+    condoms = models.BooleanField(default=False, verbose_name=_(u'prezervativy'))
+    stericup = models.BooleanField(default=False, verbose_name=_(u'Stéri-cup/filt'))
+    other = models.BooleanField(default=False, verbose_name=_(u'jiný materiál'))
 
     pregnancy_test = models.BooleanField(default=False, verbose_name=_(u'těhotenský test'))
     medical_supplies = models.BooleanField(default=False, verbose_name=_(
-        u'zdravotnický materiál'), help_text=_(u'náplasti, buničina, vitamíny, '
+        u'zdravotní'), help_text=_(u'masti, náplasti, buničina, vitamíny, škrtidlo'
         '...'))
 
     class Meta:
@@ -53,8 +50,8 @@ class HarmReduction(Service):
             (None, {'fields': ('in_count', 'out_count', 'svip', 'encounter'),
                 'classes': ('inline',)}),
             (_(u'Harm Reduction'), {'fields': (
-                'sterilized_water', 'cotton_filters', 'alcohol_swabs', 'acid',
-                'alu_foil', 'condoms', 'jelly_capsules', 'stericup', 'other',
+                'standard', 'alternatives', 'acid',
+                'condoms', 'stericup', 'other',
             ), 'classes': ('inline',)}),
             (_(u'Ostatní'), {'fields': ('pregnancy_test', 'medical_supplies'),
                 'classes': ('inline',)})
@@ -204,8 +201,8 @@ class PhoneCounseling(Service):
 class SocialWork(Service):
     socio_legal = models.BooleanField(default=False,
         verbose_name=_(u'sociálně-právní'))
-    socio_material = models.BooleanField(default=False,
-        verbose_name=_(u'sociálně-materiální'))
+    counselling = models.BooleanField(default=False,
+        verbose_name=_(u'předléčebné indiviuální poradenství'))
     service_mediation = models.BooleanField(default=False,
         verbose_name=_(u'zprostředkování dalších služeb'))
     other = models.BooleanField(default=False,
@@ -221,7 +218,7 @@ class SocialWork(Service):
         limited_to = ('Client',)
         fieldsets = (
             (None, {
-                'fields': ('encounter', 'socio_legal', 'socio_material',
+                'fields': ('encounter', 'socio_legal', 'counselling',
                     'service_mediation', 'other'),
                 'classes': ('inline',)
             }),
