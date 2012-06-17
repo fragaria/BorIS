@@ -85,20 +85,6 @@ class AddressesDU(AllAddresses):
     )
 
 
-class AddressesNonDU(AllAddresses):
-    title = _('Z toho neUD')
-    filtering = (
-        Q(content_type_model='address')
-    ) & (
-        (
-            Q(is_client=True) & # the next atom is always True for anonyms
-            Q(person__client__primary_drug__isnull=True)
-        ) |
-        Q(person__anonymous__drug_user_type__in=(ANONYMOUS_TYPES.NON_USER,
-            ANONYMOUS_TYPES.NON_USER_PARENT))
-    )
-
-
 class DiseaseTestBase(ServiceAggregation):
     title = _(u'Počet testů VHC')
     filtering = {
@@ -211,7 +197,6 @@ class MonthlyStatsByTown(Report):
         Practitioners,
         AllAddresses,
         AddressesDU,
-        AddressesNonDU,
     ] + disease_tests + [
         EncounterCount,
         ClientEncounterCount,
