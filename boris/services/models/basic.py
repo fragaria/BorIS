@@ -45,6 +45,7 @@ class HarmReduction(Service):
         verbose_name_plural = _(u'Harm Reduction')
 
     class Options:
+        codenumber = 3
         title = _(u'Výměnný a jiný harm reduction program')
         form_template = 'services/forms/small_cells.html'
         limited_to = ('Client',)
@@ -73,6 +74,7 @@ class IncomeExamination(Service):
         verbose_name_plural = _(u'Vstupní zhodnocení stavu klienta')
 
     class Options:
+        codenumber = 1
         limited_to = ('Client',)
 
 
@@ -88,6 +90,7 @@ class DiseaseTest(Service):
         verbose_name_plural = _(u'Testování infekčních nemocí')
 
     class Options:
+        codenumber = 8
         limited_to = ('Client',)
 
     def _prepare_title(self):
@@ -112,6 +115,7 @@ class AsistService(Service):
         verbose_name_plural = _(u'Asistenční služby')
 
     class Options:
+        codenumber = 9
         limited_to = ('Client',)
 
     def _prepare_title(self):
@@ -140,6 +144,7 @@ class InformationService(Service):
         verbose_name_plural = _(u'Informační servis')
 
     class Options:
+        codenumber = 10
         form_template = 'services/forms/small_cells.html'
         fieldsets = (
             (None, {
@@ -158,6 +163,7 @@ class ContactWork(Service):
         verbose_name_plural = _(u'Kontaktní práce')
 
     class Options:
+        codenumber = 4
         limited_to = ('Client', 'Anonymous')
 
 
@@ -175,6 +181,7 @@ class CrisisIntervention(Service):
         verbose_name_plural = _(u'Krizové intervence')
 
     class Options:
+        codenumber = 7
         limited_to = ('Client',)
 
     def _prepare_title(self):
@@ -189,6 +196,9 @@ class PhoneCounseling(Service):
         proxy = True
         verbose_name = _(u'Telefonické poradenství')
         verbose_name_plural = _(u'Telefonické poradenství')
+
+    class Options:
+        codenumber = 11
 
 
 class SocialWork(Service):
@@ -207,6 +217,7 @@ class SocialWork(Service):
         verbose_name_plural = _(u'Sociální práce')
 
     class Options:
+        codenumber = 6
         limited_to = ('Client',)
         fieldsets = (
             (None, {
@@ -225,6 +236,7 @@ class UtilityWork(Service):
         verbose_name_plural = _(u'Další úkony')
 
     class Options:
+        codenumber = 12
         title = _(u'Úkony potřebné pro zajištění práce s klientem')
         limited_to = ('Client', 'Practitioner')
 
@@ -237,6 +249,7 @@ class BasicMedicalTreatment(Service):
         verbose_name_plural = _(u'Základní zdravotní ošetření')
 
     class Options:
+        codenumber = 13
         limited_to = ('Client',)
 
 
@@ -248,6 +261,7 @@ class IndividualCounseling(Service):
         verbose_name_plural = _(u'Individuální poradenství')
 
     class Options:
+        codenumber = 5
         limited_to = ('Client',)
 
 
@@ -257,3 +271,6 @@ class Address(Service):
         proxy = True
         verbose_name = _(u'Oslovení')
         verbose_name_plural = _(u'Oslovení')
+
+    class Options:
+        codenumber = 2
