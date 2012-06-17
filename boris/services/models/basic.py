@@ -72,7 +72,6 @@ class IncomeExamination(Service):
 
     class Options:
         codenumber = 1
-        limited_to = ('Client',)
 
 
 class DiseaseTest(Service):
@@ -161,8 +160,6 @@ class ContactWork(Service):
 
     class Options:
         codenumber = 4
-        limited_to = ('Client', 'Anonymous')
-
 
 class CrisisIntervention(Service):
     INTERVENTION_TYPES = Choices(
@@ -234,7 +231,7 @@ class UtilityWork(Service):
 
     class Options:
         codenumber = 12
-        limited_to = ('Client', 'Practitioner')
+        limited_to = ('Client',)
 
 
 class BasicMedicalTreatment(Service):
