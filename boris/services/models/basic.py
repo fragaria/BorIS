@@ -70,8 +70,8 @@ class IncomeExamination(Service):
     class Meta:
         app_label = 'services'
         proxy = True
-        verbose_name = _(u'Vstupní zhodnocení stavu klienta')
-        verbose_name_plural = _(u'Vstupní zhodnocení stavu klienta')
+        verbose_name = _(u'První kontakt')
+        verbose_name_plural = _(u'První kontakty')
 
     class Options:
         codenumber = 1
@@ -232,12 +232,11 @@ class UtilityWork(Service):
     class Meta:
         app_label = 'services'
         proxy = True
-        verbose_name = _(u'Další úkony')
-        verbose_name_plural = _(u'Další úkony')
+        verbose_name = _(u'Odkazy a zprostředkování')
+        verbose_name_plural = _(u'Odkazy a zprostředkování')
 
     class Options:
         codenumber = 12
-        title = _(u'Úkony potřebné pro zajištění práce s klientem')
         limited_to = ('Client', 'Practitioner')
 
 
@@ -257,8 +256,8 @@ class IndividualCounseling(Service):
     class Meta:
         app_label = 'services'
         proxy = True
-        verbose_name = _(u'Individuální poradenství')
-        verbose_name_plural = _(u'Individuální poradenství')
+        verbose_name = _(u'Základní poradenství')
+        verbose_name_plural = _(u'Základní poradenství')
 
     class Options:
         codenumber = 5
