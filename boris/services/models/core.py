@@ -59,6 +59,7 @@ class ServiceOptions(object):
         self.row_attrs = None
         self.fieldsets = None
         self.codenumber = 0 # Code number to be displayed in the forms.
+        self.include_in_reports = True
 
     def get_description_template_list(self):
         return (self.description_template, 'services/desc/default.html')
@@ -165,6 +166,11 @@ class Service(TimeStampedModel):
         ``fieldsets``              Fieldsets to use when rendering the form.
                                    Defaults to one fieldset with no legend and
                                    all the fields.
+
+        ``include_in_reports``     If set to True, the Service is included in the
+                                   service reports. It's get_stats method is used
+                                   to generate the statistics of interest.
+
         ========================== =============================================
     """
     __metaclass__ = ServiceMetaclass
@@ -227,6 +233,16 @@ class Service(TimeStampedModel):
     @classmethod
     def class_name(cls):
         return cls.__name__
+
+    @classmethod
+    def get_stats(cls, filtering):
+        """
+        Return an iterator over statisitics used in service reports.
+
+        Returns an iterable over pairs of <title>, <number>.
+
+        """
+        return ()
 
 
 def service_list(person=None):
