@@ -242,7 +242,9 @@ class Service(TimeStampedModel):
         Returns an iterable over pairs of <title>, <number>.
 
         """
-        return ()
+        title = cls.service.title
+        cnt = cls.objects.filter(**filtering).count()
+        return ((title, cnt),)
 
 
 def service_list(person=None):
