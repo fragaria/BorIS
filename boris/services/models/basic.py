@@ -7,6 +7,7 @@ Created on 2.10.2011
 from itertools import chain
 
 from django.db import models
+from django.db.models import Sum
 from django.utils.translation import ugettext_lazy as _
 
 from model_utils import Choices
@@ -82,7 +83,11 @@ class HarmReduction(Service):
         booleans = ('standard', 'acid', 'alternatives', 'condoms', 'stericup',
             'other', 'pregnancy_test', 'medical_supplies')
         boolean_stats = _boolean_stats(cls, filtering, booleans)
-        return chain(basic_stats, boolean_stats)
+        in_cnt = cls.objects.filter(**filtering).aggregate(Sum('in_count'))
+        in_stats = ((_('IN total'), in_cnt['in_count__sum']),)
+        out_cnt = cls.objects.filter(**filtering).aggregate(Sum('out_count'))
+        out_stats = ((_('OUT total'), out_cnt['out_count__sum']),)
+        return chain(basic_stats, boolean_stats, in_stats, out_stats)
 
 
 class IncomeExamination(Service):
