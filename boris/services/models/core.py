@@ -189,6 +189,7 @@ class Service(TimeStampedModel):
 
     class Options:
         is_available = lambda person: False
+        include_in_reports = False
 
     def __unicode__(self):
         return self.title
