@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from itertools import chain
+
 from django.template import loader
 
 from boris.services.models import service_list
@@ -23,10 +25,12 @@ class ServiceReport(object):
             if key:
                 filtering[mapping[key]] = key
 
-        return (
+        stats = [
             service.get_stats(filtering) for service in service_list()
             if service.service.include_in_reports
-        )
+        ]
+
+        return chain(*stats)
 
     def render(self):
         ctx = {
