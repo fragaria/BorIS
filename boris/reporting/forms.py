@@ -6,6 +6,7 @@ Created on 3.12.2011
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
+from boris.clients.models import Town, Person
 from boris.utils.widgets import SelectYearWidget
 
 class MonthlyStatsForm(forms.Form):
@@ -14,3 +15,6 @@ class MonthlyStatsForm(forms.Form):
 class ServiceForm(forms.Form):
     date_from = forms.DateField(label=_(u'Od'), required=False)
     date_to = forms.DateField(label=_(u'Do'), required=False)
+    town = forms.ModelChoiceField(queryset=Town.objects.all(), required=False)
+    person = forms.ModelChoiceField(queryset=Person.objects.all(),
+        required=False)

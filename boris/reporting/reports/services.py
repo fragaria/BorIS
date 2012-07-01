@@ -12,21 +12,19 @@ class ServiceReport(object):
     description = 'Statistiky jednotlivých výkonů splňujících zadaná kritéria.'
     contenttype =  'application/vnd.ms-excel; charset=utf-8'
 
-    def __init__(self, date_from=None, date_to=None):
-        self.date_from = date_from
-        self.date_to = date_to
+    def __init__(self, date_from=None, date_to=None, town=None, person=None):
+        filtering = (
+            ('encounter__performed_on__gte', date_from),
+            ('encounter__performed_on__lte', date_to),
+            ('encounter__where', town),
+            ('encounter__person', person),
+        )
+        filtering = ((f[0], f[1]) for f in filtering if f[1] is not None)
+        self.filtering = dict(filtering)
 
     def get_stats(self):
-        mapping = {
-            self.date_to: 'encounter__performed_on__lte',
-        }
-        filtering = {}
-        for key in mapping:
-            if key:
-                filtering[mapping[key]] = key
-
         stats = [
-            service.get_stats(filtering) for service in service_list()
+            service.get_stats(self.filtering) for service in service_list()
             if service.service.include_in_reports
         ]
 
