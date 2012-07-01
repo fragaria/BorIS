@@ -12,5 +12,5 @@ class MonthlyStatsForm(forms.Form):
     year = forms.IntegerField(widget=SelectYearWidget(history=10), label=_(u'Rok'))
 
 class ServiceForm(forms.Form):
-    date_from = forms.DateField(label=_(u'Od'))
-    date_to = forms.DateField(label=_(u'Do'))
+    date_from = forms.DateField(label=_(u'Od'), required=False)
+    date_to = forms.DateField(label=_(u'Do'), required=False)
