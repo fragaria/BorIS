@@ -16,7 +16,7 @@ from boris.services.models.basic import Address, PhoneCounseling, \
 from boris.reporting.reports.monthly_stats import AllClientEncounters, \
         MaleClientEncounters, IvClientEncounters, NonUserClientEncounters, \
         NonClients, Parents, Practitioners, AllAddresses, AddressesDU, \
-        AddressesNonDU, EncounterCount, ClientEncounterCount, \
+        EncounterCount, ClientEncounterCount, \
         PractitionerEncounterCount, PhoneEncounterCount, FirstContactCount, \
         FirstContactCountDU, FirstContactCountIV, HarmReductionCount, \
         GatheredSyringes, IssuedSyringes, SyringeCollectionCount, disease_tests
@@ -208,11 +208,6 @@ class TestServiceAggregations(TestCase):
         aggregation = AddressesDU(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
         tools.assert_equals(aggregation.get_val(key), 3)
-
-    def test_all_addresses_non_du(self):
-        aggregation = AddressesNonDU(self.report)
-        key = make_key({'month': 11, 'town': self.town1.pk})
-        tools.assert_equals(aggregation.get_val(key), 2)
 
     def test_first_contact_count(self):
         aggregation = FirstContactCount(self.report)
