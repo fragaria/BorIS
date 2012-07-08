@@ -21,6 +21,7 @@ from boris.reporting.reports.monthly_stats import AllClientEncounters, \
         FirstContactCountDU, FirstContactCountIV, HarmReductionCount, \
         GatheredSyringes, IssuedSyringes, SyringeCollectionCount, disease_tests
 from boris.reporting.core import make_key
+from boris.reporting.management import install_views
 
 from test_boris.helpers import get_tst_town, get_tst_client, \
         get_tst_drug, get_tst_practitioner
@@ -61,6 +62,7 @@ class TestEncounterAggregations(TestCase):
     """ Mostly encounter aggregations are tested here. """
 
     def setUp(self):
+        install_views('')
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
         self.drug = get_tst_drug()
@@ -152,6 +154,7 @@ class TestServiceAggregations(TestCase):
     """ Mostly service aggregations are tested here. """
 
     def setUp(self):
+        install_views('')
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
         self.drug = get_tst_drug()
@@ -255,6 +258,7 @@ class TestMixedAggregations(TestCase):
     """
 
     def setUp(self):
+        install_views('')
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
 
@@ -303,6 +307,7 @@ class TestMixedAggregations(TestCase):
 class TestEncounterTotals(TestCase):
 
     def setUp(self):
+        install_views('')
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
 
@@ -358,6 +363,7 @@ class TestEncounterTotals(TestCase):
 class TestServiceTotals(TestCase):
 
     def setUp(self):
+        install_views('')
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
 
@@ -390,6 +396,7 @@ class TestServiceTotals(TestCase):
 
 class TestSyringeCollection(TestCase):
     def setUp(self):
+        install_views('')
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
 
