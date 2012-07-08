@@ -20,6 +20,25 @@ from boris.services.forms import serviceform_factory
 from django.utils.functional import curry
 
 
+class ProxyInheritanceManager(InheritanceManager):
+    """
+    Filters proxy model's queryset by ContentType.
+
+    Assumes its proxy models have ForeignKey to ContentType called
+    'content_type'.
+
+    """
+
+    def get_query_set(self):
+        qset = super(ProxyInheritanceManager, self).get_query_set()
+        meta = self.model._meta
+        if meta.proxy:
+            content_type = ContentType.objects.get_by_natural_key(meta.app_label,
+                meta.object_name.lower())
+            return qset.filter(content_type=content_type)
+        return qset
+
+
 class Encounter(models.Model, AdminLinkMixin):
     person = models.ForeignKey('clients.Person', related_name='encounters',
         verbose_name=_(u'Osoba'))
@@ -181,7 +200,7 @@ class Service(TimeStampedModel):
         verbose_name=_(u'Název'))
     content_type = models.ForeignKey(ContentType, editable=False)
 
-    objects = InheritanceManager()
+    objects = ProxyInheritanceManager()
 
     class Meta:
         app_label = 'services'
