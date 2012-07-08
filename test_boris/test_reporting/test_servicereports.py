@@ -1,7 +1,6 @@
 from datetime import date
 
 from django.test import TestCase
-from django.utils.translation import ugettext_lazy as _
 
 from boris.reporting.reports.services import ServiceReport
 from boris.services.models import (Address, UtilityWork, SocialWork,
