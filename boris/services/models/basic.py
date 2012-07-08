@@ -84,9 +84,11 @@ class HarmReduction(Service):
             'other', 'pregnancy_test', 'medical_supplies')
         boolean_stats = _boolean_stats(cls, filtering, booleans)
         in_cnt = cls.objects.filter(**filtering).aggregate(Sum('in_count'))
-        in_stats = ((_('IN total'), in_cnt['in_count__sum'] or 0),)
+        in_title = cls._meta.get_field('in_count').verbose_name.__unicode__()
+        in_stats = ((in_title, in_cnt['in_count__sum'] or 0),)
         out_cnt = cls.objects.filter(**filtering).aggregate(Sum('out_count'))
-        out_stats = ((_('OUT total'), out_cnt['out_count__sum'] or 0),)
+        out_title = cls._meta.get_field('out_count').verbose_name.__unicode__()
+        out_stats = ((out_title, out_cnt['out_count__sum'] or 0),)
         return chain(basic_stats, boolean_stats, in_stats, out_stats)
 
 
