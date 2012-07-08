@@ -1,9 +1,12 @@
+from copy import copy
+
 from django.contrib.auth.models import User
 from django.utils.functional import curry
 from django.contrib.contenttypes.models import ContentType
 
 from boris.clients.models import Client, Town, Region, District, Drug, Practitioner
 from boris.classification import SEXES
+from boris.services.models import Encounter
 
 
 def get_testing_string_enum(ModelClass, title, *args, **kwargs):
@@ -56,3 +59,13 @@ def get_tst_usr(username='strachkvas'):
 
     return user
 
+def create_service(service_class, person, date, town, kwargs_dict={}):
+    e = Encounter.objects.create(person=person, performed_on=date, where=town)
+    service_kwargs = copy(kwargs_dict)
+    service_kwargs.update({
+        'encounter': e,
+        'content_type': ContentType.objects.get_by_natural_key('services',
+            service_class.__name__),
+    })
+
+    return service_class.objects.create(**service_kwargs)
