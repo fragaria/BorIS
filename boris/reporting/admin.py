@@ -3,7 +3,6 @@ from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
 from django.template.defaultfilters import slugify
-from django.utils.functional import update_wrapper
 
 from boris.reporting.core import ReportResponse
 from boris.reporting.forms import MonthlyStatsForm, ServiceForm
