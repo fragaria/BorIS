@@ -15,10 +15,6 @@ import nose
 def run_all(argv=None):
     os.environ['DJANGO_SETTINGS_MODULE'] = 'test_boris.settings'
 
-    from django.test.simple import DjangoTestSuiteRunner
-    runner = DjangoTestSuiteRunner()
-    runner.setup_databases()
-
     # called by setuptools
     if argv is None:
         argv = ['nosetests']
