@@ -1,8 +1,6 @@
 from datetime import date
-from copy import copy
 
 from django.test import TestCase
-from django.contrib.contenttypes.models import ContentType
 
 from nose import tools
 
@@ -24,7 +22,7 @@ from boris.reporting.core import make_key
 from boris.reporting.management import install_views
 
 from test_boris.helpers import get_tst_town, get_tst_client, \
-        get_tst_drug, get_tst_practitioner
+        get_tst_drug, get_tst_practitioner, create_service
 
 def create_encounter(person, date, town=None):
     if not town:
@@ -32,16 +30,6 @@ def create_encounter(person, date, town=None):
 
     return Encounter.objects.create(person=person, performed_on=date, where=town)
 
-def create_service(service_class, person, date, town, kwargs_dict={}):
-    e = Encounter.objects.create(person=person, performed_on=date, where=town)
-    service_kwargs = copy(kwargs_dict)
-    service_kwargs.update({
-        'encounter': e,
-        'content_type': ContentType.objects.get_by_natural_key('services',
-            service_class.__name__),
-    })
-
-    return service_class.objects.create(**service_kwargs)
 
 def create_syringe_collection(town, date, count):
     return SyringeCollection.objects.create(date=date, town=town, count=count,

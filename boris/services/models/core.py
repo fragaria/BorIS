@@ -20,6 +20,25 @@ from boris.services.forms import serviceform_factory
 from django.utils.functional import curry
 
 
+class ProxyInheritanceManager(InheritanceManager):
+    """
+    Filters proxy model's queryset by ContentType.
+
+    Assumes its proxy models have ForeignKey to ContentType called
+    'content_type'.
+
+    """
+
+    def get_query_set(self):
+        qset = super(ProxyInheritanceManager, self).get_query_set()
+        meta = self.model._meta
+        if meta.proxy:
+            content_type = ContentType.objects.get_by_natural_key(meta.app_label,
+                meta.object_name.lower())
+            return qset.filter(content_type=content_type)
+        return qset
+
+
 class Encounter(models.Model, AdminLinkMixin):
     person = models.ForeignKey('clients.Person', related_name='encounters',
         verbose_name=_(u'Osoba'))
@@ -59,6 +78,7 @@ class ServiceOptions(object):
         self.row_attrs = None
         self.fieldsets = None
         self.codenumber = 0 # Code number to be displayed in the forms.
+        self.include_in_reports = True
 
     def get_description_template_list(self):
         return (self.description_template, 'services/desc/default.html')
@@ -165,6 +185,11 @@ class Service(TimeStampedModel):
         ``fieldsets``              Fieldsets to use when rendering the form.
                                    Defaults to one fieldset with no legend and
                                    all the fields.
+
+        ``include_in_reports``     If set to True, the Service is included in the
+                                   service reports. It's get_stats method is used
+                                   to generate the statistics of interest.
+
         ========================== =============================================
     """
     __metaclass__ = ServiceMetaclass
@@ -175,7 +200,7 @@ class Service(TimeStampedModel):
         verbose_name=_(u'Název'))
     content_type = models.ForeignKey(ContentType, editable=False)
 
-    objects = InheritanceManager()
+    objects = ProxyInheritanceManager()
 
     class Meta:
         app_label = 'services'
@@ -183,6 +208,7 @@ class Service(TimeStampedModel):
 
     class Options:
         is_available = lambda person: False
+        include_in_reports = False
 
     def __unicode__(self):
         return self.title
@@ -226,6 +252,18 @@ class Service(TimeStampedModel):
     @classmethod
     def class_name(cls):
         return cls.__name__
+
+    @classmethod
+    def get_stats(cls, filtering):
+        """
+        Return an iterator over statisitics used in service reports.
+
+        Returns an iterable over pairs of <title>, <number>.
+
+        """
+        title = cls.service.title
+        cnt = cls.objects.filter(**filtering).count()
+        return ((title, cnt),)
 
 
 def service_list(person=None):

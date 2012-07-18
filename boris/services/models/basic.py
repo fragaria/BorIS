@@ -4,7 +4,10 @@ Created on 2.10.2011
 
 @author: xaralis
 '''
+from itertools import chain
+
 from django.db import models
+from django.db.models import Sum
 from django.utils.translation import ugettext_lazy as _
 
 from model_utils import Choices
@@ -12,6 +15,18 @@ from model_utils import Choices
 from boris.classification import DISEASES, DISEASE_TEST_SIGN
 
 from .core import Service
+
+
+def _boolean_stats(model, filtering, field_names):
+    """Get stats for boolean fields for any service class."""
+    boolean_stats = []
+    for fname in field_names:
+        title = model._meta.get_field(fname).verbose_name.__unicode__()
+        filtering_bln = {fname: True}
+        filtering_bln.update(filtering)
+        cnt = model.objects.filter(**filtering_bln).count()
+        boolean_stats.append((title, cnt))
+    return boolean_stats
 
 
 class HarmReduction(Service):
@@ -59,6 +74,20 @@ class HarmReduction(Service):
         return u'%s (%s / %s)' % (self.service.title,
                                        self.in_count,
                                        self.out_count)
+
+    @classmethod
+    def get_stats(cls, filtering):
+        basic_stats = super(HarmReduction, cls).get_stats(filtering)
+        booleans = ('standard', 'acid', 'alternatives', 'condoms', 'stericup',
+            'other', 'pregnancy_test', 'medical_supplies')
+        boolean_stats = _boolean_stats(cls, filtering, booleans)
+        in_cnt = cls.objects.filter(**filtering).aggregate(Sum('in_count'))
+        in_title = cls._meta.get_field('in_count').verbose_name.__unicode__()
+        in_stats = ((in_title, in_cnt['in_count__sum'] or 0),)
+        out_cnt = cls.objects.filter(**filtering).aggregate(Sum('out_count'))
+        out_title = cls._meta.get_field('out_count').verbose_name.__unicode__()
+        out_stats = ((out_title, out_cnt['out_count__sum'] or 0),)
+        return chain(basic_stats, boolean_stats, in_stats, out_stats)
 
 
 class IncomeExamination(Service):
@@ -148,6 +177,14 @@ class InformationService(Service):
             }),
         )
 
+    @classmethod
+    def get_stats(cls, filtering):
+        basic_stats = super(InformationService, cls).get_stats(filtering)
+        booleans = ('safe_usage', 'safe_sex', 'medical', 'socio_legal',
+            'cure_possibilities', 'literature', 'other')
+        boolean_stats = _boolean_stats(cls, filtering, booleans)
+        return chain(basic_stats, boolean_stats)
+
 
 class ContactWork(Service):
     class Meta:
@@ -218,6 +255,13 @@ class SocialWork(Service):
                 'classes': ('inline',)
             }),
         )
+
+    @classmethod
+    def get_stats(cls, filtering):
+        basic_stats = super(SocialWork, cls).get_stats(filtering)
+        booleans = ('socio_legal', 'counselling', 'service_mediation', 'other')
+        boolean_stats = _boolean_stats(cls, filtering, booleans)
+        return chain(basic_stats, boolean_stats)
 
 
 class UtilityWork(Service):
