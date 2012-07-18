@@ -58,7 +58,7 @@ class EncounterAdmin(BorisBaseAdmin):
         'performed_by__username', 'performed_by__first_name',
         'performed_by__last_name')
     fieldsets = (
-        (None, {'fields': (('person', 'performed_on', 'where'), 'performed_by')}),
+        (None, {'fields': (('person', 'performed_on'), 'where', 'performed_by')}),
     )
     raw_id_fields = ('where', 'person')
     date_hierarchy = 'performed_on'
@@ -90,7 +90,6 @@ class EncounterAdmin(BorisBaseAdmin):
         else:
             return super(EncounterAdmin, self).formfield_for_dbfield(db_field, **kwargs)
 
-    def show_save_as_new(self, obj): return False
     def show_save_and_add_another(self, obj): return bool(obj.pk)
 
 EncounterAdmin.service_list = service_list

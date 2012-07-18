@@ -58,6 +58,7 @@ class ServiceOptions(object):
         self.excludes = None
         self.row_attrs = None
         self.fieldsets = None
+        self.codenumber = 0 # Code number to be displayed in the forms.
 
     def get_description_template_list(self):
         return (self.description_template, 'services/desc/default.html')
@@ -138,6 +139,9 @@ class Service(TimeStampedModel):
         ========================== =============================================
         ``title``                  Title used in forms and when saving.
                                    Defaults to verbose_name in Meta
+
+        ``codenumber``             Code number used in forms, users are used
+                                   to it.
 
         ``description_template``   Template path to use for service description
                                    rendering. Defaults to 'services/desc/default.html'
@@ -226,14 +230,18 @@ class Service(TimeStampedModel):
 
 def service_list(person=None):
     """
-    Returns tuple of person's services registered in application.
+    Returns a list of person's services registered in application.
 
     When `person` parameter is used, only those that can be provided
     to `person` will be listed.
     """
     if person:
-        return (s for s in Service.registered_services if s.service.is_available(person))
-    return Service.registered_services
+        services = (
+            s for s in Service.registered_services if s.service.is_available(person)
+        )
+    else:
+        services = Service.registered_services
+    return sorted(services, key = lambda x: x.service.codenumber)
 
 
 def get_model_for_class_name(class_name):

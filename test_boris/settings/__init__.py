@@ -4,11 +4,11 @@ except ImportError:
     pass
 
 try:
-    from base import *
+    from test_boris.settings.base import *
 except ImportError:
     pass
 
 try:
-    from local import *
+    from test_boris.settings.local import *
 except ImportError:
     pass

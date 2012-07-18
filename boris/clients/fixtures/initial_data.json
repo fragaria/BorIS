@@ -38,7 +38,7 @@
     "pk": 3,
     "fields": {
       "content_type": ["clients", "anonymous"],
-      "title": "žena - neIV"
+      "title": "žena - neIV uživatelka"
     }
   },
   {
@@ -55,7 +55,7 @@
     "pk": 4,
     "fields": {
       "content_type": ["clients", "anonymous"],
-      "title": "žena - IV"
+      "title": "žena - IV uživatelka"
     }
   },
   {
@@ -106,7 +106,7 @@
     "pk": 7,
     "fields": {
       "content_type": ["clients", "anonymous"],
-      "title": "muž - neIV"
+      "title": "muž - neIV uživatel"
     }
   },
   {
@@ -123,7 +123,7 @@
     "pk": 8,
     "fields": {
       "content_type": ["clients", "anonymous"],
-      "title": "muž - IV"
+      "title": "muž - IV uživatel"
     }
   },
   {

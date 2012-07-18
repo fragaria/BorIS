@@ -10,10 +10,6 @@ SEXES = Choices(
     (1, 'FEMALE', u'žena'),
     (2, 'MALE', u'muž')
 )
-APPLICATIONS = Choices(
-    (1, 'IV', u'IV'),
-    (2, 'NO_IV', 'neIV')
-)
 NATIONALITIES = Choices(
     (1, 'CZ', u'Česká republika'),
     (2, 'EU', u'Jiné - EU'),
@@ -84,11 +80,6 @@ DRUG_APPLICATION_TYPES = Choices(
     (5, 'SMOKING', u'kouření'),
     (6, 'INHALATION', u'inhalace'),
     (7, 'UNKNOWN', u'Není známo')
-)
-
-PRIMARY_DRUG_APPLICATION_TYPES = Choices(
-    (1, 'IV', u'intravenózní (IV)'),
-    (2, 'NON_IV', u'jiná (neIV)'),
 )
 
 RISKY_BEHAVIOR_PERIODICITY = Choices(

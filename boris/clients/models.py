@@ -13,8 +13,8 @@ from fragapy.common.models.adminlink import AdminLinkMixin
 from boris.classification import SEXES, NATIONALITIES, \
     ETHNIC_ORIGINS, LIVING_CONDITIONS, ACCOMODATION_TYPES, EMPLOYMENT_TYPES, \
     DRUG_APPLICATION_FREQUENCY, DRUG_APPLICATION_TYPES, \
-    PRIMARY_DRUG_APPLICATION_TYPES, RISKY_BEHAVIOR_PERIODICITY, DISEASES, \
-    DISEASE_TEST_RESULTS, EDUCATION_LEVELS, ANONYMOUS_TYPES
+    RISKY_BEHAVIOR_PERIODICITY, DISEASES, DISEASE_TEST_RESULTS, \
+    EDUCATION_LEVELS, ANONYMOUS_TYPES
 from django.contrib.contenttypes.models import ContentType
 
 
@@ -185,7 +185,7 @@ class Client(Person):
     town = models.ForeignKey(Town, verbose_name=_(u'Město'))
     primary_drug = models.ForeignKey(Drug, blank=True, null=True, verbose_name=_(u'Primární droga'))
     primary_drug_usage = models.PositiveSmallIntegerField(blank=True, null=True,
-        choices=PRIMARY_DRUG_APPLICATION_TYPES, verbose_name=_(u'Způsob aplikace'))
+        choices=DRUG_APPLICATION_TYPES, verbose_name=_(u'Způsob aplikace'))
     close_person = models.BooleanField(default=False,
         verbose_name=_(u'Osoba blízká'))
 

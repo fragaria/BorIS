@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 from django.contrib.contenttypes.models import ContentType
 
-from boris.classification import SEXES, PRIMARY_DRUG_APPLICATION_TYPES,\
+from boris.classification import SEXES, DRUG_APPLICATION_TYPES,\
         EMPLOYMENT_TYPES, EDUCATION_LEVELS, DISEASES
 from boris.clients.models import Anonymous, Client, Town, District, Region,\
         Drug, Practitioner
@@ -85,8 +85,8 @@ def generate():
             "content_type": ctype,
             "primary_drug": client_drug,
             "primary_drug_usage": choice([
-                PRIMARY_DRUG_APPLICATION_TYPES.IV,
-                PRIMARY_DRUG_APPLICATION_TYPES.NON_IV,
+                DRUG_APPLICATION_TYPES.VEIN_INJECTION,
+                DRUG_APPLICATION_TYPES.UNKNOWN,
             ]),
         }
         c = Client(**fields)

@@ -53,7 +53,6 @@ class DiseaseTestInline(admin.TabularInline):
 class EnumAdmin(BorisBaseAdmin):
     def show_save(self, obj): return True
     def show_save_and_continue(self, obj): return False
-    def show_save_and_add_another(self, obj): return True
 
 
 class AnamnesisAdmin(BorisBaseAdmin):
@@ -101,7 +100,7 @@ class AnamnesisAdmin(BorisBaseAdmin):
     def client__sex(self, obj):
         if obj.pk:
             return obj.client.get_sex_display()
-        return _(u'(Dostupné po uložení)')
+        return _(u'(Dostupné po uložení anamnézy)')
     client__sex.short_description = _(u'Pohlaví')
 
     def client__birthyear(self, obj):
@@ -110,7 +109,7 @@ class AnamnesisAdmin(BorisBaseAdmin):
         elif obj.pk:
             return _(u'(Zatím neznámý)')
         else:
-            return _(u'(Dostupné po uložení)')
+            return _(u'(Dostupné po uložení anamnézy)')
     client__birthyear.short_description = _(u'Rok narození')
 
     def formfield_for_dbfield(self, db_field, **kwargs):
@@ -148,6 +147,8 @@ class AnamnesisAdmin(BorisBaseAdmin):
             return HttpResponse('<script type="text/javascript">window.close();</script>')
         else:
             return super(AnamnesisAdmin, self).response_change(request, obj)
+
+    def show_save(self, obj): return True
 
 
 class PersonAdmin(BorisBaseAdmin):
@@ -215,7 +216,8 @@ class ClientAdmin(AddContactAdmin):
     search_fields = ('code', 'first_name', 'last_name')
     fieldsets = (
         (_(u'Základní informace'), {'fields': (
-            ('code', 'sex', 'town'),
+            ('code', 'sex'),
+            ('town',),
             ('first_name', 'last_name'),
             ('birthdate', 'birthdate_year_only'),
             ('primary_drug', 'close_person', 'primary_drug_usage'),

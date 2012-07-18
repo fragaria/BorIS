@@ -6,7 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from nose import tools
 
-from boris.classification import SEXES, PRIMARY_DRUG_APPLICATION_TYPES, \
+from boris.classification import SEXES, DRUG_APPLICATION_TYPES, \
         ANONYMOUS_TYPES, DISEASES
 from boris.clients.models import Anonymous
 from boris.syringes.models import SyringeCollection
@@ -16,11 +16,12 @@ from boris.services.models.basic import Address, PhoneCounseling, \
 from boris.reporting.reports.monthly_stats import AllClientEncounters, \
         MaleClientEncounters, IvClientEncounters, NonUserClientEncounters, \
         NonClients, Parents, Practitioners, AllAddresses, AddressesDU, \
-        AddressesNonDU, EncounterCount, ClientEncounterCount, \
+        EncounterCount, ClientEncounterCount, \
         PractitionerEncounterCount, PhoneEncounterCount, FirstContactCount, \
         FirstContactCountDU, FirstContactCountIV, HarmReductionCount, \
         GatheredSyringes, IssuedSyringes, SyringeCollectionCount, disease_tests
 from boris.reporting.core import make_key
+from boris.reporting.management import install_views
 
 from test_boris.helpers import get_tst_town, get_tst_client, \
         get_tst_drug, get_tst_practitioner
@@ -61,13 +62,14 @@ class TestEncounterAggregations(TestCase):
     """ Mostly encounter aggregations are tested here. """
 
     def setUp(self):
+        install_views('')
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
         self.drug = get_tst_drug()
 
         # clients
         self.client1 = get_tst_client('c1', {'town': self.town1, 'primary_drug': self.drug})
-        self.client2 = get_tst_client('c2', {'town': self.town1, 'primary_drug': self.drug, 'primary_drug_usage': PRIMARY_DRUG_APPLICATION_TYPES.IV})
+        self.client2 = get_tst_client('c2', {'town': self.town1, 'primary_drug': self.drug, 'primary_drug_usage': DRUG_APPLICATION_TYPES.VEIN_INJECTION})
         self.client3 = get_tst_client('c3', {'town': self.town1, 'sex': SEXES.FEMALE, 'close_person': True})
         self.client4 = get_tst_client('c4', {'town': self.town1})
         self.client5 = get_tst_client('c5', {'town': self.town2})
@@ -152,6 +154,7 @@ class TestServiceAggregations(TestCase):
     """ Mostly service aggregations are tested here. """
 
     def setUp(self):
+        install_views('')
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
         self.drug = get_tst_drug()
@@ -209,11 +212,6 @@ class TestServiceAggregations(TestCase):
         key = make_key({'month': 11, 'town': self.town1.pk})
         tools.assert_equals(aggregation.get_val(key), 3)
 
-    def test_all_addresses_non_du(self):
-        aggregation = AddressesNonDU(self.report)
-        key = make_key({'month': 11, 'town': self.town1.pk})
-        tools.assert_equals(aggregation.get_val(key), 2)
-
     def test_first_contact_count(self):
         aggregation = FirstContactCount(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
@@ -260,6 +258,7 @@ class TestMixedAggregations(TestCase):
     """
 
     def setUp(self):
+        install_views('')
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
 
@@ -308,6 +307,7 @@ class TestMixedAggregations(TestCase):
 class TestEncounterTotals(TestCase):
 
     def setUp(self):
+        install_views('')
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
 
@@ -363,6 +363,7 @@ class TestEncounterTotals(TestCase):
 class TestServiceTotals(TestCase):
 
     def setUp(self):
+        install_views('')
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
 
@@ -395,6 +396,7 @@ class TestServiceTotals(TestCase):
 
 class TestSyringeCollection(TestCase):
     def setUp(self):
+        install_views('')
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
 

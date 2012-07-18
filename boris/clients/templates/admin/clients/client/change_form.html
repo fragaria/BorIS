@@ -36,7 +36,9 @@
                         $('#id_primary_drug_usage').val('');
                     } else {
                         $('#id_primary_drug_usage option[value!=]').show();
-                        $('#id_primary_drug_usage').val($('#id_primary_drug_usage option[value!=]:first').val());
+                        if ($('#id_primary_drug_usage option:selected:first').val() == "") {
+                             $('#id_primary_drug_usage').val($('#id_primary_drug_usage option[value!=]:first').val());
+                        }
                     }
                     return true; 
                 });
