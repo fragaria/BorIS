@@ -248,7 +248,6 @@ class ClientAdmin(AddContactAdmin):
         return super(ClientAdmin, self).change_view(request, object_id,
             extra_context=extra_context)
 
-
     formfield_overrides = {
         models.DateField: {'widget': SplitDateWidget},
     }
@@ -297,7 +296,6 @@ class ClientAdmin(AddContactAdmin):
                 reverse('admin:clients_anamnesis_add'), obj.pk, _(u'Přidat anamnézu'))
     anamnesis_link.allow_tags = True
     anamnesis_link.short_description = _(u'Anamnéza')
-
 
 
 admin.site.register(RiskyBehavior, EnumAdmin)
