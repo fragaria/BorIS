@@ -7,6 +7,7 @@ from django import forms
 
 from boris.clients.models import ClientNote
 
+
 class ReadOnlyWidget(forms.Widget):
 
     def __init__(self, original_value, display_value):
@@ -33,6 +34,7 @@ TIME_FORMATS = (
     '%H:%M:%S',
     '%H:%M',
 )
+
 
 class ClientNoteForm(forms.ModelForm):
 
