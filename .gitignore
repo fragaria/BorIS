@@ -10,3 +10,4 @@ test_boris/settings/local.py
 boris.db
 .coverage
 *sublime*
+.ropeproject
