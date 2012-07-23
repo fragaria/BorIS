@@ -3,14 +3,17 @@ Created on 2.10.2011
 
 @author: xaralis
 '''
-from django.shortcuts import render, get_object_or_404
-from boris.services.models.core import get_model_for_class_name, Service,\
-    Encounter
-from django.core.urlresolvers import reverse
 import anyjson
+
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse, Http404
-from django.template.loader import render_to_string
+from django.shortcuts import render, get_object_or_404
 from django.template.context import RequestContext
+from django.template.loader import render_to_string
+
+from boris.services.models.core import get_model_for_class_name, Service, \
+    Encounter
+
 
 class HandleForm(object):
     def get_context(self, request, encounter_id, service_cls, object_id):
@@ -71,11 +74,13 @@ class HandleForm(object):
 
 handle_form = HandleForm()
 
+
 def services_list(request, encounter_id):
     encounter = get_object_or_404(Encounter, pk=encounter_id)
     services_done = Service.objects.filter(encounter=encounter_id)
     return render(request, 'services/list.html', {'encounter': encounter,
         'services_done': services_done})
+
 
 def drop_service(request, service_id):
     try:

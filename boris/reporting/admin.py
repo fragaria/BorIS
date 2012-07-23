@@ -10,6 +10,8 @@ from boris.reporting.reports.monthly_stats import MonthlyStatsByTown, \
     MonthlyStatsByDistrict
 from boris.reporting.reports.yearly_stats import YearlyStatsByMonth
 from boris.reporting.reports.services import ServiceReport
+from django.utils.datastructures import SortedDict
+
 
 class ReportingInterfaceTab(object):
     """
@@ -38,6 +40,7 @@ def interfacetab_factory(ReportClass, FormClass):
     return type(ReportClass.__name__ + 'Tab', (ReportingInterfaceTab,), {
         'report': ReportClass, 'form': FormClass})
 
+
 class ReportingInterface(object):
     """
     Separate report forms are splitted to tabs in admin, this
@@ -59,7 +62,7 @@ class ReportingInterfaceHandler(object):
 
     def __call__(self, request, tab_class=None):
         interface = ReportingInterface()
-        tabs = {}
+        tabs = SortedDict()
 
         for t in interface.tabs:
             tab = t()
@@ -71,7 +74,7 @@ class ReportingInterfaceHandler(object):
                 form = tab.form()
             tabs[tab] = form
 
-        ctx = {'tabs': sorted(tabs.items()), 'interface': interface}
+        ctx = {'tabs': tabs.items(), 'interface': interface}
         return render(request, 'reporting/interface.html', ctx)
 
     def get_urls(self):
