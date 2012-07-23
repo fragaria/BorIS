@@ -48,13 +48,16 @@
     </div>
 </div>
 </div>
+
 <script>
     var $ = django.jQuery;
     var jQuery = django.jQuery;
     var ui = null;
 </script>
+
 <link rel="stylesheet" href="{{ STATIC_URL }}css/tipsy.css" />
 <script src="{{ STATIC_URL }}js/jquery.tipsy.js" type="text/javascript"></script>
+
 <script type="text/javascript">
     function ServiceUI(encounterId) {
         this.encounterId = encounterId;
@@ -93,6 +96,7 @@
                 } else {
                     grappelli.initDateAndTimePicker();
                     $('#service-form-wrap h3 span').tipsy({gravity: 'w', html: true});
+                    $('#service-form-wrap input[type="text"]:first').focus(function () { $(this).select(); }).focus();
                 }
             }
         }
