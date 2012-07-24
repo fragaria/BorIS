@@ -9,12 +9,17 @@ from test_boris.helpers import (get_tst_town, get_tst_client, get_tst_drug,
     create_service)
 
 
-def remove_zero_stats(stats):
-    for key, val in stats.items():
-        if val == 0:
-            del stats[key]
-
-    return stats
+def normalize_stats(stats):
+    stats = dict(stats)
+    clean_stats = {}
+    for service, services in stats.items():
+        non_zero_services = []
+        for title, count in services:
+            if count != 0:
+                non_zero_services.append((title, count))
+        if non_zero_services:
+            clean_stats[service] = tuple(non_zero_services)
+    return clean_stats
 
 
 class TestServiceReports(TestCase):
@@ -39,56 +44,51 @@ class TestServiceReports(TestCase):
     def test_no_filter(self):
         filtering = {}
         r = ServiceReport(**filtering)
-        stats = remove_zero_stats(dict(r.get_stats()))
+        stats = normalize_stats(r.get_stats())
         expected = {
-            Address.service.title: 3,
-            UtilityWork.service.title: 1,
-            SocialWork.service.title: 2,
-            SocialWork._meta.get_field('other').verbose_name.__unicode__(): 1,
-            InformationService.service.title: 1,
-            HarmReduction.service.title: 1,
-            HarmReduction._meta.get_field('condoms').verbose_name.__unicode__(): 1,
-            HarmReduction._meta.get_field('in_count').verbose_name.__unicode__(): 87,
+            Address: ((Address.service.title, 3),),
+            UtilityWork: ((UtilityWork.service.title, 1),),
+            SocialWork: ((SocialWork.service.title, 2), (SocialWork._meta.get_field('other').verbose_name.__unicode__(), 1)),
+            InformationService: ((InformationService.service.title, 1),),
+            HarmReduction: ((HarmReduction.service.title, 1), (HarmReduction._meta.get_field('condoms').verbose_name.__unicode__(), 1), (HarmReduction._meta.get_field('in_count').verbose_name.__unicode__(), 87))
         }
         self.assertEqual(stats, expected)
 
     def test_filter_by_person(self):
         filtering = {'person': self.client2}
         r = ServiceReport(**filtering)
-        stats = remove_zero_stats(dict(r.get_stats()))
+        stats = normalize_stats(r.get_stats())
         expected = {
-            Address.service.title: 1
+            Address: ((Address.service.title, 1),)
         }
         self.assertEqual(stats, expected)
 
     def test_filter_by_date_from(self):
         filtering = {'date_from': date(2012, 1, 1)}
         r = ServiceReport(**filtering)
-        stats = remove_zero_stats(dict(r.get_stats()))
+        stats = normalize_stats(r.get_stats())
         expected = {
-            SocialWork.service.title: 1,
-            SocialWork._meta.get_field('other').verbose_name.__unicode__(): 1,
+            SocialWork: ((SocialWork.service.title, 1), (SocialWork._meta.get_field('other').verbose_name.__unicode__(), 1))
         }
         self.assertEqual(stats, expected)
 
     def test_filter_by_date_to(self):
         filtering = {'date_to': date(2010, 1, 1)}
         r = ServiceReport(**filtering)
-        stats = remove_zero_stats(dict(r.get_stats()))
+        stats = normalize_stats(r.get_stats())
         expected = {}
         self.assertEqual(stats, expected)
 
     def test_filter_by_town(self):
         filtering = {'town': self.town2}
         r = ServiceReport(**filtering)
-        stats = remove_zero_stats(dict(r.get_stats()))
+        stats = normalize_stats(r.get_stats())
         expected = {
-            UtilityWork.service.title: 1
+            UtilityWork: ((UtilityWork.service.title, 1),)
         }
         self.assertEqual(stats, expected)
 
     def test_include_in_reports(self):
         classes = [s for s in service_list() if s.service.include_in_reports]
-        stats = dict(ServiceReport().get_stats())
-        for c in classes:
-            self.assertTrue(c.service.title in stats)
+        stat_classes = [s[0] for s in ServiceReport().get_stats()]
+        self.assertEqual(classes, stat_classes)

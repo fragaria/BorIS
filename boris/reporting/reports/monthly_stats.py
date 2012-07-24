@@ -15,8 +15,13 @@ from boris.reporting.core import Aggregation, Report, \
     SumAggregation, make_key, SuperAggregation, NonDistinctCountAggregation
 from boris.reporting.models import SearchEncounter, SearchService, SearchSyringeCollection
 
-class EncounterAggregation(Aggregation): model = SearchEncounter
-class ServiceAggregation(Aggregation):   model = SearchService
+
+class EncounterAggregation(Aggregation):
+    model = SearchEncounter
+
+
+class ServiceAggregation(Aggregation):
+    model = SearchService
 
 
 class AllClientEncounters(EncounterAggregation):
@@ -175,6 +180,7 @@ class IssuedSyringes(SumAggregation, ServiceAggregation):
     title = _(u'Počet vydaného inj. materiálu')
     aggregation_dbcol = 'service__harmreduction__out_count'
 
+
 class SyringeCollectionCount(SumAggregation):
     title = _(u'Počet nalezených inj. stříkaček')
     aggregation_dbcol = 'count'
@@ -238,6 +244,7 @@ class MonthlyStatsByTown(Report):
                 ] + [self.get_sum(aggregation, month)]) for aggregation in self.aggregations
             ]) for month in self.months()
         ]
+
 
 class MonthlyStatsByDistrict(MonthlyStatsByTown):
     title = _(u'Měsíční statistiky podle okresu')

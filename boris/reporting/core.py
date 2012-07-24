@@ -2,6 +2,7 @@ from collections import defaultdict
 
 from django.http import HttpResponse
 from django.template import loader
+from django.template.context import RequestContext
 
 
 class hashdict(dict):
@@ -10,6 +11,7 @@ class hashdict(dict):
     """
     def __hash__(self):
         return hash(tuple(sorted(self.items())))
+
 
 def make_key(expression):
     return hashdict(expression)
@@ -20,13 +22,24 @@ class ReportResponse(HttpResponse):
     Ancestor of HttpRespose which takes report class and its args and kwargs
     that renders itself.
     """
-    def __init__(self, report_class, *args, **kwargs):
+    def __init__(self, report_class, request, *args, **kwargs):
         report = report_class(*args, **kwargs)
-        super(ReportResponse, self).__init__(content=report.render(), content_type=report.contenttype)
-        self['Content-Disposition'] = 'attachment; filename=report.xls'
+        super(ReportResponse, self).__init__(content=report.render(request),
+                                             content_type=report.contenttype)
+        if report.response_headers:
+            self.__dict__.update(report.response_headers)
 
 
-class Report(object):
+class BaseReport(object):
+    title = None
+    description = None
+    contenttype = 'application/vnd.ms-excel; charset=utf-8'
+    response_headers = {
+        'Content-Disposition': 'attachment; filename=report.xls'
+    }
+
+
+class Report(BaseReport):
     """
     Base class for reporting output.
 
@@ -42,7 +55,6 @@ class Report(object):
 
     - get_data (required) - returns the data to be used in the template
     """
-    title = None
     columns = None
     aggregation_classes = ()
 
@@ -62,8 +74,11 @@ class Report(object):
     def get_context(self):
         return {'report': self}
 
-    def render(self):
-        return loader.render_to_string(self.template, self.get_context())
+    def render(self, request):
+        return loader.render_to_string(
+            self.template,
+            self.get_context(),
+            context_instance=RequestContext(request))
 
     @property
     def aggregations(self):
@@ -150,6 +165,7 @@ class SumAggregation(Aggregation):
         from django.db.models import Sum
         return Sum(self.aggregation_dbcol)
 
+
 class NonDistinctCountAggregation(Aggregation):
     """
     Row that uses COUNT without distinct to annotate.
@@ -157,6 +173,7 @@ class NonDistinctCountAggregation(Aggregation):
     def get_annotation_func(self):
         from django.db.models import Count
         return Count(self.aggregation_dbcol, distinct=False)
+
 
 class SuperAggregation(Aggregation):
     """ Provides an 'aggregation' (sum) over aggregations. """

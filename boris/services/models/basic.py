@@ -26,7 +26,15 @@ def _boolean_stats(model, filtering, field_names):
         filtering_bln.update(filtering)
         cnt = model.objects.filter(**filtering_bln).count()
         boolean_stats.append((title, cnt))
-    return boolean_stats
+    return tuple(boolean_stats)
+
+
+def _field_label(model, field):
+    return model._meta.get_field(field).verbose_name.__unicode__()
+
+
+def _sum_int(model, filtering, field):
+    return model.objects.filter(**filtering).aggregate(Sum(field))['%s__sum' % field] or 0
 
 
 class HarmReduction(Service):
@@ -76,18 +84,17 @@ class HarmReduction(Service):
                                        self.out_count)
 
     @classmethod
-    def get_stats(cls, filtering):
-        basic_stats = super(HarmReduction, cls).get_stats(filtering)
-        booleans = ('standard', 'acid', 'alternatives', 'condoms', 'stericup',
-            'other', 'pregnancy_test', 'medical_supplies')
-        boolean_stats = _boolean_stats(cls, filtering, booleans)
-        in_cnt = cls.objects.filter(**filtering).aggregate(Sum('in_count'))
-        in_title = cls._meta.get_field('in_count').verbose_name.__unicode__()
-        in_stats = ((in_title, in_cnt['in_count__sum'] or 0),)
-        out_cnt = cls.objects.filter(**filtering).aggregate(Sum('out_count'))
-        out_title = cls._meta.get_field('out_count').verbose_name.__unicode__()
-        out_stats = ((out_title, out_cnt['out_count__sum'] or 0),)
-        return chain(basic_stats, boolean_stats, in_stats, out_stats)
+    def _get_stats(cls, filtering):
+        return chain(
+            super(HarmReduction, cls)._get_stats(filtering),
+            _boolean_stats(cls, filtering, ('standard', 'acid',
+                                            'alternatives', 'condoms',
+                                            'stericup', 'other',
+                                            'pregnancy_test',
+                                            'medical_supplies')),
+            ((_field_label(cls, 'in_count'), _sum_int(cls, filtering, 'in_count')),),
+            ((_field_label(cls, 'out_count'), _sum_int(cls, filtering, 'out_count')),)
+        )
 
 
 class IncomeExamination(Service):
@@ -178,12 +185,14 @@ class InformationService(Service):
         )
 
     @classmethod
-    def get_stats(cls, filtering):
-        basic_stats = super(InformationService, cls).get_stats(filtering)
-        booleans = ('safe_usage', 'safe_sex', 'medical', 'socio_legal',
-            'cure_possibilities', 'literature', 'other')
-        boolean_stats = _boolean_stats(cls, filtering, booleans)
-        return chain(basic_stats, boolean_stats)
+    def _get_stats(cls, filtering):
+        return chain(
+            super(InformationService, cls)._get_stats(filtering),
+            _boolean_stats(cls, filtering, ('safe_usage', 'safe_sex',
+                                            'medical', 'socio_legal',
+                                            'cure_possibilities', 'literature',
+                                            'other'))
+        )
 
 
 class ContactWork(Service):
@@ -195,6 +204,7 @@ class ContactWork(Service):
 
     class Options:
         codenumber = 4
+
 
 class CrisisIntervention(Service):
     INTERVENTION_TYPES = Choices(
@@ -257,11 +267,10 @@ class SocialWork(Service):
         )
 
     @classmethod
-    def get_stats(cls, filtering):
-        basic_stats = super(SocialWork, cls).get_stats(filtering)
-        booleans = ('socio_legal', 'counselling', 'service_mediation', 'other')
-        boolean_stats = _boolean_stats(cls, filtering, booleans)
-        return chain(basic_stats, boolean_stats)
+    def _get_stats(cls, filtering):
+        return super(SocialWork, cls)._get_stats(filtering) + (
+            _boolean_stats(cls, filtering, ('socio_legal', 'counselling',
+                                            'service_mediation', 'other')))
 
 
 class UtilityWork(Service):

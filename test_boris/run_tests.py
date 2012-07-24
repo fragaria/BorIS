@@ -12,6 +12,7 @@ from os.path import abspath, dirname
 
 import nose
 
+
 def run_all(argv=None):
     os.environ['DJANGO_SETTINGS_MODULE'] = 'test_boris.settings'
 

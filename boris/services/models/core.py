@@ -9,15 +9,15 @@ from datetime import date
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.encoding import force_unicode
+from django.utils.functional import curry
 from django.utils.translation import ugettext_lazy as _
 
-from model_utils.models import TimeStampedModel
 from model_utils.managers import InheritanceManager
+from model_utils.models import TimeStampedModel
 
 from fragapy.common.models.adminlink import AdminLinkMixin
 
 from boris.services.forms import serviceform_factory
-from django.utils.functional import curry
 
 
 class ProxyInheritanceManager(InheritanceManager):
@@ -26,9 +26,7 @@ class ProxyInheritanceManager(InheritanceManager):
 
     Assumes its proxy models have ForeignKey to ContentType called
     'content_type'.
-
     """
-
     def get_query_set(self):
         qset = super(ProxyInheritanceManager, self).get_query_set()
         meta = self.model._meta
@@ -77,7 +75,7 @@ class ServiceOptions(object):
         self.excludes = None
         self.row_attrs = None
         self.fieldsets = None
-        self.codenumber = 0 # Code number to be displayed in the forms.
+        self.codenumber = 0  # Code number to be displayed in the forms.
         self.include_in_reports = True
 
     def get_description_template_list(self):
@@ -154,9 +152,9 @@ class Service(TimeStampedModel):
     ``Options`` nested class can have following attributes to allow for
     customizations::
 
-        ========================== =============================================
+        ========================== ============================================
         Attribute                  Description
-        ========================== =============================================
+        ========================== ============================================
         ``title``                  Title used in forms and when saving.
                                    Defaults to verbose_name in Meta
 
@@ -190,7 +188,7 @@ class Service(TimeStampedModel):
                                    service reports. It's get_stats method is used
                                    to generate the statistics of interest.
 
-        ========================== =============================================
+        ========================== ============================================
     """
     __metaclass__ = ServiceMetaclass
 
@@ -258,9 +256,12 @@ class Service(TimeStampedModel):
         """
         Return an iterator over statisitics used in service reports.
 
-        Returns an iterable over pairs of <title>, <number>.
-
+        Returns an iterable over pairs of (<title>, <number>).
         """
+        return (cls, cls._get_stats(filtering),)
+
+    @classmethod
+    def _get_stats(cls, filtering):
         title = cls.service.title
         cnt = cls.objects.filter(**filtering).count()
         return ((title, cnt),)
@@ -279,7 +280,7 @@ def service_list(person=None):
         )
     else:
         services = Service.registered_services
-    return sorted(services, key = lambda x: x.service.codenumber)
+    return sorted(services, key=lambda x: x.service.codenumber)
 
 
 def get_model_for_class_name(class_name):

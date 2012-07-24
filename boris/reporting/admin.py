@@ -3,14 +3,14 @@ from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
 from django.template.defaultfilters import slugify
+from django.utils.datastructures import SortedDict
 
 from boris.reporting.core import ReportResponse
 from boris.reporting.forms import MonthlyStatsForm, ServiceForm
 from boris.reporting.reports.monthly_stats import MonthlyStatsByTown, \
     MonthlyStatsByDistrict
-from boris.reporting.reports.yearly_stats import YearlyStatsByMonth
 from boris.reporting.reports.services import ServiceReport
-from django.utils.datastructures import SortedDict
+from boris.reporting.reports.yearly_stats import YearlyStatsByMonth
 
 
 class ReportingInterfaceTab(object):
@@ -36,9 +36,15 @@ class ReportingInterfaceTab(object):
         return reverse(self.get_urlname())
 
 
-def interfacetab_factory(ReportClass, FormClass):
-    return type(ReportClass.__name__ + 'Tab', (ReportingInterfaceTab,), {
-        'report': ReportClass, 'form': FormClass})
+def interfacetab_factory(ReportClass, FormClass, output_format=None):
+    cls = type(ReportClass.__name__ + 'Tab',
+               (ReportingInterfaceTab,),
+               {'report': ReportClass, 'form': FormClass})
+
+    if output_format is not None:
+        cls.output_format = output_format
+
+    return cls
 
 
 class ReportingInterface(object):
@@ -69,7 +75,7 @@ class ReportingInterfaceHandler(object):
             if tab_class == t and request.method == 'POST':
                 form = tab.form(request.POST)
                 if form.is_valid():
-                    return ReportResponse(tab.report, **form.cleaned_data)
+                    return ReportResponse(tab.report, request, **form.cleaned_data)
             else:
                 form = tab.form()
             tabs[tab] = form

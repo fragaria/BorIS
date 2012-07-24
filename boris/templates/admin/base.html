@@ -50,22 +50,26 @@
 </head>
 <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
     <div id="container">
-        <!-- HEADER -->
-        {% if not is_popup %}
-            {% include "admin/includes_grappelli/header.html" %}
-            <!-- SITEMENU -->
-            {% block sitemenu %}
-                {% include "sitemenu.html" %}
-            {% endblock %}
-        {% endif %}
-        <!-- MESSAGES -->
-        {% if messages %}
-            <ul class="messagelist">
-                {% for message in messages %}
-                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
+        {% block header %}
+            <!-- HEADER -->
+            {% if not is_popup %}
+                {% include "admin/includes_grappelli/header.html" %}
+                <!-- SITEMENU -->
+                {% block sitemenu %}
+                    {% include "sitemenu.html" %}
+                {% endblock %}
+            {% endif %}
+        {% endblock %}
+        {% block messages %}
+            <!-- MESSAGES -->
+            {% if messages %}
+                <ul class="messagelist">
+                    {% for message in messages %}
+                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endblock %}
         <!-- CONTENT -->
         <div id="content" class="{% block content-class %}{% endblock %}">
             {% block pretitle %}{% endblock %}

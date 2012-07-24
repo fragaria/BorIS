@@ -10,6 +10,7 @@ from boris.reporting.core import make_key
 
 from .monthly_stats import MonthlyStatsByTown
 
+
 class YearlyStatsByMonth(MonthlyStatsByTown):
     title = _(u'Roční statistiky po měsících')
     description = _(u'Statistika zobrazuje data agregovaná za všechny města po měsících.')

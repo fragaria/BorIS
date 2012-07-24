@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-
-from itertools import chain
-
 from django.template import loader
+from django.template.context import RequestContext
 
 from boris.services.models import service_list
+from boris.reporting.core import BaseReport
 
 
-class ServiceReport(object):
+class ServiceReport(BaseReport):
     title = 'Shrnutí výkonů'
     description = 'Statistiky jednotlivých výkonů splňujících zadaná kritéria.'
-    contenttype =  'application/vnd.ms-excel; charset=utf-8'
+    contenttype = 'text/html'
+    response_headers = None
 
     def __init__(self, date_from=None, date_to=None, town=None, person=None):
         filtering = (
@@ -23,15 +23,13 @@ class ServiceReport(object):
         self.filtering = dict(filtering)
 
     def get_stats(self):
-        stats = [
+        return [
             service.get_stats(self.filtering) for service in service_list()
             if service.service.include_in_reports
         ]
 
-        return chain(*stats)
-
-    def render(self):
-        ctx = {
-            'stats': self.get_stats(),
-        }
-        return loader.render_to_string('reporting/reports/servicereport.html', ctx)
+    def render(self, request):
+        return loader.render_to_string(
+            'reporting/reports/servicereport.html',
+            {'stats': self.get_stats(), 'filtering': self.filtering},
+            context_instance=RequestContext(request))

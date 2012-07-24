@@ -1,2 +1,30 @@
-{% for stat in stats %}"{{ stat.0 }}";"{{ stat.1 }}";
-{% endfor %}
+{% extends "print_base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Souhrn výkonů" %} {{ block.super }}{% endblock %}
+{% block content_title %}<h1>{% trans "Souhrn výkonů" %}</h1>{% endblock %}
+
+{% block content %}
+    <table style="width: 100%">
+        <tr>
+            <th>{% trans "Výkon" %}</th>
+            <th>{% trans "Množství" %}</th>
+        </tr>
+        {% for service, results in stats %}
+            {% with results|length as length %}
+            {% for title, result in results %}
+            <tr>
+                <td>
+                    {% if forloop.first %}
+                        <strong>{{ title }}</strong>
+                    {% else %}
+                        {% if length > 2 %}&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}
+                        {{ title }}
+                    {% endif %}</td>
+                <td>{{ result }}</td>
+            </tr>
+            {% endfor %}
+            {% endwith %}
+        {% endfor %}
+    </table>
+{% endblock %}
