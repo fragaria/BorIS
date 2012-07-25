@@ -90,6 +90,9 @@ class BorisBaseAdmin(ModelAdmin):
     def show_save_and_add_another(self, obj):
         return False
 
+    def force_show_delete(self, obj):
+        return False
+
     @csrf_protect_m
     @transaction.commit_on_success
     def change_view(self, request, object_id, extra_context=None):
@@ -98,7 +101,8 @@ class BorisBaseAdmin(ModelAdmin):
             'BO_SHOW_SAVE': self.show_save(obj),
             'BO_SHOW_SAVE_AS_NEW': self.show_save_as_new(obj),
             'BO_SHOW_SAVE_AND_CONT': self.show_save_and_continue(obj),
-            'BO_SHOW_SAVE_AND_ADD_ANOTHER': self.show_save_and_add_another(obj)
+            'BO_SHOW_SAVE_AND_ADD_ANOTHER': self.show_save_and_add_another(obj),
+            'BO_FORCE_SHOW_DELETE': self.force_show_delete(obj)
         }
         if extra_context is not None:
             extra_context.update(buttons_context)
@@ -110,12 +114,14 @@ class BorisBaseAdmin(ModelAdmin):
     @csrf_protect_m
     @transaction.commit_on_success
     def add_view(self, request, form_url='', extra_context=None):
+        empty_obj = self.model()
         buttons_context = {
-            'BO_SHOW_SAVE': self.show_save(self.model()),
-            'BO_SHOW_SAVE_AS_NEW': self.show_save_as_new(self.model()),
-            'BO_SHOW_SAVE_AND_CONT': self.show_save_and_continue(self.model()),
+            'BO_SHOW_SAVE': self.show_save(empty_obj),
+            'BO_SHOW_SAVE_AS_NEW': self.show_save_as_new(empty_obj),
+            'BO_SHOW_SAVE_AND_CONT': self.show_save_and_continue(empty_obj),
             'BO_SHOW_SAVE_AND_ADD_ANOTHER': self.show_save_and_add_another(
-                self.model())
+                empty_obj),
+            'BO_FORCE_SHOW_DELETE': self.force_show_delete(empty_obj)
         }
         if extra_context is not None:
             extra_context.update(buttons_context)

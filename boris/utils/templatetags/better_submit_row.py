@@ -49,6 +49,10 @@ def submit_row(context):
     if 'BO_SHOW_SAVE_AND_CONT' in context:
         data['show_save_and_continue'] = (context['BO_SHOW_SAVE_AND_CONT'] and
                                           data['show_save_and_continue'])
+
+    if context.get('BO_FORCE_SHOW_DELETE', False) is True:
+        data['show_delete_link'] = True
+
     return data
 
 submit_row = register.inclusion_tag('admin/submit_line.html', takes_context=True)(submit_row)

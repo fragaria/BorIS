@@ -154,6 +154,9 @@ class AnamnesisAdmin(BorisBaseAdmin):
     def show_save(self, obj):
         return True
 
+    def force_show_delete(self, obj):
+        return obj.pk is not None
+
 
 class PersonAdmin(BorisBaseAdmin):
     list_display = ('title',)
