@@ -118,7 +118,7 @@ class Person(TimeStampedModel, AdminLinkMixin):
         """
         try:
             return self.content_type.get_object_for_this_type(pk=self.pk)
-        except ContentType.DoesNotExist: # E.g. mock objects or some not-yet-saved objects.
+        except ContentType.DoesNotExist:  # E.g. mock objects or some not-yet-saved objects.
             return self
 
     def is_default_service(self, service):
