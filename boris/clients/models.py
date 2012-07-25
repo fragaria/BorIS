@@ -150,7 +150,7 @@ class Practitioner(Person):
 
     def is_default_service(self, service):
         """Returns True if ``service`` is default for this person, False otherwise"""
-        return service.__class__.__name__ == 'UtilityWork'
+        return service.class_name() == 'UtilityWork'
 
 
 class Anonymous(Person):
@@ -168,7 +168,7 @@ class Anonymous(Person):
 
     def is_default_service(self, service):
         """Returns True if ``service`` is default for this person, False otherwise"""
-        return service.__class__.__name__ == 'Address'
+        return service.class_name() == 'Address'
 
 
 class Client(Person):
@@ -198,7 +198,7 @@ class Client(Person):
 
     def is_default_service(self, service):
         """Returns True if ``service`` is default for this person, False otherwise"""
-        return service.__class__.__name__ == 'HarmReduction'
+        return service.class_name() == 'HarmReduction'
 
     def save(self, *args, **kwargs):
         if self.code:
