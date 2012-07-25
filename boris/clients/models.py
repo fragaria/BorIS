@@ -200,6 +200,11 @@ class Client(Person):
         """Returns True if ``service`` is default for this person, False otherwise"""
         return service.__class__.__name__ == 'HarmReduction'
 
+    def save(self, *args, **kwargs):
+        if self.code:
+            self.code = self.code.upper()
+        super(Client, self).save(*args, **kwargs)
+
 
 class Anamnesis(TimeStampedModel, AdminLinkMixin):
     """ Income anamnesis. """
