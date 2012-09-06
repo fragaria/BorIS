@@ -17,6 +17,9 @@ class YearlyStatsByMonth(MonthlyStatsByTown):
     grouping = ('month',)
     grouping_total = ('year',)
 
+    def get_filename(self):
+        return 'stat_rocni.xls'
+
     def _columns(self):
         return self.months()
     columns = property(_columns)

@@ -27,16 +27,23 @@ class ReportResponse(HttpResponse):
         super(ReportResponse, self).__init__(content=report.render(request),
                                              content_type=report.contenttype)
         if report.response_headers:
-            self.__dict__.update(report.response_headers)
+            for key, val in report.response_headers.items():
+                self[key] = val
 
 
 class BaseReport(object):
     title = None
     description = None
     contenttype = 'application/vnd.ms-excel; charset=utf-8'
-    response_headers = {
-        'Content-Disposition': 'attachment; filename=report.xls'
+
+    @property
+    def response_headers(self):
+        return {
+        'Content-Disposition': 'attachment; filename=%s' % self.get_filename()
     }
+
+    def get_filename(self):
+        return 'report.xls'
 
 
 class Report(BaseReport):

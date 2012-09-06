@@ -217,6 +217,9 @@ class MonthlyStatsByTown(Report):
         IssuedSyringes
     ]
 
+    def get_filename(self):
+        return 'stat_mesicni_podle_mesta.xls'
+
     def _columns(self):
         if not hasattr(self, '_cols'):
             self._cols = [town for town in Town.objects.all()]
@@ -252,6 +255,9 @@ class MonthlyStatsByDistrict(MonthlyStatsByTown):
         u'každý měsíc zobrazuje sledované informace pro jednotlivé <strong>okresy</strong>.')
     grouping = ('month', 'town__district')
     grouping_total = ('month',)
+
+    def get_filename(self):
+        return 'stat_mesicni_podle_okresu.xls'
 
     def _columns(self):
         if not hasattr(self, '_cols'):
