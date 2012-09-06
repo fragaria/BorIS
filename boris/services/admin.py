@@ -54,6 +54,7 @@ EncounterInline.service_list = service_list
 class EncounterAdmin(BorisBaseAdmin):
     list_display = ('person', 'performed_on', 'where', 'service_list')
     list_filter = ('performed_on', 'where')
+    list_actions = ('change_link', 'person_link')
     search_fields = ('person__title', 'where__title',
         'performed_by__username', 'performed_by__first_name',
         'performed_by__last_name')
@@ -65,6 +66,15 @@ class EncounterAdmin(BorisBaseAdmin):
     autocomplete_lookup_fields = {
         'fk': ['where', 'person']
     }
+
+    def person_link(self, obj):
+        """Link to the person related to the encounter"""
+        return u'<a href="%s" class="changelink cbutton high1">%s</button>' % (
+            obj.person.cast().get_admin_url(), _('zobrazit osobu'))
+
+    def get_list_display_links(self, request, list_display):
+        """Supress showing of list display links"""
+        return ()
 
     def formfield_for_dbfield(self, db_field, **kwargs):
         """

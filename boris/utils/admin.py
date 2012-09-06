@@ -41,6 +41,8 @@ class BorisChangeList(ChangeList):
 
         # Display different buttons based on whether we render a pop-up window.
         if 'pop' in request.GET:
+            if isinstance(self.list_display, tuple):
+                self.list_display = list(self.list_display)
             self.list_display.insert(0, 'select_link')
             self.list_display = filter(lambda x: x not in self.remove_in_popup,
                 self.list_display)
