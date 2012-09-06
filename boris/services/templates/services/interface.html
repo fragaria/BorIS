@@ -108,7 +108,7 @@
         this.cleanForm = function () { this.placeForm(''); }
         
         this.saveForm = function () {
-            var data = this.getForm().find('select,input').serialize();
+            var data = this.getForm().find('select,input,textarea').serialize();
             $.post(this.getForm().attr('class'), data, function (response) {
                 if (response.ok) {
                     ui.showSaveMessage();
