@@ -20,7 +20,12 @@ class ServiceReport(BaseReport):
             ('encounter__person', person),
         )
         filtering = ((f[0], f[1]) for f in filtering if f[1] is not None)
+
         self.filtering = dict(filtering)
+        self.date_from = date_from
+        self.date_to = date_to
+        self.town = town
+        self.person = person
 
     def get_stats(self):
         return [
@@ -31,5 +36,10 @@ class ServiceReport(BaseReport):
     def render(self, request):
         return loader.render_to_string(
             'reporting/reports/servicereport.html',
-            {'stats': self.get_stats(), 'filtering': self.filtering},
-            context_instance=RequestContext(request))
+            {
+                'stats': self.get_stats(),
+                'filtering': self.filtering,
+                'person': self.person
+            },
+            context_instance=RequestContext(request)
+        )

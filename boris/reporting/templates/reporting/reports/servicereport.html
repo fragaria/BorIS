@@ -2,29 +2,68 @@
 {% load i18n %}
 
 {% block title %}{% trans "Souhrn výkonů" %} {{ block.super }}{% endblock %}
-{% block content_title %}<h1>{% trans "Souhrn výkonů" %}</h1>{% endblock %}
+{% block content_title %}<h1>{% if person %}{% blocktrans with person as person %}Souhrn výkonů klienta {{ person }}{% endblocktrans %}{% else %}{% trans "Souhrn výkonů" %}{% endif %}</h1>{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        body { padding: 0 20px; }
+        table td { padding: 5px 5px; }
+        .multicolumn {
+            display: block;
+            -moz-column-count: 2;
+            -moz-column-gap: 20px;
+            -webkit-column-count: 2;
+            -webkit-column-gap: 20px;
+            column-count: 2;
+            column-gap: 20px;
+        }
+        div.more:before, div.more:after {
+            clear: both;
+        }
+        div.more {
+            margin-top: 40px;
+        }
+        ul li {
+            font-size: 90%;
+        }
+        ul li span.res {
+            margin: 0 0 0 100px;
+            float: right;
+        }
+        ul li {
+            display: block;
+        }
+        hr { margin-top: 50px;}
+    </style>
+{% endblock %}
 
 {% block content %}
-    <table style="width: 100%">
-        <tr>
-            <th>{% trans "Výkon" %}</th>
-            <th>{% trans "Množství" %}</th>
-        </tr>
+    <ul class="multicolumn">
         {% for service, results in stats %}
             {% with results|length as length %}
             {% for title, result in results %}
-            <tr>
-                <td>
+            <li>
+                <span>
                     {% if forloop.first %}
                         <strong>{{ title }}</strong>
                     {% else %}
                         {% if length > 2 %}&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}
                         {{ title }}
-                    {% endif %}</td>
-                <td>{{ result }}</td>
-            </tr>
+                    {% endif %}
+                </span>
+                <span class="res">{{ result }}</span>
+            </li>
             {% endfor %}
             {% endwith %}
         {% endfor %}
-    </table>
+    </ul>
+    
+    <hr>
+    
+    <div class="more multicolumn">
+        <h2>Zhodnocení</h2>
+        
+        <h2>Plán na další období</h2>
+    </div>
 {% endblock %}

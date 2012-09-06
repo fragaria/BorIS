@@ -36,7 +36,7 @@
         <div class="form-container">
             {% for tab, form in tabs %}
             <div id="tabs-{{ forloop.counter }}">
-                <form method="POST" action="{{ tab.get_absolute_url }}">
+                <form method="POST" action="{{ tab.get_absolute_url }}" {% if tab.to_popup %}target="_blank"{% endif %}>
                     <fieldset class="module">
                         <div class="row cells cells-1"><div class="cell">
                             {% autoescape off %}

@@ -21,6 +21,7 @@ class ReportingInterfaceTab(object):
     """
     report = None
     form = None
+    to_popup = False
 
     @classmethod
     def get_urlname(cls):
@@ -36,10 +37,13 @@ class ReportingInterfaceTab(object):
         return reverse(self.get_urlname())
 
 
-def interfacetab_factory(ReportClass, FormClass, output_format=None):
+def interfacetab_factory(ReportClass, FormClass, output_format=None, **kwargs):
+    attrs = {'report': ReportClass, 'form': FormClass}
+    attrs.update(**kwargs)
+
     cls = type(ReportClass.__name__ + 'Tab',
                (ReportingInterfaceTab,),
-               {'report': ReportClass, 'form': FormClass})
+               attrs)
 
     if output_format is not None:
         cls.output_format = output_format
@@ -59,7 +63,7 @@ class ReportingInterface(object):
         interfacetab_factory(MonthlyStatsByTown, MonthlyStatsForm),
         interfacetab_factory(MonthlyStatsByDistrict, MonthlyStatsForm),
         interfacetab_factory(YearlyStatsByMonth, MonthlyStatsForm),
-        interfacetab_factory(ServiceReport, ServiceForm)
+        interfacetab_factory(ServiceReport, ServiceForm, to_popup=True)
     )
 
 
