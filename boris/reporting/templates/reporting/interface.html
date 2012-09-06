@@ -20,14 +20,14 @@
 {% block breadcrumbs %}
     <div id="breadcrumbs">
          <a href="../">{% trans "Home" %}</a> &rsaquo;
-         <a href=".">{% trans "Výkazy" %}</a>
+         <a href=".">{% trans "Výstupy" %}</a>
     </div>
 {% endblock %}
 
 <!-- CONTENT -->
 {% block content %}
     <div class="container-flexible" id="tabs">
-        <h1>{% trans "Výkazy" %}</h1>
+        <h1>{% trans "Výstupy" %}</h1>
         <ul>
             {% for tab, form in tabs %}
             <li><a href="#tabs-{{ forloop.counter }}">{{ tab.get_title }}</a></li> 
@@ -45,7 +45,7 @@
                         </div></div>
                         {% include "form_snippet.html" %}
                         <div class="row cells cells-2 submit-right"><div class="cell">
-                            <a onclick="django.jQuery(this).closest('form').submit();" class="cbutton">Zobrazit výkaz</a>
+                            <a onclick="django.jQuery(this).closest('form').submit();" class="cbutton">Zobrazit výstup</a>
                         </div></div>
                     </fieldset>
                 </form>

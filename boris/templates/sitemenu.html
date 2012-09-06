@@ -20,7 +20,7 @@
     <li class="{% active practitioners %}"><a href="{{ practitioners }}">{% trans "Odborníci" %}</a></li>
     <li class="{% active contacts %}"><a href="{{ contacts }}">{% trans "Kontakty" %}</a></li>
     <li class="{% active syringecollection %}"><a href="{{ syringecollection }}">{% trans "Sběr stříkaček" %}</a></li>
-    <li class="{% active reporting %}"><a href="{{ reporting }}">{% trans "Výkazy" %}</a></li>
+    <li class="{% active reporting %}"><a href="{{ reporting }}">{% trans "Výstupy" %}</a></li>
     {% if request.user.is_superuser %}
     <li class="{% active towns districts regions drugs riskybehavior %}">
         <a href="#">{% trans "Nastavení" %}</a>
