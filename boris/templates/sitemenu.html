@@ -1,16 +1,18 @@
 {% load i18n adminnav %}
+{% load url from future %}
 {% if user.is_authenticated %}
 <ul id="nav">
-    {% url admin:clients_client_changelist as clients %}
-    {% url admin:clients_anonymous_changelist as anonymous %}
-    {% url admin:clients_practitioner_changelist as practitioners %}
-    {% url admin:services_encounter_changelist as contacts %}
-    {% url admin:syringes_syringecollection_changelist as syringecollection %}
-    {% url admin:clients_town_changelist as towns %}
-    {% url admin:clients_district_changelist as districts %}
-    {% url admin:clients_region_changelist as regions %}
-    {% url admin:clients_drug_changelist as drugs %}
-    {% url admin:clients_riskybehavior_changelist as riskybehavior %}
+    {% url "admin:clients_client_changelist" as clients %}
+    {% url "admin:clients_anonymous_changelist" as anonymous %}
+    {% url "admin:clients_practitioner_changelist" as practitioners %}
+    {% url "admin:services_encounter_changelist" as contacts %}
+    {% url "admin:syringes_syringecollection_changelist" as syringecollection %}
+    {% url "admin:clients_town_changelist" as towns %}
+    {% url "admin:clients_district_changelist" as districts %}
+    {% url "admin:clients_region_changelist" as regions %}
+    {% url "admin:clients_drug_changelist" as drugs %}
+    {% url "admin:clients_riskybehavior_changelist" as riskybehavior %}
+    {% url "reporting_base" as reporting %}
     
     <li class="{% active "/" %}"><a href="/">{% trans "Nástěnka" %}</a></li>
     <li class="{% active clients %}"><a href="{{ clients }}">{% trans "Klienti" %}</a></li>
@@ -18,6 +20,7 @@
     <li class="{% active practitioners %}"><a href="{{ practitioners }}">{% trans "Odborníci" %}</a></li>
     <li class="{% active contacts %}"><a href="{{ contacts }}">{% trans "Kontakty" %}</a></li>
     <li class="{% active syringecollection %}"><a href="{{ syringecollection }}">{% trans "Sběr stříkaček" %}</a></li>
+    <li class="{% active reporting %}"><a href="{{ reporting }}">{% trans "Výkazy" %}</a></li>
     {% if request.user.is_superuser %}
     <li class="{% active towns districts regions drugs riskybehavior %}">
         <a href="#">{% trans "Nastavení" %}</a>
