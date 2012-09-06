@@ -6,6 +6,7 @@ from boris.services.models.core import Service, Encounter
 
 DO_NOTHING = models.DO_NOTHING
 
+
 class SearchEncounter(models.Model):
     """
     An augmented model corresponding to a database view.
@@ -25,6 +26,7 @@ class SearchEncounter(models.Model):
     class Meta:
         managed = False
 
+
 class SearchService(models.Model):
     service = models.ForeignKey(Service, related_name='+', on_delete=DO_NOTHING)
     person = models.ForeignKey(Person, related_name='+', on_delete=DO_NOTHING)
@@ -39,6 +41,7 @@ class SearchService(models.Model):
 
     class Meta:
         managed = False
+
 
 class SearchSyringeCollection(models.Model):
     count = models.SmallIntegerField()

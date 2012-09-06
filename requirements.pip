@@ -5,7 +5,7 @@ south
 # temporary till pull request is accepted
 -e git+https://github.com/fragaria/django-grappelli.git#egg=grappelli
 raven==1.4.6
-fragapy==1.2.3
+fragapy==1.2.5
 gunicorn
 
 -e git+https://github.com/carljm/django-model-utils.git#egg=model_utils

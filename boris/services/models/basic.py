@@ -8,9 +8,11 @@ from itertools import chain
 
 from django.db import models
 from django.db.models import Sum
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, ugettext
 
 from model_utils import Choices
+
+from fragapy.fields.models import MultiSelectField
 
 from boris.classification import DISEASES, DISEASE_TEST_SIGN
 
@@ -132,24 +134,25 @@ class DiseaseTest(Service):
 
 class AsistService(Service):
     ASIST_TYPES = Choices(
-        ('d', 'DOCTOR', _(u'lékař')),
-        ('o', 'OFFICE', _(u'úřad')),
-        ('m', 'MEDICAL_FACILITY', _(u'léčebné zařízení')),
+        ('m', 'MEDICAL', ugettext(u'zdravotní')),
+        ('s', 'SOCIAL', ugettext(u'sociální')),
+        ('f', 'MEDICAL_FACILITY', ugettext(u'léčebné zařízení')),
+        ('o', 'OTHER', ugettext(u'jiné'))
     )
-    where = models.CharField(max_length=1, choices=ASIST_TYPES, verbose_name=_(u'Kam'))
+    where = MultiSelectField(max_length=10, choices=ASIST_TYPES, verbose_name=_(u'Kam'))
     note = models.TextField(null=True, blank=True, verbose_name=_(u'Poznámka'))
 
     class Meta:
         app_label = 'services'
-        verbose_name = _(u'Asistenční služba')
-        verbose_name_plural = _(u'Asistenční služby')
+        verbose_name = _(u'Doprovod klienta')
+        verbose_name_plural = _(u'Doprovod klientů')
 
     class Options:
         codenumber = 9
         limited_to = ('Client',)
 
     def _prepare_title(self):
-        return _(u'%(title)s: doprovod %(where)s') % {
+        return _(u'%(title)s: %(where)s') % {
             'title': self.service.title, 'where': self.get_where_display()
         }
 
@@ -207,15 +210,9 @@ class ContactWork(Service):
 
 
 class CrisisIntervention(Service):
-    INTERVENTION_TYPES = Choices(
-        ('d', 'DIRECT', _(u'přímá')),
-        ('p', 'OVER_THE_PHONE', _(u'po telefonu')),
-    )
-    type = models.CharField(max_length=1, choices=INTERVENTION_TYPES,
-        default=INTERVENTION_TYPES.DIRECT, verbose_name=_(u'Typ'))
-
     class Meta:
         app_label = 'services'
+        proxy = True
         verbose_name = _(u'Krizová intervence')
         verbose_name_plural = _(u'Krizové intervence')
 
@@ -223,18 +220,13 @@ class CrisisIntervention(Service):
         codenumber = 7
         limited_to = ('Client',)
 
-    def _prepare_title(self):
-        return _(u'%(title)s: %(type)s') % {
-            'title': self.service.title, 'type': self.get_type_display()
-        }
-
 
 class PhoneCounseling(Service):
     class Meta:
         app_label = 'services'
         proxy = True
-        verbose_name = _(u'Telefonické poradenství')
-        verbose_name_plural = _(u'Telefonické poradenství')
+        verbose_name = _(u'Telefonický kontakt')
+        verbose_name_plural = _(u'Telefonické kontakty')
 
     class Options:
         codenumber = 11
@@ -252,8 +244,8 @@ class SocialWork(Service):
 
     class Meta:
         app_label = 'services'
-        verbose_name = _(u'Sociální práce')
-        verbose_name_plural = _(u'Sociální práce')
+        verbose_name = _(u'Případová práce')
+        verbose_name_plural = _(u'Případové práce')
 
     class Options:
         codenumber = 6
@@ -274,15 +266,29 @@ class SocialWork(Service):
 
 
 class UtilityWork(Service):
+    REF_TYPES = Choices(
+        ('fp', 'FIELD_PROGRAMME', ugettext(u'Terenní programy')),
+        ('cc', 'CONTACT_CENTER', ugettext(u'Kontaktní centrum')),
+        ('mf', 'MEDICAL_FACILITY', ugettext(u'Léčebná zařízení')),
+        ('ep', 'EXCHANGE_PROGRAMME', ugettext(u'Výměnný pogram')),
+        ('crc', 'CRISIS_CENTER', ugettext(u'Krizové centrum')),
+        ('t', 'TESTS', ugettext(u'Testy')),
+        ('hs', 'HEALTHCARE_SERVICES', ugettext(u'Zdravotní služby')),
+        ('ss', 'SOCIAL_SERVICES', ugettext(u'Sociální služby')),
+        ('no', 'NO_REF', ugettext(u'Péče ukončena dohodou s klientem bez odkazu a zprostředkování')),
+        ('can', 'CANCEL', ugettext(u'Dohoduntý kontakt neproběhl / event. péče ukončena klientem bez dohody')),
+        ('o', 'OTHER', ugettext(u'jiné'))
+    )
+
+    refs = MultiSelectField(max_length=40, choices=REF_TYPES, verbose_name=_(u'Odkazy'))
+
     class Meta:
         app_label = 'services'
-        proxy = True
-        verbose_name = _(u'Odkazy a zprostředkování')
-        verbose_name_plural = _(u'Odkazy a zprostředkování')
+        verbose_name = _(u'Odkazy')
+        verbose_name_plural = _(u'Odkazy')
 
     class Options:
         codenumber = 12
-        limited_to = ('Client',)
 
 
 class BasicMedicalTreatment(Service):
