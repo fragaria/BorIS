@@ -197,7 +197,8 @@ class AnonymousAdmin(AddContactAdmin):
 
 
 class PractitionerAdmin(AddContactAdmin):
-    list_display = ('first_name', 'last_name', 'town', 'encounter_count')
+    list_display = ('first_name', 'last_name', 'organization', 'town', 'encounter_count')
+    list_display_links = ('first_name', 'last_name')
     search_fields = ('first_name', 'last_name')
     fieldsets = (
         (_(u'Základní informace'), {'fields': (

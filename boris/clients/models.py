@@ -134,6 +134,8 @@ class Practitioner(Person):
     first_name = models.CharField(max_length=63, blank=True, null=True,
         verbose_name=_(u'Jméno'))
     last_name = models.CharField(max_length=63, verbose_name=_(u'Příjmení'))
+    organization = models.CharField(max_length=100, blank=True, null=True,
+        verbose_name=_(u'Instituce'))
     note = models.CharField(max_length=255, blank=True, null=True, verbose_name=_(u'Poznámka'))
     sex = models.PositiveSmallIntegerField(choices=SEXES, verbose_name=_(u'Pohlaví'))
     town = models.ForeignKey(Town, verbose_name=_(u'Město'))
