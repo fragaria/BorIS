@@ -8,7 +8,7 @@ BorIS is an open source project aimed to help drug prevention non-profit
 ogranizations with the management of their clients.
 
 It's a Python web application based on Django framework developed 
-under BSD license so that anyone can participate.
+under MIT license so that anyone can participate.
 
 How to install
 **************
