@@ -326,3 +326,15 @@ class Address(Service):
 
     class Options:
         codenumber = 2
+
+
+class IncomeFormFillup(Service):
+    class Meta:
+        app_label = 'services'
+        proxy = True
+        verbose_name = _(u'Vyplnění IN-COME dotazníku')
+        verbose_name_plural = _(u'Vyplnění IN-COME dotazníků')
+
+    class Options:
+        codenumber = 14
+        limited_to = ('Client',)
