@@ -2,25 +2,27 @@
 from django.template import loader
 from django.template.context import RequestContext
 
-from boris.services.models import service_list
+from boris.services.models import service_list, Encounter
 from boris.reporting.core import BaseReport
 
 
 class ServiceReport(BaseReport):
-    title = 'Shrnutí výkonů'
-    description = 'Statistiky jednotlivých výkonů splňujících zadaná kritéria.'
+    title = u'Shrnutí výkonů'
+    description = u'Statistiky jednotlivých výkonů splňujících zadaná kritéria.'
     contenttype = 'text/html'
     response_headers = None
 
     def __init__(self, date_from=None, date_to=None, town=None, person=None):
-        filtering = (
-            ('encounter__performed_on__gte', date_from),
-            ('encounter__performed_on__lte', date_to),
-            ('encounter__where', town),
-            ('encounter__person', person),
+        enc_filtering = (
+            ('performed_on__gte', date_from),
+            ('performed_on__lte', date_to),
+            ('where', town),
+            ('person', person),
         )
-        filtering = ((f[0], f[1]) for f in filtering if f[1] is not None)
+        enc_filtering = [(f[0], f[1]) for f in enc_filtering if f[1] is not None]
+        filtering = [('encounter__%s' % f[0], f[1]) for f in enc_filtering]
 
+        self.enc_filtering = dict(enc_filtering)
         self.filtering = dict(filtering)
         self.date_from = date_from
         self.date_to = date_to
@@ -28,8 +30,9 @@ class ServiceReport(BaseReport):
         self.person = person
 
     def get_stats(self):
-        return [
-            service.get_stats(self.filtering) for service in service_list()
+        enc_count = Encounter.objects.filter(**self.enc_filtering).count()
+        return [(None, ((u'Počet kontaktů', enc_count),))] + [
+            service.get_stats(self.filtering) for service in service_list(self.person)
             if service.service.include_in_reports
         ]
 
