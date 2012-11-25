@@ -9,8 +9,9 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from boris.clients.models import Town, Person
+from boris.services.models import Encounter
 from boris.utils.widgets import SelectYearWidget
-from django.contrib.admin.widgets import AdminDateWidget
+from django.contrib.admin.widgets import AdminDateWidget, ForeignKeyRawIdWidget
 
 
 class MonthlyStatsForm(forms.Form):
@@ -23,5 +24,5 @@ class ServiceForm(forms.Form):
     town = forms.ModelChoiceField(label=_(u'Město'),
                                   queryset=Town.objects.all(), required=False)
     person = forms.ModelChoiceField(label=_(u'Osoba'),
-                                    queryset=Person.objects.all(),
-                                    required=False)
+        queryset=Person.objects.all(), required=False,
+        widget=ForeignKeyRawIdWidget(Encounter.person.field.rel))

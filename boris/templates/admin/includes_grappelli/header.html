@@ -36,7 +36,7 @@
                     <li><a href="{{ testindexurl }}">{% trans 'Tests' %}</a></li>
                 {% endif %}
             {% endblock %}
-            
+
             <li class="search">
                 <span>Vyhledat klienta:</span>
                 <form>
@@ -61,32 +61,32 @@
 
             self.searchElement = $('#id_globalsearch_client');
             self.lookupElement = $('#lookup_id_globalsearch_client');
-            
+
             self.init = function () {
                 self.searchElement.grp_autocomplete_fk({
                     lookup_url:"/grappelli/lookup/related/",
                     autocomplete_lookup_url:"/grappelli/lookup/autocomplete/"
                 });
-                
+
                 self.lookupElement.unbind('click').click(function () {
                     if (self.searchElement.val()) {
                         self.goToClient(self.searchElement.val());
-                    }; 
+                    };
                     return false;
                 });
-                
+
                 /* autocomplete creates this field */
                 $('#id_globalsearch_client-autocomplete').bind('autocompleteselect', function (event, ui) {
                     self.goToClient(ui.item.value);
                     return true;
                 });
             };
-            
+
             self.goToClient = function (id) {
                 document.location = '/clients/client/' + id + '/';
             };
         };
-        
+
 
         $(document).ready(function() {
             $("div#header .collapse").grp_collapsible();

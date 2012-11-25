@@ -11,9 +11,19 @@
         (function($) {
             $(document).ready(function() {
                 grappelli.initDateAndTimePicker();
+
+                $('.form-container .vForeignKeyRawIdAdminField').grp_autocomplete_fk({
+                    lookup_url:"/grappelli/lookup/related/",
+                    autocomplete_lookup_url:"/grappelli/lookup/autocomplete/"
+                });
             });
         })(django.jQuery);
     </script>
+    <style>
+        .form-container input {
+            font-size: 12px !important;
+        }
+    </style>
 {% endblock %}
 
 <!-- BREADCRUMBS -->
@@ -30,7 +40,7 @@
         <h1>{% trans "Výstupy" %}</h1>
         <ul>
             {% for tab, form in tabs %}
-            <li><a href="#tabs-{{ forloop.counter }}">{{ tab.get_title }}</a></li> 
+            <li><a href="#tabs-{{ forloop.counter }}">{{ tab.get_title }}</a></li>
             {% endfor %}
         </ul>
         <div class="form-container">
@@ -53,10 +63,10 @@
             {% endfor %}
         </div>
     </div>
-    
+
     <script type="text/javascript">
         django.jQuery(document).ready(function () {
-            django.jQuery('#tabs').tabs({cookie: {expires: 1}}); 
+            django.jQuery('#tabs').tabs({cookie: {expires: 1}});
         });
     </script>
 {% endblock %}
