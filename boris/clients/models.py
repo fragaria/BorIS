@@ -13,8 +13,8 @@ from fragapy.common.models.adminlink import AdminLinkMixin
 from boris.classification import SEXES, NATIONALITIES, \
     ETHNIC_ORIGINS, LIVING_CONDITIONS, ACCOMODATION_TYPES, EMPLOYMENT_TYPES, \
     DRUG_APPLICATION_FREQUENCY, DRUG_APPLICATION_TYPES, \
-    RISKY_BEHAVIOR_PERIODICITY, DISEASES, DISEASE_TEST_RESULTS, \
-    EDUCATION_LEVELS, ANONYMOUS_TYPES
+    DISEASES, DISEASE_TEST_RESULTS, EDUCATION_LEVELS, ANONYMOUS_TYPES, \
+    RISKY_BEHAVIOR_PAST_PERIODICITY, RISKY_BEHAVIOR_CURRENT_PERIODICITY
 from django.contrib.contenttypes.models import ContentType
 
 
@@ -306,8 +306,12 @@ class DrugUsage(models.Model):
 class RiskyManners(models.Model):
     behavior = models.ForeignKey(RiskyBehavior, verbose_name=_(u'Chování'))
     anamnesis = models.ForeignKey(Anamnesis, verbose_name=_(u'Anamnéza'))
-    periodicity = models.PositiveSmallIntegerField(blank=True, null=True,
-        choices=RISKY_BEHAVIOR_PERIODICITY, verbose_name=_(u'Jak často'))
+    periodicity_in_past = models.PositiveIntegerField(blank=True, null=True,
+        choices=RISKY_BEHAVIOR_PAST_PERIODICITY,
+        verbose_name=_(u'Jak často v minulosti'))
+    periodicity_in_present = models.PositiveIntegerField(blank=True, null=True,
+        choices=RISKY_BEHAVIOR_CURRENT_PERIODICITY,
+        verbose_name=_(u'Jak často v přítomnosti'))
 
     def __unicode__(self):
         return u'%s: %s' % (self.anamnesis.client, self.behavior)

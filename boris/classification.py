@@ -67,7 +67,7 @@ DRUG_APPLICATION_FREQUENCY = Choices(
     (6, '2X_3X_A_DAY', u'2-3x denně'),
     (7, 'MORE_THAN_3X_A_DAY', u'více než 3x denně'),
     (8, 'NONE_FOR_MORE_THAN_6_MONTHS', u'neužita déle než 6 měsíců'),
-    (9, 'NONE_FOR_LAST_6_MONTHS', u'neužita posledních 6 měsíců'),
+#    (9, 'NONE_FOR_LAST_6_MONTHS', u'neužita posledních 6 měsíců'),  # Feature 103
     (10, 'NONE_FOR_LAST_3_MONTHS', u'neužita poslední 3 měsíce'),
     (11, 'NONE_FOR_LAST_1_MONTH', u'neužita v posledním měsíci'),
     (12, 'UNKNOWN', u'Není známo')
@@ -88,6 +88,20 @@ RISKY_BEHAVIOR_PERIODICITY = Choices(
     (3, 'OFTEN_BACK_THEN', u'Opakovaně v minulosti'),
     (4, 'ONCE_CURRENTLY', u'Jednorázově v současnosti'),
     (5, 'OFTEN_CURRENTLY', u'Opakovaně v současnosti'),
+    (6, 'UNKNOWN', u'Není známo')
+)
+
+RISKY_BEHAVIOR_PAST_PERIODICITY = Choices(
+    (1, 'NEVER', u'Nikdy'),
+    (2, 'ONCE_BACK_THEN', u'Jednorázově'),
+    (3, 'OFTEN_BACK_THEN', u'Opakovaně '),
+    (6, 'UNKNOWN', u'Není známo')
+)
+
+RISKY_BEHAVIOR_CURRENT_PERIODICITY = Choices(
+    (1, 'NEVER', u'Nikdy'),
+    (4, 'ONCE_CURRENTLY', u'Jednorázově'),
+    (5, 'OFTEN_CURRENTLY', u'Opakovaně'),
     (6, 'UNKNOWN', u'Není známo')
 )
 
