@@ -42,6 +42,7 @@ def _sum_int(model, filtering, field):
 class HarmReduction(Service):
     in_count = models.PositiveSmallIntegerField(default=0, verbose_name=_(u'IN'))
     out_count = models.PositiveSmallIntegerField(default=0, verbose_name=_(u'OUT'))
+    svip_person_count = models.PositiveSmallIntegerField(default=1, verbose_name=_(u'počet osob ve SVIP'))
 
     standard = models.BooleanField(default=False,
         verbose_name=_(u'standard'),
@@ -70,14 +71,15 @@ class HarmReduction(Service):
         form_template = 'services/forms/small_cells.html'
         limited_to = ('Client',)
         fieldsets = (
-            (None, {'fields': ('in_count', 'out_count', 'encounter'),
-                'classes': ('inline',)}),
-            (_(u'Harm Reduction'), {'fields': (
-                'standard', 'alternatives', 'acid',
-                'condoms', 'stericup', 'other',
-            ), 'classes': ('inline',)}),
+            (None, {'fields': ('in_count', 'out_count', 'svip_person_count',
+                               'encounter'),
+                    'classes': ('inline',)}),
+            (_(u'Harm Reduction'), {'fields': ('standard', 'alternatives',
+                                               'acid', 'condoms', 'stericup',
+                                               'other'),
+                                    'classes': ('inline',)}),
             (_(u'Ostatní'), {'fields': ('pregnancy_test', 'medical_supplies'),
-                'classes': ('inline',)})
+                             'classes': ('inline',)})
         )
 
     def _prepare_title(self):
