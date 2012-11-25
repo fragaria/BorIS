@@ -11,3 +11,4 @@ boris.db
 .coverage
 *sublime*
 .ropeproject
+.idea
