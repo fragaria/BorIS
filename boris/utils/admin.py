@@ -52,7 +52,7 @@ class BorisBaseAdmin(ModelAdmin):
     """
     Adds ``list_actions`` to simplify addition of actions to changelist rows.
     """
-    list_actions = ('change_link',)
+    list_actions = ('change_button',)
 
     def __init__(self, *args, **kwargs):
         self.list_display += ('actions_display',)
@@ -66,7 +66,7 @@ class BorisBaseAdmin(ModelAdmin):
     actions_display.allow_tags = True
     actions_display.short_description = _(u'Akce')
 
-    def change_link(self, obj):
+    def change_button(self, obj):
         return u'<a href="%s" class="changelink cbutton">%s</button>' % (
             obj.get_admin_url(), _('upravit'))
 

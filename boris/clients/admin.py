@@ -164,7 +164,7 @@ class PersonAdmin(BorisBaseAdmin):
 
 
 class AddContactAdmin(BorisBaseAdmin):
-    list_actions = ('change_link', 'add_contact_link')
+    list_actions = ('change_button', 'add_contact_button')
 
     def queryset(self, request):
         return super(AddContactAdmin, self).queryset(request).extra(
@@ -178,7 +178,7 @@ class AddContactAdmin(BorisBaseAdmin):
         return obj.ecnt
     encounter_count.short_description = _(u'Počet kontaktů')
 
-    def add_contact_link(self, obj):
+    def add_contact_button(self, obj):
         return u'<a href="%s" class="changelink cbutton high1">%s</button>' % (
             reverse('admin:services_encounter_add') + '?person_id=%s' % obj.pk,
             _(u'přidat kontakt'))
