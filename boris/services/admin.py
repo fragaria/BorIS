@@ -99,7 +99,7 @@ class EncounterAdmin(BorisBaseAdmin):
             return db_field.formfield(**kwargs)
         elif db_field.name == 'performed_by':
             kwargs.pop('request')
-            kwargs['widget'] = forms.SelectMultiple(attrs={'style': 'height: 70px;'})
+            kwargs['widget'] = forms.SelectMultiple(attrs={'style': 'height: 160px;'})
             kwargs['initial'] = (request.user,)
             return db_field.formfield(**kwargs)
         else:
