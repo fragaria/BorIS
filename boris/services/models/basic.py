@@ -42,7 +42,7 @@ def _sum_int(model, filtering, field):
 class HarmReduction(Service):
     in_count = models.PositiveSmallIntegerField(default=0, verbose_name=_(u'IN'))
     out_count = models.PositiveSmallIntegerField(default=0, verbose_name=_(u'OUT'))
-    svip_person_count = models.PositiveSmallIntegerField(default=1, verbose_name=_(u'počet osob ve SVIP'))
+    svip_person_count = models.PositiveSmallIntegerField(default=0, verbose_name=_(u'počet osob ve SVIP'))
 
     standard = models.BooleanField(default=False,
         verbose_name=_(u'standard'),
