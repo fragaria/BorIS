@@ -80,7 +80,7 @@ class EncounterAdmin(BorisBaseAdmin):
 
     def person_button(self, obj):
         """Link to the person related to the encounter"""
-        return u'<a href="%s" class="changelink cbutton high1">%s</button>' % (
+        return u'<a href="%s" class="changelink cbutton high1">%s</a>' % (
             obj.person.cast().get_admin_url(), _('zobrazit osobu'))
 
     def get_list_display_links(self, request, list_display):

@@ -67,7 +67,7 @@ class BorisBaseAdmin(ModelAdmin):
     actions_display.short_description = _(u'Akce')
 
     def change_button(self, obj):
-        return u'<a href="%s" class="changelink cbutton">%s</button>' % (
+        return u'<a href="%s" class="changelink cbutton">%s</a>' % (
             obj.get_admin_url(), _('upravit'))
 
     def select_link(self, obj):
@@ -75,7 +75,7 @@ class BorisBaseAdmin(ModelAdmin):
                    'class="changelink cbutton" ' \
                    'onclick="opener.dismissRelatedLookupPopup(window, \'%s\');' \
                             'return false;"' \
-                '>%s</button>' % (
+                '>%s</a>' % (
             '%s/' % obj.pk, obj.pk, _('vybrat'))
     select_link.allow_tags = True
     select_link.short_description = ''
