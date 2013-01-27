@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
-'''
-Created on 27.10.2011
-
-@author: xaralis
-'''
-from django.contrib import admin
-from django.utils.translation import ugettext_lazy as _
 from django import forms
+from django.contrib import admin
+from django.shortcuts import get_object_or_404
+from django.utils.translation import ugettext_lazy as _
 
 from boris.services.models.core import Encounter
 from boris.clients.forms import ReadOnlyWidget
@@ -91,7 +87,7 @@ class EncounterAdmin(BorisBaseAdmin):
         request = kwargs.get('request', None)
         if request is not None and request.GET.get('person_id') and db_field.name == 'person':
             pid = request.GET.get('person_id')
-            person = Person.objects.get(pk=pid).cast()
+            person = get_object_or_404(Person, pk=pid).cast()
             kwargs.pop('request')
             kwargs['widget'] = ReadOnlyWidget(pid,
                 '%s %s' % (unicode(person._meta.verbose_name).lower(), person))
