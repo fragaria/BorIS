@@ -79,27 +79,30 @@ class EncounterAdmin(BorisBaseAdmin):
 
     def formfield_for_dbfield(self, db_field, **kwargs):
         """
-        When popup and person_id in GET, use special widget that doesn't need
-        to be filled up.
+        When popup and person_id in GET, prefill values and change widgets.
         """
         from boris.clients.models import Person
 
         request = kwargs.get('request', None)
-        if request is not None and request.GET.get('person_id') and db_field.name == 'person':
+        if db_field.name in ('person', 'where') and request is not None and \
+                request.GET.get('person_id'):
             pid = request.GET.get('person_id')
             person = get_object_or_404(Person, pk=pid).cast()
-            kwargs.pop('request')
-            kwargs['widget'] = ReadOnlyWidget(pid,
-                '%s %s' % (unicode(person._meta.verbose_name).lower(), person))
-            kwargs['initial'] = pid
-            return db_field.formfield(**kwargs)
+            if db_field.name == 'person':
+                kwargs['widget'] = ReadOnlyWidget(pid,
+                    '%s %s' % (unicode(person._meta.verbose_name).lower(), person))
+                kwargs['initial'] = pid
+                kwargs.pop('request')
+                return db_field.formfield(**kwargs)
+            elif db_field.name == 'where' and hasattr(person, 'town_id'):
+                kwargs['initial'] = person.town_id
+                return super(EncounterAdmin, self).formfield_for_dbfield(db_field, **kwargs)
         elif db_field.name == 'performed_by':
-            kwargs.pop('request')
             kwargs['widget'] = forms.SelectMultiple(attrs={'style': 'height: 160px;'})
             kwargs['initial'] = (request.user,)
+            kwargs.pop('request')
             return db_field.formfield(**kwargs)
-        else:
-            return super(EncounterAdmin, self).formfield_for_dbfield(db_field, **kwargs)
+        return super(EncounterAdmin, self).formfield_for_dbfield(db_field, **kwargs)
 
     def show_save_and_add_another(self, obj): return bool(obj.pk)
 
