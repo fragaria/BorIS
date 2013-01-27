@@ -50,7 +50,11 @@ class NonClients(SuperAggregation):
 
     class AnonymousAggregation(NonDistinctCountAggregation, EncounterAggregation):
         aggregation_dbcol = 'person'
-        filtering = {'is_anonymous': True}
+        filtering = {
+            'is_anonymous': True,
+            'person__anonymous__drug_user_type__in': (ANONYMOUS_TYPES.NON_USER,
+                ANONYMOUS_TYPES.NON_USER_PARENT)
+        }
 
     class PractitionerAggregation(EncounterAggregation):
         aggregation_dbcol = 'person'
