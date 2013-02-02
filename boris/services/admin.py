@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 from django import forms
 from django.contrib import admin
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
+from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext_lazy as _
 
 from boris.services.models.core import Encounter
 from boris.clients.forms import ReadOnlyWidget
+from boris.clients.models import Person
 from boris.utils.admin import BorisBaseAdmin
 
 
@@ -77,27 +80,74 @@ class EncounterAdmin(BorisBaseAdmin):
         """Supress showing of list display links"""
         return ()
 
-    def formfield_for_dbfield(self, db_field, **kwargs):
-        """
-        When popup and person_id in GET, prefill values and change widgets.
-        """
-        from boris.clients.models import Person
+    def _prepare_for_prefilling(self, request, obj):
+        """Enable field pre-filling based on existing records."""
+        if "_addanother" in request.POST:
+            verbose_name = obj._meta.verbose_name
+            msg = _('The %(name)s "%(obj)s" was added successfully.') % {
+                'name': force_unicode(verbose_name), 'obj': force_unicode(obj)}
+            self.message_user(request, msg + ' ' + (
+                _("You may add another %s below.") % force_unicode(verbose_name)))
+            return HttpResponseRedirect("../add/?previous_id=%i" % obj.pk)
 
-        request = kwargs.get('request', None)
-        if db_field.name in ('person', 'where') and request is not None and \
-                request.GET.get('person_id'):
-            pid = request.GET.get('person_id')
-            person = get_object_or_404(Person, pk=pid).cast()
+    def response_change(self, request, obj):
+        redir_prefill = self._prepare_for_prefilling(request, obj)
+        if redir_prefill is not None:
+            return redir_prefill
+        return super(EncounterAdmin, self).response_change(request, obj)
+
+    def response_add(self, request, obj, post_url_continue='../%s/'):
+        redir_prefill = self._prepare_for_prefilling(request, obj)
+        if redir_prefill is not None:
+            return redir_prefill
+        return super(EncounterAdmin, self).response_add(request, obj,
+            post_url_continue)
+
+    def _prefill_by_encounter(self, db_field, kwargs, encounter_id):
+        if db_field.name in ('person', 'where', 'performed_by', 'performed_on'):
+            try:
+                encounter = Encounter.objects.get(pk=encounter_id)
+            except Encounter.DoesNotExist:
+                return
             if db_field.name == 'person':
-                kwargs['widget'] = ReadOnlyWidget(pid,
+                kwargs['initial'] = encounter.person_id
+            elif db_field.name == 'where':
+                kwargs['initial'] = encounter.where_id
+            elif db_field.name == 'performed_by':
+                kwargs['widget'] = forms.SelectMultiple(attrs={'style': 'height: 160px;'})
+                kwargs['initial'] = encounter.performed_by.all()
+                kwargs.pop('request')
+                return db_field.formfield(**kwargs)
+            elif db_field.name == 'performed_on':
+                kwargs['initial'] = encounter.performed_on
+            return super(EncounterAdmin, self).formfield_for_dbfield(db_field, **kwargs)
+
+    def _prefill_by_person(self, db_field, kwargs, person_id):
+        if db_field.name in ('person', 'where'):
+            try:
+                person = Person.objects.get(pk=person_id).cast()
+            except Person.DoesNotExist:
+                return
+            if db_field.name == 'person':
+                kwargs['widget'] = ReadOnlyWidget(person_id,
                     '%s %s' % (unicode(person._meta.verbose_name).lower(), person))
-                kwargs['initial'] = pid
+                kwargs['initial'] = person_id
                 kwargs.pop('request')
                 return db_field.formfield(**kwargs)
             elif db_field.name == 'where' and hasattr(person, 'town_id'):
                 kwargs['initial'] = person.town_id
                 return super(EncounterAdmin, self).formfield_for_dbfield(db_field, **kwargs)
-        elif db_field.name == 'performed_by':
+
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        """Prefill values and change widgets in certain cases."""
+        request = kwargs.get('request', None)
+        if request and request.GET.get('previous_id'):
+            formfield = self._prefill_by_encounter(db_field, kwargs, request.GET['previous_id'])
+            if formfield: return formfield
+        if request and request.GET.get('person_id'):
+            formfield = self._prefill_by_person(db_field, kwargs, request.GET['person_id'])
+            if formfield: return formfield
+        if db_field.name == 'performed_by':
             kwargs['widget'] = forms.SelectMultiple(attrs={'style': 'height: 160px;'})
             kwargs['initial'] = (request.user,)
             kwargs.pop('request')
