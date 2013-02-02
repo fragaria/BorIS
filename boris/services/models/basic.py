@@ -151,6 +151,14 @@ class DiseaseTest(Service):
             'sign': self.get_sign_display()
         }
 
+    @classmethod
+    def _get_stats(cls, filtering):
+        boolean_fields = ('pre_test_advice', 'test_execution', 'post_test_advice')
+        return chain(
+            super(DiseaseTest, cls)._get_stats(filtering),
+            _boolean_stats(cls, filtering, boolean_fields)
+        )
+
     def clean(self):
         super(DiseaseTest, self).clean()
         msg = None
