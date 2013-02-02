@@ -6,6 +6,7 @@ Created on 2.10.2011
 '''
 from itertools import chain
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Sum
 from django.utils.translation import ugettext_lazy as _, ugettext
@@ -113,10 +114,19 @@ class IncomeExamination(Service):
 
 
 class DiseaseTest(Service):
-    disease = models.PositiveSmallIntegerField(choices=DISEASES,
-        verbose_name=_(u'Testované onemocnění'))
-    sign = models.CharField(max_length=1, choices=DISEASE_TEST_SIGN,
-        default=DISEASE_TEST_SIGN.INCONCLUSIVE, verbose_name=_(u'Stav'))
+
+    pre_test_advice = models.BooleanField(default=False,
+        verbose_name=_(u'Předtestové poradenství'))
+    test_execution = models.BooleanField(default=False,
+        verbose_name=_(u'Provedení testu'))
+    post_test_advice = models.BooleanField(default=False,
+        verbose_name=_(u'Potestové poradenství'))
+
+    disease = models.PositiveSmallIntegerField(null=True, blank=True,
+        choices=DISEASES, verbose_name=_(u'Testované onemocnění'))
+    sign = models.CharField(null=True, blank=True, max_length=1,
+        choices=DISEASE_TEST_SIGN, default=DISEASE_TEST_SIGN.INCONCLUSIVE,
+        verbose_name=_(u'Stav'))
 
     class Meta:
         app_label = 'services'
@@ -126,12 +136,33 @@ class DiseaseTest(Service):
     class Options:
         codenumber = 8
         limited_to = ('Client',)
+        form_template = 'services/forms/diseasetest.html'
+        fieldsets = (
+            (None, {'fields': ('encounter', 'pre_test_advice', 'test_execution',
+                        'post_test_advice'),
+                    'classes': ('inline',)}),
+            (_(u'Parametry testu'), {'fields': ('disease', 'sign',),
+                                    'classes': ('inline',)}),
+        )
 
     def _prepare_title(self):
         return _(u'%(title)s: %(disease)s / %(sign)s') % {
             'title': self.service.title, 'disease': self.get_disease_display(),
             'sign': self.get_sign_display()
         }
+
+    def clean(self):
+        msg = None
+        if not (self.pre_test_advice or self.test_execution or self.post_test_advice):
+            msg = (u'Vyberte alespoň jednu možnost: předtestové poradenství'
+                u'/provedení testu/potestové poradenství.')
+        if self.test_execution and not (self.disease and self.sign):
+            msg = u'Zadejte prosím parametry testu (testované onemocnění a stav).'
+        if not self.test_execution and (self.disease or self.sign):
+            msg = u'Nelze zadávat parametry testu, pokud test nebyl proveden.'
+        if msg is not None:
+            raise ValidationError(msg)
+
 
 
 class AsistService(Service):
