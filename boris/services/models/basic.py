@@ -152,6 +152,7 @@ class DiseaseTest(Service):
         }
 
     def clean(self):
+        super(DiseaseTest, self).clean()
         msg = None
         if not (self.pre_test_advice or self.test_execution or self.post_test_advice):
             msg = (u'Vyberte alespoň jednu možnost: předtestové poradenství'
