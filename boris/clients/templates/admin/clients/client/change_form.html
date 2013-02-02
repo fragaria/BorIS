@@ -25,7 +25,9 @@
                         $('#id_primary_drug').val('');
                     } else {
                         $('#id_primary_drug option[value=""]').hide();
-                        $('#id_primary_drug').val($('#id_primary_drug option[value!=]:first').val());
+                        if ($('#id_primary_drug').val() == '') {
+                             $('#id_primary_drug').val($('#id_primary_drug option[value!=]:first').val());
+                        }
                     }
                     $('#id_primary_drug').change();
                     return true;
