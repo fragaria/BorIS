@@ -146,10 +146,12 @@ class DiseaseTest(Service):
         )
 
     def _prepare_title(self):
-        return _(u'%(title)s: %(disease)s / %(sign)s') % {
-            'title': self.service.title, 'disease': self.get_disease_display(),
-            'sign': self.get_sign_display()
-        }
+        ticked = []
+        if self.pre_test_advice or self.post_test_advice:
+            ticked.append(u'poradenství')
+        if self.test_execution:
+            ticked.append(u'test')
+        return _(u'%s: %s' % (self.service.title, ', '.join(ticked)))
 
     @classmethod
     def _get_stats(cls, filtering):
