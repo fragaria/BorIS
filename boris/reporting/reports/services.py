@@ -2,15 +2,14 @@
 from django.template import loader
 from django.template.context import RequestContext
 
-from boris.services.models import service_list, Encounter
 from boris.reporting.core import BaseReport
+from boris.services.models import service_list, Encounter
 
 
 class ServiceReport(BaseReport):
     title = u'Shrnutí výkonů'
     description = u'Statistiky jednotlivých výkonů splňujících zadaná kritéria.'
-    contenttype = 'text/html'
-    response_headers = None
+    contenttype_office = 'application/vnd.ms-word; charset=utf-8'
 
     def __init__(self, date_from=None, date_to=None, town=None, person=None):
         enc_filtering = (
@@ -28,6 +27,9 @@ class ServiceReport(BaseReport):
         self.date_to = date_to
         self.town = town
         self.person = person
+
+    def get_filename(self):
+        return 'souhrn_vykonu.doc'
 
     def get_stats(self):
         enc_count = Encounter.objects.filter(**self.enc_filtering).count()

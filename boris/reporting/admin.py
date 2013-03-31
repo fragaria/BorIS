@@ -21,7 +21,6 @@ class ReportingInterfaceTab(object):
     """
     report = None
     form = None
-    to_popup = False
 
     @classmethod
     def get_urlname(cls):
@@ -63,7 +62,7 @@ class ReportingInterface(object):
         interfacetab_factory(MonthlyStatsByTown, MonthlyStatsForm),
         interfacetab_factory(MonthlyStatsByDistrict, MonthlyStatsForm),
         interfacetab_factory(YearlyStatsByMonth, MonthlyStatsForm),
-        interfacetab_factory(ServiceReport, ServiceForm, to_popup=True)
+        interfacetab_factory(ServiceReport, ServiceForm)
     )
 
 
@@ -79,7 +78,10 @@ class ReportingInterfaceHandler(object):
             if tab_class == t and request.method == 'POST':
                 form = tab.form(request.POST)
                 if form.is_valid():
-                    return ReportResponse(tab.report, request, **form.cleaned_data)
+                    cleaned_data = form.cleaned_data
+                    display_type = cleaned_data.pop('display')
+                    return ReportResponse(tab.report, request, display_type,
+                        **cleaned_data)
             else:
                 form = tab.form()
             tabs[tab] = form

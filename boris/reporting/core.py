@@ -4,6 +4,8 @@ from django.http import HttpResponse
 from django.template import loader
 from django.template.context import RequestContext
 
+from boris.reporting.forms import OUTPUT_BROWSER, OUTPUT_OFFICE
+
 
 class hashdict(dict):
     """
@@ -22,28 +24,36 @@ class ReportResponse(HttpResponse):
     Ancestor of HttpRespose which takes report class and its args and kwargs
     that renders itself.
     """
-    def __init__(self, report_class, request, *args, **kwargs):
+    def __init__(self, report_class, request, display_type, *args, **kwargs):
         report = report_class(*args, **kwargs)
         super(ReportResponse, self).__init__(content=report.render(request),
-                                             content_type=report.contenttype)
-        if report.response_headers:
-            for key, val in report.response_headers.items():
+            content_type=report.contenttype(display_type))
+        if report.response_headers(display_type):
+            for key, val in report.response_headers(display_type).items():
                 self[key] = val
 
 
 class BaseReport(object):
     title = None
     description = None
-    contenttype = 'application/vnd.ms-excel; charset=utf-8'
-
-    @property
-    def response_headers(self):
-        return {
-        'Content-Disposition': 'attachment; filename=%s' % self.get_filename()
-    }
+    contenttype_office = 'application/vnd.ms-excel; charset=utf-8'
 
     def get_filename(self):
         return 'report.xls'
+
+    def contenttype(self, display_type):
+        return {
+            OUTPUT_BROWSER: 'text/html',
+            OUTPUT_OFFICE: self.contenttype_office,
+        }[display_type]
+
+    def response_headers(self, display_type):
+        return {
+            OUTPUT_BROWSER: {},
+            OUTPUT_OFFICE: {
+                'Content-Disposition': 'attachment; filename=%s' % self.get_filename()
+            }
+        }[display_type]
 
 
 class Report(BaseReport):
@@ -67,10 +77,6 @@ class Report(BaseReport):
 
     def __unicode__(self):
         return self.title
-
-    @property
-    def contenttype(self):
-        return 'application/vnd.ms-excel; charset=utf-8'
 
     @property
     def template(self):
