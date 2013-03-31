@@ -190,6 +190,8 @@ class Client(Person):
         choices=DRUG_APPLICATION_TYPES, verbose_name=_(u'Způsob aplikace'))
     close_person = models.BooleanField(default=False,
         verbose_name=_(u'Osoba blízká'))
+    sex_partner = models.BooleanField(default=False,
+        verbose_name=_(u'Sexuální partner'))
 
     class Meta:
         verbose_name = _(u'Klient')

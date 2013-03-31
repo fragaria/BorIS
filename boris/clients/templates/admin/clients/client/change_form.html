@@ -17,10 +17,12 @@
          * is selected as well.
          */
         (function ($) {
-            
+
             $(document).ready(function () {
-                $('#id_close_person').change(function () {
-                    if ($(this).attr('checked') == 'checked') {
+                $('#id_close_person,#id_sex_partner').change(function () {
+                    var close_person = $('#id_close_person').attr('checked') == 'checked';
+                    var sex_partner = $('#id_sex_partner').attr('checked') == 'checked';
+                    if (close_person || sex_partner) {
                         $('#id_primary_drug option[value=""]').show();
                         $('#id_primary_drug').val('');
                     } else {
