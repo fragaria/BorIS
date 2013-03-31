@@ -31,8 +31,14 @@ class AllClientEncounters(EncounterAggregation):
 
 
 class IvClientEncounters(AllClientEncounters):
-    title = _(u'z toho injekčních uživatelů drog')
+    title = _(u'Z toho injekčních uživatelů drog')
     filtering = {'is_client': True, 'primary_drug_usage': DRUG_APPLICATION_TYPES.VEIN_INJECTION}
+
+
+class NonIvClientEncounters(AllClientEncounters):
+    title = _(u'Z toho neinjekčních uživatelů drog')
+    filtering = {'is_client': True, 'primary_drug__isnull': False}
+    excludes = {'primary_drug_usage': DRUG_APPLICATION_TYPES.VEIN_INJECTION}
 
 
 class MaleClientEncounters(AllClientEncounters):
@@ -40,9 +46,14 @@ class MaleClientEncounters(AllClientEncounters):
     filtering = {'is_client': True, 'client_sex': SEXES.MALE}
 
 
-class NonUserClientEncounters(AllClientEncounters):
-    title = _(u'Z toho osob blízkých (sex. partneři)')
-    filtering = Q(is_close_person=True) | Q(is_sex_partner=True)
+class ClosePersonEncounters(AllClientEncounters):
+    title = _(u'Z toho osob blízkých (rodiče apod.)')
+    filtering = {'is_close_person': True}
+
+
+class SexPartnerEncounters(AllClientEncounters):
+    title = _(u'Z toho sexuálních partnerů')
+    filtering = {'is_sex_partner': True}
 
 
 class NonClients(SuperAggregation):
@@ -200,8 +211,10 @@ class MonthlyStatsByTown(Report):
     aggregation_classes = [
         AllClientEncounters,
         MaleClientEncounters,
-        NonUserClientEncounters,
         IvClientEncounters,
+        SexPartnerEncounters,
+        NonIvClientEncounters,
+        ClosePersonEncounters,
         NonClients,
         Parents,
         Practitioners,
