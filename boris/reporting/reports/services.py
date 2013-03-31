@@ -38,9 +38,9 @@ class ServiceReport(BaseReport):
             if service.service.include_in_reports
         ]
 
-    def render(self, request):
+    def render(self, request, display_type):
         return loader.render_to_string(
-            'reporting/reports/servicereport.html',
+            self.get_template(display_type),
             {
                 'stats': self.get_stats(),
                 'filtering': self.filtering,

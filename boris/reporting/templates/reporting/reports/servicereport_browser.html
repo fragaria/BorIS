@@ -34,38 +34,9 @@
         ul li {
             display: block;
         }
-        hr { margin-top: 50px;}
     </style>
 {% endblock %}
 
 {% block content %}
-    <ul class="multicolumn">
-        {% for service, results in stats %}
-            {% with results|length as length %}
-            {% for title, result in results %}
-            <li>
-                <span>
-                    {% if forloop.first %}
-                        <strong>{{ title }}</strong>
-                    {% else %}
-                        {% if length > 2 %}&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}
-                        {{ title }}
-                    {% endif %}
-                </span>
-                <span class="res">{{ result }}</span>
-            </li>
-            {% endfor %}
-            {% endwith %}
-        {% endfor %}
-    </ul>
-
-    <hr>
-
-    <div class="more">
-        <h2>Zhodnocení</h2>
-        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-        <br><br><br><br>
-
-        <h2>Plán na další období</h2>
-    </div>
+	{% include "reporting/reports/servicereport_data.html" %}
 {% endblock %}

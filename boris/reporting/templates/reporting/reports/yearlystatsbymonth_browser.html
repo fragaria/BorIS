@@ -1,0 +1,9 @@
+{% extends "reporting/reports/monthlystatsbytown_browser.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Roční statistiky po měsících" %}{% endblock %}
+{% block content_title %}<h1>{% trans "Roční statistiky po měsících" %}</h1>{% endblock %}
+
+{% block content %}
+	{% include "reporting/reports/yearlystatsbymonth_data.html" %}
+{% endblock %}

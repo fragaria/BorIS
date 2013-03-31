@@ -1,0 +1,19 @@
+<ul class="multicolumn">
+    {% for service, results in stats %}
+        {% with results|length as length %}
+        {% for title, result in results %}
+        <li>
+            <span>
+                {% if forloop.first %}
+                    <strong>{{ title }}</strong>
+                {% else %}
+                    {% if length > 2 %}&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}
+                    {{ title }}
+                {% endif %}
+            </span>
+            <span class="res">{{ result }}</span>
+        </li>
+        {% endfor %}
+        {% endwith %}
+    {% endfor %}
+</ul>

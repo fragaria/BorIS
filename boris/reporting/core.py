@@ -26,7 +26,8 @@ class ReportResponse(HttpResponse):
     """
     def __init__(self, report_class, request, display_type, *args, **kwargs):
         report = report_class(*args, **kwargs)
-        super(ReportResponse, self).__init__(content=report.render(request),
+        content = report.render(request, display_type)
+        super(ReportResponse, self).__init__(content=content,
             content_type=report.contenttype(display_type))
         if report.response_headers(display_type):
             for key, val in report.response_headers(display_type).items():
@@ -55,6 +56,12 @@ class BaseReport(object):
             }
         }[display_type]
 
+    def get_template(self, display_type):
+        return (
+            'reporting/reports/%s_%s.html' % (self.__class__.__name__.lower(),
+                display_type), # display_type can be "browser" or "office"
+        )
+
 
 class Report(BaseReport):
     """
@@ -78,18 +85,12 @@ class Report(BaseReport):
     def __unicode__(self):
         return self.title
 
-    @property
-    def template(self):
-        return (
-            'reporting/reports/%s.html' % self.__class__.__name__.lower(),
-        )
-
     def get_context(self):
         return {'report': self}
 
-    def render(self, request):
+    def render(self, request, display_type):
         return loader.render_to_string(
-            self.template,
+            self.get_template(display_type),
             self.get_context(),
             context_instance=RequestContext(request))
 

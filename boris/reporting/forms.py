@@ -15,7 +15,7 @@ from boris.utils.widgets import SelectYearWidget
 
 
 OUTPUT_BROWSER = 'browser'
-OUTPUT_OFFICE = 'file'
+OUTPUT_OFFICE = 'office'
 OUTPUT_TYPES = (
     (OUTPUT_BROWSER, u'V prohlížeči'),
     (OUTPUT_OFFICE, 'Do souboru'),
