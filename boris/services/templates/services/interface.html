@@ -4,18 +4,6 @@
 <fieldset class="module">
     <h2>{% trans "Nový výkon" %}</h2>
     
-    <div class="row" id="savemessage" style="display: none;">
-        <ul class="messagelist">
-            <li class="success">Výkon byl uložen.</li>
-        </ul>
-    </div>
-    
-    <div class="row" id="deletemessage" style="display: none;">
-        <ul class="messagelist">
-            <li class="warning">Výkon byl smazán.</li>
-        </ul>
-    </div>
-    
     <div class="row cells-2 cells">
         <div class="cell">
             <div class="column span-4"><label>{% trans "Zvolte druh výkonu:" %}</label></div>
@@ -26,6 +14,7 @@
                     {% endfor %}
                 </select>
                 <a class="cbutton" onclick="ui.loadForm(); return false;" style="margin-left: 20px;">{% trans "OK" %}</a>
+                <span id="databasemessage" style="margin-left: 20px; font-weight: bold;"></span>
             </div>
         </div>
     </div>
@@ -111,7 +100,7 @@
             var data = this.getForm().find('select,input,textarea').serialize();
             $.post(this.getForm().attr('class'), data, function (response) {
                 if (response.ok) {
-                    ui.showSaveMessage();
+                    ui.showDatabaseMessage('Výkon byl uložen.');
                     ui.cleanForm();
                     ui.refreshServiceList();
                 } else {
@@ -123,28 +112,20 @@
             return false;
         }
         
-        this.showDelMessage = function () {
-            $('#deletemessage').show();
-            setTimeout("ui.hideDelMessage();", 1000);
+        this.showDatabaseMessage = function (msg) {
+            $('#databasemessage').text(msg);
+            $('#databasemessage').show();
+            setTimeout("ui.hideDatabaseMessage();", 1000);
         }
-        
-        this.hideDelMessage = function () {
-            $('#deletemessage').fadeOut('slow');
+
+        this.hideDatabaseMessage = function () {
+            $('#databasemessage').fadeOut('slow');
         }
-        
-        this.showSaveMessage = function () {
-            $('#savemessage').show();
-            setTimeout("ui.hideSaveMessage();", 1000);
-        }
-        
-        this.hideSaveMessage = function () {
-            $('#savemessage').fadeOut('slow');
-        }
-        
+
         this.dropService = function (serviceId) {
             $.post('/services/drop/' + serviceId + '/', {}, function () {
                ui.cleanForm();
-               ui.showDelMessage();
+               ui.showDatabaseMessage('Výkon byl smazán');
                ui.refreshServiceList(); 
             });
         }
