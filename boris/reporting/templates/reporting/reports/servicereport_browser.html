@@ -4,6 +4,7 @@
 {% block title %}{% trans "Souhrn výkonů" %} {{ block.super }}{% endblock %}
 {% block content_title %}<h1>{% if person %}{% blocktrans with person as person %}Souhrn výkonů klienta {{ person }}{% endblocktrans %}{% else %}{% trans "Souhrn výkonů" %}{% endif %}</h1>{% endblock %}
 
+
 {% block extrastyle %}
     {{ block.super }}
     <style>
@@ -38,5 +39,8 @@
 {% endblock %}
 
 {% block content %}
-	{% include "reporting/reports/servicereport_data.html" %}
+    {% if date_from and date_to %}
+        <p style="margin-bottom: 20px;">{{ date_from|date:"j.n.Y" }} - {{ date_to|date:"j.n.Y" }}</p>
+    {% endif %}
+    {% include "reporting/reports/servicereport_data.html" %}
 {% endblock %}

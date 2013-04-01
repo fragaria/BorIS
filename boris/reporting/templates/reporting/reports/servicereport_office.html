@@ -1,5 +1,8 @@
 {% load i18n %}
-<h1>{% trans "Souhrn výkonů" %}</h1>
+<h1>{% if person %}{% blocktrans with person as person %}Souhrn výkonů klienta {{ person }}{% endblocktrans %}{% else %}{% trans "Souhrn výkonů" %}{% endif %}</h1>
+{% if date_from and date_to %}
+    <p>{{ date_from|date:"j.n.Y" }} - {{ date_to|date:"j.n.Y" }}</p>
+{% endif %}
 
 {% include "reporting/reports/servicereport_data.html" %}
 <hr />

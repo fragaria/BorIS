@@ -43,8 +43,9 @@ class ServiceReport(BaseReport):
             self.get_template(display_type),
             {
                 'stats': self.get_stats(),
-                'filtering': self.filtering,
-                'person': self.person
+                'person': self.person,
+                'date_from': self.filtering.get('encounter__performed_on__gte'),
+                'date_to': self.filtering.get('encounter__performed_on__lte'),
             },
             context_instance=RequestContext(request)
         )
