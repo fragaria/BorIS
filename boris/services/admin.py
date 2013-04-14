@@ -161,6 +161,7 @@ EncounterAdmin.service_list = service_list
 
 class PractitionerEncounterAdmin(EncounterAdmin):
     list_display = ('performed_on', 'where', 'person_link', 'performed_by_display', 'service_list')
+    change_form_template = 'admin/services/encounter/change_form.html'
 
     def performed_by_display(self, obj):
         return u', '.join([unicode(e) for e in obj.performed_by.all()])

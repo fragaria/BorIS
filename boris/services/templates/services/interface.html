@@ -3,7 +3,7 @@
 <div id="service-interface">
 <fieldset class="module">
     <h2>{% trans "Nový výkon" %}</h2>
-    
+
     <div class="row cells-2 cells">
         <div class="cell">
             <div class="column span-4"><label>{% trans "Zvolte druh výkonu:" %}</label></div>
@@ -32,7 +32,7 @@
             </div>
         </div>
         <div class="module tbody dynamic-form" id="done-services">
-            
+
         </div>
     </div>
 </div>
@@ -50,36 +50,37 @@
 <script type="text/javascript">
     function ServiceUI(encounterId) {
         this.encounterId = encounterId;
-        
+        this.messageTimeout = undefined;
+
         this.getServiceClass = function () {
             return $('#service-selector').val();
         }
-        
+
         this.getForm = function () {
             return $('#service-form');
-        }
-        
-        this.refreshServiceList = function () {
-           $('#done-services').load('{% url services_list encounter.pk %}'); 
         };
-        
+
+        this.refreshServiceList = function () {
+           $('#done-services').load('{% url services_list encounter.pk %}');
+        };
+
         this.getHandlerUrl = function (serviceId, serviceClass) {
             if (! serviceClass)
                 serviceClass = this.getServiceClass();
-            
+
             var url = '/services/handle-form/' + this.encounterId + '/' + serviceClass + '/';
             if (serviceId)
                 return url + serviceId + '/';
-            return url; 
-        }
-        
+            return url;
+        };
+
         this.placeForm = function (html) {
         	$('#service-form-wrap').html(html);
-            
+
             if (html != '') {
                 var allFields = $('#service-form-wrap').find('select,input');
                 var visibleFields = $('#service-form-wrap').find('select:visible,input:visible');
-                
+
                 if (visibleFields.length == 0 && allFields.length != 0) {
                     ui.saveForm();
                 } else {
@@ -88,14 +89,14 @@
                     $('#service-form-wrap input[type="text"]:first').focus(function () { $(this).select(); }).focus();
                 }
             }
-        }
-        
+        };
+
         this.loadForm = function (serviceId, serviceClass) {
             $.get(this.getHandlerUrl(serviceId, serviceClass), this.placeForm);
-        }
-        
-        this.cleanForm = function () { this.placeForm(''); }
-        
+        };
+
+        this.cleanForm = function () { this.placeForm(''); };
+
         this.saveForm = function () {
             var data = this.getForm().find('select,input,textarea').serialize();
             $.post(this.getForm().attr('class'), data, function (response) {
@@ -104,36 +105,41 @@
                     ui.cleanForm();
                     ui.refreshServiceList();
                 } else {
-                    ui.placeForm(response.content);                
+                    ui.placeForm(response.content);
                 }
-                
+
             }, 'json');
-            
+
             return false;
-        }
-        
+        };
+
         this.showDatabaseMessage = function (msg) {
+            if (this.messageTimeout) {
+                clearTimeout(this.messageTimeout);
+                $('#databasemessage').fadeIn('fast');
+            }
+
             $('#databasemessage').text(msg);
             $('#databasemessage').show();
-            setTimeout("ui.hideDatabaseMessage();", 1000);
-        }
+            this.messageTimeout = setTimeout(this.hideDatabaseMessage, 1000);
+        };
 
         this.hideDatabaseMessage = function () {
             $('#databasemessage').fadeOut('slow');
-        }
+        };
 
         this.dropService = function (serviceId) {
             $.post('/services/drop/' + serviceId + '/', {}, function () {
                ui.cleanForm();
-               ui.showDatabaseMessage('Výkon byl smazán');
-               ui.refreshServiceList(); 
+               ui.showDatabaseMessage('Výkon byl smazán.');
+               ui.refreshServiceList();
             });
-        }
-        
+        };
+
         this.refreshServiceList();
     }
-    
+
     $(document).ready(function () {
-       ui = new ServiceUI({{ encounter.pk }}); 
+       ui = new ServiceUI({{ encounter.pk }});
     });
 </script>
