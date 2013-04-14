@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext_lazy as _
 
-from boris.services.models.core import Encounter
+from boris.services.models.core import Encounter, PractitionerEncounter
 from boris.clients.forms import ReadOnlyWidget
 from boris.clients.models import Person
 from boris.utils.admin import BorisBaseAdmin
@@ -158,5 +158,14 @@ class EncounterAdmin(BorisBaseAdmin):
 
 EncounterAdmin.service_list = service_list
 
+
+class PractitionerEncounterAdmin(EncounterAdmin):
+    list_display = ('performed_on', 'where', 'person_link', 'performed_by_display', 'service_list')
+
+    def performed_by_display(self, obj):
+        return u', '.join([unicode(e) for e in obj.performed_by.all()])
+    performed_by_display.short_description = _('Kdo')
+
 admin.site.register(Encounter, EncounterAdmin)
+admin.site.register(PractitionerEncounter, PractitionerEncounterAdmin)
 

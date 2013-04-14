@@ -58,6 +58,26 @@ class Encounter(models.Model, AdminLinkMixin):
         return unicode(self.person)
 
 
+class PractitionerEncounterManager(models.Manager):
+    def get_query_set(self):
+        from django.contrib.contenttypes.models import ContentType
+        from boris.clients.models import Practitioner
+        pct = ContentType.objects.get_for_model(Practitioner)
+        return super(
+            PractitionerEncounterManager, self
+        ).get_query_set().filter(person__content_type=pct)
+
+
+class PractitionerEncounter(Encounter):
+    objects = PractitionerEncounterManager()
+
+    class Meta:
+        proxy = True
+        app_label = 'services'
+        verbose_name = _(u'Odborný kontakt')
+        verbose_name_plural = _(u'Odborné kontakty')
+
+
 class ServiceOptions(object):
     """
     This class is similar to `Options` class that Django defines for every model.
