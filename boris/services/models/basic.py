@@ -8,7 +8,7 @@ from itertools import chain
 
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Sum, Max, Avg
 from django.utils.translation import ugettext_lazy as _, ugettext
 
 from model_utils import Choices
@@ -38,6 +38,15 @@ def _field_label(model, field):
 
 def _sum_int(model, filtering, field):
     return model.objects.filter(**filtering).aggregate(Sum(field))['%s__sum' % field] or 0
+
+
+def _max_int(model, filtering, field):
+    return model.objects.filter(**filtering).aggregate(Max(field))['%s__max' % field] or 0
+
+
+def _avg_int(model, filtering, field):
+    return model.objects.filter(**filtering).aggregate(Avg(field))['%s__avg' % field] or 0
+
 
 
 class HarmReduction(Service):
@@ -98,7 +107,11 @@ class HarmReduction(Service):
                                             'pregnancy_test',
                                             'medical_supplies')),
             ((_field_label(cls, 'in_count'), _sum_int(cls, filtering, 'in_count')),),
-            ((_field_label(cls, 'out_count'), _sum_int(cls, filtering, 'out_count')),)
+            ((_field_label(cls, 'out_count'), _sum_int(cls, filtering, 'out_count')),),
+            ((_(u'Průměrný počet osob ve SVIP'), int(round(_avg_int(cls, filtering,
+                'svip_person_count')))),),
+            ((_(u'Nejvyšší počet osob ve SVIP'), _max_int(cls, filtering,
+                'svip_person_count')),),
         )
 
 
