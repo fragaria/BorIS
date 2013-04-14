@@ -81,6 +81,8 @@ class BorisBaseAdmin(ModelAdmin):
     select_link.short_description = ''
 
     def show_save(self, obj):
+        if not obj.pk:
+            return True
         return False
 
     def show_save_as_new(self, obj):
