@@ -246,12 +246,11 @@ class InformationService(Service):
 
     @classmethod
     def _get_stats(cls, filtering):
-        return chain(
-            super(InformationService, cls)._get_stats(filtering),
-            _boolean_stats(cls, filtering, ('safe_usage', 'safe_sex',
-                                            'medical', 'socio_legal',
-                                            'cure_possibilities', 'literature',
-                                            'other'))
+        boolean_stats = _boolean_stats(cls, filtering, ('safe_usage', 'safe_sex',
+            'medical', 'socio_legal', 'cure_possibilities', 'literature', 'other'))
+        return chain( # The total count is computed differently than usually.
+                ((cls.service.title, sum(stat[1] for stat in boolean_stats)),),
+                boolean_stats,
         )
 
 
@@ -346,6 +345,13 @@ class UtilityWork(Service):
 
     class Options:
         codenumber = 12
+
+    @classmethod
+    def _get_stats(cls, filtering):
+        """Count all the items in all the MultiSelectFields."""
+        objects = cls.objects.filter(**filtering)
+        count =  sum(len(address.refs) for address in objects)
+        return ((cls.service.title, count),)
 
 
 class BasicMedicalTreatment(Service):
