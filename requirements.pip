@@ -8,5 +8,6 @@ raven==1.4.6
 fragapy==1.2.5
 gunicorn
 
--e git+https://github.com/carljm/django-model-utils.git#egg=model_utils
+django-model-utils==1.2.0
+#-e git+https://github.com/carljm/django-model-utils.git#egg=model_utils
 -e git+https://github.com/carljm/django-form-utils.git#egg=form_utils

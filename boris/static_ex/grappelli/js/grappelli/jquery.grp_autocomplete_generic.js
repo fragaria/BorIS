@@ -91,6 +91,16 @@
     
     var lookup_autocomplete = function(elem, options) {
         options.wrapper_autocomplete.find("input:first")
+            .bind("keydown", function(event) { // don't navigate away from the field on tab when selecting an item
+                var w = $(this).data("autocomplete");
+                if (event.keyCode === $.ui.keyCode.TAB && $(w.menu.element).css('display') != "none") { 
+                    if (!w.menu.active) {
+                        w.menu.active = $(w.menu.element).find('li:first');
+                    }
+                    w.menu.active.click()
+                    event.preventDefault();
+                }
+            })
             .autocomplete({
                 minLength: 2,
                 delay: 100,
