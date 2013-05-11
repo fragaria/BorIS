@@ -189,7 +189,7 @@ class Client(Person):
     primary_drug_usage = models.PositiveSmallIntegerField(blank=True, null=True,
         choices=DRUG_APPLICATION_TYPES, verbose_name=_(u'Způsob aplikace'))
     close_person = models.BooleanField(default=False,
-        verbose_name=_(u'Osoba blízká'))
+        verbose_name=_(u'Osoba blízká (rodiče apod.)'))
     sex_partner = models.BooleanField(default=False,
         verbose_name=_(u'Sexuální partner'))
 
