@@ -1,0 +1,29 @@
+{% extends "print_base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Shrnutí klientů" %}{% endblock %}
+{% block content_title %}<h1>{% trans "Shrnutí klientů" %}</h1>{% endblock %}
+
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        body { padding: 0 20px; }
+        table td { padding: 5px 5px; }
+    </style>
+{% endblock %}
+
+{% block content %}
+	{% if date_from or date_to %}
+		<p style="margin-bottom: 20px;">
+			{% if  date_from %}{{ date_from|date:"j.n.Y" }}{% else %}(Dolní hranice data neuvedena){% endif %}
+				-
+			{% if date_to %}{{ date_to|date:"j.n.Y" }}{% else %}(Horní hranice data neuvedena){% endif %}
+		</p>
+	{% endif %}
+	{% if towns %}
+		<p style="margin-bottom: 20px;">Vybraná města: {{ towns|join:", " }}</p>
+	{% endif %}
+
+	{% include "reporting/reports/clientreport_data.html" %}
+{% endblock %}
