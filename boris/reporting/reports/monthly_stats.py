@@ -74,20 +74,6 @@ class NonClients(SuperAggregation):
     aggregation_classes = (AnonymousAggregation, PractitionerAggregation)
 
 
-class Parents(EncounterAggregation):
-    aggregation_dbcol = 'person'
-    title = _(u'Z toho rodiče')
-    filtering = {
-        'person__anonymous__drug_user_type': ANONYMOUS_TYPES.NON_USER_PARENT,
-    }
-
-
-class Practitioners(EncounterAggregation):
-    aggregation_dbcol = 'person'
-    title = _(u'Z toho odborná veřejnost')
-    filtering = {'is_practitioner': True}
-
-
 class AllAddresses(ServiceAggregation):
     title = _(u'Počet oslovených')
     aggregation_dbcol = 'id'
@@ -131,15 +117,10 @@ class EncounterCount(EncounterAggregation):
 
 
 class ClientEncounterCount(ServiceAggregation):
-    title = _(u'z toho s klienty, uživateli drog, přímý')
+    title = _(u'z toho s klienty přímý')
     aggregation_dbcol = 'encounter'
     filtering = {'is_client': True}
     excludes = {'content_type_model': 'phonecounseling'}
-
-
-class PractitionerEncounterCount(EncounterCount):
-    title = _(u'z toho s odbornou veřejností')
-    filtering = {'is_practitioner': True}
 
 
 class PhoneEncounterCount(ServiceAggregation):
@@ -216,14 +197,11 @@ class MonthlyStatsByTown(Report):
         NonIvClientEncounters,
         ClosePersonEncounters,
         NonClients,
-        Parents,
-        Practitioners,
         AllAddresses,
         AddressesDU,
     ] + disease_tests + [
         EncounterCount,
         ClientEncounterCount,
-        PractitionerEncounterCount,
         PhoneEncounterCount,
         FirstContactCount,
         FirstContactCountDU,

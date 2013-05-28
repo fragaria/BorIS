@@ -350,8 +350,20 @@ class UtilityWork(Service):
     def _get_stats(cls, filtering):
         """Count all the items in all the MultiSelectFields."""
         objects = cls.objects.filter(**filtering)
-        count =  sum(len(address.refs) for address in objects)
-        return ((cls.service.title, count),)
+        total_count = sum(len(address.refs) for address in objects)
+
+        choice_to_title = dict(cls.REF_TYPES) # E.g. 'ss' -> 'Socialni sluzby'.
+        # Initialize the dict manually - avoid defaultdict, which could,
+        # in effect, hide some choices from the report.
+        substats = dict((title, 0) for title in choice_to_title.values())
+        for address in objects:
+            for choice in address.refs:
+                substats[choice_to_title[choice]] += 1
+
+        return chain(
+            ((cls.service.title, total_count),),
+            substats.iteritems(),
+        )
 
 
 class BasicMedicalTreatment(Service):

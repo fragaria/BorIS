@@ -6,10 +6,11 @@ from django.template.defaultfilters import slugify
 from django.utils.datastructures import SortedDict
 
 from boris.reporting.core import ReportResponse
-from boris.reporting.forms import MonthlyStatsForm, ServiceForm
+from boris.reporting.forms import MonthlyStatsForm, ServiceForm, ClientForm
 from boris.reporting.reports.monthly_stats import MonthlyStatsByTown, \
     MonthlyStatsByDistrict
 from boris.reporting.reports.services import ServiceReport
+from boris.reporting.reports.clients import ClientReport
 from boris.reporting.reports.yearly_stats import YearlyStatsByMonth
 
 
@@ -18,9 +19,11 @@ class ReportingInterfaceTab(object):
     One tab of the interface. Requires 2 attributes to be set:
         `report`       Report subclass
         `form`         Form used to get parameters for report initiation
+        `form prefix`  Prefix to separate forms' id namespaces on the rendered page.
     """
     report = None
     form = None
+    form_prefix = None
 
     @classmethod
     def get_urlname(cls):
@@ -36,16 +39,12 @@ class ReportingInterfaceTab(object):
         return reverse(self.get_urlname())
 
 
-def interfacetab_factory(ReportClass, FormClass, output_format=None, **kwargs):
-    attrs = {'report': ReportClass, 'form': FormClass}
-    attrs.update(**kwargs)
+def interfacetab_factory(report_cls, form_cls, form_prefix):
+    attrs = {'report': report_cls, 'form': form_cls, 'form_prefix': form_prefix}
 
-    cls = type(ReportClass.__name__ + 'Tab',
+    cls = type(report_cls.__name__ + 'Tab',
                (ReportingInterfaceTab,),
                attrs)
-
-    if output_format is not None:
-        cls.output_format = output_format
 
     return cls
 
@@ -59,10 +58,11 @@ class ReportingInterface(object):
     `tabs` attribute.
     """
     tabs = (
-        interfacetab_factory(MonthlyStatsByTown, MonthlyStatsForm),
-        interfacetab_factory(MonthlyStatsByDistrict, MonthlyStatsForm),
-        interfacetab_factory(YearlyStatsByMonth, MonthlyStatsForm),
-        interfacetab_factory(ServiceReport, ServiceForm)
+        interfacetab_factory(MonthlyStatsByTown, MonthlyStatsForm, 'monthbytown'),
+        interfacetab_factory(MonthlyStatsByDistrict, MonthlyStatsForm, 'monthbydistrict'),
+        interfacetab_factory(YearlyStatsByMonth, MonthlyStatsForm, 'yearbymonth'),
+        interfacetab_factory(ServiceReport, ServiceForm, 'services'),
+        interfacetab_factory(ClientReport, ClientForm, 'clients'),
     )
 
 
@@ -76,14 +76,14 @@ class ReportingInterfaceHandler(object):
         for t in interface.tabs:
             tab = t()
             if tab_class == t and request.method == 'POST':
-                form = tab.form(request.POST)
+                form = tab.form(request.POST, prefix=tab.form_prefix)
                 if form.is_valid():
                     cleaned_data = form.cleaned_data
                     display_type = cleaned_data.pop('display')
                     return ReportResponse(tab.report, request, display_type,
                         **cleaned_data)
             else:
-                form = tab.form()
+                form = tab.form(prefix=tab.form_prefix)
             tabs[tab] = form
 
         ctx = {'tabs': tabs.items(), 'interface': interface}
