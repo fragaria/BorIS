@@ -11,11 +11,11 @@ class ServiceReport(BaseReport):
     description = u'Statistiky jednotlivých výkonů splňujících zadaná kritéria.'
     contenttype_office = 'application/vnd.ms-word; charset=utf-8'
 
-    def __init__(self, date_from=None, date_to=None, town=None, person=None):
+    def __init__(self, date_from=None, date_to=None, towns=None, person=None):
         enc_filtering = (
             ('performed_on__gte', date_from),
             ('performed_on__lte', date_to),
-            ('where', town),
+            ('where__in', towns),
             ('person', person),
         )
         enc_filtering = [(f[0], f[1]) for f in enc_filtering if f[1] is not None]
@@ -25,7 +25,7 @@ class ServiceReport(BaseReport):
         self.filtering = dict(filtering)
         self.date_from = date_from
         self.date_to = date_to
-        self.town = town
+        self.town = towns
         self.person = person
 
     def get_filename(self):
