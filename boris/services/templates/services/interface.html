@@ -54,7 +54,7 @@
 
         this.getServiceClass = function () {
             return $('#service-selector').val();
-        }
+        };
 
         this.getForm = function () {
             return $('#service-form');
@@ -63,6 +63,10 @@
         this.refreshServiceList = function () {
            $('#done-services').load('{% url services_list encounter.pk %}');
         };
+
+        this.performedServiceCount = function () {
+            return $('#done-services .tr').length;
+        }
 
         this.getHandlerUrl = function (serviceId, serviceClass) {
             if (! serviceClass)
@@ -139,7 +143,12 @@
         this.refreshServiceList();
     }
 
+    $(window).bind('beforeunload', function () {
+        if (ui.performedServiceCount() == 0)
+            return "!!! VAROVÁNÍ !!!: Ke kontaktu nejsou nastaveny žádné výkony!";
+    });
+
     $(document).ready(function () {
-       ui = new ServiceUI({{ encounter.pk }});
+        ui = new ServiceUI({{ encounter.pk }});
     });
 </script>
