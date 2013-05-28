@@ -55,19 +55,19 @@ class HarmReduction(Service):
     svip_person_count = models.PositiveSmallIntegerField(default=0, verbose_name=_(u'počet osob ve SVIP'))
 
     standard = models.BooleanField(default=False,
-        verbose_name=_(u'standard'),
+        verbose_name=_(u'1) standard'),
         help_text=_(u'sterilní voda, filtry, alkoholové tampony'))
-    acid = models.BooleanField(default=False, verbose_name=_(u'kyselina'))
+    acid = models.BooleanField(default=False, verbose_name=_(u'2) kyselina'))
     alternatives = models.BooleanField(default=False,
-            verbose_name=_(u'alternativy'),
+            verbose_name=_(u'3) alternativy'),
             help_text=_(u'alobal, kapsle, šňupátka'))
-    condoms = models.BooleanField(default=False, verbose_name=_(u'prezervativy'))
-    stericup = models.BooleanField(default=False, verbose_name=_(u'Stéri-cup/filt'))
-    other = models.BooleanField(default=False, verbose_name=_(u'jiný materiál'))
+    condoms = models.BooleanField(default=False, verbose_name=_(u'4) prezervativy'))
+    stericup = models.BooleanField(default=False, verbose_name=_(u'5) Stéri-cup/filt'))
+    other = models.BooleanField(default=False, verbose_name=_(u'6) jiný materiál'))
 
-    pregnancy_test = models.BooleanField(default=False, verbose_name=_(u'těhotenský test'))
+    pregnancy_test = models.BooleanField(default=False, verbose_name=_(u'7) těhotenský test'))
     medical_supplies = models.BooleanField(default=False, verbose_name=_(
-        u'zdravotní'), help_text=_(u'masti, náplasti, buničina, vitamíny, škrtidlo'
+        u'8) zdravotní'), help_text=_(u'masti, náplasti, buničina, vitamíny, škrtidlo'
         '...'))
 
     class Meta:
@@ -216,17 +216,17 @@ class AsistService(Service):
 
 class InformationService(Service):
     safe_usage = models.BooleanField(default=False,
-        verbose_name=_(u'bezpečné užívání'))
+        verbose_name=_(u'1) bezpečné užívání'))
     safe_sex = models.BooleanField(default=False,
-        verbose_name=_(u'bezpečný sex'))
-    medical = models.BooleanField(default=False, verbose_name=_(u'zdravotní'))
+        verbose_name=_(u'2) bezpečný sex'))
+    medical = models.BooleanField(default=False, verbose_name=_(u'3) zdravotní'))
     socio_legal = models.BooleanField(default=False,
-        verbose_name=_(u'sociálně-právní'))
+        verbose_name=_(u'4) sociálně-právní'))
     cure_possibilities = models.BooleanField(default=False,
-        verbose_name=_(u'možnosti léčby'))
+        verbose_name=_(u'5) možnosti léčby'))
     literature = models.BooleanField(default=False,
-        verbose_name=_(u'literatura'))
-    other = models.BooleanField(default=False, verbose_name=_(u'ostatní'))
+        verbose_name=_(u'6) literatura'))
+    other = models.BooleanField(default=False, verbose_name=_(u'7) ostatní'))
 
     class Meta:
         app_label = 'services'
@@ -290,13 +290,13 @@ class PhoneCounseling(Service):
 
 class SocialWork(Service):
     socio_legal = models.BooleanField(default=False,
-        verbose_name=_(u'sociálně-právní'))
+        verbose_name=_(u'a) sociálně-právní'))
     counselling = models.BooleanField(default=False,
-        verbose_name=_(u'předléčebné indiviuální poradenství'))
+        verbose_name=_(u'b) předléčebné indiviuální poradenství'))
     service_mediation = models.BooleanField(default=False,
-        verbose_name=_(u'zprostředkování dalších služeb'))
+        verbose_name=_(u'c) zprostředkování dalších služeb'))
     other = models.BooleanField(default=False,
-        verbose_name=_(u'jiná'))
+        verbose_name=_(u'd) jiná'))
 
     class Meta:
         app_label = 'services'
@@ -323,17 +323,17 @@ class SocialWork(Service):
 
 class UtilityWork(Service):
     REF_TYPES = Choices(
-        ('fp', 'FIELD_PROGRAMME', ugettext(u'Terenní programy')),
-        ('cc', 'CONTACT_CENTER', ugettext(u'Kontaktní centrum')),
-        ('mf', 'MEDICAL_FACILITY', ugettext(u'Léčebná zařízení')),
-        ('ep', 'EXCHANGE_PROGRAMME', ugettext(u'Výměnný pogram')),
-        ('crc', 'CRISIS_CENTER', ugettext(u'Krizové centrum')),
-        ('t', 'TESTS', ugettext(u'Testy')),
-        ('hs', 'HEALTHCARE_SERVICES', ugettext(u'Zdravotní služby')),
-        ('ss', 'SOCIAL_SERVICES', ugettext(u'Sociální služby')),
-        ('no', 'NO_REF', ugettext(u'Péče ukončena dohodou s klientem bez odkazu a zprostředkování')),
-        ('can', 'CANCEL', ugettext(u'Dohoduntý kontakt neproběhl / event. péče ukončena klientem bez dohody')),
-        ('o', 'OTHER', ugettext(u'jiné'))
+        ('fp', 'FIELD_PROGRAMME', ugettext(u'1) Terenní programy')),
+        ('cc', 'CONTACT_CENTER', ugettext(u'2) Kontaktní centrum')),
+        ('mf', 'MEDICAL_FACILITY', ugettext(u'3) Léčebná zařízení')),
+        ('ep', 'EXCHANGE_PROGRAMME', ugettext(u'4) Výměnný pogram')),
+        ('crc', 'CRISIS_CENTER', ugettext(u'5) Krizové centrum')),
+        ('t', 'TESTS', ugettext(u'6) Testy')),
+        ('hs', 'HEALTHCARE_SERVICES', ugettext(u'7) Zdravotní služby')),
+        ('ss', 'SOCIAL_SERVICES', ugettext(u'8) Sociální služby')),
+        ('no', 'NO_REF', ugettext(u'9) Péče ukončena dohodou s klientem bez odkazu a zprostředkování')),
+        ('can', 'CANCEL', ugettext(u'10) Dohoduntý kontakt neproběhl / event. péče ukončena klientem bez dohody')),
+        ('o', 'OTHER', ugettext(u'11) jiné'))
     )
 
     refs = MultiSelectField(max_length=40, choices=REF_TYPES, verbose_name=_(u'Odkazy'))
