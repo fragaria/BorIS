@@ -104,6 +104,7 @@ INSTALLED_APPS = (
 
     'south',
     'form_utils',
+    'raven.contrib.django.raven_compat',
 
     'boris.clients',
     'boris.services',
@@ -131,10 +132,11 @@ SESSION_SAVE_EVERY_REQUEST = True
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
-# GRAPPELLI RELATED ------------------------------------------------------------
+# GRAPPELLI RELATED ----------------------------------------------------------
 GRAPPELLI_ADMIN_TITLE = gettext(u'<span class="highlight">Informační systém BorIS</span> - Elektronická databáze pro evidenci výkonů v sociálních službách')
 GRAPPELLI_INDEX_DASHBOARD = 'boris.dashboard.CustomIndexDashboard'
 
-# SENTRY -----------------------------------------------------------------------
-SENTRY_DSN = 'http://87bf37873f4948a9b12d1ebe2ef2ffd0:e5e5c63ba3ce4e43bf1c38ebee61ab74@sentry1-lan.vsh.fragaria.cz/3'
-SENTRY_SITE = 'BorIS'
+# SENTRY ---------------------------------------------------------------------
+RAVEN_CONFIG = {
+    'dsn': 'http://5a785de534534233a7f0d4dea28725e9:2a36fdc33ff94bcf9e4d2767d6a4aabc@sentry2.fragaria.cz/8',
+}
