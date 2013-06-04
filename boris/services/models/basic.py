@@ -57,9 +57,9 @@ class HarmReduction(Service):
     standard = models.BooleanField(default=False,
         verbose_name=_(u'1) standard'),
         help_text=_(u'sterilní voda, filtry, alkoholové tampony'))
-    acid = models.BooleanField(default=False, verbose_name=_(u'2) kyselina'))
+    acid = models.BooleanField(default=False, verbose_name=_(u'3) kyselina'))
     alternatives = models.BooleanField(default=False,
-            verbose_name=_(u'3) alternativy'),
+            verbose_name=_(u'2) alternativy'),
             help_text=_(u'alobal, kapsle, šňupátka'))
     condoms = models.BooleanField(default=False, verbose_name=_(u'4) prezervativy'))
     stericup = models.BooleanField(default=False, verbose_name=_(u'5) Stéri-cup/filt'))
