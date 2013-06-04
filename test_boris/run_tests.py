@@ -6,24 +6,22 @@ replacement for *.bat or *.sh wrappers
 '''
 
 import sys
-import os
-
 from os.path import abspath, dirname
 
 import nose
 
 
 def run_all(argv=None):
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'test_boris.settings'
+    sys.exitfunc = lambda msg = 'Process shutting down...': sys.stderr.write(msg + '\n')
 
-    # called by setuptools
     if argv is None:
-        argv = ['nosetests']
-
-    if len(argv) == 1:  # only the command itself is in argv
-        argv += [
+        argv = [
+            'nosetests',
             '--with-coverage', '--cover-package=boris', '--cover-erase',
+            '--nocapture', '--nologcapture',
+            '--verbose',
         ]
+
 
     nose.run_exit(
         argv=argv,

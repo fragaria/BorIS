@@ -1,8 +1,3 @@
-'''
-Created on 3.3.2012
-
-@author: xaralis
-'''
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,

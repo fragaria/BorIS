@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-# Django base settings for dum_common project.
-
 from os.path import dirname, join, abspath
 
 import boris

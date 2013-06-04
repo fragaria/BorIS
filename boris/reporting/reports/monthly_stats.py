@@ -131,13 +131,7 @@ class PhoneEncounterCount(ServiceAggregation):
 
 class FirstContactCount(ServiceAggregation):
     title = _(u'Počet prvních kontaktů')
-    filtering = (
-        Q(is_client=True) &
-        Q(content_type_model='incomeexamination')
-    ) | (
-        Q(is_anonymous=True) &
-        Q(content_type_model='address')
-    )
+    filtering = {'content_type_model': 'incomeexamination'}
 
 
 class FirstContactCountDU(FirstContactCount):
@@ -147,18 +141,19 @@ class FirstContactCountDU(FirstContactCount):
         Q(content_type_model='incomeexamination')
     ) | (
         Q(person__anonymous__drug_user_type__in=(ANONYMOUS_TYPES.IV, ANONYMOUS_TYPES.NON_IV)) &
-        Q(content_type_model='address')
+        Q(content_type_model='incomeexamination')
     )
 
 
 class FirstContactCountIV(FirstContactCount):
     title = _(u'z toho nitrožilních UD')
     filtering = (
-        Q(person__client__primary_drug_usage=DRUG_APPLICATION_TYPES.VEIN_INJECTION) &
+        Q(person__client__primary_drug_usage__in=(DRUG_APPLICATION_TYPES.VEIN_INJECTION,
+                                                  DRUG_APPLICATION_TYPES.MUSCLE_INJECTION)) &
         Q(content_type_model='incomeexamination')
     ) | (
         Q(person__anonymous__drug_user_type=ANONYMOUS_TYPES.IV) &
-        Q(content_type_model='address')
+        Q(content_type_model='incomeexamination')
     )
 
 

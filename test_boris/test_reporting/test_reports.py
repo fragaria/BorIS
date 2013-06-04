@@ -12,10 +12,10 @@ from boris.services.models.core import Encounter
 from boris.services.models.basic import Address, PhoneCounseling, \
         HarmReduction, IncomeExamination, DiseaseTest
 from boris.reporting.reports.monthly_stats import AllClientEncounters, \
-        MaleClientEncounters, IvClientEncounters, NonUserClientEncounters, \
-        NonClients, Parents, Practitioners, AllAddresses, AddressesDU, \
+        MaleClientEncounters, IvClientEncounters, \
+        NonClients, AllAddresses, AddressesDU, \
         EncounterCount, ClientEncounterCount, \
-        PractitionerEncounterCount, PhoneEncounterCount, FirstContactCount, \
+        PhoneEncounterCount, FirstContactCount, \
         FirstContactCountDU, FirstContactCountIV, HarmReductionCount, \
         GatheredSyringes, IssuedSyringes, SyringeCollectionCount, disease_tests
 from boris.reporting.core import make_key
@@ -117,25 +117,25 @@ class TestEncounterAggregations(TestCase):
         key = make_key({'month': 11, 'town': self.town1.pk})
         tools.assert_equals(aggregation.get_val(key), 1)
 
-    def test_nonuser_client_encounters(self):
-        aggregation = NonUserClientEncounters(self.report)
-        key = make_key({'month': 11, 'town': self.town1.pk})
-        tools.assert_equals(aggregation.get_val(key), 1)
+    # def test_nonuser_client_encounters(self):
+    #     aggregation = NonUserClientEncounters(self.report)
+    #     key = make_key({'month': 11, 'town': self.town1.pk})
+    #     tools.assert_equals(aggregation.get_val(key), 1)
 
     def test_nonclient_encounters(self):
         aggregation = NonClients(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
         tools.assert_equals(aggregation.get_val(key), 6)
 
-    def test_parents(self):
-        aggregation = Parents(self.report)
-        key = make_key({'month': 11, 'town': self.town1.pk})
-        tools.assert_equals(aggregation.get_val(key), 1)
-
-    def test_practitioners(self):
-        aggregation = Practitioners(self.report)
-        key = make_key({'month': 11, 'town': self.town1.pk})
-        tools.assert_equals(aggregation.get_val(key), 2)
+    # def test_parents(self):
+    #     aggregation = Parents(self.report)
+    #     key = make_key({'month': 11, 'town': self.town1.pk})
+    #     tools.assert_equals(aggregation.get_val(key), 1)
+    #
+    # def test_practitioners(self):
+    #     aggregation = Practitioners(self.report)
+    #     key = make_key({'month': 11, 'town': self.town1.pk})
+    #     tools.assert_equals(aggregation.get_val(key), 2)
 
 
 class TestServiceAggregations(TestCase):
@@ -151,6 +151,8 @@ class TestServiceAggregations(TestCase):
         self.client1 = get_tst_client('c1', {'town': self.town1, 'primary_drug': self.drug})
         self.client2 = get_tst_client('c2', {'town': self.town2, 'primary_drug': self.drug})
         self.client3 = get_tst_client('c3', {'town': self.town1})
+        self.client4 = get_tst_client('c4', {'town': self.town1, 'primary_drug': self.drug, 'primary_drug_usage': DRUG_APPLICATION_TYPES.VEIN_INJECTION})
+
         self.anonym1 = Anonymous.objects.get(sex=SEXES.MALE,
                 drug_user_type=ANONYMOUS_TYPES.IV)
         self.anonym2 = Anonymous.objects.get(sex=SEXES.MALE,
@@ -168,7 +170,10 @@ class TestServiceAggregations(TestCase):
 
         # services - income examinations
         create_service(IncomeExamination, self.client1, date(2011, 11, 1), self.town1)
-        create_service(IncomeExamination, self.client3, date(2011, 11, 1), self.town1)
+        create_service(IncomeExamination, self.client3, date(2011, 11, 1), self.town2)
+        create_service(IncomeExamination, self.client4, date(2011, 11, 1), self.town1)
+        create_service(IncomeExamination, self.anonym1, date(2011, 11, 1), self.town1)
+        create_service(IncomeExamination, self.anonym2, date(2011, 11, 1), self.town1)
         create_service(IncomeExamination, self.client2, date(2011, 12, 1), self.town1)
 
         # services - harm reduction
@@ -203,7 +208,7 @@ class TestServiceAggregations(TestCase):
     def test_first_contact_count(self):
         aggregation = FirstContactCount(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
-        tools.assert_equals(aggregation.get_val(key), 5)
+        tools.assert_equals(aggregation.get_val(key), 4)
 
     def test_first_contact_count_du(self):
         aggregation = FirstContactCountDU(self.report)
@@ -281,10 +286,10 @@ class TestMixedAggregations(TestCase):
         key = make_key({'month': 11, 'town': self.town1.pk})
         tools.assert_equals(aggregation.get_val(key), 2)
 
-    def test_practitioner_encounter_count(self):
-        aggregation = PractitionerEncounterCount(self.report)
-        key = make_key({'month': 11, 'town': self.town1.pk})
-        tools.assert_equals(aggregation.get_val(key), 2)
+    # def test_practitioner_encounter_count(self):
+    #     aggregation = PractitionerEncounterCount(self.report)
+    #     key = make_key({'month': 11, 'town': self.town1.pk})
+    #     tools.assert_equals(aggregation.get_val(key), 2)
 
     def test_phone_encounter_count(self):
         aggregation = PhoneEncounterCount(self.report)

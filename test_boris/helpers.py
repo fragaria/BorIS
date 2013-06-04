@@ -36,7 +36,8 @@ def get_tst_practitioner(last_name='Sroubek'):
          'last_name': last_name,
          'sex': SEXES.MALE,
          'town': get_tst_town(),
-         'content_type': ContentType.objects.get_for_model(Practitioner)
+         'content_type': ContentType.objects.get_for_model(Practitioner),
+         'organization': 'MF Dnes'
     }
 
     return Practitioner.objects.create(**practitioner_data)
