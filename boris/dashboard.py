@@ -24,7 +24,6 @@ class CustomIndexDashboard(Dashboard):
             models=(
                 'boris.clients.models.Client',
                 'boris.clients.models.Anonymous',
-                'boris.clients.models.Practitioner'
             ),
         ))
 
@@ -34,8 +33,8 @@ class CustomIndexDashboard(Dashboard):
             column=1,
             models=(
                 'boris.services.models.core.Encounter',
-                'boris.services.models.core.PractitionerEncounter',
                 'boris.clients.models.Anamnesis',
+                'boris.clients.models.PractitionerContact',
                 'boris.syringes.models.SyringeCollection'
             ),
         ))

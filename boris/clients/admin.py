@@ -14,7 +14,7 @@ from django.utils.html import escape, escapejs
 
 from boris.clients.models import Client, Drug, Town, RiskyBehavior, Anamnesis, \
      DrugUsage, RiskyManners, Region, District, DiseaseTest, Anonymous, \
-    Practitioner, Person
+    PractitionerContact, Person
 from boris.clients.forms import ReadOnlyWidget
 from boris.clients.views import add_note, delete_note
 from boris.services.admin import EncounterInline
@@ -196,25 +196,23 @@ class AnonymousAdmin(AddContactAdmin):
         return False
 
 
-class PractitionerAdmin(AddContactAdmin):
-    list_display = ('first_name', 'last_name', 'organization', 'town', 'encounter_count')
-    list_display_links = ('first_name', 'last_name')
-    search_fields = ('first_name', 'last_name')
-    fieldsets = (
-        (_(u'Základní informace'), {'fields': (
-            ('first_name', 'last_name',),
-            ('sex', 'town'),
-            'note',
-            )}),
-    )
-    list_filter = ('town', 'sex')
+class PractitionerContactAdmin(BorisBaseAdmin):
+    list_display = ('date', 'town', 'person_or_institution', 'note', 'user_list')
+    list_filter = ('date', 'town', 'users')
+    date_hierarchy = 'date'
+    search_fields = ('person_or_institution', 'note')
     raw_id_fields = ('town',)
     autocomplete_lookup_fields = {
         'fk': ['town', ]
     }
-    ordering = ('last_name',)
-    change_form_template = 'admin/clients/person/change_form.html'
-    inlines = (EncounterInline,)
+    ordering = ('date', 'person_or_institution')
+
+    @textual(_(u'Kdo'))
+    def user_list(self, obj):
+        return u'<br />'.join([unicode(s) for s in obj.users.all()])
+
+    def show_save_and_add_another(self, obj): return bool(obj.pk)
+
 
 
 class ClientAdmin(AddContactAdmin):
@@ -313,7 +311,7 @@ admin.site.register(Region, EnumAdmin)
 admin.site.register(District, EnumAdmin)
 admin.site.register(Town, EnumAdmin)
 admin.site.register(Person, PersonAdmin)
-admin.site.register(Practitioner, PractitionerAdmin)
+admin.site.register(PractitionerContact, PractitionerContactAdmin)
 admin.site.register(Anonymous, AnonymousAdmin)
 admin.site.register(Client, ClientAdmin)
 admin.site.register(Anamnesis, AnamnesisAdmin)

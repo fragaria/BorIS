@@ -14,7 +14,6 @@ class SearchEncounter(models.Model):
     town = models.ForeignKey(Town, related_name='+', on_delete=DO_NOTHING)
     is_client = models.BooleanField()
     is_anonymous = models.BooleanField()
-    is_practitioner = models.BooleanField()
     is_close_person = models.BooleanField()
     is_sex_partner = models.BooleanField()
     client_sex = models.PositiveSmallIntegerField()
@@ -37,7 +36,6 @@ class SearchService(models.Model):
     year = models.SmallIntegerField()
     is_client = models.BooleanField()
     is_anonymous = models.BooleanField()
-    is_practitioner = models.BooleanField()
 
     class Meta:
         managed = False

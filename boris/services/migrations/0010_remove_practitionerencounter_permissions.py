@@ -4,25 +4,24 @@ from south.db import db
 from south.v2 import DataMigration
 from django.db import models
 
+
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        "Write your forwards methods here."
-        ct, _ = orm['contenttypes.contenttype'].objects.get_or_create(app_label='services', model='practitionerencounter', defaults={'name': u'Odborný kontakt'})
-        orm['auth.permission'].objects.create(name=u'Can change Odborný kontakt',
-                                              content_type_id=ct.pk,
-                                              codename='change_practitionerencounter')
-        orm['auth.permission'].objects.create(name=u'Can add Odborný kontakt',
-                                              content_type_id=ct.pk,
-                                              codename='add_practitionerencounter')
-        orm['auth.permission'].objects.create(name=u'Can delete Odborný kontakt',
-                                              content_type_id=ct.pk,
-                                              codename='delete_practitionerencounter')
+        "Cleanup."
+         # Can't use 'get' instead of 'filter' - there might be multiple records in the DB.
+        orm['auth.permission'].objects.filter(codename='change_practitionerencounter').delete()
+        orm['auth.permission'].objects.filter(codename='add_practitionerencounter').delete()
+        orm['auth.permission'].objects.filter(codename='delete_practitionerencounter').delete()
+        orm['contenttypes.contenttype'].objects.get(app_label='services', model='practitionerencounter').delete
+
+        # Note: PractitionerEncounter records have been deleted in the clients 0007 migration.
+        # Note 2: There is no need to remove the PractitionerEncounter table, as it was a proxy model.
 
 
     def backwards(self, orm):
         "Write your backwards methods here."
-
+        raise RuntimeError("There is no way back.")
 
     models = {
         'auth.group': {

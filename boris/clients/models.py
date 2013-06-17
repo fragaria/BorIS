@@ -4,7 +4,7 @@ import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.dateformat import format
-from django.utils.formats import get_format
+from django.utils.formats import date_format, get_format
 from django.utils.translation import ugettext_lazy as _
 
 from model_utils.models import TimeStampedModel
@@ -130,29 +130,30 @@ class Person(TimeStampedModel, AdminLinkMixin):
         return ('title__icontains',)
 
 
-class Practitioner(Person):
-    first_name = models.CharField(max_length=63, blank=True, null=True,
-        verbose_name=_(u'Jméno'))
-    last_name = models.CharField(max_length=63, verbose_name=_(u'Příjmení'))
-    organization = models.CharField(max_length=100, blank=True, null=True,
-        verbose_name=_(u'Instituce'))
-    note = models.CharField(max_length=255, blank=True, null=True, verbose_name=_(u'Poznámka'))
-    sex = models.PositiveSmallIntegerField(choices=SEXES, verbose_name=_(u'Pohlaví'))
-    town = models.ForeignKey(Town, verbose_name=_(u'Město'))
+class PractitionerContact(models.Model, AdminLinkMixin):
+    '''
+    A simple model to capture the contacts with practitioners.
+
+    (Formerly was a descendant of Person named "Practitioner".)
+
+    '''
+    users = models.ManyToManyField('auth.User', verbose_name=_('Kdo'))
+    person_or_institution = models.CharField(max_length=255,
+        verbose_name=_('Osoba nebo instituce'))
+    town = models.ForeignKey('clients.Town', related_name='+', verbose_name=_('Město'))
+    date = models.DateField(verbose_name=_('Kdy'))
+    note = models.TextField(verbose_name=_('Poznámka'), blank=True)
 
     class Meta:
-        verbose_name = _(u'Odborník')
-        verbose_name_plural = _(u'Odborníci')
+        verbose_name = _(u'Odborný kontakt')
+        verbose_name_plural = _(u'Odborné kontakty')
 
     def __unicode__(self):
-        if self.first_name:
-            return u'%s, %s' % (self.last_name, self.first_name)
-        else:
-            return u'%s' % self.last_name
-
-    def is_default_service(self, service):
-        """Returns True if ``service`` is default for this person, False otherwise"""
-        return service.class_name() == 'UtilityWork'
+        return _(u'%(person_or_institution)s v %(town)s, %(date)s') % {
+            'person_or_institution': self.person_or_institution,
+            'town': self.town,
+            'date': date_format(self.date)
+        }
 
 
 class Anonymous(Person):

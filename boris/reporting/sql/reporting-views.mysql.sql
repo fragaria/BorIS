@@ -12,13 +12,11 @@ SELECT
 	clients_client.primary_drug_usage,
 	clients_client.close_person as is_close_person,
 	clients_client.sex_partner as is_sex_partner,
-	clients_anonymous.person_ptr_id IS NOT NULL AS is_anonymous,
-	clients_practitioner.person_ptr_id IS NOT NULL AS is_practitioner
+	clients_anonymous.person_ptr_id IS NOT NULL AS is_anonymous
 FROM
 	services_encounter
 	LEFT OUTER JOIN clients_client ON (services_encounter.person_id = clients_client.person_ptr_id)
 	LEFT OUTER JOIN clients_anonymous ON (services_encounter.person_id = clients_anonymous.person_ptr_id)
-	LEFT OUTER JOIN clients_practitioner ON (services_encounter.person_id = clients_practitioner.person_ptr_id)
 );
 
 CREATE OR REPLACE VIEW reporting_searchservice AS
@@ -33,15 +31,13 @@ SELECT
 	YEAR(services_encounter.performed_on) AS year,
 	MONTH(services_encounter.performed_on) AS month,
 	clients_client.person_ptr_id is NOT NULL AS is_client,
-	clients_anonymous.person_ptr_id IS NOT NULL AS is_anonymous,
-	clients_practitioner.person_ptr_id IS NOT NULL AS is_practitioner
+	clients_anonymous.person_ptr_id IS NOT NULL AS is_anonymous
 FROM
 	services_service
 	JOIN services_encounter ON (services_service.encounter_id = services_encounter.id)
 	JOIN django_content_type ON (services_service.content_type_id = django_content_type.id)
 	LEFT OUTER JOIN clients_client ON (services_encounter.person_id = clients_client.person_ptr_id)
 	LEFT OUTER JOIN clients_anonymous ON (services_encounter.person_id = clients_anonymous.person_ptr_id)
-	LEFT OUTER JOIN clients_practitioner ON (services_encounter.person_id = clients_practitioner.person_ptr_id)
 );
 
 

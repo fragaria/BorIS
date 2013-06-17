@@ -12,7 +12,7 @@ from boris.classification import SEXES, ANONYMOUS_TYPES, DISEASES, \
 
 from boris.clients.models import Town, District
 from boris.reporting.core import Aggregation, Report, \
-    SumAggregation, make_key, SuperAggregation, NonDistinctCountAggregation
+    SumAggregation, make_key, NonDistinctCountAggregation
 from boris.reporting.models import SearchEncounter, SearchService, SearchSyringeCollection
 
 
@@ -56,22 +56,15 @@ class SexPartnerEncounters(AllClientEncounters):
     filtering = {'is_sex_partner': True}
 
 
-class NonClients(SuperAggregation):
+class AnonymousAggregation(NonDistinctCountAggregation, EncounterAggregation):
     title = _(u'Počet neuživatelů, kteří využili alespoň jednou služeb programu')
+    aggregation_dbcol = 'person'
+    filtering = {
+        'is_anonymous': True,
+        'person__anonymous__drug_user_type__in': (ANONYMOUS_TYPES.NON_USER,
+            ANONYMOUS_TYPES.NON_USER_PARENT)
+    }
 
-    class AnonymousAggregation(NonDistinctCountAggregation, EncounterAggregation):
-        aggregation_dbcol = 'person'
-        filtering = {
-            'is_anonymous': True,
-            'person__anonymous__drug_user_type__in': (ANONYMOUS_TYPES.NON_USER,
-                ANONYMOUS_TYPES.NON_USER_PARENT)
-        }
-
-    class PractitionerAggregation(EncounterAggregation):
-        aggregation_dbcol = 'person'
-        filtering = {'is_practitioner': True}
-
-    aggregation_classes = (AnonymousAggregation, PractitionerAggregation)
 
 
 class AllAddresses(ServiceAggregation):
@@ -191,7 +184,7 @@ class MonthlyStatsByTown(Report):
         SexPartnerEncounters,
         NonIvClientEncounters,
         ClosePersonEncounters,
-        NonClients,
+        AnonymousAggregation,
         AllAddresses,
         AddressesDU,
     ] + disease_tests + [
