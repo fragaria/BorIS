@@ -38,7 +38,7 @@ class Migration(DataMigration):
                     (' (' + p.organization + ')') if p.organization else ''
                 )
                 pract_contact.date = encounter.performed_on
-                pract_contact.town = encounter.where.id
+                pract_contact.town = orm['clients.Town'].objects.get(pk=encounter.where.id)
                 pract_contact.note = p.note
 
                 # Temporarily reassign the primary key to make entries in the
@@ -57,7 +57,9 @@ class Migration(DataMigration):
                 # proved to be nontrivial, as it is hard to distinguish between
                 # practitioner and non-practitioner encounter.
 
+            orm['clients.Person'].objects.get(pk=p.person_ptr_id).delete()
             p.delete()
+
 
 
     def backwards(self, orm):
