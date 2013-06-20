@@ -139,10 +139,10 @@ class PractitionerContact(models.Model, AdminLinkMixin):
     '''
     users = models.ManyToManyField('auth.User', verbose_name=_('Kdo'))
     person_or_institution = models.CharField(max_length=255,
-        verbose_name=_('Osoba nebo instituce'))
-    town = models.ForeignKey('clients.Town', related_name='+', verbose_name=_('Město'))
-    date = models.DateField(verbose_name=_('Kdy'))
-    note = models.TextField(verbose_name=_('Poznámka'), blank=True)
+        verbose_name=_(u'Osoba nebo instituce'))
+    town = models.ForeignKey('clients.Town', related_name='+', verbose_name=_(u'Město'))
+    date = models.DateField(verbose_name=_(u'Kdy'))
+    note = models.TextField(verbose_name=_(u'Poznámka'), blank=True)
 
     class Meta:
         verbose_name = _(u'Odborný kontakt')
