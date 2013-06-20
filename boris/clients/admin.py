@@ -205,7 +205,7 @@ class PractitionerContactAdmin(BorisBaseAdmin):
     autocomplete_lookup_fields = {
         'fk': ['town', ]
     }
-    ordering = ('date', 'person_or_institution')
+    ordering = ('-date', 'person_or_institution')
 
     @textual(_(u'Kdo'))
     def user_list(self, obj):
