@@ -9,14 +9,18 @@ class Migration(DataMigration):
     def forwards(self, orm):
         "Write your forwards methods here."
         # Note: Remember to use orm['appname.ModelName'] rather than "from appname.models..."
-        ct = orm['contenttypes.ContentType'].objects.get(app_label='clients', model='practitioner')
-        ct.model = 'practitionercontact'
-        ct.name = u'Odborný kontakt'
-        ct.save()
+        perms = (
+            orm['auth.permission'].objects.get(codename='change_practitioner'),
+            orm['auth.permission'].objects.get(codename='add_practitioner'),
+            orm['auth.permission'].objects.get(codename='delete_practitioner'),
+        )
+        for perm in perms:
+            perm.name = perm.name.replace(u'Odborník', u'Odborný kontakt')
+            perm.codename = perm.codename.replace('practitioner', 'practitionercontact')
+            perm.save()
 
     def backwards(self, orm):
         "Write your backwards methods here."
-        raise RuntimeError("There is no way back.")
 
     models = {
         'auth.group': {
