@@ -18,7 +18,7 @@ class ServiceReport(BaseReport):
             ('where__in', towns),
             ('person', person),
         )
-        enc_filtering = [(f[0], f[1]) for f in enc_filtering if f[1] is not None]
+        enc_filtering = [(f[0], f[1]) for f in enc_filtering if f[1]]
         filtering = [('encounter__%s' % f[0], f[1]) for f in enc_filtering]
 
         self.enc_filtering = dict(enc_filtering)
