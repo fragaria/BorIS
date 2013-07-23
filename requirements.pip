@@ -10,4 +10,4 @@ gunicorn
 
 django-model-utils==1.2.0
 #-e git+https://github.com/carljm/django-model-utils.git#egg=model_utils
--e git+https://github.com/carljm/django-form-utils.git@ad0fa906d4294ac333db5cf36144346a1a5b8bb2#egg=form_utils
+-e git+https://github.com/carljm/django-form-utils.git@41b3af2ff2c89940dc7b331135681c093526b508#egg=form_utils
