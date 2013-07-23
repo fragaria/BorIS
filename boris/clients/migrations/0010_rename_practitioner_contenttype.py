@@ -8,11 +8,14 @@ class Migration(DataMigration):
 
     def forwards(self, orm):
         "Write your forwards methods here."
-        # Note: Remember to use orm['appname.ModelName'] rather than "from appname.models..."
-        ct = orm['contenttypes.ContentType'].objects.get(app_label='clients', model='practitioner')
-        ct.model = 'practitionercontact'
-        ct.name = u'Odborný kontakt'
-        ct.save()
+        try:
+            # Note: Remember to use orm['appname.ModelName'] rather than "from appname.models..."
+            ct = orm['contenttypes.ContentType'].objects.get(app_label='clients', model='practitioner')
+            ct.model = 'practitionercontact'
+            ct.name = u'Odborný kontakt'
+            ct.save()
+        except orm['contenttypes.ContentType'].DoesNotExist:
+            pass
 
     def backwards(self, orm):
         "Write your backwards methods here."
