@@ -4,6 +4,7 @@ SELECT
 	services_encounter.id,
 	services_encounter.person_id,
 	services_encounter.where_id AS town_id,
+	services_encounter.is_by_phone,
 	YEAR(services_encounter.performed_on) AS year,
 	MONTH(services_encounter.performed_on) AS month,
 	clients_client.person_ptr_id is NOT NULL AS is_client,

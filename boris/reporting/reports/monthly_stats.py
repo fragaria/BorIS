@@ -109,17 +109,14 @@ class EncounterCount(EncounterAggregation):
     title = _(u'Počet kontaktů celkem')
 
 
-class ClientEncounterCount(ServiceAggregation):
+class ClientEncounterCount(EncounterAggregation):
     title = _(u'z toho s klienty přímý')
-    aggregation_dbcol = 'encounter'
-    filtering = {'is_client': True}
-    excludes = {'content_type_model': 'phonecounseling'}
+    filtering = {'is_by_phone': False}
 
 
-class PhoneEncounterCount(ServiceAggregation):
+class PhoneEncounterCount(EncounterAggregation):
     title = _(u'z toho telefonický kontakt')
-    filtering = {'content_type_model': 'phonecounseling'}
-    aggregation_dbcol = 'encounter'
+    filtering = {'is_by_phone': True}
 
 
 class FirstContactCount(ServiceAggregation):
