@@ -134,6 +134,173 @@
       "sex": 2,
       "drug_user_type": 3
     }
-  }
+  },
+    {
+        "pk": 3,
+        "model": "clients.drug",
+        "fields": {
+            "title": "Pervitin, jin\u00e9 amfetaminy"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "clients.drug",
+        "fields": {
+            "title": "Subutex , Ravata, Buprenorphine alkaloid - leg\u00e1ln\u011b"
+        }
+    },
+    {
+        "pk": 5,
+        "model": "clients.drug",
+        "fields": {
+            "title": "Tab\u00e1k"
+        }
+    },
+    {
+        "pk": 14,
+        "model": "clients.drug",
+        "fields": {
+            "title": "Subutex , Ravata, Buprenorphine alkaloid - ileg\u00e1ln\u011b"
+        }
+    },
+    {
+        "pk": 8,
+        "model": "clients.drug",
+        "fields": {
+            "title": "THC"
+        }
+    },
+    {
+        "pk": 9,
+        "model": "clients.drug",
+        "fields": {
+            "title": "Ext\u00e1ze, LSD, lysohl\u00e1vky"
+        }
+    },
+    {
+        "pk": 10,
+        "model": "clients.drug",
+        "fields": {
+            "title": "Designer drugs"
+        }
+    },
+    {
+        "pk": 11,
+        "model": "clients.drug",
+        "fields": {
+            "title": "Heroin"
+        }
+    },
+    {
+        "pk": 12,
+        "model": "clients.drug",
+        "fields": {
+            "title": "Braun a jin\u00e9 opi\u00e1ty"
+        }
+    },
+    {
+        "pk": 13,
+        "model": "clients.drug",
+        "fields": {
+            "title": "Surov\u00e9 opium"
+        }
+    },
+    {
+        "pk": 15,
+        "model": "clients.drug",
+        "fields": {
+            "title": "Cigarety"
+        }
+    },
+    {
+        "pk": 16,
+        "model": "clients.drug",
+        "fields": {
+            "title": "Alkohol"
+        }
+    },
+    {
+        "pk": 17,
+        "model": "clients.drug",
+        "fields": {
+            "title": "Inhala\u010dn\u00ed l\u00e1tky, \u0159edidla"
+        }
+    },
+    {
+        "pk": 18,
+        "model": "clients.drug",
+        "fields": {
+            "title": "Medikamenty"
+        }
+    },
+    {
+        "pk": 19,
+        "model": "clients.drug",
+        "fields": {
+            "title": "Metadon"
+        }
+    },
+    {
+        "pk": 20,
+        "model": "clients.drug",
+        "fields": {
+            "title": "Kokain, crack"
+        }
+    },
+    {
+        "pk": 21,
+        "model": "clients.drug",
+        "fields": {
+            "title": "Suboxone"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "clients.riskybehavior",
+        "fields": {
+            "title": "sd\u00edlen\u00ed n\u00e1\u010din\u00ed"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "clients.riskybehavior",
+        "fields": {
+            "title": "nechr\u00e1n\u011bn\u00fd sex"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "clients.riskybehavior",
+        "fields": {
+            "title": "sd\u00edlen\u00ed jehel"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "clients.riskybehavior",
+        "fields": {
+            "title": "nitro\u017eiln\u00ed aplikace"
+        }
+    },
+    {
+        "pk": 5,
+        "model": "clients.riskybehavior",
+        "fields": {
+            "title": "rizikov\u00e1 aplikace"
+        }
+    },
+    {
+        "pk": 6,
+        "model": "clients.riskybehavior",
+        "fields": {
+            "title": "p\u0159ed\u00e1vkov\u00e1n\u00ed"
+        }
+    },
+    {
+        "pk": 7,
+        "model": "clients.riskybehavior",
+        "fields": {
+            "title": "zdravotn\u00ed komplikace"
+        }
+    }
 ]
-
