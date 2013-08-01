@@ -43,6 +43,8 @@ class Encounter(models.Model, AdminLinkMixin):
     performed_by = models.ManyToManyField('auth.User', verbose_name=_(u'Kdo'))
     performed_on = models.DateField(default=date.today, verbose_name=_(u'Kdy'))
     where = models.ForeignKey('clients.Town', verbose_name=_(u'Kde'))
+    is_by_phone = models.BooleanField(default=False, verbose_name=_(
+        u'Telefonický kontakt'))
 
     class Meta:
         app_label = 'services'

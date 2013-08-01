@@ -277,17 +277,6 @@ class CrisisIntervention(Service):
         limited_to = ('Client',)
 
 
-class PhoneCounseling(Service):
-    class Meta:
-        app_label = 'services'
-        proxy = True
-        verbose_name = _(u'Telefonický kontakt')
-        verbose_name_plural = _(u'Telefonické kontakty')
-
-    class Options:
-        codenumber = 11
-
-
 class SocialWork(Service):
     socio_legal = models.BooleanField(default=False,
         verbose_name=_(u'a) sociálně-právní'))

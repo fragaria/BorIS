@@ -10,14 +10,16 @@ class Migration(DataMigration):
         "Write your forwards methods here."
         # Note: Remember to use orm['appname.ModelName'] rather than "from appname.models..."
         perms = (
-            orm['auth.permission'].objects.get(codename='change_practitioner'),
-            orm['auth.permission'].objects.get(codename='add_practitioner'),
-            orm['auth.permission'].objects.get(codename='delete_practitioner'),
+            orm['auth.permission'].objects.filter(codename='change_practitioner'),
+            orm['auth.permission'].objects.filter(codename='add_practitioner'),
+            orm['auth.permission'].objects.filter(codename='delete_practitioner'),
         )
         for perm in perms:
-            perm.name = perm.name.replace(u'Odborník', u'Odborný kontakt')
-            perm.codename = perm.codename.replace('practitioner', 'practitionercontact')
-            perm.save()
+            if perm.exists():
+                p = perm[0]
+                p.name = p.name.replace(u'Odborník', u'Odborný kontakt')
+                p.codename = p.codename.replace('practitioner', 'practitionercontact')
+                p.save()
 
     def backwards(self, orm):
         "Write your backwards methods here."
