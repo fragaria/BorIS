@@ -71,7 +71,14 @@ a.cbutton:hover {
     height: 25px;
 }
 
-#header .admin-title .highlight { color: #39bae5; }
+#header .admin-title .logo {
+    display: block;
+    float: left;
+    width: 58px;
+    height: 20px;
+    margin-right: 5px;
+    background: url(../img/boris-logo-30x115-white.png);
+}
 
 /* GRAPPELLI OVERRIDES */
 body { padding: 66px 20px 0; }
