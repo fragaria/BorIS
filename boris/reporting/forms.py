@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from datetime import date
 
 from django import forms
 from django.contrib.admin.widgets import AdminDateWidget, ForeignKeyRawIdWidget
@@ -16,10 +17,15 @@ OUTPUT_TYPES = (
     (OUTPUT_OFFICE, 'Do souboru'),
 )
 
-
 class ReportForm(forms.Form):
     display = forms.ChoiceField(label=_(u'Zobrazit'), choices=OUTPUT_TYPES)
 
+
+class BaseReportForm(ReportForm):
+    date_from = forms.DateField(label=_(u'Od'), required=False, widget=AdminDateWidget())
+    date_to = forms.DateField(label=_(u'Do'), required=False, widget=AdminDateWidget())
+    towns = forms.ModelMultipleChoiceField(label=_(u'Město'),
+                                  queryset=Town.objects.all(), required=False)
 
 class MonthlyStatsForm(ReportForm):
     year = forms.IntegerField(widget=SelectYearWidget(history=10), label=_(u'Rok'))
@@ -36,8 +42,14 @@ class ServiceForm(ReportForm):
         widget=ForeignKeyRawIdWidget(Encounter.person.field.rel))
 
 
-class ClientForm(ReportForm):
-    date_from = forms.DateField(label=_(u'Od'), required=False, widget=AdminDateWidget())
-    date_to = forms.DateField(label=_(u'Do'), required=False, widget=AdminDateWidget())
-    towns = forms.ModelMultipleChoiceField(label=_(u'Město'),
-                                  queryset=Town.objects.all(), required=False)
+class HygieneForm(ReportForm):
+    def __init__(self, *args, **kwargs):
+        super(HygieneForm, self).__init__(*args, **kwargs)
+        current_year = date.today().year
+        choices = list((('%s/%s' % (q, y), '%s/%s' % (q, y))
+                       for y in reversed(range(current_year - 10, current_year + 1))
+                       for q in reversed(range(1, 5))))
+
+        self.fields['quarter'] = forms.ChoiceField(choices=choices, label=_(u'Období'))
+        self.fields['towns'] = forms.ModelMultipleChoiceField(label=_(u'Město'),
+                                  queryset=Town.objects.all())

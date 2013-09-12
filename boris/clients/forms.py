@@ -9,7 +9,6 @@ from boris.clients.models import ClientNote
 
 
 class ReadOnlyWidget(forms.Widget):
-
     def __init__(self, original_value, display_value):
         self.original_value = original_value
         self.display_value = display_value
@@ -37,9 +36,8 @@ TIME_FORMATS = (
 
 
 class ClientNoteForm(forms.ModelForm):
-
     datetime = forms.SplitDateTimeField(input_date_formats=DATE_FORMATS,
-        input_time_formats=TIME_FORMATS)
+                                        input_time_formats=TIME_FORMATS)
 
     class Meta:
         model = ClientNote

@@ -9,3 +9,8 @@ LOGGING['loggers']['django.request'] = {
     'handlers': ['console'],
     'propagate': False,
 }
+
+TEMPLATE_LOADERS = (
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
+)

@@ -259,6 +259,34 @@ class Anamnesis(TimeStampedModel, AdminLinkMixin):
         verbose_name = _(u'Anamnéza')
         verbose_name_plural = _(u'Anamnézy')
 
+    @property
+    def drug_info(self):
+        if not hasattr(self, '__drug_info'):
+            self.__drug_info = DrugUsage.objects.filter(anamnesis=self).order_by('is_primary')
+        return self.__drug_info
+
+    @property
+    def disease_test_results(self):
+        if not hasattr(self, '__disease_test_results'):
+            self.__disease_test_results = dict((c[1], None) for c in DISEASE_TEST_RESULTS)
+
+            for t in DiseaseTest.objects.filter(anamnesis=self):
+                self.__disease_test_results[t.get_disease_display()] = t
+        return self.__disease_test_results
+
+    @property
+    def overall_first_try_age(self):
+        if not hasattr(self, '__overall_first_try_age'):
+            self.__overall_first_try_age = min([d.first_try_age for d in self.drug_info])
+        return self.__overall_first_try_age
+
+    @property
+    def intravenous_first_try_age(self):
+        if not hasattr(self, '__intravenous_first_try_age'):
+            usages = [d.first_try_iv_age for d in self.drug_info if d.first_try_iv_age]
+            self.__intravenous_first_try_age = min(usages) if usages else None
+        return self.__intravenous_first_try_age
+
 
 class ClientNote(models.Model):
     author = models.ForeignKey(User, verbose_name=_(u'Autor'),

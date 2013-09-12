@@ -5,6 +5,7 @@ Created on 2.10.2011
 @author: xaralis
 '''
 from datetime import date
+import operator
 
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
@@ -37,6 +38,13 @@ class ProxyInheritanceManager(InheritanceManager):
         return qset
 
 
+class EncounterManager(models.Manager):
+    def first(self):
+        f_ects = self.values('person').annotate(min_date=models.Min('performed_on'))
+        filters = reduce(operator.or_, [models.Q(person=e['person'], performed_on=e['min_date']) for e in f_ects])
+        return self.filter(filters)
+
+
 class Encounter(models.Model, AdminLinkMixin):
     person = models.ForeignKey('clients.Person', related_name='encounters',
         verbose_name=_(u'Osoba'))
@@ -45,6 +53,8 @@ class Encounter(models.Model, AdminLinkMixin):
     where = models.ForeignKey('clients.Town', verbose_name=_(u'Kde'))
     is_by_phone = models.BooleanField(default=False, verbose_name=_(
         u'Telefonický kontakt'))
+
+    objects = EncounterManager()
 
     class Meta:
         app_label = 'services'

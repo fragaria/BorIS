@@ -6,7 +6,8 @@ from django.template.defaultfilters import slugify
 from django.utils.datastructures import SortedDict
 
 from boris.reporting.core import ReportResponse
-from boris.reporting.forms import MonthlyStatsForm, ServiceForm, ClientForm
+from boris.reporting import forms
+from boris.reporting.reports.hygiene import HygieneReport
 from boris.reporting.reports.monthly_stats import MonthlyStatsByTown, \
     MonthlyStatsByDistrict
 from boris.reporting.reports.services import ServiceReport
@@ -58,11 +59,12 @@ class ReportingInterface(object):
     `tabs` attribute.
     """
     tabs = (
-        interfacetab_factory(MonthlyStatsByTown, MonthlyStatsForm, 'monthbytown'),
-        interfacetab_factory(MonthlyStatsByDistrict, MonthlyStatsForm, 'monthbydistrict'),
-        interfacetab_factory(YearlyStatsByMonth, MonthlyStatsForm, 'yearbymonth'),
-        interfacetab_factory(ServiceReport, ServiceForm, 'services'),
-        interfacetab_factory(ClientReport, ClientForm, 'clients'),
+        interfacetab_factory(MonthlyStatsByTown, forms.MonthlyStatsForm, 'monthbytown'),
+        interfacetab_factory(MonthlyStatsByDistrict, forms.MonthlyStatsForm, 'monthbydistrict'),
+        interfacetab_factory(YearlyStatsByMonth, forms.MonthlyStatsForm, 'yearbymonth'),
+        interfacetab_factory(ServiceReport, forms.ServiceForm, 'services'),
+        interfacetab_factory(ClientReport, forms.BaseReportForm, 'clients'),
+        interfacetab_factory(HygieneReport, forms.HygieneForm, 'hygiene'),
     )
 
 

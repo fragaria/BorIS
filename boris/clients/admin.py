@@ -211,8 +211,8 @@ class PractitionerContactAdmin(BorisBaseAdmin):
     def user_list(self, obj):
         return u'<br />'.join([unicode(s) for s in obj.users.all()])
 
-    def show_save_and_add_another(self, obj): return bool(obj.pk)
-
+    def show_save_and_add_another(self, obj):
+        return bool(obj.pk)
 
 
 class ClientAdmin(AddContactAdmin):
