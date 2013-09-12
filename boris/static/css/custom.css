@@ -73,8 +73,10 @@ a.cbutton:hover {
 
 #header .admin-title .logo {
     display: block;
-    width: 86px;
-    height: 30px;
+    float: left;
+    width: 58px;
+    height: 20px;
+    margin-right: 5px;
     background: url(../img/boris-logo-30x115-white.png);
 }
 
