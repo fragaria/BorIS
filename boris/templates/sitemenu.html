@@ -16,9 +16,9 @@
 
     <li class="{% active "/" %}"><a href="/">{% trans "Nástěnka" %}</a></li>
     <li class="{% active clients %}"><a href="{{ clients }}">{% trans "Klienti" %}</a></li>
-    <li class="{% active anonymous %}"><a href="{{ anonymous }}">{% trans "Anonymové" %}</a></li>
-    <li class="{% active practitioners %}"><a href="{{ practitioners }}">{% trans "Odborné kontakty" %}</a></li>
     <li class="{% active contacts %}"><a href="{{ contacts }}">{% trans "Kontakty" %}</a></li>
+    <li class="{% active anonymous %}"><a href="{{ anonymous }}">{% trans "Anonymní kontakty" %}</a></li>
+    <li class="{% active practitioners %}"><a href="{{ practitioners }}">{% trans "Odborné kontakty" %}</a></li>
     <li class="{% active syringecollection %}"><a href="{{ syringecollection }}">{% trans "Sběr stříkaček" %}</a></li>
     <li class="{% active reporting %}"><a href="{{ reporting }}">{% trans "Výstupy" %}</a></li>
     {% if request.user.is_superuser %}
