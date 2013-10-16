@@ -64,7 +64,7 @@ class ReportingInterface(object):
         interfacetab_factory(YearlyStatsByMonth, forms.MonthlyStatsForm, 'yearbymonth'),
         interfacetab_factory(ServiceReport, forms.ServiceForm, 'services'),
         interfacetab_factory(ClientReport, forms.BaseReportForm, 'clients'),
-        #interfacetab_factory(HygieneReport, forms.HygieneForm, 'hygiene'),
+        interfacetab_factory(HygieneReport, forms.HygieneForm, 'hygiene'),
     )
 
 
