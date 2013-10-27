@@ -2,7 +2,6 @@
 from django import forms
 from django.contrib import admin
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
 from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext_lazy as _
 
@@ -157,6 +156,11 @@ class EncounterAdmin(BorisBaseAdmin):
         return super(EncounterAdmin, self).formfield_for_dbfield(db_field, **kwargs)
 
     def show_save_and_add_another(self, obj): return bool(obj.pk)
+
+    def button_captions(self, obj):
+        if not obj.pk:
+            return {'BO_SAVE_CAPTION': _(u'Přidat výkony')}
+        return {}
 
 EncounterAdmin.service_list = service_list
 

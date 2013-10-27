@@ -1,8 +1,3 @@
-'''
-Created on 12.2.2012
-
-@author: xaralis
-'''
 from django.contrib.admin.options import ModelAdmin, csrf_protect_m
 from django.contrib.admin.views.main import ChangeList
 from django.db import transaction
@@ -97,6 +92,23 @@ class BorisBaseAdmin(ModelAdmin):
     def force_show_delete(self, obj):
         return False
 
+    def button_captions(self, obj):
+        """
+        Specify various button captions.
+
+        Override to change the captions. The default values are in the
+        templates/admin/submit_line.html template. Below dictionary serves
+        to document all possible captions.
+
+        """
+        return {
+            'BO_SAVE_CAPTION': '',
+            'BO_SAVE_AS_NEW_CAPTION': '',
+            'BO_SAVE_AND_CONT_CAPTION': '',
+            'BO_SAVE_AND_ADD_ANOTHER_CAPTION': '',
+            'BO_DELETE_CAPTION': '',
+        }
+
     @csrf_protect_m
     @transaction.commit_on_success
     def change_view(self, request, object_id, extra_context=None):
@@ -106,8 +118,9 @@ class BorisBaseAdmin(ModelAdmin):
             'BO_SHOW_SAVE_AS_NEW': self.show_save_as_new(obj),
             'BO_SHOW_SAVE_AND_CONT': self.show_save_and_continue(obj),
             'BO_SHOW_SAVE_AND_ADD_ANOTHER': self.show_save_and_add_another(obj),
-            'BO_FORCE_SHOW_DELETE': self.force_show_delete(obj)
+            'BO_FORCE_SHOW_DELETE': self.force_show_delete(obj),
         }
+        buttons_context.update(self.button_captions(obj))
         if extra_context is not None:
             extra_context.update(buttons_context)
         else:
@@ -127,6 +140,7 @@ class BorisBaseAdmin(ModelAdmin):
                 empty_obj),
             'BO_FORCE_SHOW_DELETE': self.force_show_delete(empty_obj)
         }
+        buttons_context.update(self.button_captions(empty_obj))
         if extra_context is not None:
             extra_context.update(buttons_context)
         else:
