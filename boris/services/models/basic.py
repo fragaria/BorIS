@@ -400,3 +400,15 @@ class IncomeFormFillup(Service):
     class Options:
         codenumber = 14
         limited_to = ('Client',)
+
+
+class PhoneUsage(Service):
+    class Meta:
+        app_label = 'services'
+        proxy = True
+        verbose_name = _(u'Použití telefonu klientem')
+        verbose_name_plural = _(u'Použití telefonu klientem')
+
+    class Options:
+        codenumber = 15
+        limited_to = ('Client',)
