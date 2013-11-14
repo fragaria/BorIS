@@ -48,10 +48,12 @@
 
             <p class="section">A. Charakter kontaktu</p>
             <p class="row">
-                <strong>3. Datum žádosti o léčení</strong> <span>{# This value is added in view handling the report. #}{{ anamnesis.first_encounter_date|date:"DATE_FORMAT" }}</span>
+                {# This value is added in view handling the report. #}
+                <strong>3. Datum žádosti o léčení</strong> <span>{{ anamnesis.extra_first_encounter_date|date:"DATE_FORMAT" }}</span>
             </p>
             <p class="row">
-                <strong>4. Byl klient dříve léčen</strong> <span>{% if anamnesis.been_cured_before %}2. Ano{% else %}1. Ne{% endif %}</span>
+                {# This value is added in view handling the report. #}
+                <strong>4. Byl klient dříve léčen</strong> <span>{% if anamnesis.extra_been_cured_before %}2. Ano, v tomto L/K centru{% else %}1. Ne, nikde neléčen{% endif %}</span>
             </p>
             <p class="row">
                 <strong>5. Klient přichází na doporučení</strong> <span>0. Neuvedeno</span>
@@ -59,10 +61,10 @@
 
             <p class="section">B. Socioekonomické údaje</p>
             <p class="row">
-                <strong>6. V současné době klient žije</strong> <span>{{ anamnesis.accomodation }}. {{ anamnesis.get_accomodation_display }}</span>
+                <strong>6. V současné době klient žije</strong> <span>{{ anamnesis.living_condition }}. {{ anamnesis.get_living_condition_display }}</span>
             </p>
             <p class="row">
-                <strong>7. Charakter bydlení</strong> <span>{{ anamnesis.living_condition }}. {{ anamnesis.get_living_condition_display }}</span>
+                <strong>7. Charakter bydlení</strong> <span>{{ anamnesis.accomodation }}. {{ anamnesis.get_accomodation_display }}</span>
             </p>
             <p class="row">
                 <strong>8. Klient žije s osobou užívající drogy</strong> <span>{% if anamnesis.lives_with_junkies %}1. Ano{% else %}2. Ne{% endif %}</span>

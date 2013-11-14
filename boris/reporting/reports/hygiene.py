@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 from datetime import date, datetime, time, timedelta
 
+from django.contrib.contenttypes.models import ContentType
 from django.template import loader
 from django.template.context import RequestContext
 from django.db import models
 
 from boris.clients.models import Anamnesis
 from boris.reporting.core import BaseReport
-from boris.services.models import Encounter
+from boris.services.models import Encounter, IncomeExamination, Service
 
 
 class HygieneReport(BaseReport):
@@ -52,14 +53,21 @@ class HygieneReport(BaseReport):
                                .annotate(first_encounter_date=models.Min('performed_on'))
 
         # Get client PKs from filtered encounters.
-        results = encounters.values_list('person_id', 'first_encounter_date')
-        encounter_dates = dict(r for r in results)
+        encounter_data = {}
+
+        for e in encounters:
+            encounter_data.setdefault(e.person_id, {'first_encounter_date': date.max, 'objects': []})
+            encounter_data[e.person_id]['first_encounter_date'] = min(encounter_data[e.person_id]['first_encounter_date'], e.performed_on)
+            encounter_data[e.person_id]['objects'].append(e)
 
         # Finally, select these clients if they have anamnesis filled up.
-        anamnesiss = Anamnesis.objects.filter(client__pk__in=[r[0] for r in results]).select_related()
+        anamnesiss = Anamnesis.objects.filter(client__pk__in=[pk for pk in encounter_data.keys()]).select_related()
 
+        # Annotate extra information needed in report.
         for a in anamnesiss:
-            a.first_encounter_date = encounter_dates[a.client_id]
+            a.extra_first_encounter_date = encounter_data[a.client_id]['first_encounter_date']
+            a.extra_been_cured_before = Service.objects.filter(encounter__in=encounter_data[a.client_id]['objects'],
+                                                               content_type=ContentType.objects.get_for_model(IncomeExamination)).exists()
 
         return anamnesiss
 
