@@ -46,7 +46,8 @@ class HygieneReport(BaseReport):
 
         # Filter encounters so that only current quarter is present.
         encounters = encounters.filter(performed_on__gte=self.datetime_from,
-                                       performed_on__lt=self.datetime_to)
+                                       performed_on__lt=self.datetime_to,
+                                       where__in=self.towns)
 
         # Get client PKs from filtered encounters.
         client_pks = encounters.values_list('person_id', flat=True)
