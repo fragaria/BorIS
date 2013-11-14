@@ -1,7 +1,7 @@
 {% extends "print_base.html" %}
 {% load i18n %}
 
-{% block content_title %}<h1>{% block title %}{% trans "Registr uživatelů drog" %} {{ q_no }}/{{ year }}{% endblock %}</h1>{% endblock %}
+{% block content_title %}<h1>{% block title %}{% trans "Registr uživatelů drog - žadatelů o léčbu" %} {{ q_no }}/{{ year }}{% endblock %}</h1>{% endblock %}
 
 
 {% block extrastyle %}
@@ -41,7 +41,7 @@
                 <strong>Kód</strong>
             </p>
             <p class="row">
-                <strong>2. Kód klienta</strong> <span>{{ anamnesis.client.code }}</span>
+                <strong>2. Kód klienta</strong> <span>{{ anamnesis.client.hygiene_report_code }}</span>
                 <strong>Pohlaví</strong> <span>{% if anamnesis.client.sex == 'MALE' %}M{% else %}Ž{% endif %}</span>
                 <strong>Okres bydliště</strong>
             </p>

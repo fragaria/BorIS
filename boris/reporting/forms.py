@@ -17,6 +17,7 @@ OUTPUT_TYPES = (
     (OUTPUT_OFFICE, 'Do souboru'),
 )
 
+
 class ReportForm(forms.Form):
     display = forms.ChoiceField(label=_(u'Zobrazit'), choices=OUTPUT_TYPES)
 
