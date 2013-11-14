@@ -3,10 +3,11 @@ from datetime import date, datetime, time, timedelta
 
 from django.template import loader
 from django.template.context import RequestContext
+from django.db import models
 
-from boris.clients.models import Client, Anamnesis
+from boris.clients.models import Anamnesis
 from boris.reporting.core import BaseReport
-from boris.services.models import service_list, Encounter
+from boris.services.models import Encounter
 
 
 class HygieneReport(BaseReport):
@@ -47,13 +48,21 @@ class HygieneReport(BaseReport):
         # Filter encounters so that only current quarter is present.
         encounters = encounters.filter(performed_on__gte=self.datetime_from,
                                        performed_on__lt=self.datetime_to,
-                                       where__in=self.towns)
+                                       where__in=self.towns)\
+                               .annotate(first_encounter_date=models.Min('performed_on'))
 
         # Get client PKs from filtered encounters.
-        client_pks = encounters.values_list('person_id', flat=True)
+        results = encounters.values_list('person_id', 'first_encounter_date')
+        encounter_dates = dict(r for r in results)
 
         # Finally, select these clients if they have anamnesis filled up.
-        return Anamnesis.objects.filter(client__pk__in=client_pks).select_related()
+        anamnesiss = Anamnesis.objects.filter(client__pk__in=[r[0] for r in results]).select_related()
+
+        for a in anamnesiss:
+            a.first_encounter_date = encounter_dates[a.client_id]
+
+        return anamnesiss
+
 
     def render(self, request, display_type):
         return loader.render_to_string(

@@ -48,7 +48,7 @@
 
             <p class="section">A. Charakter kontaktu</p>
             <p class="row">
-                <strong>3. Datum žádosti o léčení</strong> <span>{{ anamnesis.filled_when|date:"DATE_FORMAT" }}</span>
+                <strong>3. Datum žádosti o léčení</strong> <span>{# This value is added in view handling the report. #}{{ anamnesis.first_encounter_date|date:"DATE_FORMAT" }}</span>
             </p>
             <p class="row">
                 <strong>4. Byl klient dříve léčen</strong> <span>{% if anamnesis.been_cured_before %}2. Ano{% else %}1. Ne{% endif %}</span>
