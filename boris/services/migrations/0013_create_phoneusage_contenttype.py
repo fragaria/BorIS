@@ -9,9 +9,22 @@ class Migration(DataMigration):
 
     def forwards(self, orm):
         "Write your forwards methods here."
-        orm['contenttypes.ContentType'].objects.create(name=u'Použití telefonu klientem', app_label='services', model='phoneusage')
-        services_app = models.get_app('services')
-        create_permissions(services_app, None, 2)
+        ct = orm['contenttypes.ContentType'].objects.create(name=u'Použití telefonu klientem', app_label='services', model='phoneusage')
+        orm['auth.Permission'].objects.create(
+            codename='add_phoneusage',
+            name='Can add phone usage',
+            content_type=ct
+        )
+        orm['auth.Permission'].objects.create(
+            codename='delete_phoneusage',
+            name='Can delete phone usage',
+            content_type=ct
+        )
+        orm['auth.Permission'].objects.create(
+            codename='change_phoneusage',
+            name='Can change phone usage',
+            content_type=ct
+        )
 
     def backwards(self, orm):
         "Write your backwards methods here."
@@ -24,7 +37,7 @@ class Migration(DataMigration):
             'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
         },
         'auth.permission': {
-            'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')", 'unique_together': "(('content_type', 'codename'),)", 'object_name': 'Permission'},
+            'Meta': {'ordering': "('content___app_label', 'content_type__model', 'codename')", 'unique_together': "(('content_type', 'codename'),)", 'object_name': 'Permission'},
             'codename': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
