@@ -201,6 +201,12 @@ class Client(Person):
     def __unicode__(self):
         return self.code
 
+    @property
+    def hygiene_report_code(self):
+        code = (str(self.birthdate.year)[2:] if self.birthdate else '??') + '0000/'
+        code += self.first_name[:3].upper() if self.first_name else '???'
+        return code
+
     def is_default_service(self, service):
         """Returns True if ``service`` is default for this person, False otherwise"""
         return service.class_name() == 'HarmReduction'
@@ -277,14 +283,15 @@ class Anamnesis(TimeStampedModel, AdminLinkMixin):
     @property
     def overall_first_try_age(self):
         if not hasattr(self, '__overall_first_try_age'):
-            self.__overall_first_try_age = min([d.first_try_age for d in self.drug_info])
+            ages = [d.first_try_age for d in self.drug_info]
+            self.__overall_first_try_age = min(ages) if ages else None
         return self.__overall_first_try_age
 
     @property
     def intravenous_first_try_age(self):
         if not hasattr(self, '__intravenous_first_try_age'):
-            usages = [d.first_try_iv_age for d in self.drug_info if d.first_try_iv_age]
-            self.__intravenous_first_try_age = min(usages) if usages else None
+            ages = [d.first_try_iv_age for d in self.drug_info if d.first_try_iv_age]
+            self.__intravenous_first_try_age = min(ages) if ages else None
         return self.__intravenous_first_try_age
 
 
