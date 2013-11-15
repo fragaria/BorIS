@@ -288,6 +288,12 @@ class Anamnesis(TimeStampedModel, AdminLinkMixin):
         return self.__overall_first_try_age
 
     @property
+    def is_intravenous_user(self):
+        return any([di.application in (DRUG_APPLICATION_TYPES.VEIN_INJECTION,
+                                       DRUG_APPLICATION_TYPES.MUSCLE_INJECTION)
+                    for di in self.drug_info])
+
+    @property
     def intravenous_first_try_age(self):
         if not hasattr(self, '__intravenous_first_try_age'):
             ages = [d.first_try_iv_age for d in self.drug_info if d.first_try_iv_age]
@@ -364,7 +370,7 @@ class DiseaseTest(models.Model):
     anamnesis = models.ForeignKey(Anamnesis)
     disease = models.PositiveSmallIntegerField(choices=DISEASES,
         verbose_name=_(u'Testované onemocnění'))
-    result = models.PositiveSmallIntegerField(choices=DISEASE_TEST_RESULTS,
+    result = models.SmallIntegerField(choices=DISEASE_TEST_RESULTS,
         default=DISEASE_TEST_RESULTS.UNKNOWN, verbose_name=_(u'Výsledek testu'))
 
     def __unicode__(self):

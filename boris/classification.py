@@ -113,12 +113,12 @@ DISEASES = Choices(
 )
 
 DISEASE_TEST_RESULTS = Choices(
-    (1, 'NOT_TESTED', u'Netestován'),
-    (2, 'TESTED_POSITIVE', u'Testován - pozitivní'),
-    (3, 'TESTED_NEGATIVE', u'Testován - negativní'),
-	(4, 'TESTED_UNKNOWN', u'Testován - výsledek neznámý'),
+    (0, 'UNKNOWN', u'Neznámo, zda testován'),
+    (1, 'TESTED_POSITIVE', u'Testován - pozitivní'),
+    (2, 'TESTED_NEGATIVE', u'Testován - negativní'),
+	(3, 'TESTED_UNKNOWN', u'Testován - výsledek neznámý'),
+    (4, 'NOT_TESTED', u'Nikdy netestován'),
     (5, 'RESULT_NOT_ACCLAIMED', u'Nevyzvedl výsledek'),
-    (6, 'UNKNOWN', u'Neznámo')
 )
 
 DISEASE_TEST_SIGN = Choices(
