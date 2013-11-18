@@ -268,7 +268,12 @@ class Anamnesis(TimeStampedModel, AdminLinkMixin):
     @property
     def drug_info(self):
         if not hasattr(self, '__drug_info'):
-            self.__drug_info = DrugUsage.objects.filter(anamnesis=self).order_by('is_primary')
+            self.__drug_info =  DrugUsage.objects.filter(anamnesis=self)
+            self.__drug_info = sorted(list(self.__drug_info),
+                                      key=lambda di: '%s%s' % (
+                                          '1' if di.is_primary else '2',
+                                          str(di.pk)
+                                      ))
         return self.__drug_info
 
     @property
