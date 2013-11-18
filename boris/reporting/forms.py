@@ -44,13 +44,8 @@ class ServiceForm(ReportForm):
 
 
 class HygieneForm(ReportForm):
-    def __init__(self, *args, **kwargs):
-        super(HygieneForm, self).__init__(*args, **kwargs)
-        current_year = date.today().year
-        choices = list((('%s/%s' % (q, y), '%s/%s' % (q, y))
-                       for y in reversed(range(current_year - 10, current_year + 1))
-                       for q in reversed(range(1, 5))))
-
-        self.fields['quarter'] = forms.ChoiceField(choices=choices, label=_(u'Období'))
-        self.fields['towns'] = forms.ModelMultipleChoiceField(label=_(u'Město'),
-                                  queryset=Town.objects.all())
+    date_from = forms.DateField(label=_(u'Od'), required=False, widget=AdminDateWidget())
+    date_to = forms.DateField(label=_(u'Do'), required=False, widget=AdminDateWidget())
+    towns = forms.ModelMultipleChoiceField(label=_(u'Město'),
+                                           queryset=Town.objects.all(),
+                                           required=True)

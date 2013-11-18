@@ -16,20 +16,10 @@ class HygieneReport(BaseReport):
     description = u'Souhrnný tiskový výstup pro hygienu.'
     contenttype_office = 'application/vnd.ms-word; charset=utf-8'
 
-    def __init__(self, quarter, towns):
+    def __init__(self, date_from, date_to, towns):
+        self.datetime_from = datetime.combine(date_from, time(0))
+        self.datetime_to = datetime.combine(date_to, time(23, 59, 59))
         self.towns = towns
-
-        self.q_no, self.year = int(quarter.split('/')[0]), int(quarter.split('/')[1])
-
-        df = lambda m: datetime.combine(date(self.year, m, 1), time(0))
-        dt = lambda m, y=self.year: datetime.combine(date(y, m, 1), time(0)) - timedelta(seconds=1)
-
-        if self.q_no < 4:
-            self.datetime_from = df(1 + 3 * (self.q_no - 1))
-            self.datetime_to = dt(4 + 3 * (self.q_no - 1))
-        else:
-            self.datetime_from = df(10)
-            self.datetime_to = dt(1, self.year + 1)
 
     def get_filename(self):
         return ('vystup_pro_hygienu_%s_%s.doc' % (self.datetime_from, self.datetime_to)).replace('-', '_').replace(' ', '_')
@@ -77,8 +67,6 @@ class HygieneReport(BaseReport):
             self.get_template(display_type),
             {
                 'objects': self.get_anamnesis_list(),
-                'q_no': self.q_no,
-                'year': self.year,
                 'datetime_from': self.datetime_from,
                 'datetime_to': self.datetime_to
             },
