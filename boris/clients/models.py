@@ -204,7 +204,7 @@ class Client(Person):
     @property
     def hygiene_report_code(self):
         code = (str(self.birthdate.year)[2:] if self.birthdate else '??') + '0000/'
-        code += self.first_name[:3].upper() if self.first_name else '???'
+        code += self.code[5:8].upper() if len(self.code) >= 7 else '???'
         return code
 
     def is_default_service(self, service):

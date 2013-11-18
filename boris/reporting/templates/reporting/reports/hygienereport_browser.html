@@ -23,7 +23,7 @@
             padding: 0 20px;
         }
         .anamnesis .section {
-            margin: 40px 0 10px;
+            margin: 0 0 5px;
             padding: 5px 10px;
             font-weight: bold;
             text-transform: uppercase;
@@ -65,6 +65,21 @@
         }
 
         @media print {
+            body {
+                padding: 0;
+            }
+
+            .anamnesis {
+                font-size: 10px;
+            }
+
+            .anamnesis .section {
+                padding: 25px 0 0;
+            }
+
+            .row {
+                padding: 0;
+            }
             #content, #container { float: none; }
             .pagebreak { display: block; page-break-after: always; }
         }
@@ -180,10 +195,10 @@
                 <p class="row">
                     {% with anamnesis.disease_test_results as tests %}
                         <strong class="block">21. Vyšetření HIV a virové hepatitidy</strong>
-                        <strong class="no-margin">HIV</strong> <span>{% if tests.HIV %}{{ tests.HIV.result }}. {{ tests.HIV.get_result_display }}{% else %}0. neznámo, zda testován{% endif %}</span>
-                        <strong class="no-margin">VHA</strong> <span>{% if tests.VHA %}{{ tests.VHA.result }}. {{ tests.VHA.get_result_display }}{% else %}0. neznámo, zda testován{% endif %}</span>
-                        <strong class="no-margin">VHB</strong> <span>{% if tests.VHB %}{{ tests.VHB.result }}. {{ tests.VHB.get_result_display }}{% else %}0. neznámo, zda testován{% endif %}</span>
-                        <strong class="no-margin">VHC</strong> <span>{% if tests.VHC %}{{ tests.VHC.result }}. {{ tests.VHC.get_result_display }}{% else %}0. neznámo, zda testován{% endif %}</span>
+                        <strong class="no-margin clear-row">HIV</strong> <span>{% if tests.HIV %}{{ tests.HIV.result }}. {{ tests.HIV.get_result_display }}{% else %}0. neznámo, zda testován{% endif %}</span><br/>
+                        <strong class="no-margin clear-row">VHA</strong> <span>{% if tests.VHA %}{{ tests.VHA.result }}. {{ tests.VHA.get_result_display }}{% else %}0. neznámo, zda testován{% endif %}</span><br/>
+                        <strong class="no-margin clear-row">VHB</strong> <span>{% if tests.VHB %}{{ tests.VHB.result }}. {{ tests.VHB.get_result_display }}{% else %}0. neznámo, zda testován{% endif %}</span><br/>
+                        <strong class="no-margin clear-row">VHC</strong> <span>{% if tests.VHC %}{{ tests.VHC.result }}. {{ tests.VHC.get_result_display }}{% else %}0. neznámo, zda testován{% endif %}</span><br/>
                     {% endwith %}
                 </p>
 
