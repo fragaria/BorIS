@@ -82,27 +82,21 @@ DRUG_APPLICATION_TYPES = Choices(
     (7, 'UNKNOWN', u'Není známo')
 )
 
+RISKY_BEHAVIOR_KIND = Choices(
+    (1, 'EQUIPMENT_SHARING', u'Sdílení náčiní'),
+    (2, 'SEX_WITHOUT_PROTECTION', u'Nechráněný sex'),
+    (3, 'SYRINGE_SHARING', u'Sdílení jehel'),
+    (4, 'INTRAVENOUS_APPLICATION', u'Nitrožilní aplikace'),
+    (5, 'RISKY_APPLICATION', u'Riziková aplikace'),
+    (6, 'OVERDOSING', u'Předávkování'),
+    (7, 'HEALTH_COMPLICATIONS', u'Zdravotní komplikace')
+)
+
 RISKY_BEHAVIOR_PERIODICITY = Choices(
     (1, 'NEVER', u'Nikdy'),
-    (2, 'ONCE_BACK_THEN', u'Jednorázově v minulosti'),
-    (3, 'OFTEN_BACK_THEN', u'Opakovaně v minulosti'),
-    (4, 'ONCE_CURRENTLY', u'Jednorázově v současnosti'),
-    (5, 'OFTEN_CURRENTLY', u'Opakovaně v současnosti'),
-    (6, 'UNKNOWN', u'Není známo')
-)
-
-RISKY_BEHAVIOR_PAST_PERIODICITY = Choices(
-    (1, 'NEVER', u'Nikdy'),
-    (2, 'ONCE_BACK_THEN', u'Jednorázově'),
-    (3, 'OFTEN_BACK_THEN', u'Opakovaně '),
-    (6, 'UNKNOWN', u'Není známo')
-)
-
-RISKY_BEHAVIOR_CURRENT_PERIODICITY = Choices(
-    (1, 'NEVER', u'Nikdy'),
-    (4, 'ONCE_CURRENTLY', u'Jednorázově'),
-    (5, 'OFTEN_CURRENTLY', u'Opakovaně'),
-    (6, 'UNKNOWN', u'Není známo')
+    (2, 'ONCE', u'Jednorázově'),
+    (3, 'OFTEN', u'Opakovaně '),
+    (4, 'UNKNOWN', u'Není známo')
 )
 
 DISEASES = Choices(

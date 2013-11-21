@@ -1,30 +1,29 @@
 # -*- coding: utf-8 -*-
 import datetime
 from south.db import db
-from south.v2 import DataMigration
+from south.v2 import SchemaMigration
 from django.db import models
 
-class Migration(DataMigration):
+
+class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        "Write your forwards methods here."
-        for rm in orm.RiskyManners.objects.all():
-            if rm.periodicity in (1, 7):
-                rm.periodicity_in_past = rm.periodicity
-                rm.periodicity_in_present = rm.periodicity
+        # Removing unique constraint on 'RiskyManners', fields ['anamnesis', 'behavior']
+        db.delete_unique('clients_riskymanners', ['anamnesis_id', 'behavior_id'])
 
-            if rm.periodicity in (2, 3):
-                rm.periodicity_in_past = rm.periodicity
+        # Deleting field 'RiskyManners.behavior'
+        db.delete_column('clients_riskymanners', 'behavior_id')
 
-            if rm.periodicity in (4, 5):
-                rm.periodicity_in_present = rm.periodicity
+        db.rename_column('clients_riskymanners', 'behavior_tmp', 'behavior')
 
-            rm.save()
+        # Adding unique constraint on 'RiskyManners', fields ['behavior', 'anamnesis']
+        db.create_unique('clients_riskymanners', ['behavior', 'anamnesis_id'])
 
+        db.drop_table('clients_riskybehavior')
 
 
     def backwards(self, orm):
-        "Write your backwards methods here."
+        raise RuntimeError("Cannot reverse this migration. 'RiskyManners.behavior' and its values cannot be restored.")
 
 
     models = {
@@ -75,8 +74,7 @@ class Migration(DataMigration):
             'lives_with_junkies': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'}),
             'living_condition': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '7'}),
             'modified': ('model_utils.fields.AutoLastModifiedField', [], {'default': 'datetime.datetime.now'}),
-            'nationality': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '4'}),
-            'risky_manners': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['clients.RiskyBehavior']", 'through': "orm['clients.RiskyManners']", 'symmetrical': 'False'})
+            'nationality': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '4'})
         },
         'clients.anonymous': {
             'Meta': {'unique_together': "(('sex', 'drug_user_type'),)", 'object_name': 'Anonymous', '_ormbases': ['clients.Person']},
@@ -96,6 +94,7 @@ class Migration(DataMigration):
             'primary_drug': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['clients.Drug']", 'null': 'True', 'blank': 'True'}),
             'primary_drug_usage': ('django.db.models.fields.PositiveSmallIntegerField', [], {'null': 'True', 'blank': 'True'}),
             'sex': ('django.db.models.fields.PositiveSmallIntegerField', [], {}),
+            'sex_partner': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'town': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['clients.Town']"})
         },
         'clients.clientnote': {
@@ -111,7 +110,7 @@ class Migration(DataMigration):
             'anamnesis': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['clients.Anamnesis']"}),
             'disease': ('django.db.models.fields.PositiveSmallIntegerField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'result': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '6'})
+            'result': ('django.db.models.fields.SmallIntegerField', [], {'default': '0'})
         },
         'clients.district': {
             'Meta': {'object_name': 'District'},
@@ -146,15 +145,14 @@ class Migration(DataMigration):
             'modified': ('model_utils.fields.AutoLastModifiedField', [], {'default': 'datetime.datetime.now'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '255', 'db_index': 'True'})
         },
-        'clients.practitioner': {
-            'Meta': {'object_name': 'Practitioner', '_ormbases': ['clients.Person']},
-            'first_name': ('django.db.models.fields.CharField', [], {'max_length': '63', 'null': 'True', 'blank': 'True'}),
-            'last_name': ('django.db.models.fields.CharField', [], {'max_length': '63'}),
-            'note': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'organization': ('django.db.models.fields.CharField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
-            'person_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['clients.Person']", 'unique': 'True', 'primary_key': 'True'}),
-            'sex': ('django.db.models.fields.PositiveSmallIntegerField', [], {}),
-            'town': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['clients.Town']"})
+        'clients.practitionercontact': {
+            'Meta': {'object_name': 'PractitionerContact'},
+            'date': ('django.db.models.fields.DateField', [], {}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'note': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
+            'person_or_institution': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'town': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'+'", 'to': "orm['clients.Town']"}),
+            'users': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.User']", 'symmetrical': 'False'})
         },
         'clients.region': {
             'Meta': {'object_name': 'Region'},
@@ -167,11 +165,10 @@ class Migration(DataMigration):
             'title': ('django.db.models.fields.CharField', [], {'max_length': '100', 'db_index': 'True'})
         },
         'clients.riskymanners': {
-            'Meta': {'unique_together': "(('behavior', 'anamnesis'),)", 'object_name': 'RiskyManners'},
+            'Meta': {'unique_together': "(('behavior_tmp', 'anamnesis'),)", 'object_name': 'RiskyManners'},
             'anamnesis': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['clients.Anamnesis']"}),
-            'behavior': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['clients.RiskyBehavior']"}),
+            'behavior_tmp': ('django.db.models.fields.PositiveIntegerField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'periodicity': ('django.db.models.fields.PositiveSmallIntegerField', [], {'null': 'True', 'blank': 'True'}),
             'periodicity_in_past': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True', 'blank': 'True'}),
             'periodicity_in_present': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True', 'blank': 'True'})
         },
@@ -191,4 +188,3 @@ class Migration(DataMigration):
     }
 
     complete_apps = ['clients']
-    symmetrical = True

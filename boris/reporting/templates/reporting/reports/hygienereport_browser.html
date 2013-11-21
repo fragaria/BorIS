@@ -181,13 +181,54 @@
 
                 <p class="section">D. Rizikové chování</p>
                 <p class="row">
-                    <strong>17. Injekční aplikace</strong> <span>{% if anamnesis.is_intravenous_user %}1. Ano{% else %}2. Ne{% endif %}</span>
+                    <strong>17. Injekční aplikace</strong>&nbsp;<span>
+                    {% if anamnesis.extra_intravenous_application == 'a' %}
+                        a) ano, ale ne v současnosti: 1.ano
+                    {% endif %}
+                    {% if anamnesis.extra_intravenous_application == 'b' %}
+                        b) ano, v současnosti: 1.ano
+                    {% endif %}
+                    {% if anamnesis.extra_intravenous_application == 'c' %}
+                        c) nikdy: 1.ano
+                    {% endif %}
+                    {% if anamnesis.extra_intravenous_application == 'd' %}
+                        d) neznámo: 1.ano
+                    {% endif %}
+                    </span>
                 </p>
                 <p class="row">
-                    <strong>18. Užívání společných stříkaček/jehel v posledním měsíci</strong>
+                    <strong>18. Užívání společných stříkaček/jehel v posledním měsíci</strong>&nbsp;<span>
+                    {% if anamnesis.extra_intravenous_application == 'b' %}
+                        {% if anamnesis.extra_syringe_sharing == 'yes' %}
+                            1. ano
+                        {% endif %}
+                        {% if anamnesis.extra_syringe_sharing == 'no' %}
+                            2. ne
+                        {% endif %}
+                        {% if anamnesis.extra_syringe_sharing == 'unknown' %}
+                            0. neznámo
+                        {% endif %}
+                    {% else %}
+                        ---
+                    {% endif %}
+                    </span>
                 </p>
                 <p class="row">
-                    <strong>19. Užívání kdykoliv v minulosti společné jehly</strong>
+                    <strong>19. Užívání kdykoliv v minulosti společné jehly</strong>&nbsp;<span>
+                    {% if anamnesis.extra_intravenous_application == 'a' %}
+                        {% if anamnesis.extra_syringe_sharing == 'yes' %}
+                            1. ano
+                        {% endif %}
+                        {% if anamnesis.extra_syringe_sharing == 'no' %}
+                            2. ne
+                        {% endif %}
+                        {% if anamnesis.extra_syringe_sharing == 'unknown' %}
+                            0. neznámo
+                        {% endif %}
+                    {% else %}
+                        ---
+                    {% endif %}
+                    </span>
                 </p>
                 <p class="row">
                     <strong>20. Věk prvního injekčního užití</strong> <span>{% if anamnesis.intravenous_first_try_age %}{{ anamnesis.intravenous_first_try_age }}{% else %}---{% endif %}</span>

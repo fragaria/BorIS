@@ -253,54 +253,5 @@
         "fields": {
             "title": "Suboxone"
         }
-    },
-    {
-        "pk": 1,
-        "model": "clients.riskybehavior",
-        "fields": {
-            "title": "sd\u00edlen\u00ed n\u00e1\u010din\u00ed"
-        }
-    },
-    {
-        "pk": 2,
-        "model": "clients.riskybehavior",
-        "fields": {
-            "title": "nechr\u00e1n\u011bn\u00fd sex"
-        }
-    },
-    {
-        "pk": 3,
-        "model": "clients.riskybehavior",
-        "fields": {
-            "title": "sd\u00edlen\u00ed jehel"
-        }
-    },
-    {
-        "pk": 4,
-        "model": "clients.riskybehavior",
-        "fields": {
-            "title": "nitro\u017eiln\u00ed aplikace"
-        }
-    },
-    {
-        "pk": 5,
-        "model": "clients.riskybehavior",
-        "fields": {
-            "title": "rizikov\u00e1 aplikace"
-        }
-    },
-    {
-        "pk": 6,
-        "model": "clients.riskybehavior",
-        "fields": {
-            "title": "p\u0159ed\u00e1vkov\u00e1n\u00ed"
-        }
-    },
-    {
-        "pk": 7,
-        "model": "clients.riskybehavior",
-        "fields": {
-            "title": "zdravotn\u00ed komplikace"
-        }
     }
 ]

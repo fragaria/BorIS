@@ -12,7 +12,7 @@ from django.utils.dateformat import format
 from django.utils.formats import get_format
 from django.utils.html import escape, escapejs
 
-from boris.clients.models import Client, Drug, Town, RiskyBehavior, Anamnesis, \
+from boris.clients.models import Client, Drug, Town, Anamnesis, \
      DrugUsage, RiskyManners, Region, District, DiseaseTest, Anonymous, \
     PractitionerContact, Person
 from boris.clients.forms import ReadOnlyWidget
@@ -305,7 +305,6 @@ class ClientAdmin(AddContactAdmin):
     anamnesis_link.short_description = _(u'Anamnéza')
 
 
-admin.site.register(RiskyBehavior, EnumAdmin)
 admin.site.register(Drug, EnumAdmin)
 admin.site.register(Region, EnumAdmin)
 admin.site.register(District, EnumAdmin)

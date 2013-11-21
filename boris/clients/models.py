@@ -14,7 +14,7 @@ from boris.classification import SEXES, NATIONALITIES, \
     ETHNIC_ORIGINS, LIVING_CONDITIONS, ACCOMODATION_TYPES, EMPLOYMENT_TYPES, \
     DRUG_APPLICATION_FREQUENCY, DRUG_APPLICATION_TYPES, \
     DISEASES, DISEASE_TEST_RESULTS, EDUCATION_LEVELS, ANONYMOUS_TYPES, \
-    RISKY_BEHAVIOR_PAST_PERIODICITY, RISKY_BEHAVIOR_CURRENT_PERIODICITY
+    RISKY_BEHAVIOR_KIND, RISKY_BEHAVIOR_PERIODICITY
 from django.contrib.contenttypes.models import ContentType
 
 
@@ -36,12 +36,6 @@ class Drug(IndexedStringEnum):
     class Meta:
         verbose_name = _(u'Droga')
         verbose_name_plural = _(u'Drogy')
-
-
-class RiskyBehavior(IndexedStringEnum):
-    class Meta:
-        verbose_name = _(u'Rizikové chování')
-        verbose_name_plural = _(u'Riziková chování')
 
 
 class Region(IndexedStringEnum):
@@ -243,8 +237,6 @@ class Anamnesis(TimeStampedModel, AdminLinkMixin):
 
     drugs = models.ManyToManyField(Drug, through='DrugUsage',
         verbose_name=_(u'Užívané drogy'))
-    risky_manners = models.ManyToManyField(RiskyBehavior, through='RiskyManners',
-        verbose_name=_(u'Riziková chování'))
 
     @property
     def birth_year(self):
@@ -353,13 +345,13 @@ class DrugUsage(models.Model):
 
 
 class RiskyManners(models.Model):
-    behavior = models.ForeignKey(RiskyBehavior, verbose_name=_(u'Chování'))
+    behavior = models.PositiveIntegerField(choices=RISKY_BEHAVIOR_KIND)
     anamnesis = models.ForeignKey(Anamnesis, verbose_name=_(u'Anamnéza'))
     periodicity_in_past = models.PositiveIntegerField(blank=True, null=True,
-        choices=RISKY_BEHAVIOR_PAST_PERIODICITY,
+        choices=RISKY_BEHAVIOR_PERIODICITY,
         verbose_name=_(u'Jak často v minulosti'))
     periodicity_in_present = models.PositiveIntegerField(blank=True, null=True,
-        choices=RISKY_BEHAVIOR_CURRENT_PERIODICITY,
+        choices=RISKY_BEHAVIOR_PERIODICITY,
         verbose_name=_(u'Jak často v přítomnosti'))
 
     def __unicode__(self):
