@@ -1,87 +1,65 @@
 {% extends "print_base.html" %}
 {% load i18n %}
 
-{% block content_title %}<h1>{% block title %}{% trans "Registr uživatelů drog - žadatelů o léčbu" %}, {{ datetime_from|date:"DATE_FORMAT" }} - {{ datetime_to|date:"DATE_FORMAT" }}{% endblock %}</h1>{% endblock %}
+{% block content_title %}<h1>{% block title %}{% trans "Registr uživatelů drog - žadatelů o léčbu" %}<strong>{{ datetime_from|date:"DATE_FORMAT" }} - {{ datetime_to|date:"DATE_FORMAT" }}</strong>{% endblock %}</h1>{% endblock %}
 
 
 {% block extrastyle %}
     {{ block.super }}
-    <style>
-        body { padding: 0 20px; }
-        table {
-            width: 100%;
+    <style type="text/css">
+        body {
+            padding: 20px;
+            font: 12px normal Arial, Helvetica, sans-serif;
         }
-        table td { padding: 5px 5px; }
-        table td.bold {
-            font-weight: bold;
-            width: 20%;
+        #content {
+            width: 100%
         }
-        .anamnesis {
-            margin-bottom: 200px;
-        }
-        .anamnesis-body {
-            padding: 0 20px;
-        }
-        .anamnesis .section {
-            margin: 0 0 5px;
-            padding: 5px 10px;
-            font-weight: bold;
-            text-transform: uppercase;
-            background: #eee;
-        }
-        .anamnesis .section:last-of-type + .anamnesis .row {
-            border-bottom: 10px #ddd solid;
-        }
-        .row strong {
-            display: inline-block;
-            margin-right: 30px;
-            min-width: 20em;
-        }
-        .row .block {
-            display: block;
-        }
-        .row .no-min-width {
-            min-width: inherit;
-        }
-        .row .large-margin {
-            margin-right: 150px;
-        }
-        .row .small-margin {
-            margin-right: 50px;
-        }
-        .row .no-margin {
-            margin-right: 0;
-        }
-        .row span {
+        h1 {
+            margin-top: 0;
+            font-size: 22px;
             font-weight: normal;
-            margin-right: 30px;
+            text-align: center;
         }
-        .row ul li {
-            margin-left: 20px;
+        h1 strong {
+            display: block;
+            font-size: 16px;
+            padding: 5px 0 10px;
         }
-
-        @media all {
-            .pagebreak { display: none; }
+        h2 {
+            font-size: 16px;
+            font-weight: normal;
+            padding: 18px 0 3px;
         }
-
+        .label {
+            display: inline-block;
+            margin-right: 12px
+        }
+        table td, table th { 
+            padding: 0 15px 5px 0;
+            border:none;
+        }
+        table th {
+            padding: 0 15px 0 0;
+            font-size: 8px;
+            text-transform: uppercase;
+        }
+        .header td{
+            padding: 10px 15px 5px 0
+        }
+        .bold {
+            font-weight: bold
+        }
+        .headerInfo {
+            display: inline-block;
+            margin-right: 140px
+        }
+        li {
+            padding: 3px 30px 3px 0
+        }
         @media print {
             body {
                 padding: 0;
             }
-
-            .anamnesis {
-                font-size: 10px;
-            }
-
-            .anamnesis .section {
-                padding: 25px 0 0;
-            }
-
-            .row {
-                padding: 0;
-            }
-            #content, #container { float: none; }
-            .pagebreak { display: block; page-break-after: always; }
         }
     </style>
 {% endblock %}
@@ -89,99 +67,138 @@
 {% block content %}
     {% for anamnesis in objects %}
         <div class="anamnesis">
-            <div class="anamnesis-body">
-                <p class="row">
-                    <strong class="no-min-width">1. Léčebné kontaktní centrum</strong>
-                    <strong class="no-min-width large-margin">Okres</strong>
-                    <strong class="no-min-width small-margin">Číslo</strong>
-                    <strong class="no-min-width small-margin">Kód</strong>
-                </p>
-                <p class="row">
-                    <strong class="no-min-width">2. Kód klienta</strong> <span>{{ anamnesis.client.hygiene_report_code }}</span>
-                    <strong class="no-min-width">Pohlaví</strong> <span>{% if anamnesis.client.sex == 'MALE' %}M{% else %}Ž{% endif %}</span>
-                    <strong>Okres bydliště</strong>
-                </p>
+            <table class="header">
+                <tr>
+                    <td>                        
+                        <strong class="label headerInfo">1. Léčebné kontaktní centrum</strong>                       
+                        <strong class="headerInfo">Okres</strong>
+                        <strong class="headerInfo">Číslo</strong>
+                        <strong>Kód</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong class="label">2. Kód klienta</strong>
+                        {{ anamnesis.client.hygiene_report_code }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <strong>Pohlaví</strong> {% if anamnesis.client.sex == 'MALE' %}M{% else %}Ž{% endif %}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <strong>Okres bydliště</strong>
+                    </td>
+                </tr>
+            </table>
 
-                <p class="section">A. Charakter kontaktu</p>
-                <p class="row">
-                    {# This value is added in view handling the report. #}
-                    <strong>3. Datum žádosti o léčení</strong> <span>{{ anamnesis.extra_first_encounter_date|date:"DATE_FORMAT" }}</span>
-                </p>
-                <p class="row">
-                    {# This value is added in view handling the report. #}
-                    <strong>4. Byl klient dříve léčen</strong> <span>{% if anamnesis.extra_been_cured_before %}2. Ano, v tomto L/K centru{% else %}1. Ne, nikde neléčen{% endif %}</span>
-                </p>
-                <p class="row">
-                    <strong>5. Klient přichází na doporučení</strong> <span>0. Neuvedeno</span>
-                </p>
+            {# This value is added in view handling the report. #}
+            <table>
+                <tr>
+                    <td colspan="2">
+                        <h2>A. Charakter kontaktu</h2>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong class="label">3. Datum žádosti o léčení</strong></td>
+                    <td><span>{{ anamnesis.extra_first_encounter_date|date:"DATE_FORMAT" }}</td>
+                </tr>
 
-                <p class="section">B. Socioekonomické údaje</p>
-                <p class="row">
-                    <strong>6. V současné době klient žije</strong> <span>{{ anamnesis.living_condition }}. {{ anamnesis.get_living_condition_display }}</span>
-                </p>
-                <p class="row">
-                    <strong>7. Charakter bydlení</strong> <span>{{ anamnesis.accomodation }}. {{ anamnesis.get_accomodation_display }}</span>
-                </p>
-                <p class="row">
-                    <strong>8. Klient žije s osobou užívající drogy</strong> <span>{% if anamnesis.lives_with_junkies %}1. Ano{% else %}2. Ne{% endif %}</span>
-                </p>
-                <p class="row">
-                    <strong>9. Národnost</strong> <span>0. Nesledováno</span>
-                </p>
-                <p class="row">
-                    <strong>10. Státní příslušnost</strong> <span>{{ anamnesis.nationality }}. {{ anamnesis.get_nationality_display }}</span>
-                </p>
-                <p class="row">
-                    <strong>11. Zaměstnání</strong> <span>{{ anamnesis.employment }}. {{ anamnesis.get_employment_display }}</span>
-                </p>
-                <p class="row">
-                    <strong>12. Nejvyšší dosažené vzdělání</strong> <span>{{ anamnesis.education }}. {{ anamnesis.get_education_display }}</span>
-                </p>
+            {# This value is added in view handling the report. #}
+                <tr>
 
-                <p class="section">C. Užívání drog</p>
-                {% with anamnesis.drug_info as drugs %}
-                <table>
-                    <tr>
-                        <th></th>
-                        <th>Druh</th>
-                        <th>Aplikace</th>
-                        <th>Četnost užívání za měsíc</th>
-                        <th>Věk prvního užití</th>
-                    </tr>
-                    <tr>
-                        <td class="bold">13. Základní droga</td>
-                        <td>{{ drugs.0 }}</td>
-                        <td>{{ drugs.0.application }}. {{ drugs.0.get_application_display }}</td>
-                        <td>{{ drugs.0.frequency }}. {{ drugs.0.get_frequency_display }}</td>
-                        <td>{{ drugs.0.first_try_age }}</td>
-                    </tr>
-                    {% if anamnesis.drugs.count > 1 %}
-                    <tr>
-                        <td class="bold">14. Jiná droga 1</td>
-                        <td>{{ drugs.1 }}</td>
-                        <td>{{ drugs.1.application }}. {{ drugs.1.get_application_display }}</td>
-                        <td>{{ drugs.1.frequency }}. {{ drugs.1.get_frequency_display }}</td>
-                        <td>{{ drugs.1.first_try_age }}</td>
-                    </tr>
-                    {% endif %}
-                    {% if anamnesis.drugs.count > 2 %}
-                    <tr>
-                        <td class="bold">15. Jiná droga 2</td>
-                        <td>{{ drugs.2 }}</td>
-                        <td>{{ drugs.2.application }}. {{ drugs.2.get_application_display }}</td>
-                        <td>{{ drugs.2.frequency }}. {{ drugs.2.get_frequency_display }}</td>
-                        <td>{{ drugs.2.first_try_age }}</td>
-                    </tr>
-                    {% endif %}
-                </table>
-                {% endwith %}
-                <p class="row">
-                    <strong>16. Věk prvního užití jakékoliv drogy</strong> <span>{{ anamnesis.overall_first_try_age }}</span>
-                </p>
+                    <td><strong class="label">4. Byl klient dříve léčen</strong></td>
+                    <td>{% if anamnesis.extra_been_cured_before %}2. Ano, v tomto L/K centru{% else %}1. Ne, nikde neléčen{% endif %}</td>
+                </tr>
+                <tr>
 
-                <p class="section">D. Rizikové chování</p>
-                <p class="row">
-                    <strong>17. Injekční aplikace</strong>&nbsp;<span>
+                    <td><strong class="label">5. Klient přichází na doporučení</strong></td>
+                    <td>0. Neuvedeno</td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                    <h2>B. Socioekonomické údaje</h2>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong class="label">6. V současné době klient žije</strong></td>
+                    <td>{{ anamnesis.living_condition }}. {{ anamnesis.get_living_condition_display }}</td>
+                </tr>
+                <tr>            
+                    <td><strong class="label">7. Charakter bydlení</strong></td>
+                    <td>{{ anamnesis.accomodation }}. {{ anamnesis.get_accomodation_display }}</td>
+                </tr>
+                <tr>            
+                    <td><strong class="label">8. Klient žije s osobou užívající drogy</strong></td>
+                    <td>{% if anamnesis.lives_with_junkies %}1. Ano{% else %}2. Ne{% endif %}</td>
+                </tr>
+                <tr>            
+                    <td><strong class="label">9. Národnost</strong></td>
+                    <td>0. Nesledováno</td>
+                </tr>
+                <tr>
+                    <td><strong class="label">10. Státní příslušnost</strong></td>
+                    <td>{{ anamnesis.nationality }}. {{ anamnesis.get_nationality_display }}</td>
+                </tr>
+                <tr>            
+                    <td><strong class="label">11. Zaměstnání</strong></td>
+                    <td>{{ anamnesis.employment }}. {{ anamnesis.get_employment_display }}</td>
+                </tr>
+                <tr>                
+                    <td><strong class="label">12. Nejvyšší dosažené vzdělání</strong></td>
+                    <td>{{ anamnesis.education }}. {{ anamnesis.get_education_display }}</td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td colspan="2">
+                        <h2>C. Užívání drog</h2>
+                        {% with anamnesis.drug_info as drugs %}
+                        <table>
+                            <tr>
+                                <th></th>
+                                <th>Druh</th>
+                                <th>Aplikace</th>
+                                <th>Četnost užívání za měsíc</th>
+                                <th>Věk prvního užití</th>
+                            </tr>
+                            <tr>
+                                <td class="bold">13. Základní droga</td>
+                                <td>{{ drugs.0 }}</td>
+                                <td>{{ drugs.0.application }}. {{ drugs.0.get_application_display }}</td>
+                                <td>{{ drugs.0.frequency }}. {{ drugs.0.get_frequency_display }}</td>
+                                <td>{{ drugs.0.first_try_age }}</td>
+                            </tr>
+                            {% if anamnesis.drugs.count > 1 %}
+                            <tr>
+                                <td class="bold">14. Jiná droga 1</td>
+                                <td>{{ drugs.1 }}</td>
+                                <td>{{ drugs.1.application }}. {{ drugs.1.get_application_display }}</td>
+                                <td>{{ drugs.1.frequency }}. {{ drugs.1.get_frequency_display }}</td>
+                                <td>{{ drugs.1.first_try_age }}</td>
+                            </tr>
+                            {% endif %}
+                            {% if anamnesis.drugs.count > 2 %}
+                            <tr>
+                                <td class="bold">15. Jiná droga 2</td>
+                                <td>{{ drugs.2 }}</td>
+                                <td>{{ drugs.2.application }}. {{ drugs.2.get_application_display }}</td>
+                                <td>{{ drugs.2.frequency }}. {{ drugs.2.get_frequency_display }}</td>
+                                <td>{{ drugs.2.first_try_age }}</td>
+                            </tr>
+                            {% endif %}
+                        </table>
+                        {% endwith %}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2"><strong class="label">16. Věk prvního užití jakékoliv drogy</strong>
+                    {{ anamnesis.overall_first_try_age }}</td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td colspan="2">
+                        <h2>D. Rizikové chování</h2>
+                    </td>
+                </tr>
+                <tr>                    
+                    <td><strong class="label">17. Injekční aplikace</strong></td>
+                    <td>
                     {% if anamnesis.extra_intravenous_application == 'a' %}
                         a) ano, ale ne v současnosti: 1.ano
                     {% endif %}
@@ -194,10 +211,11 @@
                     {% if anamnesis.extra_intravenous_application == 'd' %}
                         d) neznámo: 1.ano
                     {% endif %}
-                    </span>
-                </p>
-                <p class="row">
-                    <strong>18. Užívání společných stříkaček/jehel v posledním měsíci</strong>&nbsp;<span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong class="label">18. Užívání společných stříkaček/jehel v posledním měsíci</strong></td>
+                    <td>
                     {% if anamnesis.extra_intravenous_application == 'b' %}
                         {% if anamnesis.extra_syringe_sharing == 'yes' %}
                             1. ano
@@ -211,10 +229,11 @@
                     {% else %}
                         ---
                     {% endif %}
-                    </span>
-                </p>
-                <p class="row">
-                    <strong>19. Užívání kdykoliv v minulosti společné jehly</strong>&nbsp;<span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong class="label">19. Užívání kdykoliv v minulosti společné jehly</strong></td>
+                    <td>
                     {% if anamnesis.extra_intravenous_application == 'a' %}
                         {% if anamnesis.extra_syringe_sharing == 'yes' %}
                             1. ano
@@ -228,40 +247,66 @@
                     {% else %}
                         ---
                     {% endif %}
-                    </span>
-                </p>
-                <p class="row">
-                    <strong>20. Věk prvního injekčního užití</strong> <span>{% if anamnesis.intravenous_first_try_age %}{{ anamnesis.intravenous_first_try_age }}{% else %}---{% endif %}</span>
-                </p>
-                <p class="row">
-                    {% with anamnesis.disease_test_results as tests %}
-                        <strong class="block">21. Vyšetření HIV a virové hepatitidy</strong>
-                        <strong class="no-margin clear-row">HIV</strong> <span>{% if tests.HIV %}{{ tests.HIV.result }}. {{ tests.HIV.get_result_display }}{% else %}0. neznámo, zda testován{% endif %}</span><br/>
-                        <strong class="no-margin clear-row">VHA</strong> <span>{% if tests.VHA %}{{ tests.VHA.result }}. {{ tests.VHA.get_result_display }}{% else %}0. neznámo, zda testován{% endif %}</span><br/>
-                        <strong class="no-margin clear-row">VHB</strong> <span>{% if tests.VHB %}{{ tests.VHB.result }}. {{ tests.VHB.get_result_display }}{% else %}0. neznámo, zda testován{% endif %}</span><br/>
-                        <strong class="no-margin clear-row">VHC</strong> <span>{% if tests.VHC %}{{ tests.VHC.result }}. {{ tests.VHC.get_result_display }}{% else %}0. neznámo, zda testován{% endif %}</span><br/>
-                    {% endwith %}
-                </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong class="label">20. Věk prvního injekčního užití</strong></td>
+                    <td>{% if anamnesis.intravenous_first_try_age %}{{ anamnesis.intravenous_first_try_age }}{% else %}---{% endif %}</td>
+                </tr>
+                {% with anamnesis.disease_test_results as tests %}
+            </table>
+            <table>                    
+                <tr>
+                    <td colspan="2">
+                        <strong class="label">21. Vyšetření HIV a virové hepatitidy</strong>
+                    </td>
+                </tr>
+                <tr>                    
+                    <td>
+                        <table>
+                            <tr>
+                                <td><strong class="no-margin clear-row">HIV</strong></td>
+                                <td>{% if tests.HIV %}{{ tests.HIV.result }}. {{ tests.HIV.get_result_display }}{% else %}0. neznámo, zda testován{% endif %}</td>  
+                                <td><strong class="no-margin clear-row">VHA</strong></td>
+                                <td>{% if tests.VHA %}{{ tests.VHA.result }}. {{ tests.VHA.get_result_display }}{% else %}0. neznámo, zda testován{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td><strong class="no-margin clear-row">VHB</strong></td>
+                                <td>{% if tests.VHB %}{{ tests.VHB.result }}. {{ tests.VHB.get_result_display }}{% else %}0. neznámo, zda testován{% endif %}</td>
+                                <td><strong class="no-margin clear-row">VHC</strong></td>
+                                <td>{% if tests.VHC %}{{ tests.VHC.result }}. {{ tests.VHC.get_result_display }}{% else %}0. neznámo, zda testován{% endif %}</td>
+                            </tr>
+                        </table>
+            {% endwith %}
+                    </td>
+                </tr>
 
-                <p class="section">E. Průběžný závěr (zakroužkujte)</p>
-                <div class="row">
-                    <strong>22.</strong>
-
-                    <ul>
-                        <li>1. detoxifikace/krátkodobá redukce</li>
-                        <li>2. dlouhodobá léková substituce</li>
-                        <li>3. dluhodobá psychosoc. léčba (bez léků)</li>
-                        <li>4. poradenství, sociální služby</li>
-                        <li>5. odeslání do jiného L/K centra</li>
-                        <li>6. léčení nezahájeno</li>
-                        <li>7. klient utekl</li>
-                        <li>8. jiná možnost: _____________________</li>
-                        <li>9. nízkoprahové služby</li>
-                        <li>0. neuzavřeno/neznámo</li>
-                    </ul>
-                </div>
-            </div>
+                <tr>
+                    <td colspan="2">
+                        <h2>E. Průběžný závěr (zakroužkujte)</h2>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <ul>
+                            <li>1. detoxifikace/krátkodobá redukce</li>
+                            <li>2. dlouhodobá léková substituce</li>
+                            <li>3. dluhodobá psychosoc. léčba (bez léků)</li>
+                            <li>4. poradenství, sociální služby</li>
+                            <li>5. odeslání do jiného L/K centra</li>                            
+                        </ul>
+                    </td>
+                    <td>
+                        <ul>
+                            <li>6. léčení nezahájeno</li>
+                            <li>7. klient utekl</li>
+                            <li>8. jiná možnost: _____________________</li>
+                            <li>9. nízkoprahové služby</li>
+                            <li>0. neuzavřeno/neznámo</li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
         </div>
-        <div class="pagebreak"></div>
     {% endfor %}
 {% endblock %}
