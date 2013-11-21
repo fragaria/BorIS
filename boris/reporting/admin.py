@@ -25,6 +25,7 @@ class ReportingInterfaceTab(object):
     report = None
     form = None
     form_prefix = None
+    template = None
 
     @classmethod
     def get_urlname(cls):
@@ -40,8 +41,11 @@ class ReportingInterfaceTab(object):
         return reverse(self.get_urlname())
 
 
-def interfacetab_factory(report_cls, form_cls, form_prefix):
-    attrs = {'report': report_cls, 'form': form_cls, 'form_prefix': form_prefix}
+def interfacetab_factory(report_cls, form_cls, form_prefix, template='reporting/tab.html'):
+    attrs = {'report': report_cls,
+             'form': form_cls,
+             'form_prefix': form_prefix,
+             'template': template}
 
     cls = type(report_cls.__name__ + 'Tab',
                (ReportingInterfaceTab,),

@@ -8,7 +8,9 @@ from django.conf import settings
 
 from boris.services.models.core import service_list
 
+
 register = template.Library()
+
 
 @register.inclusion_tag('services/interface.html')
 def render_service_interface(encounter):
@@ -18,6 +20,7 @@ def render_service_interface(encounter):
         'services_done': encounter.services.all(),
         'service_list': service_list(encounter.person)
     }
+
 
 @register.inclusion_tag('services/inc/option.html')
 def render_service_option(service, encounter):

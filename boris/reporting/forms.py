@@ -46,6 +46,9 @@ class ServiceForm(ReportForm):
 class HygieneForm(ReportForm):
     date_from = forms.DateField(label=_(u'Od'), required=False, widget=AdminDateWidget())
     date_to = forms.DateField(label=_(u'Do'), required=False, widget=AdminDateWidget())
+    kind = forms.ChoiceField(((1, u'Prevalence'), (2, u'Incidence')),
+                             label=_(u'Druh výstupu'), widget=forms.RadioSelect,
+                             initial=1)
     towns = forms.ModelMultipleChoiceField(label=_(u'Město'),
                                            queryset=Town.objects.all(),
                                            required=True)

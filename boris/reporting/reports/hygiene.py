@@ -17,10 +17,11 @@ class HygieneReport(BaseReport):
     description = u'Souhrnný tiskový výstup pro hygienu.'
     contenttype_office = 'application/vnd.ms-word; charset=utf-8'
 
-    def __init__(self, date_from, date_to, towns):
+    def __init__(self, date_from, date_to, towns, kind):
         self.datetime_from = datetime.combine(date_from, time(0))
         self.datetime_to = datetime.combine(date_to, time(23, 59, 59))
         self.towns = towns
+        self.kind = 'prevalence' if int(kind) == 1 else 'incidence'
 
     def get_filename(self):
         return ('vystup_pro_hygienu_%s_%s.doc' % (self.datetime_from, self.datetime_to)).replace('-', '_').replace(' ', '_')
@@ -55,13 +56,23 @@ class HygieneReport(BaseReport):
             encounter_data[e.person_id]['objects'].append(e)
 
         # Finally, select these clients if they have anamnesis filled up.
-        anamnesiss = Anamnesis.objects.filter(client__pk__in=[pk for pk in encounter_data.keys()]).select_related()
+        _a = Anamnesis.objects.filter(client__pk__in=[pk for pk in encounter_data.keys()]).select_related()
+        _all = []
 
         # Annotate extra information needed in report.
-        for a in anamnesiss:
+        for a in _a:
+            # Date of first encounter with client.
             a.extra_first_encounter_date = encounter_data[a.client_id]['first_encounter_date']
+            # If has been cured before.
             a.extra_been_cured_before = Service.objects.filter(encounter__in=encounter_data[a.client_id]['objects'],
                                                                content_type=ContentType.objects.get_for_model(IncomeExamination)).exists()
+
+            # When showing 'incidency', only those, who have not been cured before
+            # should be returned.
+            if self.kind == 'incidence' and a.extra_been_cured_before is True:
+                continue
+
+            # Information about risky behaviour and it's periodicity.
             try:
                 ivrm = a.riskymanners_set.get(behavior=classification.RISKY_BEHAVIOR_KIND.INTRAVENOUS_APPLICATION)
 
@@ -76,7 +87,7 @@ class HygieneReport(BaseReport):
             except RiskyManners.DoesNotExist:
                 a.extra_intravenous_application = 'd'
 
-
+            # Information about syringe sharing activity.
             if a.extra_intravenous_application in ('a', 'b'):
                 try:
                     ssrm = a.riskymanners_set.get(behavior=classification.RISKY_BEHAVIOR_KIND.SYRINGE_SHARING)
@@ -96,7 +107,9 @@ class HygieneReport(BaseReport):
                 except RiskyManners.DoesNotExist:
                     a.extra_syringe_sharing = 'unknown'
 
-        return anamnesiss
+            _all.append(a)
+
+        return _all
 
 
     def render(self, request, display_type):

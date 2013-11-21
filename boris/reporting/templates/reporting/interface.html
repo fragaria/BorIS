@@ -1,5 +1,5 @@
 {% extends "admin/base_site.html" %}
-{% load i18n admin_modify adminmedia grp_tags %}
+{% load i18n admin_modify adminmedia grp_tags reporting_tags %}
 
 {% block title %}{% trans "Výstupy" %}{{ block.super }}{% endblock %}
 
@@ -47,19 +47,7 @@
         <div class="form-container">
             {% for tab, form in tabs %}
             <div id="tabs-{{ forloop.counter }}">
-                <form method="POST" action="{{ tab.get_absolute_url }}" target="_blank">
-                    <fieldset class="module">
-                        <div class="row cells cells-1"><div class="cell">
-                            {% autoescape off %}
-                            {{ tab.get_description }}
-                            {% endautoescape %}
-                        </div></div>
-                        {% include "form_snippet.html" %}
-                        <div class="row cells cells-2 submit-right"><div class="cell">
-                            <a onclick="django.jQuery(this).closest('form').submit();" class="cbutton">Zobrazit výstup</a>
-                        </div></div>
-                    </fieldset>
-                </form>
+                {% render_tab_form tab form %}
             </div>
             {% endfor %}
         </div>
