@@ -121,11 +121,6 @@
           "region"
         ],
         [
-          "change_riskybehavior",
-          "clients",
-          "riskybehavior"
-        ],
-        [
           "change_riskymanners",
           "clients",
           "riskymanners"
@@ -149,21 +144,6 @@
           "delete_asistservice",
           "services",
           "asistservice"
-        ],
-        [
-          "add_crisisintervention",
-          "services",
-          "crisisintervention"
-        ],
-        [
-          "change_crisisintervention",
-          "services",
-          "crisisintervention"
-        ],
-        [
-          "delete_crisisintervention",
-          "services",
-          "crisisintervention"
         ],
         [
           "add_diseasetest",
@@ -228,17 +208,17 @@
         [
           "add_phoneusage",
           "services",
-          "phoneusage"
+          "service"
         ],
         [
           "change_phoneusage",
           "services",
-          "phoneusage"
+          "service"
         ],
         [
           "delete_phoneusage",
           "services",
-          "phoneusage"
+          "service"
         ],
         [
           "add_address",
@@ -272,11 +252,6 @@
         ],
         [
           "add_service",
-          "services",
-          "service"
-        ],
-        [
-          "add_utilitywork",
           "services",
           "service"
         ],
@@ -316,11 +291,6 @@
           "service"
         ],
         [
-          "change_utilitywork",
-          "services",
-          "service"
-        ],
-        [
           "delete_address",
           "services",
           "service"
@@ -352,11 +322,6 @@
         ],
         [
           "delete_service",
-          "services",
-          "service"
-        ],
-        [
-          "delete_utilitywork",
           "services",
           "service"
         ],

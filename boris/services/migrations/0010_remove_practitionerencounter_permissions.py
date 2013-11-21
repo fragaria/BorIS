@@ -13,7 +13,7 @@ class Migration(DataMigration):
         orm['auth.permission'].objects.filter(codename='change_practitionerencounter').delete()
         orm['auth.permission'].objects.filter(codename='add_practitionerencounter').delete()
         orm['auth.permission'].objects.filter(codename='delete_practitionerencounter').delete()
-        orm['contenttypes.contenttype'].objects.get(app_label='services', model='practitionerencounter').delete
+        orm['contenttypes.contenttype'].objects.get(app_label='services', model='practitionerencounter').delete()
 
         # Note: PractitionerEncounter records have been deleted in the clients 0007 migration.
         # Note 2: There is no need to remove the PractitionerEncounter table, as it was a proxy model.
