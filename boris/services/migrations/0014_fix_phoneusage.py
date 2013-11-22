@@ -11,8 +11,9 @@ class Migration(DataMigration):
         # Note: Don't use "from appname.models import ModelName". 
         # Use orm.ModelName to refer to models in this application,
         # and orm['appname.ModelName'] for models in other applications.
-        from django.core.management import call_command
-        call_command("loaddata", "my_fixture.json")
+        ct = orm['contenttypes.ContentType'].objects.get(app_label='services', model='service')
+        orm['auth.Permission'].objects.filter(codename__in=('add_phoneusage', 'change_phoneusage', 'delete_phoneusage')).update(content_type=ct)
+        orm['contenttypes.ContentType'].objects.filter(app_label='services', model='phoneusage').delete()
 
     def backwards(self, orm):
         "Write your backwards methods here."
