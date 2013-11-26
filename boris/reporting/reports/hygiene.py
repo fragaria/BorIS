@@ -63,9 +63,10 @@ class HygieneReport(BaseReport):
         for a in _a:
             # Date of first encounter with client.
             a.extra_first_encounter_date = encounter_data[a.client_id]['first_encounter_date']
-            # If has been cured before.
-            a.extra_been_cured_before = Service.objects.filter(encounter__in=encounter_data[a.client_id]['objects'],
-                                                               content_type=ContentType.objects.get_for_model(IncomeExamination)).exists()
+            # If has been cured before - True if there is not IncomeExamination
+            # within selected encounters.
+            a.extra_been_cured_before = not Service.objects.filter(encounter__in=encounter_data[a.client_id]['objects'],
+                                                                   content_type=IncomeExamination.real_content_type()).exists()
 
             # When showing 'incidency', only those, who have not been cured before
             # should be returned.

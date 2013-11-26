@@ -26,6 +26,7 @@ class BaseReportForm(ReportForm):
     towns = forms.ModelMultipleChoiceField(label=_(u'Město'),
                                   queryset=Town.objects.all(), required=False)
 
+
 class MonthlyStatsForm(ReportForm):
     year = forms.IntegerField(widget=SelectYearWidget(history=10), label=_(u'Rok'))
 

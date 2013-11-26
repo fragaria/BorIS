@@ -226,13 +226,17 @@ class Service(TimeStampedModel):
     def _prepare_title(self):
         return self.service.title
 
+    @classmethod
+    def real_content_type(cls):
+        # @attention: instead of using get_for_model which doesn't respect
+        # proxy models content types, use get_by_natural key as a workaround
+        return ContentType.objects.get_by_natural_key(cls._meta.app_label,
+                                                      cls._meta.object_name.lower())
+
     def clean(self):
         super(Service, self).clean()
         self.title = force_unicode(self._prepare_title())
-        # @attention: instead of using get_for_model which doesn't respect
-        # proxy models content types, use get_by_natural key as a workaround
-        self.content_type = ContentType.objects.get_by_natural_key(
-            self._meta.app_label, self._meta.object_name.lower())
+        self.content_type = self.real_content_type()
 
     def cast(self):
         """
