@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from datetime import date
-
 from django import forms
 from django.contrib.admin.widgets import AdminDateWidget, ForeignKeyRawIdWidget
 from django.utils.translation import ugettext_lazy as _
@@ -14,7 +12,7 @@ OUTPUT_BROWSER = 'browser'
 OUTPUT_OFFICE = 'office'
 OUTPUT_TYPES = (
     (OUTPUT_BROWSER, u'V prohlížeči'),
-    (OUTPUT_OFFICE, 'Do souboru'),
+    (OUTPUT_OFFICE, u'Do souboru'),
 )
 
 
@@ -44,6 +42,8 @@ class ServiceForm(ReportForm):
 
 
 class HygieneForm(ReportForm):
+    display = forms.ChoiceField(label=_(u'Zobrazit'), choices=OUTPUT_TYPES,
+                                initial=OUTPUT_BROWSER, widget=forms.HiddenInput)
     date_from = forms.DateField(label=_(u'Od'), required=True, widget=AdminDateWidget())
     date_to = forms.DateField(label=_(u'Do'), required=True, widget=AdminDateWidget())
     kind = forms.ChoiceField(((1, u'Prevalence'), (2, u'Incidence')),
