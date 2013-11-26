@@ -28,7 +28,7 @@ class ReportResponse(HttpResponse):
         report = report_class(*args, **kwargs)
         content = report.render(request, display_type)
         super(ReportResponse, self).__init__(content=content,
-            content_type=report.contenttype(display_type))
+                                             content_type=report.contenttype(display_type))
         if report.response_headers(display_type):
             for key, val in report.response_headers(display_type).items():
                 self[key] = val
@@ -38,17 +38,24 @@ class BaseReport(object):
     title = None
     description = None
     contenttype_office = 'application/vnd.ms-excel; charset=utf-8'
+    browser_only = False
 
     def get_filename(self):
         return 'report.xls'
 
     def contenttype(self, display_type):
+        if self.browser_only:
+            return 'text/html'
+
         return {
             OUTPUT_BROWSER: 'text/html',
             OUTPUT_OFFICE: self.contenttype_office,
         }[display_type]
 
     def response_headers(self, display_type):
+        if self.browser_only:
+            return {}
+
         return {
             OUTPUT_BROWSER: {},
             OUTPUT_OFFICE: {
@@ -57,6 +64,9 @@ class BaseReport(object):
         }[display_type]
 
     def get_template(self, display_type):
+        if self.browser_only:
+            return ('reporting/reports/%s_browser.html' % (self.__class__.__name__.lower()))
+
         return (
             'reporting/reports/%s_%s.html' % (self.__class__.__name__.lower(),
                 display_type), # display_type can be "browser" or "office"

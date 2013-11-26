@@ -86,8 +86,11 @@ class ReportingInterfaceHandler(object):
                 if form.is_valid():
                     cleaned_data = form.cleaned_data
                     display_type = cleaned_data.pop('display')
-                    return ReportResponse(tab.report, request, display_type,
-                        **cleaned_data)
+
+                    return ReportResponse(tab.report,
+                                          request,
+                                          display_type,
+                                          **cleaned_data)
             else:
                 form = tab.form(prefix=tab.form_prefix)
             tabs[tab] = form

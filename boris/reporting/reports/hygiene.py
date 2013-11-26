@@ -6,7 +6,7 @@ from django.template import loader
 from django.template.context import RequestContext
 from django.db import models
 
-from boris.clients.models import Anamnesis, RiskyManners
+from boris.clients.models import Anamnesis, RiskyManners, Town
 from boris.reporting.core import BaseReport
 from boris.services.models import Encounter, IncomeExamination, Service
 from boris import classification
@@ -15,12 +15,12 @@ from boris import classification
 class HygieneReport(BaseReport):
     title = u'Výstup pro hygienu'
     description = u'Souhrnný tiskový výstup pro hygienu.'
-    contenttype_office = 'application/vnd.ms-word; charset=utf-8'
+    browser_only = True
 
     def __init__(self, date_from, date_to, towns, kind):
         self.datetime_from = datetime.combine(date_from, time(0))
         self.datetime_to = datetime.combine(date_to, time(23, 59, 59))
-        self.towns = towns
+        self.towns = towns or Town.objects.all()
         self.kind = 'prevalence' if int(kind) == 1 else 'incidence'
 
     def get_filename(self):
@@ -110,7 +110,6 @@ class HygieneReport(BaseReport):
             _all.append(a)
 
         return _all
-
 
     def render(self, request, display_type):
         return loader.render_to_string(
