@@ -1,7 +1,7 @@
 {% extends "print_base.html" %}
 {% load i18n %}
 
-{% block content_title %}<h1>{% block title %}{% trans "Registr uživatelů drog - žadatelů o léčbu" %}<strong>{{ datetime_from|date:"DATE_FORMAT" }} - {{ datetime_to|date:"DATE_FORMAT" }}</strong>{% endblock %}</h1>{% endblock %}
+{% block content_title %}{% endblock %}
 
 
 {% block extrastyle %}
@@ -52,21 +52,33 @@
         }
         .headerInfo {
             display: inline-block;
-            margin-right: 140px
+            margin-right: 130px
         }
         li {
             padding: 3px 30px 3px 0
+        }
+        @media all {
+            .pagebreak	{ display: none; }
         }
         @media print {
             body {
                 padding: 0;
             }
+
+            .page {
+                page-break-after: always;
+                page-break-inside: avoid;
+            }
         }
     </style>
 {% endblock %}
 
+{% block title %}{% trans "Registr uživatelů drog - žadatelů o léčbu" %}{% endblock %}
+
 {% block content %}
     {% for anamnesis in objects %}
+        <div class="page">
+        <h1>{% trans "Registr uživatelů drog - žadatelů o léčbu" %}<strong>{{ datetime_from|date:"DATE_FORMAT" }} - {{ datetime_to|date:"DATE_FORMAT" }}</strong></h1>
         <div class="anamnesis">
             <table class="header">
                 <tr>
@@ -308,6 +320,7 @@
                     </td>
                 </tr>
             </table>
+        </div>
         </div>
     {% endfor %}
 {% endblock %}
