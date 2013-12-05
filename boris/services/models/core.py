@@ -39,10 +39,19 @@ class ProxyInheritanceManager(InheritanceManager):
 
 
 class EncounterManager(models.Manager):
-    def first(self):
-        f_ects = self.values('person').annotate(min_date=models.Min('performed_on'))
+    def first(self, year, towns=None):
+        """Return the first encounters in the given year (and towns)."""
+        date_start = date(year=year, month=1, day=1)
+        date_stop = date(year=year, month=12, day=31)
+        criteria = {'performed_on__gte': date_start, 'performed_on__lte': date_stop}
+        if towns is not None:
+            criteria.update({'where__in': towns})
+        f_ects = self.filter(**criteria).values('person').annotate(min_date=models.Min('performed_on'))
         filters = reduce(operator.or_, [models.Q(person=e['person'], performed_on=e['min_date']) for e in f_ects])
-        return self.filter(filters)
+        if towns is not None:
+            return self.filter(filters).filter(where__in=towns)
+        else:
+            return self.filter(filters)
 
 
 class Encounter(models.Model, AdminLinkMixin):

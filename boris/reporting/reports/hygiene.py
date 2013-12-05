@@ -32,20 +32,27 @@ class HygieneReport(BaseReport):
 
         Filters clients using following rules::
             * Client must have Anamnesis filled up
-            * First recorded encounter with the client must be witin quarter
-              limited by date range.
+            * First recorded encounter with the client in the given year (and possibly towns)
+              must be witin quarter limited by date range.
         """
         # tmp store periodicity
         p = classification.RISKY_BEHAVIOR_PERIODICITY
 
-        # Get QuerySet of first encounters for all clients.
-        encounters = Encounter.objects.first()
+        # Get QuerySet of first encounters in the given year/town for all clients.
+        encounters = Encounter.objects.first(year=self.datetime_from.year, towns=self.towns)
 
-        # Filter encounters so that only current quarter is present.
+        # Filter encounters so that only the specified date range is present.
         encounters = encounters.filter(performed_on__gte=self.datetime_from,
-                                       performed_on__lt=self.datetime_to,
-                                       where__in=self.towns)\
-                               .annotate(first_encounter_date=models.Min('performed_on'))
+                                       performed_on__lt=self.datetime_to)
+
+        # Get all clients whose first encounters fall into the specified range.
+        clients = encounters.values('person')
+
+        # Now get all the encounters for these clients that fulfill the specified criteria.
+        encounters = Encounter.objects.filter(performed_on__gte=self.datetime_from,
+                                              performed_on__lt=self.datetime_to,
+                                              where__in=self.towns,
+                                              person__in=clients)
 
         # Get client PKs from filtered encounters.
         encounter_data = {}
@@ -56,7 +63,7 @@ class HygieneReport(BaseReport):
             encounter_data[e.person_id]['objects'].append(e)
 
         # Finally, select these clients if they have anamnesis filled up.
-        _a = Anamnesis.objects.filter(client__pk__in=[pk for pk in encounter_data.keys()]).select_related()
+        _a = Anamnesis.objects.filter(client__pk__in=encounter_data.keys()).select_related()
         _all = []
 
         # Annotate extra information needed in report.
@@ -67,7 +74,6 @@ class HygieneReport(BaseReport):
             # within selected encounters.
             a.extra_been_cured_before = not Service.objects.filter(encounter__in=encounter_data[a.client_id]['objects'],
                                                                    content_type=IncomeExamination.real_content_type()).exists()
-
             # When showing 'incidency', only those, who have not been cured before
             # should be returned.
             if self.kind == 'incidence' and a.extra_been_cured_before is True:
