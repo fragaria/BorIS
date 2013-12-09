@@ -18,4 +18,4 @@ def load_static_data(app, **kwargs):
         call_command('loaddata', 'groups.json')
 
 
-post_migrate.connect(load_static_data)
+#post_migrate.connect(load_static_data)
