@@ -93,7 +93,7 @@
                     <td>
                         <strong class="label">2. Kód klienta</strong>
                         {{ anamnesis.client.hygiene_report_code }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <strong>Pohlaví</strong> {% if anamnesis.client.sex == 'MALE' %}M{% else %}Ž{% endif %}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <strong>Pohlaví</strong> {% if anamnesis.client.sex == SEXES.MALE %}M{% else %}Ž{% endif %}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         <strong>Okres bydliště</strong>
                     </td>
                 </tr>

@@ -6,6 +6,7 @@ from django.template import loader
 from django.template.context import RequestContext
 from django.db import models
 
+from boris.classification import SEXES
 from boris.clients.models import Anamnesis, RiskyManners, Town
 from boris.reporting.core import BaseReport
 from boris.services.models import Encounter, IncomeExamination, Service
@@ -124,7 +125,8 @@ class HygieneReport(BaseReport):
             {
                 'objects': self.get_anamnesis_list(),
                 'datetime_from': self.datetime_from,
-                'datetime_to': self.datetime_to
+                'datetime_to': self.datetime_to,
+                'SEXES': SEXES,
             },
             context_instance=RequestContext(request)
         )
