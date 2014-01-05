@@ -1,29 +1,31 @@
-# encoding: utf-8
-import datetime
+# -*- coding: utf-8 -*-
+from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
         # Adding model 'Encounter'
         db.create_table('services_encounter', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('person', self.gf('django.db.models.fields.related.ForeignKey')(related_name='encounters', to=orm['clients.Person'])),
             ('performed_on', self.gf('django.db.models.fields.DateField')(default=datetime.date.today)),
             ('where', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['clients.Town'])),
+            ('is_by_phone', self.gf('django.db.models.fields.BooleanField')(default=False)),
         ))
         db.send_create_signal('services', ['Encounter'])
 
         # Adding M2M table for field performed_by on 'Encounter'
-        db.create_table('services_encounter_performed_by', (
+        m2m_table_name = db.shorten_name('services_encounter_performed_by')
+        db.create_table(m2m_table_name, (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
             ('encounter', models.ForeignKey(orm['services.encounter'], null=False)),
             ('user', models.ForeignKey(orm['auth.user'], null=False))
         ))
-        db.create_unique('services_encounter_performed_by', ['encounter_id', 'user_id'])
+        db.create_unique(m2m_table_name, ['encounter_id', 'user_id'])
 
         # Adding model 'Service'
         db.create_table('services_service', (
@@ -41,14 +43,11 @@ class Migration(SchemaMigration):
             ('service_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['services.Service'], unique=True, primary_key=True)),
             ('in_count', self.gf('django.db.models.fields.PositiveSmallIntegerField')(default=0)),
             ('out_count', self.gf('django.db.models.fields.PositiveSmallIntegerField')(default=0)),
-            ('svip', self.gf('django.db.models.fields.PositiveIntegerField')(null=True, blank=True)),
-            ('sterilized_water', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('cotton_filters', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('alcohol_swabs', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('svip_person_count', self.gf('django.db.models.fields.PositiveSmallIntegerField')(default=0)),
+            ('standard', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('acid', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('alu_foil', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('alternatives', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('condoms', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('jelly_capsules', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('stericup', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('other', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('pregnancy_test', self.gf('django.db.models.fields.BooleanField')(default=False)),
@@ -59,15 +58,18 @@ class Migration(SchemaMigration):
         # Adding model 'DiseaseTest'
         db.create_table('services_diseasetest', (
             ('service_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['services.Service'], unique=True, primary_key=True)),
-            ('disease', self.gf('django.db.models.fields.PositiveSmallIntegerField')()),
-            ('sign', self.gf('django.db.models.fields.CharField')(default='i', max_length=1)),
+            ('pre_test_advice', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('test_execution', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('post_test_advice', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('disease', self.gf('django.db.models.fields.PositiveSmallIntegerField')(null=True, blank=True)),
+            ('sign', self.gf('django.db.models.fields.CharField')(default='i', max_length=1, null=True, blank=True)),
         ))
         db.send_create_signal('services', ['DiseaseTest'])
 
         # Adding model 'AsistService'
         db.create_table('services_asistservice', (
             ('service_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['services.Service'], unique=True, primary_key=True)),
-            ('where', self.gf('django.db.models.fields.CharField')(max_length=1)),
+            ('where', self.gf('fragapy.fields.models.MultiSelectField')(max_length=10)),
             ('note', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
         ))
         db.send_create_signal('services', ['AsistService'])
@@ -85,31 +87,30 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('services', ['InformationService'])
 
-        # Adding model 'CrisisIntervention'
-        db.create_table('services_crisisintervention', (
-            ('service_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['services.Service'], unique=True, primary_key=True)),
-            ('type', self.gf('django.db.models.fields.CharField')(default='d', max_length=1)),
-        ))
-        db.send_create_signal('services', ['CrisisIntervention'])
-
         # Adding model 'SocialWork'
         db.create_table('services_socialwork', (
             ('service_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['services.Service'], unique=True, primary_key=True)),
             ('socio_legal', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('socio_material', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('counselling', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('service_mediation', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('other', self.gf('django.db.models.fields.BooleanField')(default=False)),
         ))
         db.send_create_signal('services', ['SocialWork'])
 
+        # Adding model 'UtilityWork'
+        db.create_table('services_utilitywork', (
+            ('service_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['services.Service'], unique=True, primary_key=True)),
+            ('refs', self.gf('fragapy.fields.models.MultiSelectField')(max_length=40)),
+        ))
+        db.send_create_signal('services', ['UtilityWork'])
+
 
     def backwards(self, orm):
-        
         # Deleting model 'Encounter'
         db.delete_table('services_encounter')
 
         # Removing M2M table for field performed_by on 'Encounter'
-        db.delete_table('services_encounter_performed_by')
+        db.delete_table(db.shorten_name('services_encounter_performed_by'))
 
         # Deleting model 'Service'
         db.delete_table('services_service')
@@ -126,11 +127,11 @@ class Migration(SchemaMigration):
         # Deleting model 'InformationService'
         db.delete_table('services_informationservice')
 
-        # Deleting model 'CrisisIntervention'
-        db.delete_table('services_crisisintervention')
-
         # Deleting model 'SocialWork'
         db.delete_table('services_socialwork')
+
+        # Deleting model 'UtilityWork'
+        db.delete_table('services_utilitywork')
 
 
     models = {
@@ -199,22 +200,21 @@ class Migration(SchemaMigration):
             'Meta': {'ordering': "('encounter',)", 'object_name': 'AsistService', '_ormbases': ['services.Service']},
             'note': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'service_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['services.Service']", 'unique': 'True', 'primary_key': 'True'}),
-            'where': ('django.db.models.fields.CharField', [], {'max_length': '1'})
-        },
-        'services.crisisintervention': {
-            'Meta': {'ordering': "('encounter',)", 'object_name': 'CrisisIntervention', '_ormbases': ['services.Service']},
-            'service_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['services.Service']", 'unique': 'True', 'primary_key': 'True'}),
-            'type': ('django.db.models.fields.CharField', [], {'default': "'d'", 'max_length': '1'})
+            'where': ('fragapy.fields.models.MultiSelectField', [], {'max_length': '10'})
         },
         'services.diseasetest': {
             'Meta': {'ordering': "('encounter',)", 'object_name': 'DiseaseTest', '_ormbases': ['services.Service']},
-            'disease': ('django.db.models.fields.PositiveSmallIntegerField', [], {}),
+            'disease': ('django.db.models.fields.PositiveSmallIntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'post_test_advice': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'pre_test_advice': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'service_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['services.Service']", 'unique': 'True', 'primary_key': 'True'}),
-            'sign': ('django.db.models.fields.CharField', [], {'default': "'i'", 'max_length': '1'})
+            'sign': ('django.db.models.fields.CharField', [], {'default': "'i'", 'max_length': '1', 'null': 'True', 'blank': 'True'}),
+            'test_execution': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
         },
         'services.encounter': {
             'Meta': {'ordering': "('-performed_on',)", 'object_name': 'Encounter'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'is_by_phone': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'performed_by': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.User']", 'symmetrical': 'False'}),
             'performed_on': ('django.db.models.fields.DateField', [], {'default': 'datetime.date.today'}),
             'person': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'encounters'", 'to': "orm['clients.Person']"}),
@@ -223,20 +223,17 @@ class Migration(SchemaMigration):
         'services.harmreduction': {
             'Meta': {'ordering': "('encounter',)", 'object_name': 'HarmReduction', '_ormbases': ['services.Service']},
             'acid': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'alcohol_swabs': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'alu_foil': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'alternatives': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'condoms': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'cotton_filters': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'in_count': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '0'}),
-            'jelly_capsules': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'medical_supplies': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'other': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'out_count': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '0'}),
             'pregnancy_test': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'service_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['services.Service']", 'unique': 'True', 'primary_key': 'True'}),
+            'standard': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'stericup': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'sterilized_water': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'svip': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True', 'blank': 'True'})
+            'svip_person_count': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '0'})
         },
         'services.informationservice': {
             'Meta': {'ordering': "('encounter',)", 'object_name': 'InformationService', '_ormbases': ['services.Service']},
@@ -260,11 +257,16 @@ class Migration(SchemaMigration):
         },
         'services.socialwork': {
             'Meta': {'ordering': "('encounter',)", 'object_name': 'SocialWork', '_ormbases': ['services.Service']},
+            'counselling': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'other': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'service_mediation': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'service_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['services.Service']", 'unique': 'True', 'primary_key': 'True'}),
-            'socio_legal': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'socio_material': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
+            'socio_legal': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
+        },
+        'services.utilitywork': {
+            'Meta': {'ordering': "('encounter',)", 'object_name': 'UtilityWork', '_ormbases': ['services.Service']},
+            'refs': ('fragapy.fields.models.MultiSelectField', [], {'max_length': '40'}),
+            'service_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['services.Service']", 'unique': 'True', 'primary_key': 'True'})
         }
     }
 
