@@ -246,6 +246,11 @@
           "service"
         ],
         [
+          "add_incomeformfillup",
+          "services",
+          "service"
+        ],
+        [
           "add_individualcounseling",
           "services",
           "service"
@@ -281,6 +286,11 @@
           "service"
         ],
         [
+          "change_incomeformfillup",
+          "services",
+          "service"
+        ],
+        [
           "change_individualcounseling",
           "services",
           "service"
@@ -312,6 +322,11 @@
         ],
         [
           "delete_incomeexamination",
+          "services",
+          "service"
+        ],
+        [
+          "delete_incomeformfillup",
           "services",
           "service"
         ],
