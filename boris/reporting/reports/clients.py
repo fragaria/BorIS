@@ -5,7 +5,7 @@ from django.template.context import RequestContext
 from django.utils.translation import ugettext_lazy as _
 
 from boris.classification import DRUG_APPLICATION_TYPES as DAT
-from boris.clients.models import Person
+from boris.clients.models import Client
 from boris.reporting.core import BaseReport
 from boris.services.models import Encounter
 
@@ -48,9 +48,11 @@ class ClientReport(BaseReport):
         return 'souhrn_klientu.xls'
 
     def get_stats(self):
-        person_ids = Encounter.objects.filter(**self.filtering).order_by(
-            'where').values_list('person', flat=True).distinct()
-        clients = [Person.objects.get(pk=id_).cast() for id_ in person_ids]
+        person_ids = Encounter.objects.filter(**self.filtering).values_list(
+            'person', flat=True) # distinct() cannot be used here because
+                                 # Encounters are ordered by default.
+        clients = Client.objects.filter(person_ptr__in=person_ids).order_by(
+            'code')
         for client in clients:
             enrich_with_type(client)
         return clients
