@@ -109,8 +109,8 @@ class Migration(SchemaMigration):
             ('living_condition', self.gf('django.db.models.fields.PositiveSmallIntegerField')(default=7)),
             ('accomodation', self.gf('django.db.models.fields.PositiveSmallIntegerField')(default=8)),
             ('lives_with_junkies', self.gf('django.db.models.fields.NullBooleanField')(null=True, blank=True)),
-            ('employment', self.gf('django.db.models.fields.PositiveSmallIntegerField')()),
-            ('education', self.gf('django.db.models.fields.PositiveSmallIntegerField')()),
+            ('employment', self.gf('django.db.models.fields.PositiveSmallIntegerField')(default=8)),
+            ('education', self.gf('django.db.models.fields.PositiveSmallIntegerField')(default=7)),
             ('been_cured_before', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('been_cured_currently', self.gf('django.db.models.fields.BooleanField')(default=False)),
         ))
