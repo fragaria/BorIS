@@ -24,7 +24,8 @@ def enrich_with_type(client):
 
 class ClientReport(BaseReport):
     title = u'Shrnutí klientů'
-    description = u'Přehled klientů splňujících zadaná kritéria.'
+    description = (u'Přehled klientů splňujících zadaná kritéria. '
+        u'Město ve formuláři označuje místo, kde byl zaznamenán kontakt s klientem.')
     contenttype_office = 'application/vnd.ms-excel; charset=utf-8'
     columns = (_(u'Klientský kód'), _(u'Pohlaví'), _(u'Město'),
         _(u'Typ klienta'), _(u'Primární droga'))
