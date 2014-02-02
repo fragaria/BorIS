@@ -229,9 +229,9 @@ class Anamnesis(TimeStampedModel, AdminLinkMixin):
         default=ACCOMODATION_TYPES.UNKNOWN, verbose_name=_(u'Bydlení (kde klient žije)'))
     lives_with_junkies = models.NullBooleanField(verbose_name=_(u'Žije klient s osobou užívající drogy?'))
     employment = models.PositiveSmallIntegerField(choices=EMPLOYMENT_TYPES,
-        verbose_name=_(u'Zaměstnání / škola'))
+        default=EMPLOYMENT_TYPES.UNKNOWN, verbose_name=_(u'Zaměstnání / škola'))
     education = models.PositiveSmallIntegerField(choices=EDUCATION_LEVELS,
-        verbose_name=_(u'Vzdělání'))
+        default=EDUCATION_LEVELS.UNKNOWN, verbose_name=_(u'Vzdělání'))
     been_cured_before = models.BooleanField(verbose_name=_(u'Dříve léčen'))
     been_cured_currently = models.BooleanField(verbose_name=_(u'Nyní léčen'))
 
