@@ -4,6 +4,7 @@ Created on 2.10.2011
 
 @author: xaralis
 '''
+from collections import defaultdict
 from itertools import chain
 
 from django.core.exceptions import ValidationError
@@ -101,8 +102,8 @@ class HarmReduction(Service):
     def _get_stats(cls, filtering):
         return chain(
             super(HarmReduction, cls)._get_stats(filtering),
-            _boolean_stats(cls, filtering, ('standard', 'acid',
-                                            'alternatives', 'condoms',
+            _boolean_stats(cls, filtering, ('standard', 'alternatives',
+                                            'acid', 'condoms',
                                             'stericup', 'other',
                                             'pregnancy_test',
                                             'medical_supplies')),
@@ -340,18 +341,13 @@ class UtilityWork(Service):
         """Count all the items in all the MultiSelectFields."""
         objects = cls.objects.filter(**filtering)
         total_count = sum(len(address.refs) for address in objects)
-
-        choice_to_title = dict(cls.REF_TYPES) # E.g. 'ss' -> 'Socialni sluzby'.
-        # Initialize the dict manually - avoid defaultdict, which could,
-        # in effect, hide some choices from the report.
-        substats = dict((title, 0) for title in choice_to_title.values())
+        substats = defaultdict(int)
         for address in objects:
             for choice in address.refs:
-                substats[choice_to_title[choice]] += 1
-
+                substats[choice] += 1
         return chain(
             ((cls.service.title, total_count),),
-            substats.iteritems(),
+            ((choice[1], substats[choice[0]]) for choice in cls.REF_TYPES),
         )
 
 
