@@ -196,6 +196,14 @@ class Client(Person):
         return self.code
 
     @property
+    def age(self):
+        """Return the client's age in years, if known."""
+        if not self.birthdate:
+            return None
+        age = datetime.date.today() - self.birthdate
+        return int(round(age.days / 365.0))
+
+    @property
     def hygiene_report_code(self):
         code = (str(self.birthdate.year)[2:] if self.birthdate else '??') + '0000/'
         code += self.code[5:8].upper() if len(self.code) >= 7 else '???'

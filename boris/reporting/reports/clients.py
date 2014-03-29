@@ -27,7 +27,7 @@ class ClientReport(BaseReport):
     description = (u'Přehled klientů splňujících zadaná kritéria. '
         u'Město ve formuláři označuje místo, kde byl zaznamenán kontakt s klientem.')
     contenttype_office = 'application/vnd.ms-excel; charset=utf-8'
-    columns = (_(u'Klientský kód'), _(u'Pohlaví'), _(u'Město'),
+    columns = (_(u'Klientský kód'), _(u'Pohlaví'), _(u'Věk'), _(u'Město'),
         _(u'Typ klienta'), _(u'Primární droga'))
 
     def __init__(self, date_from=None, date_to=None, towns=None):
@@ -58,15 +58,24 @@ class ClientReport(BaseReport):
             enrich_with_type(client)
         return clients
 
+    @staticmethod
+    def get_average_age(client_stats):
+        """Return average age of the filtered clients."""
+        ages = filter(bool, (c.age for c in client_stats))
+        if ages:
+            return int(round(float(sum(ages)) / len(ages)))
+
     def render(self, request, display_type):
+        client_stats = self.get_stats()
         return loader.render_to_string(
             self.get_template(display_type),
             {
                 'report': self,
-                'stats': self.get_stats(),
+                'stats': client_stats,
                 'towns': [t.title for t in self.towns],
                 'date_from': self.date_from,
-                'date_to': self.date_to
+                'date_to': self.date_to,
+                'average_age': self.get_average_age(client_stats),
             },
             context_instance=RequestContext(request)
         )

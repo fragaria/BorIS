@@ -22,6 +22,7 @@
 			{% if date_to %}{{ date_to|date:"j.n.Y" }}{% else %}(Horní hranice data neuvedena){% endif %}
 		</p>
 	{% endif %}
+	<p style="margin-bottom: 10px;">Průměrný věk klienta: {% if average_age %}{{ average_age }}{% else %}neznámý{% endif %}
 	{% if towns %}
 		<p style="margin-bottom: 20px;">Vybraná města: {{ towns|join:", " }}</p>
 	{% endif %}

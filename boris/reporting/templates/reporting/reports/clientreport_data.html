@@ -9,6 +9,7 @@
         <tr>
 				<td>{{ client.code }}</td>
 				<td>{{ client.get_sex_display }}</td>
+				<td>{% if client.age %}{{ client.age }}{% endif %}</td>
 				<td>{{ client.town }}</td>
 				<td>{{ client.type_ }}</td>
 				{% if client.primary_drug %}
