@@ -57,6 +57,10 @@
         li {
             padding: 3px 30px 3px 0
         }
+        #client_list th {
+            padding-bottom: 3px;
+            font-size: 11px;
+        }
         @media all {
             .pagebreak	{ display: none; }
         }
@@ -69,6 +73,10 @@
                 page-break-after: always;
                 page-break-inside: avoid;
             }
+
+            #client_list {
+                page-break-after: always;
+            }
         }
     </style>
 {% endblock %}
@@ -76,6 +84,21 @@
 {% block title %}{% trans "Registr uživatelů drog - žadatelů o léčbu" %}{% endblock %}
 
 {% block content %}
+    <div id="client_list">
+        <h1>{% trans "Seznam klientů" %}</h1>
+        <table>
+            <tr>
+                <th>{% trans "Kód klienta" %}</th>
+                <th>{% trans "Město" %}</th>
+            </tr>
+            {% for anamnesis in objects %}
+                <tr>
+                    <td>{{ anamnesis.client.code }}</td>
+                    <td>{{ anamnesis.client.town }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
     {% for anamnesis in objects %}
         <div class="page">
         <h1>{% trans "Registr uživatelů drog - žadatelů o léčbu" %}<strong>{{ datetime_from|date:"DATE_FORMAT" }} - {{ datetime_to|date:"DATE_FORMAT" }}</strong></h1>
