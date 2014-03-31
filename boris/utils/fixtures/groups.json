@@ -208,52 +208,52 @@
         [
           "add_phoneusage",
           "services",
-          "service"
+          "phoneusage"
         ],
         [
           "change_phoneusage",
           "services",
-          "service"
+          "phoneusage"
         ],
         [
           "delete_phoneusage",
           "services",
-          "service"
+          "phoneusage"
         ],
         [
           "add_address",
           "services",
-          "service"
+          "address"
         ],
         [
           "add_basicmedicaltreatment",
           "services",
-          "service"
+          "basicmedicaltreatment"
         ],
         [
           "add_contactwork",
           "services",
-          "service"
+          "contactwork"
         ],
         [
           "add_crisisintervention",
           "services",
-          "service"
+          "crisisintervention"
         ],
         [
           "add_incomeexamination",
           "services",
-          "service"
+          "incomeexamination"
         ],
         [
           "add_incomeformfillup",
           "services",
-          "service"
+          "incomeformfillup"
         ],
         [
           "add_individualcounseling",
           "services",
-          "service"
+          "individualcounseling"
         ],
         [
           "add_service",
@@ -263,37 +263,37 @@
         [
           "change_address",
           "services",
-          "service"
+          "address"
         ],
         [
           "change_basicmedicaltreatment",
           "services",
-          "service"
+          "basicmedicaltreatment"
         ],
         [
           "change_contactwork",
           "services",
-          "service"
+          "contactwork"
         ],
         [
           "change_crisisintervention",
           "services",
-          "service"
+          "crisisintervention"
         ],
         [
           "change_incomeexamination",
           "services",
-          "service"
+          "incomeexamination"
         ],
         [
           "change_incomeformfillup",
           "services",
-          "service"
+          "incomeformfillup"
         ],
         [
           "change_individualcounseling",
           "services",
-          "service"
+          "individualcounseling"
         ],
         [
           "change_service",
@@ -303,37 +303,37 @@
         [
           "delete_address",
           "services",
-          "service"
+          "address"
         ],
         [
           "delete_basicmedicaltreatment",
           "services",
-          "service"
+          "basicmedicaltreatment"
         ],
         [
           "delete_contactwork",
           "services",
-          "service"
+          "contactwork"
         ],
         [
           "delete_crisisintervention",
           "services",
-          "service"
+          "crisisintervention"
         ],
         [
           "delete_incomeexamination",
           "services",
-          "service"
+          "incomeexamination"
         ],
         [
           "delete_incomeformfillup",
           "services",
-          "service"
+          "incomeformfillup"
         ],
         [
           "delete_individualcounseling",
           "services",
-          "service"
+          "individualcounseling"
         ],
         [
           "delete_service",
