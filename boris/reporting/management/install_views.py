@@ -1,7 +1,7 @@
 from os.path import dirname, join
 
 from django.db import connection
-from south.signals import post_migrate
+from django.db.models.signals import post_syncdb
 
 from boris import reporting
 
@@ -21,4 +21,4 @@ def install_views(app, **kwargs):
         sql_file.close()
 
 
-post_migrate.connect(install_views)
+post_syncdb.connect(install_views)

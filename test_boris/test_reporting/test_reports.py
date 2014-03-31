@@ -1,28 +1,28 @@
 from datetime import date
 
 from django.test import TestCase
-
 from nose import tools
 
 from boris.classification import SEXES, DRUG_APPLICATION_TYPES, \
-        ANONYMOUS_TYPES, DISEASES
+    ANONYMOUS_TYPES, DISEASES
 from boris.clients.models import Anonymous
 from boris.syringes.models import SyringeCollection
 from boris.services.models.core import Encounter
-from boris.services.models.basic import Address, PhoneCounseling, \
-        HarmReduction, IncomeExamination, DiseaseTest
+from boris.services.models.basic import Address, PhoneUsage, \
+    HarmReduction, IncomeExamination, DiseaseTest
 from boris.reporting.reports.monthly_stats import AllClientEncounters, \
-        MaleClientEncounters, IvClientEncounters, \
-        NonClients, AllAddresses, AddressesDU, \
-        EncounterCount, ClientEncounterCount, \
-        PhoneEncounterCount, FirstContactCount, \
-        FirstContactCountDU, FirstContactCountIV, HarmReductionCount, \
-        GatheredSyringes, IssuedSyringes, SyringeCollectionCount, disease_tests
+    MaleClientEncounters, IvClientEncounters, \
+    AllAddresses, AddressesDU, \
+    EncounterCount, ClientEncounterCount, \
+    PhoneEncounterCount, FirstContactCount, \
+    FirstContactCountDU, FirstContactCountIV, HarmReductionCount, \
+    GatheredSyringes, IssuedSyringes, SyringeCollectionCount, disease_tests, ClosePersonEncounters, \
+    SexPartnerEncounters, \
+    AnonymousAggregation, NonIvClientEncounters
 from boris.reporting.core import make_key
-from boris.reporting.management import install_views
+from boris.reporting.management.install_views import install_views
+from test_boris.helpers import get_tst_town, get_tst_drug, get_tst_client, create_service
 
-from test_boris.helpers import get_tst_town, get_tst_client, \
-        get_tst_drug, get_tst_practitioner, create_service
 
 def create_encounter(person, date, town=None):
     if not town:
@@ -32,8 +32,7 @@ def create_encounter(person, date, town=None):
 
 
 def create_syringe_collection(town, date, count):
-    return SyringeCollection.objects.create(date=date, town=town, count=count,
-            location='')
+    return SyringeCollection.objects.create(date=date, town=town, count=count, location='')
 
 
 class MockMonthlyReport(object):
@@ -41,10 +40,12 @@ class MockMonthlyReport(object):
     grouping_total = ('month',)
     additional_filtering = {'year': 2011}
 
+
 class MockYearlyReport(object):
     grouping = ('month',)
     grouping_total = ('year',)
     additional_filtering = {'year': 2011}
+
 
 class TestEncounterAggregations(TestCase):
     """ Mostly encounter aggregations are tested here. """
@@ -57,12 +58,13 @@ class TestEncounterAggregations(TestCase):
 
         # clients
         self.client1 = get_tst_client('c1', {'town': self.town1, 'primary_drug': self.drug})
-        self.client2 = get_tst_client('c2', {'town': self.town1, 'primary_drug': self.drug, 'primary_drug_usage': DRUG_APPLICATION_TYPES.VEIN_INJECTION})
+        self.client2 = get_tst_client('c2', {'town': self.town1, 'primary_drug': self.drug,
+                                             'primary_drug_usage': DRUG_APPLICATION_TYPES.VEIN_INJECTION})
         self.client3 = get_tst_client('c3', {'town': self.town1, 'sex': SEXES.FEMALE, 'close_person': True})
         self.client4 = get_tst_client('c4', {'town': self.town1})
         self.client5 = get_tst_client('c5', {'town': self.town2})
         self.client6 = get_tst_client('c6', {'town': self.town2})
-        self.client7 = get_tst_client('c7', {'town': self.town2})
+        self.client7 = get_tst_client('c7', {'town': self.town2, 'sex_partner': True})
 
         create_encounter(self.client1, date(2011, 11, 1))
         create_encounter(self.client1, date(2011, 11, 1))
@@ -77,28 +79,19 @@ class TestEncounterAggregations(TestCase):
         create_encounter(self.client6, date(2010, 11, 1))
         create_encounter(self.client6, date(2011, 7, 1))
         create_encounter(self.client6, date(2011, 11, 1))
+        create_encounter(self.client7, date(2011, 11, 1))
 
         # anonymous
-        self.anonym1 = Anonymous.objects.get(sex=SEXES.MALE,
-                drug_user_type=ANONYMOUS_TYPES.IV)
-        self.anonym2 = Anonymous.objects.get(sex=SEXES.FEMALE,
-                drug_user_type=ANONYMOUS_TYPES.IV)
-        self.anonym3 = Anonymous.objects.get(sex=SEXES.MALE,
-                drug_user_type=ANONYMOUS_TYPES.NON_USER_PARENT)
+        self.anonym1 = Anonymous.objects.get(sex=SEXES.MALE, drug_user_type=ANONYMOUS_TYPES.IV)
+        self.anonym2 = Anonymous.objects.get(sex=SEXES.FEMALE, drug_user_type=ANONYMOUS_TYPES.IV)
+        self.anonym3 = Anonymous.objects.get(sex=SEXES.MALE, drug_user_type=ANONYMOUS_TYPES.NON_USER_PARENT)
+
         create_encounter(self.anonym1, date(2011, 11, 1), self.town1)
         create_encounter(self.anonym2, date(2011, 11, 1), self.town1)
         create_encounter(self.anonym1, date(2011, 11, 1), self.town1)
         create_encounter(self.anonym3, date(2011, 11, 1), self.town1)
         create_encounter(self.anonym2, date(2011, 12, 1), self.town1)
         create_encounter(self.anonym1, date(2011, 11, 1), self.town2)
-
-        # practitioners
-        self.practitioner1 = get_tst_practitioner('sroubek1')
-        self.practitioner2 = get_tst_practitioner('sroubek2')
-        create_encounter(self.practitioner1, date(2011, 11, 1), self.town1)
-        create_encounter(self.practitioner1, date(2011, 11, 1), self.town1)
-        create_encounter(self.practitioner2, date(2011, 11, 1), self.town1)
-        create_encounter(self.practitioner2, date(2011, 12, 1), self.town1)
 
         self.report = MockMonthlyReport()
 
@@ -123,19 +116,19 @@ class TestEncounterAggregations(TestCase):
     #     tools.assert_equals(aggregation.get_val(key), 1)
 
     def test_nonclient_encounters(self):
-        aggregation = NonClients(self.report)
+        aggregation = AnonymousAggregation(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
-        tools.assert_equals(aggregation.get_val(key), 6)
+        tools.assert_equals(aggregation.get_val(key), 1)
 
-    # def test_parents(self):
-    #     aggregation = Parents(self.report)
-    #     key = make_key({'month': 11, 'town': self.town1.pk})
-    #     tools.assert_equals(aggregation.get_val(key), 1)
-    #
-    # def test_practitioners(self):
-    #     aggregation = Practitioners(self.report)
-    #     key = make_key({'month': 11, 'town': self.town1.pk})
-    #     tools.assert_equals(aggregation.get_val(key), 2)
+    def test_parents(self):
+        aggregation = ClosePersonEncounters(self.report)
+        key = make_key({'month': 11, 'town': self.town1.pk})
+        tools.assert_equals(aggregation.get_val(key), 1)
+
+    def test_sex_partners(self):
+        aggregation = SexPartnerEncounters(self.report)
+        key = make_key({'month': 11, 'town': self.town2.pk})
+        tools.assert_equals(aggregation.get_val(key), 1)  # 0
 
 
 class TestServiceAggregations(TestCase):
@@ -151,13 +144,11 @@ class TestServiceAggregations(TestCase):
         self.client1 = get_tst_client('c1', {'town': self.town1, 'primary_drug': self.drug})
         self.client2 = get_tst_client('c2', {'town': self.town2, 'primary_drug': self.drug})
         self.client3 = get_tst_client('c3', {'town': self.town1})
-        self.client4 = get_tst_client('c4', {'town': self.town1, 'primary_drug': self.drug, 'primary_drug_usage': DRUG_APPLICATION_TYPES.VEIN_INJECTION})
+        self.client4 = get_tst_client('c4', {'town': self.town1, 'primary_drug': self.drug,
+                                             'primary_drug_usage': DRUG_APPLICATION_TYPES.VEIN_INJECTION})
 
-        self.anonym1 = Anonymous.objects.get(sex=SEXES.MALE,
-                drug_user_type=ANONYMOUS_TYPES.IV)
-        self.anonym2 = Anonymous.objects.get(sex=SEXES.MALE,
-                drug_user_type=ANONYMOUS_TYPES.NON_USER)
-        self.practitioner1 = get_tst_practitioner('sroubek')
+        self.anonym1 = Anonymous.objects.get(sex=SEXES.MALE, drug_user_type=ANONYMOUS_TYPES.IV)
+        self.anonym2 = Anonymous.objects.get(sex=SEXES.MALE, drug_user_type=ANONYMOUS_TYPES.NON_USER)
 
         # services - addresses
         create_service(Address, self.client1, date(2011, 11, 1), self.town1)
@@ -258,9 +249,7 @@ class TestMixedAggregations(TestCase):
         # persons
         self.client1 = get_tst_client('c1', {'town': self.town1})
         self.client2 = get_tst_client('c2', {'town': self.town1})
-        self.anonym = Anonymous.objects.get(sex=SEXES.MALE,
-            drug_user_type=ANONYMOUS_TYPES.IV)
-        self.practitioner = get_tst_practitioner('sroubek1')
+        self.anonym = Anonymous.objects.get(sex=SEXES.MALE, drug_user_type=ANONYMOUS_TYPES.IV)
 
         # services
         create_service(Address, self.client1, date(2011, 11, 1), self.town1)
@@ -268,66 +257,53 @@ class TestMixedAggregations(TestCase):
         create_service(Address, self.client1, date(2011, 12, 1), self.town1)
         create_service(Address, self.client1, date(2011, 11, 1), self.town2)
         create_service(Address, self.anonym, date(2011, 11, 1), self.town1)
-        create_service(Address, self.practitioner, date(2011, 11, 1), self.town1)
-        create_service(Address, self.practitioner, date(2011, 11, 1), self.town2)
-        create_service(PhoneCounseling, self.practitioner, date(2011, 11, 1), self.town1)
-        create_service(PhoneCounseling, self.client1, date(2011, 11, 1), self.town1)
-        create_service(PhoneCounseling, self.anonym, date(2011, 11, 1), self.town1)
+        create_service(PhoneUsage, self.client1, date(2011, 11, 1), self.town1, is_by_phone=True)
+        create_service(PhoneUsage, self.anonym, date(2011, 11, 1), self.town1, is_by_phone=True)
 
         self.report = MockMonthlyReport()
 
     def test_encounter_count(self):
         aggregation = EncounterCount(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
-        tools.assert_equals(aggregation.get_val(key), 7)
+        tools.assert_equals(aggregation.get_val(key), 5)
 
     def test_client_encounter_count(self):
         aggregation = ClientEncounterCount(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
-        tools.assert_equals(aggregation.get_val(key), 2)
-
-    # def test_practitioner_encounter_count(self):
-    #     aggregation = PractitionerEncounterCount(self.report)
-    #     key = make_key({'month': 11, 'town': self.town1.pk})
-    #     tools.assert_equals(aggregation.get_val(key), 2)
+        val = aggregation.get_val(key)
+        tools.assert_equals(val, 2)
 
     def test_phone_encounter_count(self):
         aggregation = PhoneEncounterCount(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
-        tools.assert_equals(aggregation.get_val(key), 3)
+        tools.assert_equals(aggregation.get_val(key), 2)
 
 
 class TestEncounterTotals(TestCase):
-
     def setUp(self):
         install_views('')
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
+        self.drug = get_tst_drug()
 
         # clients
         self.client1 = get_tst_client('c1', {'town': self.town1, })
         self.client2 = get_tst_client('c2', {'town': self.town1, })
+        self.client3 = get_tst_client('c3', {'town': self.town1, 'primary_drug_usage': DRUG_APPLICATION_TYPES.SMOKING,
+                                             'primary_drug': self.drug})
 
         create_encounter(self.client1, date(2011, 11, 1))
         create_encounter(self.client1, date(2011, 11, 1), self.town2)
         create_encounter(self.client1, date(2011, 11, 1))
         create_encounter(self.client2, date(2011, 11, 1), self.town2)
         create_encounter(self.client2, date(2011, 12, 1), self.town2)
+        create_encounter(self.client3, date(2011, 12, 1), self.town2)
 
         # anonymous
-        self.anonym1 = Anonymous.objects.get(sex=SEXES.MALE,
-                drug_user_type=ANONYMOUS_TYPES.IV)
+        self.anonym1 = Anonymous.objects.get(sex=SEXES.MALE, drug_user_type=ANONYMOUS_TYPES.IV)
         create_encounter(self.anonym1, date(2011, 11, 1), self.town1)
         create_encounter(self.anonym1, date(2011, 11, 1), self.town1)
         create_encounter(self.anonym1, date(2011, 11, 1), self.town2)
-
-        # practitioners
-        self.practitioner1 = get_tst_practitioner('sroubek1')
-        self.practitioner2 = get_tst_practitioner('sroubek2')
-        create_encounter(self.practitioner1, date(2011, 11, 1), self.town1)
-        create_encounter(self.practitioner1, date(2011, 11, 1), self.town1)
-        create_encounter(self.practitioner2, date(2011, 11, 1), self.town2)
-        create_encounter(self.practitioner2, date(2011, 12, 1), self.town1)
 
         self.monthly_report = MockMonthlyReport()
         self.yearly_report = MockYearlyReport()
@@ -340,21 +316,20 @@ class TestEncounterTotals(TestCase):
     def test_all_client_encounters_total_yearly(self):
         aggregation = AllClientEncounters(self.yearly_report)
         key = make_key({'year': 2011})
-        tools.assert_equals(aggregation.get_val(key), 2)
+        tools.assert_equals(aggregation.get_val(key), 3)
 
-    def test_nonclient_encounters_monthly(self):
-        aggregation = NonClients(self.monthly_report)
-        key = make_key({'month': 11})
-        tools.assert_equals(aggregation.get_val(key), 5)
+    def test_nonivclient_encounters_monthly(self):
+        aggregation = NonIvClientEncounters(self.monthly_report)
+        key = make_key({'month': 12})
+        tools.assert_equals(aggregation.get_val(key), 1)
 
-    def test_nonclient_encounters_yearly(self):
-        aggregation = NonClients(self.yearly_report)
+    def test_nonivclient_encounters_yearly(self):
+        aggregation = NonIvClientEncounters(self.yearly_report)
         key = make_key({'year': 2011})
-        tools.assert_equals(aggregation.get_val(key), 5)
+        tools.assert_equals(aggregation.get_val(key), 1)
 
 
 class TestServiceTotals(TestCase):
-
     def setUp(self):
         install_views('')
         self.town1 = get_tst_town()

@@ -4,31 +4,27 @@ Created on 22.10.2011
 @author: xaralis
 '''
 from django.test import TestCase
-from django.db.models.base import Model
-
 from nose import tools
 
-from boris.services.models.core import Service, service_list, \
-    get_model_for_class_name
+from boris.services.models.core import Service, service_list, get_model_for_class_name
 from boris.clients.models import Client, Anonymous
+
+from models import DummyServiceClass, ModelDummy
+
 
 class TestServiceMetaClass(TestCase):
     def setUp(self):
-        class DummyServiceClass(Service):
-            pass
-        self.subcls = DummyServiceClass
+        pass
 
     def test_clientservice_subclass_is_registered_after_declaration(self):
-        tools.assert_true(self.subcls in Service.registered_services)
+        tools.assert_true(DummyServiceClass in Service.registered_services)
 
     def test_common_model_subclass_is_not_registered_after_declaration(self):
-        class ModelDummy(Model):
-            pass
         tools.assert_false(ModelDummy in Service.registered_services)
 
     def test_subclassing_clientservice_adds_service_meta_class(self):
-        tools.assert_true(hasattr(self.subcls, 'service'))
-        service_meta = self.subcls.service
+        tools.assert_true(hasattr(DummyServiceClass, 'service'))
+        service_meta = DummyServiceClass.service
 
         tools.assert_true(hasattr(service_meta, 'title'))
         tools.assert_true(hasattr(service_meta, 'description_template'))
