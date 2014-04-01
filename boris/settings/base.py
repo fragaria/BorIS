@@ -86,7 +86,7 @@ STATICFILES_DIRS = (
 
 STATIC_URL = '/static/'
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'grappelli.dashboard',
     'grappelli',
 
@@ -110,7 +110,7 @@ INSTALLED_APPS = (
     'boris.syringes',
     'boris.users',
     'boris.utils'
-)
+]
 
 # always freeze south migrations
 SOUTH_AUTO_FREEZE_APP = True
