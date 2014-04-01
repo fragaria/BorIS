@@ -35,5 +35,7 @@ INSTALLED_APPS = (
     'boris.reporting',
     'boris.syringes',
     'boris.utils',
+
+    'test_boris.test_services',
 )
 

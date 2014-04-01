@@ -31,12 +31,14 @@ class ServiceReport(BaseReport):
     def get_filename(self):
         return 'souhrn_vykonu.doc'
 
+    def _get_service_stats(self):
+        return [
+            service.get_stats(self.filtering) for service in service_list(self.person) if service.service.include_in_reports
+        ]
+
     def get_stats(self):
         enc_count = Encounter.objects.filter(**self.enc_filtering).count()
-        return [(None, ((u'Počet kontaktů', enc_count),))] + [
-            service.get_stats(self.filtering) for service in service_list(self.person)
-            if service.service.include_in_reports
-        ]
+        return [(None, ((u'Počet kontaktů', enc_count),))] + self._get_service_stats()
 
     def render(self, request, display_type):
         return loader.render_to_string(

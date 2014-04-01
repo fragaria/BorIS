@@ -5,7 +5,7 @@ from django.template.context import RequestContext
 from django.utils.translation import ugettext_lazy as _
 
 from boris.classification import DRUG_APPLICATION_TYPES as DAT
-from boris.clients.models import Person
+from boris.clients.models import Client
 from boris.reporting.core import BaseReport
 from boris.services.models import Encounter
 
@@ -24,9 +24,10 @@ def enrich_with_type(client):
 
 class ClientReport(BaseReport):
     title = u'Shrnutí klientů'
-    description = u'Přehled klientů splňujících zadaná kritéria.'
+    description = (u'Přehled klientů splňujících zadaná kritéria. '
+        u'Město ve formuláři označuje místo, kde byl zaznamenán kontakt s klientem.')
     contenttype_office = 'application/vnd.ms-excel; charset=utf-8'
-    columns = (_(u'Klientský kód'), _(u'Pohlaví'), _(u'Město'),
+    columns = (_(u'Klientský kód'), _(u'Pohlaví'), _(u'Věk'), _(u'Město'),
         _(u'Typ klienta'), _(u'Primární droga'))
 
     def __init__(self, date_from=None, date_to=None, towns=None):
@@ -48,22 +49,33 @@ class ClientReport(BaseReport):
         return 'souhrn_klientu.xls'
 
     def get_stats(self):
-        person_ids = Encounter.objects.filter(**self.filtering).order_by(
-            'where').values_list('person', flat=True).distinct()
-        clients = [Person.objects.get(pk=id_).cast() for id_ in person_ids]
+        person_ids = Encounter.objects.filter(**self.filtering).values_list(
+            'person', flat=True) # distinct() cannot be used here because
+                                 # Encounters are ordered by default.
+        clients = Client.objects.filter(person_ptr__in=person_ids).order_by(
+            'code')
         for client in clients:
             enrich_with_type(client)
         return clients
 
+    @staticmethod
+    def get_average_age(client_stats):
+        """Return average age of the filtered clients."""
+        ages = filter(bool, (c.age for c in client_stats))
+        if ages:
+            return int(round(float(sum(ages)) / len(ages)))
+
     def render(self, request, display_type):
+        client_stats = self.get_stats()
         return loader.render_to_string(
             self.get_template(display_type),
             {
                 'report': self,
-                'stats': self.get_stats(),
+                'stats': client_stats,
                 'towns': [t.title for t in self.towns],
                 'date_from': self.date_from,
-                'date_to': self.date_to
+                'date_to': self.date_to,
+                'average_age': self.get_average_age(client_stats),
             },
             context_instance=RequestContext(request)
         )

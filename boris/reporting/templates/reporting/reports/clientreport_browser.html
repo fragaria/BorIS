@@ -14,13 +14,15 @@
 {% endblock %}
 
 {% block content %}
+	<p style="margin-bottom: 10px">Počet klientů ve výběru: {{ stats|length }}</p>
 	{% if date_from or date_to %}
-		<p style="margin-bottom: 20px;">
+		<p style="margin-bottom: 10px;">
 			{% if  date_from %}{{ date_from|date:"j.n.Y" }}{% else %}(Dolní hranice data neuvedena){% endif %}
 				-
 			{% if date_to %}{{ date_to|date:"j.n.Y" }}{% else %}(Horní hranice data neuvedena){% endif %}
 		</p>
 	{% endif %}
+	<p style="margin-bottom: 10px;">Průměrný věk klienta: {% if average_age %}{{ average_age }}{% else %}neznámý{% endif %}
 	{% if towns %}
 		<p style="margin-bottom: 20px;">Vybraná města: {{ towns|join:", " }}</p>
 	{% endif %}

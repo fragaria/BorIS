@@ -47,6 +47,8 @@ class EncounterManager(models.Manager):
         if towns is not None:
             criteria.update({'where__in': towns})
         f_ects = self.filter(**criteria).values('person').annotate(min_date=models.Min('performed_on'))
+        if not f_ects: # There are no encounters fulfilling the requirements.
+            return self.filter(pk=-3)
         filters = reduce(operator.or_, [models.Q(person=e['person'], performed_on=e['min_date']) for e in f_ects])
         if towns is not None:
             return self.filter(filters).filter(where__in=towns)

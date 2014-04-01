@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.utils.functional import curry
 from django.contrib.contenttypes.models import ContentType
 
-from boris.clients.models import Client, Town, Region, District, Drug, Practitioner
+from boris.clients.models import Client, Town, Region, District, Drug
 from boris.classification import SEXES
 from boris.services.models import Encounter
 
@@ -31,16 +31,6 @@ def get_tst_client(code='borivoj22', cdata=None):
 
     return Client.objects.create(**client_data)
 
-def get_tst_practitioner(last_name='Sroubek'):
-    practitioner_data = {
-         'last_name': last_name,
-         'sex': SEXES.MALE,
-         'town': get_tst_town(),
-         'content_type': ContentType.objects.get_for_model(Practitioner),
-         'organization': 'MF Dnes'
-    }
-
-    return Practitioner.objects.create(**practitioner_data)
 
 def get_tst_usr(username='strachkvas'):
     user_data = {
@@ -60,13 +50,16 @@ def get_tst_usr(username='strachkvas'):
 
     return user
 
-def create_service(service_class, person, date, town, kwargs_dict={}):
-    e = Encounter.objects.create(person=person, performed_on=date, where=town)
+
+def create_service(service_class, person, date, town, kwargs_dict=None, is_by_phone=False):
+    if not kwargs_dict:
+        kwargs_dict = {}
+    e = Encounter.objects.create(person=person, performed_on=date, where=town, is_by_phone=is_by_phone)
     service_kwargs = copy(kwargs_dict)
     service_kwargs.update({
         'encounter': e,
         'content_type': ContentType.objects.get_by_natural_key('services',
-            service_class.__name__),
+        service_class.__name__),
     })
 
     return service_class.objects.create(**service_kwargs)

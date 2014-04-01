@@ -196,6 +196,14 @@ class Client(Person):
         return self.code
 
     @property
+    def age(self):
+        """Return the client's age in years, if known."""
+        if not self.birthdate:
+            return None
+        age = datetime.date.today() - self.birthdate
+        return int(round(age.days / 365.0))
+
+    @property
     def hygiene_report_code(self):
         code = (str(self.birthdate.year)[2:] if self.birthdate else '??') + '0000/'
         code += self.code[5:8].upper() if len(self.code) >= 7 else '???'
@@ -229,9 +237,9 @@ class Anamnesis(TimeStampedModel, AdminLinkMixin):
         default=ACCOMODATION_TYPES.UNKNOWN, verbose_name=_(u'Bydlení (kde klient žije)'))
     lives_with_junkies = models.NullBooleanField(verbose_name=_(u'Žije klient s osobou užívající drogy?'))
     employment = models.PositiveSmallIntegerField(choices=EMPLOYMENT_TYPES,
-        verbose_name=_(u'Zaměstnání / škola'))
+        default=EMPLOYMENT_TYPES.UNKNOWN, verbose_name=_(u'Zaměstnání / škola'))
     education = models.PositiveSmallIntegerField(choices=EDUCATION_LEVELS,
-        verbose_name=_(u'Vzdělání'))
+        default=EDUCATION_LEVELS.UNKNOWN, verbose_name=_(u'Vzdělání'))
     been_cured_before = models.BooleanField(verbose_name=_(u'Dříve léčen'))
     been_cured_currently = models.BooleanField(verbose_name=_(u'Nyní léčen'))
 

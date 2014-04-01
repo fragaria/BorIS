@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, time
 
-from django.contrib.contenttypes.models import ContentType
 from django.template import loader
 from django.template.context import RequestContext
-from django.db import models
 
 from boris.classification import SEXES
 from boris.clients.models import Anamnesis, RiskyManners, Town

@@ -44,12 +44,12 @@ class TestServiceReports(TestCase):
     def test_no_filter(self):
         filtering = {}
         r = ServiceReport(**filtering)
-        stats = normalize_stats(r.get_stats())
+        stats = normalize_stats(r._get_service_stats())
         expected = {
             Address: ((Address.service.title, 3),),
             UtilityWork: ((UtilityWork.service.title, 1),),
             SocialWork: ((SocialWork.service.title, 2), (SocialWork._meta.get_field('other').verbose_name.__unicode__(), 1)),
-            InformationService: ((InformationService.service.title, 1),),
+            # InformationService: ((InformationService.service.title, 1),),
             HarmReduction: ((HarmReduction.service.title, 1), (HarmReduction._meta.get_field('condoms').verbose_name.__unicode__(), 1), (HarmReduction._meta.get_field('in_count').verbose_name.__unicode__(), 87))
         }
         self.assertEqual(stats, expected)
@@ -57,7 +57,7 @@ class TestServiceReports(TestCase):
     def test_filter_by_person(self):
         filtering = {'person': self.client2}
         r = ServiceReport(**filtering)
-        stats = normalize_stats(r.get_stats())
+        stats = normalize_stats(r._get_service_stats())
         expected = {
             Address: ((Address.service.title, 1),)
         }
@@ -66,7 +66,7 @@ class TestServiceReports(TestCase):
     def test_filter_by_date_from(self):
         filtering = {'date_from': date(2012, 1, 1)}
         r = ServiceReport(**filtering)
-        stats = normalize_stats(r.get_stats())
+        stats = normalize_stats(r._get_service_stats())
         expected = {
             SocialWork: ((SocialWork.service.title, 1), (SocialWork._meta.get_field('other').verbose_name.__unicode__(), 1))
         }
@@ -80,9 +80,9 @@ class TestServiceReports(TestCase):
         self.assertEqual(stats, expected)
 
     def test_filter_by_town(self):
-        filtering = {'town': self.town2}
+        filtering = {'towns': [self.town2]}
         r = ServiceReport(**filtering)
-        stats = normalize_stats(r.get_stats())
+        stats = normalize_stats(r._get_service_stats())
         expected = {
             UtilityWork: ((UtilityWork.service.title, 1),)
         }
@@ -90,5 +90,5 @@ class TestServiceReports(TestCase):
 
     def test_include_in_reports(self):
         classes = [s for s in service_list() if s.service.include_in_reports]
-        stat_classes = [s[0] for s in ServiceReport().get_stats()]
+        stat_classes = [s[0] for s in ServiceReport()._get_service_stats()]
         self.assertEqual(classes, stat_classes)
