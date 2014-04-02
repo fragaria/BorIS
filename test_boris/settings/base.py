@@ -12,7 +12,7 @@ DATABASES = {
             'charset': 'utf8',
             "init_command": "SET storage_engine=INNODB",
         },
-        'TEST_CHAREST': 'utf8',
+        'TEST_CHARSET': 'utf8',
     }
 }
 

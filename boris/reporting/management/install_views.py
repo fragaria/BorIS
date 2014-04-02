@@ -7,8 +7,8 @@ from boris import reporting
 
 
 def install_views(app, **kwargs):
-    if app != 'services':
-        return # Avoid repeated runs and dependency problems.
+    if app != 'services' and app != 'tests':
+        return  # Avoid repeated runs and dependency problems.
 
     print "Installing reporting views ..."
 

@@ -51,7 +51,7 @@ class TestEncounterAggregations(TestCase):
     """ Mostly encounter aggregations are tested here. """
 
     def setUp(self):
-        install_views('')
+        install_views('tests')
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
         self.drug = get_tst_drug()
@@ -135,7 +135,7 @@ class TestServiceAggregations(TestCase):
     """ Mostly service aggregations are tested here. """
 
     def setUp(self):
-        install_views('')
+        install_views('tests')
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
         self.drug = get_tst_drug()
@@ -242,7 +242,7 @@ class TestMixedAggregations(TestCase):
     """
 
     def setUp(self):
-        install_views('')
+        install_views('tests')
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
 
@@ -281,7 +281,7 @@ class TestMixedAggregations(TestCase):
 
 class TestEncounterTotals(TestCase):
     def setUp(self):
-        install_views('')
+        install_views('tests')
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
         self.drug = get_tst_drug()
@@ -331,7 +331,7 @@ class TestEncounterTotals(TestCase):
 
 class TestServiceTotals(TestCase):
     def setUp(self):
-        install_views('')
+        install_views('tests')
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
 
@@ -364,7 +364,7 @@ class TestServiceTotals(TestCase):
 
 class TestSyringeCollection(TestCase):
     def setUp(self):
-        install_views('')
+        install_views('tests')
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
 
