@@ -104,6 +104,7 @@ DISEASES = Choices(
     (2, 'VHA', u'VHA'),
     (3, 'VHB', u'VHB'),
     (4, 'VHC', u'VHC'),
+    (5, 'SYFILIS', u'Syfilis'),
 )
 
 DISEASE_TEST_RESULTS = Choices(
