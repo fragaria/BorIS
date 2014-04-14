@@ -1,10 +1,20 @@
 from datetime import date
+import sys
+
+from django.core.handlers.wsgi import WSGIRequest
+from django.core.servers.basehttp import ServerHandler
+from django.http import Http404
 
 from django.test import TestCase
+from nose import tools
 
+import boris
 from boris.reporting.reports.services import ServiceReport
+from boris.services import views
+
 from boris.services.models import (Address, UtilityWork, SocialWork,
-    InformationService, HarmReduction, service_list)
+    InformationService, HarmReduction, service_list, Encounter)
+from boris.services.views import HandleForm
 from test_boris.helpers import (get_tst_town, get_tst_client, get_tst_drug,
     create_service)
 
@@ -92,3 +102,40 @@ class TestServiceReports(TestCase):
         classes = [s for s in service_list() if s.service.include_in_reports]
         stat_classes = [s[0] for s in ServiceReport()._get_service_stats()]
         self.assertEqual(classes, stat_classes)
+
+    def test_encounter_first(self):
+        e1 = Encounter.objects.first(2011)
+        e2 = Encounter.objects.first(2011, [self.town1])
+
+        self.assertEqual(len(e1), 6)
+        self.assertEqual(len(e2), 5)
+        self.assertEqual(e1[0].service_count(), 1)
+
+
+class TestServices(TestCase):
+    def setUp(self):
+        drug = get_tst_drug()
+        self.town1 = get_tst_town()
+        self.client1 = get_tst_client('c1', {'town': self.town1, 'primary_drug': drug})
+        self.harm_reduction = create_service(HarmReduction, self.client1, date(2011, 11, 1), self.town1)
+        self.encounter = Encounter.objects.filter(person=self.client1)[0]
+        handler = ServerHandler(sys.stdin, sys.stdout, sys.stderr, {'REQUEST_METHOD': 'POST'})
+        handler.setup_environ()
+        self.request = WSGIRequest(handler.environ)
+
+    def test_context(self):
+        ctx = HandleForm().get_context(self.request, self.encounter.id, 'HarmReduction', self.harm_reduction.id)
+        # render = HandleForm().__call__(self.request, self.encounter.id, 'HarmReduction', 1)
+        #
+        # self.assertEqual(render.status_code, 200)
+        self.assertEqual(ctx['encounter'], self.encounter)
+        self.assertFalse(ctx['is_edit'])
+        self.assertEqual(ctx['service'], HarmReduction)
+
+    def test_services_list(self):
+        services_list = views.services_list(self.request, self.encounter.id)
+        self.assertEqual(services_list.status_code, 200)
+
+    @tools.raises(Http404)
+    def test_drop_service(self):
+        views.drop_service(self.request, -1)

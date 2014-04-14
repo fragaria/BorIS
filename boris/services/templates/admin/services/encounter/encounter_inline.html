@@ -9,7 +9,7 @@
 		{% for inline_admin_form in inline_admin_formset|slice:"0" %}
 			{% if forloop.first %}{% comment %}somehow, the slice alone doesn't work{% endcomment %}
 				{% with inline_admin_form.fk_field.field.value as person_id %}
-					<a href="{% url admin:services_encounter_add %}?person_id={{ person_id }}">{% trans 'Přidat kontakt' %}</a>
+					<a href="{% url 'admin:services_encounter_add' %}?person_id={{ person_id }}">{% trans 'Přidat kontakt' %}</a>
 				{% endwith %}
 			{% endif %}
 		{% endfor %}

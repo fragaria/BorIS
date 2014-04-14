@@ -61,7 +61,7 @@
         };
 
         this.refreshServiceList = function () {
-           $('#done-services').load('{% url services_list encounter.pk %}');
+           $('#done-services').load('{% url "services_list" encounter.pk %}');
         };
 
         this.performedServiceCount = function () {

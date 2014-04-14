@@ -443,17 +443,17 @@ a.selector-chooseall, a.selector-clearall {
     line-height: 15px;
     font-weight: bold;
 }
-.link-list ul li a, 
-.feed ul li a, .feed ul li span, 
-.table-of-contents ul li a {
-    display: block;
-    padding: 5px 10px;
-    font-weight: bold;
-    line-height: 13px;
-    background-color: transparent;
-    background-position: 50% 50%;
-    background-repeat: no-repeat;
-}
+/*.link-list ul li a, */
+/*.feed ul li a, .feed ul li span, */
+/*.table-of-contents ul li a {*/
+    /*display: block;*/
+    /*padding: 5px 10px;*/
+    /*font-weight: bold;*/
+    /*line-height: 13px;*/
+    /*background-color: transparent;*/
+    /*background-position: 50% 50%;*/
+    /*background-repeat: no-repeat;*/
+/*}*/
 .actions p, 
 .link-list p, 
 .feed p {
@@ -461,10 +461,10 @@ a.selector-chooseall, a.selector-clearall {
     font-size: 11px;
     padding: 3px 10px;
 }
-.link-list ul li a, 
-.feed ul li a {
-    padding-left: 25px;
-}
+/*.link-list ul li a,*/
+/*.feed ul li a {*/
+    /*padding-left: 25px;*/
+/*}*/
 a.internal, 
 a.external {
     background-repeat: no-repeat;

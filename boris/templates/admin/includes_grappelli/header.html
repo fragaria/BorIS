@@ -7,11 +7,11 @@
     {% if user.is_authenticated and user.is_staff %}
         <ul id="user-tools">
             <!-- Username -->
-            <li class="user-options-container collapse closed">
-                <a href="javascript://" class="user-options-handler collapse-handler">{% firstof user.first_name user.username %}</a>
+            <li class="user-options-container grp-collapse grp-closed">
+                <a href="javascript://" class="user-options-handler grp-collapse-handler">{% firstof user.first_name user.username %}</a>
                 <ul class="user-options">
                     <!-- Change Password -->
-                    {% url admin:password_change as password_change_url %}
+                    {% url 'admin:password_change' as password_change_url %}
                     {% if password_change_url %}
                         <li><a href="{{ password_change_url }}">
                     {% else %}
@@ -19,7 +19,7 @@
                     {% endif %}
                     {% trans 'Change password' %}</a></li>
                     <!-- Logout -->
-                    {% url admin:logout as logout_url %}
+                    {% url 'admin:logout' as logout_url %}
                     {% if logout_url %}
                         <li><a href="{{ logout_url }}">
                     {% else %}
@@ -31,7 +31,7 @@
             <!-- Userlinks -->
             {% block userlinks %}
                 <!-- JS tests -->
-                {% url test-index as testindexurl %}
+                {% url 'test-index' as testindexurl %}
                 {% if testindexurl %}
                     <li><a href="{{ testindexurl }}">{% trans 'Tests' %}</a></li>
                 {% endif %}
@@ -42,7 +42,7 @@
                 <form>
                 <div class="autocomplete-wrapper-fk">
                     <input id="id_globalsearch_client" class="vForeignKeyRawIdAdminField" type="text" value="" name="globalsearch_client">
-                    <a id="lookup_id_globalsearch_client" class="related-lookup" href="{% url admin:clients_client_changelist %}?t=id" style="display: none;">
+                    <a id="lookup_id_globalsearch_client" class="related-lookup" href="{% url 'admin:clients_client_changelist' %}?t=id" style="display: none;">
                         <img width="16" height="16" alt="Hledat" src="/static/grappelli/img/admin/selector-search.gif">
                     </a>
                 </div>
@@ -89,8 +89,8 @@
 
 
         $(document).ready(function() {
-            $("div#header .collapse").grp_collapsible();
+            $("#header .grp-collapse").grp_collapsible();
             (new ClientSearch()).init();
         });
-    })(django.jQuery);
+    })(grp.jQuery);
 </script>

@@ -110,7 +110,7 @@
         options.wrapper_search.find("input:first")
             .bind("keydown", function(event) { // don't navigate away from the field on tab when selecting an item
                 if (event.keyCode === $.ui.keyCode.TAB) { 
-                    var w = $(this).data("autocomplete");
+                    var w = $(this).data("ui-autocomplete");
                     if (!w.menu.active) {
                         w.menu.active = $(w.menu.element).find('li:first');
                     }
@@ -160,7 +160,7 @@
                     return false;
                 }
             })
-            .data("autocomplete")._renderItem = function(ul,item) {
+            .data("ui-autocomplete")._renderItem = function(ul,item) {
                 return $("<li></li>")
                     .data( "item.autocomplete", item )
                     .append( "<a>" + item.label)

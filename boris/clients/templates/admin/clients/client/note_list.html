@@ -14,7 +14,7 @@ function add_new_note() {
         }
         $.ajax({
             type : 'POST',
-            url : '{% url admin:clients_add_note %}',
+            url : '{% url "admin:clients_add_note" %}',
             dataType: 'json',
             data : {
                 'text': $('#new_note_text').val(),

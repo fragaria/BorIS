@@ -1,36 +1,35 @@
 /**
- * GRAPPELLI AUTOCOMPLETE GENERIC
- * generic lookup with autocomplete
+ * GRAPPELLI AUTOCOMPLETE FK
+ * foreign-key lookup with autocomplete
  */
 
 (function($){
     
     var methods = {
         init: function(options) {
-            options = $.extend({}, $.fn.grp_autocomplete_generic.defaults, options);
+            options = $.extend({}, $.fn.grp_autocomplete_fk.defaults, options);
             return this.each(function() {
                 var $this = $(this);
+                // tabindex
+                $this.attr("tabindex", "-1");
+                // remove djangos object representation (if given)
+                if ($this.next().next() && $this.next().next().attr("class") != "errorlist") $this.next().next().remove();
                 // build autocomplete wrapper
-                if ($(options.content_type).val()) {
-                    $this.after(loader).after(remove_link($this.attr('id'))).after(lookup_link($this.attr("id"),$(options.content_type).val()));
-                }
-                $this.parent().wrapInner("<div class='autocomplete-wrapper-fk'></div>");
+                $this.next().after(loader).after(remove_link($this.attr('id')));
+                $this.parent().wrapInner("<div class='grp-autocomplete-wrapper-fk'></div>");
                 $this.parent().prepend("<input id='" + $this.attr("id") + "-autocomplete' type='text' class='vTextField' value='' />");
-                // defaults
+                // extend options
                 options = $.extend({
-                    wrapper_autocomplete: $(this).parent(),
-                    input_field: $(this).prev(),
+                    wrapper_autocomplete: $this.parent(),
+                    input_field: $this.prev(),
                     remove_link: $this.next().next().hide(),
                     loader: $this.next().next().next().hide()
-                }, $.fn.grp_autocomplete_generic.defaults, options);
+                }, $.fn.grp_autocomplete_fk.defaults, options);
                 // lookup
-                lookup_id($this, options);  // lookup when loading page
-                lookup_autocomplete($this, options);  // autocomplete-handler
-                $this.bind("change focus keyup blur", function() {  // id-handler
+                lookup_id($this, options); // lookup when loading page
+                lookup_autocomplete($this, options); // autocomplete-handler
+                $this.bind("change focus keyup blur", function() { // id-handler
                     lookup_id($this, options);
-                });
-                $(options.content_type).bind("change", function() {  // content-type-handler
-                    update_lookup($(this), options);
                 });
                 // labels
                 $("label[for='"+$this.attr('id')+"']").each(function() {
@@ -40,70 +39,44 @@
         }
     };
     
-    $.fn.grp_autocomplete_generic = function(method) {
+    $.fn.grp_autocomplete_fk = function(method) {
         if (methods[method]) {
             return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
         } else if (typeof method === 'object' || ! method) {
             return methods.init.apply(this, arguments);
         } else {
-            $.error('Method ' +  method + ' does not exist on jQuery.grp_autocomplete_generic');
-        };
+            $.error('Method ' +  method + ' does not exist on jQuery.grp_autocomplete_fk');
+        }
         return false;
     };
     
     var loader = function() {
-        var loader = $('<div class="loader">loader</div>');
+        var loader = $('<div class="grp-loader">loader</div>');
         return loader;
     };
     
     var remove_link = function(id) {
-        var removelink = $('<a class="related-remove"></a>');
+        var removelink = $('<a class="grp-related-remove"></a>');
         removelink.attr('id', 'remove_'+id);
         removelink.attr('href', 'javascript://');
         removelink.attr('onClick', 'return removeRelatedObject(this);');
         removelink.hover(function() {
-            $(this).parent().toggleClass("autocomplete-preremove");
+            $(this).parent().toggleClass("grp-autocomplete-preremove");
         });
         return removelink;
     };
     
-    var lookup_link = function(id, val) {
-        var lookuplink = $('<a class="related-lookup"></a>');
-        lookuplink.attr('id', 'lookup_'+id);
-        lookuplink.attr('href', "../../../" + MODEL_URL_ARRAY[val].app + "/" + MODEL_URL_ARRAY[val].model + '/?t=id');
-        lookuplink.attr('onClick', 'return showRelatedObjectLookupPopup(this);');
-        return lookuplink;
-    };
-    
-    var update_lookup = function(elem, options) {
-        var obj = $(options.object_id);
-        obj.val('');
-        obj.prev().val('');
-        obj.next().remove();
-        obj.next().remove();
-        obj.next().remove();
-        if ($(elem).val()) {
-            obj.after(loader).after(remove_link(obj.attr('id'))).after(lookup_link(obj.attr('id'),$(elem).val()));
-            options.remove_link = obj.next().next().hide();
-            options.loader = obj.next().next().next().hide();
-        }
-    };
-    
     var lookup_autocomplete = function(elem, options) {
         options.wrapper_autocomplete.find("input:first")
-            .bind("keydown", function(event) { // don't navigate away from the field on tab when selecting an item
-                var w = $(this).data("autocomplete");
-                if (event.keyCode === $.ui.keyCode.TAB && $(w.menu.element).css('display') != "none") { 
-                    if (!w.menu.active) {
-                        w.menu.active = $(w.menu.element).find('li:first');
-                    }
-                    w.menu.active.click()
-                    event.preventDefault();
-                }
+            .bind("focus", function() {
+                options.wrapper_autocomplete.addClass("grp-state-focus");
+            })
+            .bind("blur", function() {
+                options.wrapper_autocomplete.removeClass("grp-state-focus");
             })
             .autocomplete({
-                minLength: 2,
-                delay: 100,
+                minLength: 1,
+                delay: 1000,
                 source: function(request, response) {
                     $.ajax({
                         url: options.autocomplete_lookup_url,
@@ -153,11 +126,9 @@
         });
     };
     
-    $.fn.grp_autocomplete_generic.defaults = {
+    $.fn.grp_autocomplete_fk.defaults = {
         autocomplete_lookup_url: '',
-        lookup_url: '',
-        content_type: '',
-        object_id: ''
+        lookup_url: ''
     };
     
-})(django.jQuery);
+})(grp.jQuery);

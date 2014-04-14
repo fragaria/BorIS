@@ -1,4 +1,3 @@
-// Puts the included jQuery into our own namespace
-var django = {
-    "jQuery": jQuery.noConflict(true)
-};
+// dropped
+// not used in grappelli
+// kept this file to prevent 404

@@ -198,7 +198,7 @@ body {
 li.user-options-container.open a.user-options-handler {
     color: #eee !important;
 }
-li.user-options-container.open ul.user-options {
+li.user-options-container.grp-open ul.user-options {
     border-top: 1px solid #262626;
     border-bottom-left-radius: 5px; -moz-border-radius-bottomleft: 5px; -webkit-border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px; -moz-border-radius-bottomright: 5px; -webkit-border-bottom-right-radius: 5px;

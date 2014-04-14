@@ -301,9 +301,9 @@ ul.navigation-menu li li.item-collapse.item-open>a+a.item-collapse-handler:activ
 li.user-options-container.open a.user-options-handler {
     display: block;
 }
-ul.user-options {
-    display: none;
-}
+/*ul.user-options {*/
+    /*display: none;*/
+/*}*/
 li.user-options-container.open ul.user-options {
     display: block;
     position: absolute;

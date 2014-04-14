@@ -8,9 +8,9 @@
 (function($) {
     $.fn.grp_collapsible = function(options){
         var defaults = {
-            toggle_handler_slctr: ".collapse-handler:first",
-            closed_css: "closed",
-            open_css: "open",
+            toggle_handler_slctr: ".grp-collapse-handler:first",
+            closed_css: "grp-closed",
+            open_css: "grp-open",
             on_init: function() {},
             on_toggle: function() {}
         };
@@ -29,6 +29,7 @@
     var _register_toggle_handler = function(elem, options) {
         elem.children(options.toggle_handler_slctr).click(function() {
             elem.toggleClass(options.closed_css).toggleClass(options.open_css);
+            options.on_toggle(elem, options);
         });
     };
-})(django.jQuery);
+})(grp.jQuery);

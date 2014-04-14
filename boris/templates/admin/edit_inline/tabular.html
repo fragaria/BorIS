@@ -1,4 +1,4 @@
-{% load i18n adminmedia grp_tags %}
+{% load i18n grp_tags %}
 {% comment %}
 The only difference to the original grapelli template is in the addition of blocks to certain places.
 {% endcomment %}
@@ -112,12 +112,12 @@ The only difference to the original grapelli template is in the addition of bloc
         $.each(related_lookup_fields_fk, function() {
             $("#{{ inline_admin_formset.formset.prefix }}-group > div.table > div:not(.empty-form)")
             .find("input[name^='" + prefix + "'][name$='" + this + "']")
-            .grp_related_fk({lookup_url:"{% url grp_related_lookup %}"});
+            .grp_related_fk({lookup_url:"{% url 'grp_related_lookup' %}"});
         });
         $.each(related_lookup_fields_m2m, function() {
             $("#{{ inline_admin_formset.formset.prefix }}-group > div.table > div:not(.empty-form)")
             .find("input[name^='" + prefix + "'][name$='" + this + "']")
-            .grp_related_m2m({lookup_url:"{% url grp_m2m_lookup %}"});
+            .grp_related_m2m({lookup_url:"{% url 'grp_m2m_lookup' %}"});
         });
         $.each(related_lookup_fields_generic, function() {
             var content_type = this[0],
@@ -129,7 +129,7 @@ The only difference to the original grapelli template is in the addition of bloc
                 if (i) {
                     var ct_id = "#id_" + prefix + i[0] + content_type,
                         obj_id = "#id_" + prefix + i[0] + object_id;
-                    $(this).grp_related_generic({content_type:ct_id, object_id:obj_id, lookup_url:"{% url grp_related_lookup %}"});
+                    $(this).grp_related_generic({content_type:ct_id, object_id:obj_id, lookup_url:"{% url 'grp_related_lookup' %}"});
                 }
             });
         });
@@ -138,8 +138,8 @@ The only difference to the original grapelli template is in the addition of bloc
             .find("input[name^='" + prefix + "'][name$='" + this + "']")
             .each(function() {
                 $(this).grp_autocomplete_fk({
-                    lookup_url:"{% url grp_related_lookup %}",
-                    autocomplete_lookup_url:"{% url grp_autocomplete_lookup %}"
+                    lookup_url:"{% url 'grp_related_lookup' %}",
+                    autocomplete_lookup_url:"{% url 'grp_autocomplete_lookup' %}"
                 });
             });
         });
@@ -148,8 +148,8 @@ The only difference to the original grapelli template is in the addition of bloc
             .find("input[name^='" + prefix + "'][name$='" + this + "']")
             .each(function() {
                 $(this).grp_autocomplete_m2m({
-                    lookup_url:"{% url grp_m2m_lookup %}",
-                    autocomplete_lookup_url:"{% url grp_autocomplete_lookup %}"
+                    lookup_url:"{% url 'grp_m2m_lookup' %}",
+                    autocomplete_lookup_url:"{% url 'grp_autocomplete_lookup' %}"
                 });
             });
         });
@@ -166,8 +166,8 @@ The only difference to the original grapelli template is in the addition of bloc
                     $(this).grp_autocomplete_generic({
                         content_type:ct_id,
                         object_id:obj_id,
-                        lookup_url:"{% url grp_related_lookup %}",
-                        autocomplete_lookup_url:"{% url grp_autocomplete_lookup %}"
+                        lookup_url:"{% url 'grp_related_lookup' %}",
+                        autocomplete_lookup_url:"{% url 'grp_autocomplete_lookup' %}"
                     });
                 }
             });
@@ -181,11 +181,11 @@ The only difference to the original grapelli template is in the addition of bloc
                 grappelli.updateSelectFilter(form);
                 $.each(related_lookup_fields_fk, function() {
                     form.find("input[name^='" + prefix + "'][name$='" + this + "']")
-                    .grp_related_fk({lookup_url:"{% url grp_related_lookup %}"});
+                    .grp_related_fk({lookup_url:"{% url 'grp_related_lookup' %}"});
                 });
                 $.each(related_lookup_fields_m2m, function() {
                     form.find("input[name^='" + prefix + "'][name$='" + this + "']")
-                    .grp_related_m2m({lookup_url:"{% url grp_m2m_lookup %}"});
+                    .grp_related_m2m({lookup_url:"{% url 'grp_m2m_lookup' %}"});
                 });
                 $.each(related_lookup_fields_generic, function() {
                     var content_type = this[0],
@@ -196,7 +196,7 @@ The only difference to the original grapelli template is in the addition of bloc
                         if (i) {
                             var ct_id = "#id_" + prefix + i[0] + content_type,
                                 obj_id = "#id_" + prefix + i[0] + object_id;
-                            $(this).grp_related_generic({content_type:ct_id, object_id:obj_id, lookup_url:"{% url grp_related_lookup %}"});
+                            $(this).grp_related_generic({content_type:ct_id, object_id:obj_id, lookup_url:"{% url 'grp_related_lookup' %}"});
                         }
                     });
                 });
@@ -204,8 +204,8 @@ The only difference to the original grapelli template is in the addition of bloc
                     form.find("input[name^='" + prefix + "'][name$='" + this + "']")
                     .each(function() {
                         $(this).grp_autocomplete_fk({
-                            lookup_url:"{% url grp_related_lookup %}",
-                            autocomplete_lookup_url:"{% url grp_autocomplete_lookup %}"
+                            lookup_url:"{% url 'grp_related_lookup' %}",
+                            autocomplete_lookup_url:"{% url 'grp_autocomplete_lookup' %}"
                         });
                     });
                 });
@@ -213,8 +213,8 @@ The only difference to the original grapelli template is in the addition of bloc
                     form.find("input[name^='" + prefix + "'][name$='" + this + "']")
                     .each(function() {
                         $(this).grp_autocomplete_m2m({
-                            lookup_url:"{% url grp_m2m_lookup %}",
-                            autocomplete_lookup_url:"{% url grp_autocomplete_lookup %}"
+                            lookup_url:"{% url 'grp_m2m_lookup' %}",
+                            autocomplete_lookup_url:"{% url 'grp_autocomplete_lookup' %}"
                         });
                     });
                 });
@@ -230,8 +230,8 @@ The only difference to the original grapelli template is in the addition of bloc
                             $(this).grp_autocomplete_generic({
                                 content_type:ct_id,
                                 object_id:obj_id,
-                                lookup_url:"{% url grp_related_lookup %}",
-                                autocomplete_lookup_url:"{% url grp_autocomplete_lookup %}"
+                                lookup_url:"{% url 'grp_related_lookup' %}",
+                                autocomplete_lookup_url:"{% url 'grp_autocomplete_lookup' %}"
                             });
                         }
                     });

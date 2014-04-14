@@ -155,10 +155,10 @@ class EncounterAdmin(BorisBaseAdmin):
             return db_field.formfield(**kwargs)
         return super(EncounterAdmin, self).formfield_for_dbfield(db_field, **kwargs)
 
-    def show_save_and_add_another(self, obj): return bool(obj.pk)
+    def show_save_and_add_another(self, obj): return bool(obj and obj.pk)
 
     def button_captions(self, obj):
-        if not obj.pk:
+        if not obj or not obj.pk:
             return {'BO_SAVE_CAPTION': _(u'Přidat výkony')}
         return {}
 

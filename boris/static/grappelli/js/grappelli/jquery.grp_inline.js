@@ -10,12 +10,12 @@
             prefix: "form",                         // The form prefix for your django formset
             addText: "add another",                 // Text for the add link
             deleteText: "remove",                   // Text for the delete link
-            addCssClass: "add-handler",             // CSS class applied to the add link
-            removeCssClass: "remove-handler",       // CSS class applied to the remove link
-            deleteCssClass: "delete-handler",       // CSS class applied to the delete link
-            emptyCssClass: "empty-form",            // CSS class applied to the empty row
-            formCssClass: "dynamic-form",           // CSS class applied to each form in a formset
-            predeleteCssClass: "predelete",
+            addCssClass: "grp-add-handler",             // CSS class applied to the add link
+            removeCssClass: "grp-remove-handler",       // CSS class applied to the remove link
+            deleteCssClass: "grp-delete-handler",       // CSS class applied to the delete link
+            emptyCssClass: "grp-empty-form",            // CSS class applied to the empty row
+            formCssClass: "grp-dynamic-form",           // CSS class applied to each form in a formset
+            predeleteCssClass: "grp-predelete",
             onBeforeInit: function(form) {},        // Function called before a form is initialized
             onBeforeAdded: function(inline) {},     // Function called before a form is added
             onBeforeRemoved: function(form) {},     // Function called before a form is removed
@@ -43,31 +43,33 @@
     };
     
     updateFormIndex = function(elem, options, replace_regex, replace_with) {
-        elem.find(':input,span,table,iframe,label,a,ul,p,img').each(function() {
+        elem.find(':input,span,table,iframe,label,a,ul,p,img,div').each(function() {
             var node = $(this),
                 node_id = node.attr('id'),
                 node_name = node.attr('name'),
                 node_for = node.attr('for'),
                 node_href = node.attr("href");
+                node_class = node.attr("class");
             if (node_id) { node.attr('id', node_id.replace(replace_regex, replace_with)); }
             if (node_name) { node.attr('name', node_name.replace(replace_regex, replace_with)); }
             if (node_for) { node.attr('for', node_for.replace(replace_regex, replace_with)); }
             if (node_href) { node.attr('href', node_href.replace(replace_regex, replace_with)); }
+            if (node_class) { node.attr('class', node_class.replace(replace_regex, replace_with)); }
         });
     };
     
     initInlineForms = function(elem, options) {
-        elem.find("div.module").each(function() {
+        elem.find("div.grp-module").each(function() {
             var form = $(this);
             // callback
             options.onBeforeInit(form);
             // add options.formCssClass to all forms in the inline
             // except table/theader/add-item
             if (form.attr('id') !== "") {
-                form.not("." + options.emptyCssClass).not(".table").not(".thead").not(".add-item").addClass(options.formCssClass);
+                form.not("." + options.emptyCssClass).not(".grp-table").not(".grp-thead").not(".add-item").addClass(options.formCssClass);
             }
             // add options.predeleteCssClass to forms with the delete checkbox checked
-            form.find("li.delete-handler-container input").each(function() {
+            form.find("li.grp-delete-handler-container input").each(function() {
                 if ($(this).attr("checked") && form.hasClass("has_original")) {
                     form.toggleClass(options.predeleteCssClass);
                 }
@@ -89,7 +91,7 @@
     
     addButtonHandler = function(elem, options) {
         elem.bind("click", function() {
-            var inline = elem.parents("div.group"),
+            var inline = elem.parents(".grp-group"),
                 totalForms = inline.find("#id_" + options.prefix + "-TOTAL_FORMS"),
                 maxForms = inline.find("#id_" + options.prefix + "-MAX_NUM_FORMS"),
                 addButtons = inline.find("a." + options.addCssClass),
@@ -100,16 +102,20 @@
             var index = parseInt(totalForms.val(), 10),
                 form = empty_template.clone(true);
             form.removeClass(options.emptyCssClass)
-                .attr("id", empty_template.attr('id').replace("-empty", index))
-                .insertBefore(empty_template)
-                .addClass(options.formCssClass);
+                .attr("id", empty_template.attr('id').replace("-empty", index));
             // update form index
             var re = /__prefix__/g;
             updateFormIndex(form, options, re, index);
+            // after "__prefix__" strings has been substituted with the number
+            // of the inline, we can add the form to DOM, not earlier.
+            // This way we can support handlers that track live element
+            // adding/removing, like those used in django-autocomplete-light
+            form.insertBefore(empty_template)
+                .addClass(options.formCssClass);
             // update total forms
             totalForms.val(index + 1);
             // hide add button in case we've hit the max, except we want to add infinitely
-            if ((maxForms.val() !== 0) && (maxForms.val() != "") && (maxForms.val() - totalForms.val()) <= 0) {
+            if ((maxForms.val() !== 0) && (maxForms.val() !== "") && (maxForms.val() - totalForms.val()) <= 0) {
                 hideAddBottons(inline, options);
             }
             // callback
@@ -119,7 +125,7 @@
     
     removeButtonHandler = function(elem, options) {
         elem.bind("click", function() {
-            var inline = elem.parents("div.group"),
+            var inline = elem.parents(".grp-group"),
                 form = $(this).parents("." + options.formCssClass).first(),
                 totalForms = inline.find("#id_" + options.prefix + "-TOTAL_FORMS"),
                 maxForms = inline.find("#id_" + options.prefix + "-MAX_NUM_FORMS");
@@ -168,12 +174,12 @@
     
     hideAddBottons = function(elem, options) {
         var addButtons = elem.find("a." + options.addCssClass);
-        addButtons.hide().parents('div.add-item').hide();
+        addButtons.hide().parents('.grp-add-item').hide();
     };
     
     showAddButtons = function(elem, options) {
         var addButtons = elem.find("a." + options.addCssClass);
-        addButtons.show().parents('div.add-item').show();
+        addButtons.show().parents('.grp-add-item').show();
     };
     
-})(django.jQuery);
+})(grp.jQuery);

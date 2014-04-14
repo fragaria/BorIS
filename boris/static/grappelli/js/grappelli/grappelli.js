@@ -2,31 +2,20 @@
  * GRAPPELLI UTILS
  * functions needed for Grappelli
  */
- 
-var django = {
+
+// grp jQuery namespace
+var grp = {
     "jQuery": jQuery.noConflict(true)
 };
 
+// django jQuery namespace
+var django = {
+    "jQuery": grp.jQuery.noConflict(true)
+};
+
+// var jQuery = grp.jQuery.noConflict(true);
+
 (function($) {
-	// set jQuery UI datepicker defaults
-	$.datepicker.regional['us'] = {
-        closeText : gettext('Done'),
-        prevText : gettext('Prev'),
-        nextText : gettext('Next'),
-        currentText : gettext('Today'),
-        monthNames : [gettext('January'), gettext('February'), gettext('March'), gettext('April'), gettext('May'), gettext('June'), gettext('July'), gettext('August'), gettext('September'), gettext('October'), gettext('November'), gettext('December')],
-        monthNamesShort : [gettext('Jan'), gettext('Feb'), gettext('Mar'), gettext('Apr'), gettext('May'), gettext('Jun'), gettext('Jul'), gettext('Aug'), gettext('Sep'), gettext('Oct'), gettext('Nov'), gettext('Dec')],
-        dayNames : [gettext('Sunday'), gettext('Monday'), gettext('Tuesday'), gettext('Wednesday'), gettext('Thursday'), gettext('Friday'), gettext('Saturday')],
-        dayNamesShort : [gettext('Sun'), gettext('Mon'), gettext('Tue'), gettext('Wed'), gettext('Thu'), gettext('Fri'), gettext('Sat')],
-        dayNamesMin : [gettext('Su'), gettext('Mo'), gettext('Tu'), gettext('We'), gettext('Th'), gettext('Fr'), gettext('Sa')],
-        weekHeader : gettext('Wk'),
-        dateFormat : gettext('yy-mm-dd'),
-        firstDay : gettext('7'),
-        isRTL : false,
-        showMonthAfterYear : false,
-        yearSuffix : ''
-    };
-    $.datepicker.setDefaults($.datepicker.regional['us']);
     
     // dateformat
     grappelli.getFormat = function(type) {
@@ -82,22 +71,33 @@ var django = {
         
         // init timepicker
         $("input[class*='vTimeField']:not([id*='__prefix__'])").grp_timepicker();
+
+        // now-button for both date and time
+        // $("<button class='ui-datetime-now' />").insertAfter("button.ui-timepicker-trigger");
+        // $(".ui-datetime-now").live('click', function() {
+        //     alert("Now for date and time: grappelli.js line 68 ff.");
+        //     return false
+        // });
+        
     };
     
     // changelist: filter
     grappelli.initFilter = function() {
-        $("a.toggle-filters").click(function() {
-            $(".filter-pulldown").toggle();
-            $("#filters").toggleClass("open");
+        $("a.grp-pulldown-handler").click(function() {
+            var pulldownContainer = $(this).closest(".grp-pulldown-container");
+            $(pulldownContainer).toggleClass("grp-pulldown-state-open").children(".grp-pulldown-content").toggle();
         });
-        $(".filter_choice").change(function(){
+        $("a.grp-pulldown-handler").bind('mouseout', function() {
+            $(this).blur();
+        });
+        $(".grp-filter-choice").change(function(){
             location.href = $(this).val();
         });
     };
     
     // changelist: searchbar
     grappelli.initSearchbar = function() {
-        var searchbar = $("input#searchbar");
+        var searchbar = $("input.grp-search-field");
         searchbar.focus();
     };
     
@@ -150,5 +150,5 @@ var django = {
         return false;
     };
     
-})(django.jQuery);
+})(grp.jQuery);
 

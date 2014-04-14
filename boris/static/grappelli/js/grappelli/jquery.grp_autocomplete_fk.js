@@ -67,7 +67,7 @@
     var lookup_autocomplete = function(elem, options) {
         options.wrapper_autocomplete.find("input:first")
             .bind("keydown", function(event) { // don't navigate away from the field on tab when selecting an item
-                var w = $(this).data("autocomplete");
+                var w = $(this).data("ui-autocomplete");
                 if (event.keyCode === $.ui.keyCode.TAB && $(w.menu.element).css('display') != "none") { 
                     if (!w.menu.active) {
                         w.menu.active = $(w.menu.element).find('li:first');
@@ -107,9 +107,9 @@
                     return false;
                 }
             })
-            .data("autocomplete")._renderItem = function(ul,item) {
+            .data("ui-autocomplete")._renderItem = function(ul,item) {
                 return $("<li></li>")
-                    .data( "item.autocomplete", item )
+                    .data( "ui-item.autocomplete", item )
                     .append( "<a>" + item.label)
                     .appendTo(ul);
             };

@@ -45,7 +45,7 @@ class CustomIndexDashboard(Dashboard):
                 _(u'Administrace'),
                 column=1,
                 collapsible=True,
-                css_classes=('collapse closed',),
+                css_classes=('grp-collapse grp-closed',),
         ))
 
         # append another link list module for "support".

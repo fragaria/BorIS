@@ -39,7 +39,7 @@ class ServiceForm(ReportForm):
                                            required=False)
     person = forms.ModelChoiceField(label=_(u'Osoba'),
         queryset=Person.objects.all(), required=False,
-        widget=ForeignKeyRawIdWidget(Encounter.person.field.rel))
+        widget=ForeignKeyRawIdWidget(Encounter.person.field.rel, None))
 
 
 class HygieneForm(ReportForm):

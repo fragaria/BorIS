@@ -76,7 +76,7 @@ class BorisBaseAdmin(ModelAdmin):
     select_link.short_description = ''
 
     def show_save(self, obj):
-        if not obj.pk:
+        if not obj or not obj.pk:
             return True
         return False
 
@@ -125,8 +125,7 @@ class BorisBaseAdmin(ModelAdmin):
             extra_context.update(buttons_context)
         else:
             extra_context = buttons_context
-        return super(BorisBaseAdmin, self).change_view(request, object_id,
-            extra_context)
+        return super(BorisBaseAdmin, self).change_view(request, object_id, str(extra_context))
 
     @csrf_protect_m
     @transaction.commit_on_success
@@ -145,5 +144,4 @@ class BorisBaseAdmin(ModelAdmin):
             extra_context.update(buttons_context)
         else:
             extra_context = buttons_context
-        return super(BorisBaseAdmin, self).add_view(request, form_url,
-            extra_context)
+        return super(BorisBaseAdmin, self).add_view(request, form_url, extra_context)
