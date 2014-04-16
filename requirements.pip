@@ -3,7 +3,7 @@ django==1.3.1
 south
 #django-grappelli==2.3.7
 # temporary till pull request is accepted
--e git+https://github.com/fragaria/django-grappelli.git#egg=grappelli
+-e git+https://github.com/fragaria/django-grappelli.git@stable#egg=grappelli
 raven>=3.3.3
 fragapy==1.2.5
 gunicorn
