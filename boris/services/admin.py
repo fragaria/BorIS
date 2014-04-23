@@ -19,7 +19,7 @@ service_list.allow_tags = True
 
 class EncounterInline(admin.TabularInline):
     model = Encounter
-    classes = ('collapse closed',)
+    classes = ('grp-collapse', 'grp-closed',)
     fieldsets = (
         (None, {
             'fields': ('performed_on', 'where', 'performed_by_verbose',
@@ -102,7 +102,7 @@ class EncounterAdmin(BorisBaseAdmin):
         if redir_prefill is not None:
             return redir_prefill
         return super(EncounterAdmin, self).response_add(request, obj,
-            post_url_continue)
+            post_url_continue % obj.person.id)
 
     def _prefill_by_encounter(self, db_field, kwargs, encounter_id):
         if db_field.name in ('person', 'where', 'performed_by', 'performed_on'):

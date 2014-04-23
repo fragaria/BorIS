@@ -88,7 +88,24 @@ ul.messagelist { top: 5px; }
 #header { height: 40px; line-height: 24px; }
 #header a:link { color: #39bae5; }
 
-#changelist .changelist-results table td, #changelist .changelist-results table th { padding: 5px 30px 5px 10px; } 
+#changelist .changelist-results table td, #changelist .changelist-results table th { padding: 5px 30px 5px 10px; }
+
+ul.grp-object-tools {
+    z-index: 800;
+}
+
+.grp-object-tools li a {
+    background: -webkit-gradient(linear, left top, left bottom, from(#444), to(#222));
+    background: -o-linear-gradient(top, #444, #222);
+}
+
+.grp-object-tools li a, .grp-object-tools li a:hover {
+    border: 0px solid white !important;
+}
+
+.add-item > a.grp-add-handler {
+    display: block !important;
+}
 
 /* TAB fix */
 .ui-tabs-nav { border: 0 !important; }

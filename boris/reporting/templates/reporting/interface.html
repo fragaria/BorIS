@@ -18,7 +18,7 @@
                     autocomplete_lookup_url:"/grappelli/lookup/autocomplete/"
                 });
             });
-        })(django.jQuery);
+        })(grp.jQuery);
     </script>
     <style>
         .form-container input {
@@ -38,7 +38,7 @@
 <!-- CONTENT -->
 {% block content %}
     <div class="container-flexible" id="tabs">
-        <h1>{% trans "Výstupy" %}</h1>
+        <h1>{% trans "Výstupy" %}xxxxxxxxx</h1>
         <ul>
             {% for tab, form in tabs %}
             <li><a href="#tabs-{{ forloop.counter }}">{{ tab.get_title }}</a></li>
@@ -54,8 +54,8 @@
     </div>
 
     <script type="text/javascript">
-        django.jQuery(document).ready(function () {
-            django.jQuery('#tabs').tabs({cookie: {expires: 1}});
+        grp.jQuery(document).ready(function () {
+            grp.jQuery('#tabs').tabs({cookie: {expires: 1}});
         });
     </script>
 {% endblock %}

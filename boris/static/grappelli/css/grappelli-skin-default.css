@@ -1297,7 +1297,7 @@ select:focus * {
 
 /*  Searchbar ................................................... */
 
-form#changelist-search {
+form#grp-changelist-search-form {
     border: 1px solid #fff;
     border-radius: 15px; -moz-border-radius: 15px; -webkit-border-radius: 15px;
 }

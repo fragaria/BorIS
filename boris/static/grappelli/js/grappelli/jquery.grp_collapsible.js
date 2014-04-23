@@ -8,7 +8,7 @@
 (function($) {
     $.fn.grp_collapsible = function(options){
         var defaults = {
-            toggle_handler_slctr: ".grp-collapse-handler:first",
+            toggle_handler_slctr: ".grp-collapse-handler",
             closed_css: "grp-closed",
             open_css: "grp-open",
             on_init: function() {},

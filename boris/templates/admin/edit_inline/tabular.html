@@ -3,18 +3,19 @@
 The only difference to the original grapelli template is in the addition of blocks to certain places.
 {% endcomment %}
 
+<br style="clear: both">
 <!-- group -->
-<div class="group tabular{% if inline_admin_formset.opts.classes %} {{ inline_admin_formset.opts.classes|join:" " }}{% endif %}"
-    id="{{ inline_admin_formset.formset.prefix }}-group" >
-    <h2 class="collapse-handler">{% if inline_admin_formset.opts.title %}{{ inline_admin_formset.opts.title }}{% else %}{{ inline_admin_formset.opts.verbose_name_plural|capfirst }}{% endif %}</h2>
+<div class="group tabular{% if inline_admin_formset.opts.classes %} {{ inline_admin_formset.opts.classes|join:" " }}{% endif %}" id="{{ inline_admin_formset.formset.prefix }}-group" >
+    <h2 class="grp-collapse-handler">{% if inline_admin_formset.opts.title %}{{ inline_admin_formset.opts.title }}{% else %}{{ inline_admin_formset.opts.verbose_name_plural|capfirst }}{% endif %}</h2>
+
     {% block add-tools-upper %}
         <ul class="tools">
             <li class="add-handler-container"><a href="javascript://" class="icon add-handler" title="{% trans 'Add Another' %}"> </a></li>
         </ul>
-	{% endblock %}
+    {% endblock %}
     {{ inline_admin_formset.formset.management_form }}
     {{ inline_admin_formset.formset.non_form_errors }}
-    <!-- container -->
+<!-- container -->
     <div class="module table">
         <div class="module thead">
             <div class="tr">
@@ -101,7 +102,7 @@ The only difference to the original grapelli template is in the addition of bloc
 <script type="text/javascript">
 (function($) {
     $(document).ready(function($) {
-        
+
         var prefix = "{{ inline_admin_formset.formset.prefix }}";
         var related_lookup_fields_fk = {% get_related_lookup_fields_fk inline_admin_formset.opts %};
         var related_lookup_fields_m2m = {% get_related_lookup_fields_m2m inline_admin_formset.opts %};
@@ -278,5 +279,5 @@ The only difference to the original grapelli template is in the addition of bloc
         {% endif %}
         
     });
-})(django.jQuery);
+})(grp.jQuery);
 </script>

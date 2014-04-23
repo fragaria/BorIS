@@ -180,7 +180,7 @@ input[type=text], input[type=password] {
 
 /*  Searchbar ................................................... */
 
-form#changelist-search {
+form#grp-changelist-search-form {
     position: relative;
     float: left;
     clear: both;
