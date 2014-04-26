@@ -10,9 +10,6 @@
     {% endblock %}
     <!-- STYLESHEETS -->
     {% block stylesheets %}
-        <link href="{{ STATIC_URL }}grappelli/stylesheets/screen.css" rel="stylesheet" type="text/css" />
-        <link href="{{ STATIC_URL }}grappelli/stylesheets/mueller/screen.css" rel="stylesheet" type="text/css" />
-        <link href="{{ STATIC_URL }}grappelli/stylesheets/mueller/grid/output.css" rel="stylesheet" type="text/css" />
         <link href="{% static 'grappelli/css/base.css' %}" rel="stylesheet" type="text/css" />
         {% if not user.is_authenticated %}
             <link href="{% static 'admin/css/login.css' %}" rel="stylesheet" type="text/css" />
