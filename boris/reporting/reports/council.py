@@ -28,7 +28,9 @@ class GovCouncilReport(BaseReport):
         self.kind = 'clients' if int(kind) == 1 else 'services'
 
     def get_filename(self):
-        return 'vystup_pro_rvkpp.xls'
+        if self.kind == 'clients':
+            return 'RVKPP_klienti.xls'
+        return 'RVKPP_vykony.xls'
 
     def _get_anonymous_ids(self):
         if not hasattr(self, '_anonymous_ids'):
@@ -130,7 +132,7 @@ class GovCouncilReport(BaseReport):
             (_(u'Osobní kontakt s klienty'), directly_encountered_clients_count,
                 direct_client_encounters.count()),
             (_(u'– z toho prvních kontaktů'), clients(IncomeExamination),
-                services(IncomeExamination)),
+                services(IncomeExamination) - anon(IncomeExamination)),
             (_(u'Úkony potřebné pro zajištění práce s klientem'), 'xxx',
                 services(Address)),
             (_(u'Kontaktní práce'), clients(ContactWork) + anon(ContactWork),
