@@ -58,9 +58,25 @@ EDUCATION_LEVELS = Choices(
     (6, 'BASIC_NOT_COMPLETED', u'Neukončené základní'),
     (7, 'UNKNOWN', u'Není známo')
 )
-DRUGS = Choices( # TODO: Fill in
-    (1, 'HEROIN', u'Heroin'),
-    (2, 'PERVITIN', u'Pervitin'),
+DRUGS = Choices( # (Numbers reflect the old drug ids.)
+    (3, 'METHAMPHETAMINE', u'Pervitin, jiné amfetaminy'),
+    (4, 'SUBUTEX_LEGAL', u'Subutex, Ravata, Buprenorphine alkaloid - legálně'),
+    (5, 'TOBACCO', u'Tabák'),
+    (8, 'THC', u'THC'),
+    (9, 'ECSTASY', u'Extáze, LSD, lysohlávky'),
+    (10, 'DESIGNER_DRUGS', u'Designer drugs'),
+    (11, 'HEROIN', u'Heroin'),
+    (12, 'BRAUN', u'Braun a jiné opiáty'),
+    (13, 'RAW_OPIUM', u'Surové opium'),
+    (14, 'SUBUTEX_ILLEGAL', u'Subutex, Ravata, Buprenorphine alkaloid - ilegálně'),
+    (15, 'CIGARETTES', u'Cigarety'),
+    (16, 'ALCOHOL', u'Alkohol',),
+    (17, 'INHALER_DRUGS', u'Inhalační látky, ředidla'),
+    (18, 'MEDICAMENTS', u'Medikamenty'),
+    (19, 'METHADONE', u'Metadon'),
+    (20, 'COCAINE', u'Kokain, crack'),
+    (21, 'SUBOXONE', u'Suboxone'),
+    (22, 'VENDAL', u'Vendal'),
 )
 DRUG_APPLICATION_FREQUENCY = Choices(
     (1, 'LESS_THAN_3X_A_MONTH', u'méně než 3x měsíčně'),
