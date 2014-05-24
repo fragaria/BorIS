@@ -126,8 +126,7 @@ class GovCouncilReport(BaseReport):
             'performed_on__gte': self.datetime_from,
             'performed_on__lte': self.datetime_to,
         }
-        exclude = {'person__in': self._get_anonymous_ids()}
-        encounters = Encounter.objects.filter(**filtering).exclude(**exclude)
+        encounters = Encounter.objects.filter(**filtering)
         clients = encounters.values_list('person', flat=True)
         return Client.objects.filter(pk__in=clients).exclude(primary_drug=None)
 
@@ -137,8 +136,7 @@ class GovCouncilReport(BaseReport):
             'performed_on__gte': self.datetime_from,
             'performed_on__lte': self.datetime_to,
         }
-        exclude = {'person__in': self._get_anonymous_ids()}
-        encounters = Encounter.objects.filter(**filtering).exclude(**exclude)
+        encounters = Encounter.objects.filter(**filtering)
         clients = encounters.values_list('person', flat=True)
         return Client.objects.filter(pk__in=clients).filter(
             Q(close_person=True) | Q(sex_partner=True))
