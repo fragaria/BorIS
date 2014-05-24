@@ -33,6 +33,8 @@ class GovCouncilReport(BaseReport):
             return 'RVKPP_klienti.xls'
         return 'RVKPP_vykony.xls'
 
+    # Functions used for service-related computations.
+
     def _get_anonymous_ids(self):
         if not hasattr(self, '_anonymous_ids'):
             self._anonymous_ids = Anonymous.objects.values_list('pk', flat=True)
@@ -114,8 +116,12 @@ class GovCouncilReport(BaseReport):
         anonymous_ids = self._get_anonymous_ids()
         return len(set(person_ids) - set(anonymous_ids))
 
-    # Clients functions
+    # <--
+
+    # Functions used for client-related computations
+
     def _get_all_drug_users(self):
+        """Return all non-anonymous drug users from the given time period."""
         filtering = {
             'performed_on__gte': self.datetime_from,
             'performed_on__lte': self.datetime_to,
@@ -126,6 +132,7 @@ class GovCouncilReport(BaseReport):
         return Client.objects.filter(pk__in=clients).exclude(primary_drug=None)
 
     def _get_clients_non_drug_users(self):
+        """Return all sex partners and close persons from the given time period."""
         filtering = {
             'performed_on__gte': self.datetime_from,
             'performed_on__lte': self.datetime_to,
@@ -137,10 +144,12 @@ class GovCouncilReport(BaseReport):
             Q(close_person=True) | Q(sex_partner=True))
 
     def _get_primary_drug_users(self, *drugs):
+        """Return all clients with primary drugs from the given ones."""
         clients = self._get_all_drug_users()
         return clients.filter(primary_drug__in=drugs)
 
     def _get_average_age(self, clients):
+        """Get the average age of the input clients."""
         years = [c.birthdate.year for c in clients if c.birthdate]
         this_year = date.today().year
         ages = [this_year - year for year in years]
