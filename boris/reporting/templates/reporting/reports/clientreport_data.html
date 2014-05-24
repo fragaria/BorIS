@@ -13,7 +13,7 @@
 				<td>{{ client.town }}</td>
 				<td>{{ client.type_ }}</td>
 				{% if client.primary_drug %}
-					<td>{{ client.primary_drug }}</td>
+					<td>{{ client.get_primary_drug_display }}</td>
 				{% else %}
 					<td>Neuvedeno</td>
 				{% endif %}
