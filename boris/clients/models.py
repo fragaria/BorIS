@@ -14,7 +14,7 @@ from boris.classification import SEXES, NATIONALITIES, \
     ETHNIC_ORIGINS, LIVING_CONDITIONS, ACCOMODATION_TYPES, EMPLOYMENT_TYPES, \
     DRUG_APPLICATION_FREQUENCY, DRUG_APPLICATION_TYPES, \
     DISEASES, DISEASE_TEST_RESULTS, EDUCATION_LEVELS, ANONYMOUS_TYPES, \
-    RISKY_BEHAVIOR_KIND, RISKY_BEHAVIOR_PERIODICITY
+    RISKY_BEHAVIOR_KIND, RISKY_BEHAVIOR_PERIODICITY, DRUGS
 from django.contrib.contenttypes.models import ContentType
 
 
@@ -30,12 +30,6 @@ class IndexedStringEnum(models.Model, AdminLinkMixin):
     @staticmethod
     def autocomplete_search_fields():
         return ('title__icontains',)
-
-
-class Drug(IndexedStringEnum):
-    class Meta:
-        verbose_name = _(u'Droga')
-        verbose_name_plural = _(u'Drogy')
 
 
 class Region(IndexedStringEnum):
@@ -180,7 +174,8 @@ class Client(Person):
     birthdate_year_only = models.BooleanField(default=False,
         verbose_name=_(u'Známý pouze rok'))
     town = models.ForeignKey(Town, verbose_name=_(u'Město'))
-    primary_drug = models.ForeignKey(Drug, blank=True, null=True, verbose_name=_(u'Primární droga'))
+    primary_drug = models.PositiveSmallIntegerField(blank=True, null=True,
+            choices=DRUGS, verbose_name=_(u'Primární droga'))
     primary_drug_usage = models.PositiveSmallIntegerField(blank=True, null=True,
         choices=DRUG_APPLICATION_TYPES, verbose_name=_(u'Způsob aplikace'))
     close_person = models.BooleanField(default=False,
@@ -242,9 +237,6 @@ class Anamnesis(TimeStampedModel, AdminLinkMixin):
         default=EDUCATION_LEVELS.UNKNOWN, verbose_name=_(u'Vzdělání'))
     been_cured_before = models.BooleanField(verbose_name=_(u'Dříve léčen'))
     been_cured_currently = models.BooleanField(verbose_name=_(u'Nyní léčen'))
-
-    drugs = models.ManyToManyField(Drug, through='DrugUsage',
-        verbose_name=_(u'Užívané drogy'))
 
     @property
     def birth_year(self):
@@ -326,7 +318,7 @@ class ClientNote(models.Model):
 
 
 class DrugUsage(models.Model):
-    drug = models.ForeignKey(Drug, verbose_name=_(u'Droga'))
+    drug = models.PositiveSmallIntegerField(choices=DRUGS, verbose_name=_(u'Droga'))
     anamnesis = models.ForeignKey(Anamnesis, verbose_name=_(u'Anamnéza'))
 
     application = models.PositiveSmallIntegerField(choices=DRUG_APPLICATION_TYPES,

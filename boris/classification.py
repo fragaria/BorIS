@@ -58,6 +58,10 @@ EDUCATION_LEVELS = Choices(
     (6, 'BASIC_NOT_COMPLETED', u'Neukončené základní'),
     (7, 'UNKNOWN', u'Není známo')
 )
+DRUGS = Choices( # TODO: Fill in
+    (1, 'HEROIN', u'Heroin'),
+    (2, 'PERVITIN', u'Pervitin'),
+)
 DRUG_APPLICATION_FREQUENCY = Choices(
     (1, 'LESS_THAN_3X_A_MONTH', u'méně než 3x měsíčně'),
     (2, 'ONCE_A_WEEK', u'1x týdně'),
