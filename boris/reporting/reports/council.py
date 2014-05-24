@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 """Report for the Czech Government Council for Drug Policy Coordination."""
-from datetime import datetime, time
+from datetime import datetime, date, time
 
-from django.db.models import Sum
+from django.db.models import Q, Sum
 from django.template import loader
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
 
-from boris.classification import DISEASES
-from boris.clients.models import Anonymous
+from boris.classification import (DISEASES, DRUGS, DRUG_APPLICATION_TYPES,
+    SEXES)
+from boris.clients.models import Client, Anonymous
 from boris.reporting.core import BaseReport
 from boris.services.models import (Encounter, Address, ContactWork,
     IncomeFormFillup, IndividualCounseling, CrisisIntervention, SocialWork,
@@ -113,9 +114,100 @@ class GovCouncilReport(BaseReport):
         anonymous_ids = self._get_anonymous_ids()
         return len(set(person_ids) - set(anonymous_ids))
 
+    # Clients functions
+    def _get_all_drug_users(self):
+        filtering = {
+            'performed_on__gte': self.datetime_from,
+            'performed_on__lte': self.datetime_to,
+        }
+        exclude = {'person__in': self._get_anonymous_ids()}
+        encounters = Encounter.objects.filter(**filtering).exclude(**exclude)
+        clients = encounters.values_list('person', flat=True)
+        return Client.objects.filter(pk__in=clients).exclude(primary_drug=None)
+
+    def _get_clients_non_drug_users(self):
+        filtering = {
+            'performed_on__gte': self.datetime_from,
+            'performed_on__lte': self.datetime_to,
+        }
+        exclude = {'person__in': self._get_anonymous_ids()}
+        encounters = Encounter.objects.filter(**filtering).exclude(**exclude)
+        clients = encounters.values_list('person', flat=True)
+        return Client.objects.filter(pk__in=clients).filter(
+            Q(close_person=True) | Q(sex_partner=True))
+
+    def _get_primary_drug_users(self, *drugs):
+        clients = self._get_all_drug_users()
+        return clients.filter(primary_drug__in=drugs)
+
+    def _get_average_age(self, clients):
+        years = [c.birthdate.year for c in clients if c.birthdate]
+        this_year = date.today().year
+        ages = [this_year - year for year in years]
+        return int(round(float(sum(ages)) / len(ages))) if ages else 0
+
+    # <--
+
     def _get_data_clients(self):
-        """Get data rows for the 'clients' kind.""" # TODO: implement
-        return []
+        """Get data rows for the 'clients' kind."""
+        drug = lambda *drugs: self._get_primary_drug_users(*drugs).count()
+
+        non_alcohol_users = self._get_all_drug_users().exclude(primary_drug=DRUGS.ALCOHOL)
+        alcohol_users = self._get_primary_drug_users(DRUGS.ALCOHOL)
+        tobacco_users = self._get_primary_drug_users(DRUGS.TOBACCO)
+        non_drug_users = self._get_clients_non_drug_users()
+
+        return [ # (<label>, <client_count>)
+            (_(u'Počet klientů s kódem – uživatelů nealkoholových drog CELKEM'),
+                non_alcohol_users.count()),
+            (_(u'– z toho mužů'), non_alcohol_users.filter(sex=SEXES.MALE).count()),
+            (_(u'– z toho injekčních uživatelů drog'), non_alcohol_users.filter(
+                primary_drug_usage__in=(DRUG_APPLICATION_TYPES.VEIN_INJECTION,
+                    DRUG_APPLICATION_TYPES.MUSCLE_INJECTION)).count()),
+            (_(u'– z toho se základní drogou heroin'), drug(DRUGS.HEROIN)),
+            (_(u'– z toho se základní drogou buprenorfin – zneužívaný (i.v.'
+                u' aplikace, černý trh)'), drug(DRUGS.SUBUTEX_LEGAL,
+                    DRUGS.SUBUTEX_ILLEGAL, DRUGS.SUBOXONE)),
+            (_(u'– z toho se základní drogou metadon – zneužívaný (i.v.'
+                u' aplikace, černý trh)'), drug(DRUGS.METHADONE)),
+            (_(u'– z toho se základní drogou pervitin'),
+                drug(DRUGS.METHAMPHETAMINE)),
+            (_(u'– z toho se základní drogou opiáty a/nebo pervitin'),
+                drug(DRUGS.HEROIN, DRUGS.SUBUTEX_LEGAL, DRUGS.SUBUTEX_ILLEGAL,
+                    DRUGS.SUBOXONE, DRUGS.METHADONE, DRUGS.METHAMPHETAMINE)),
+            (_(u'Z počtu „opiáty a/nebo pervitin“ odhadované procento'
+                u' polyvalentních uživatelů opiátů a pervitinu'), ''),
+            (_(u'– z toho se základní drogou kokain/crack'), drug(DRUGS.COCAINE)),
+            (_(u'– z toho se základní drogou kanabinoidy'), drug(DRUGS.THC)),
+            (_(u'– z toho se základní drogou extáze'), drug(DRUGS.ECSTASY)),
+            (_(u'– z toho se základní drogou halucinogeny'), drug(DRUGS.ECSTASY)), # FIXME: Resolve the duplicity.
+            (_(u'– z toho se základní drogou těkavé látky'),
+                drug(DRUGS.INHALER_DRUGS)),
+            (_(u'Průměrný věk klientů – uživatelů nealkoholových drog'),
+                self._get_average_age(non_alcohol_users)),
+            (_(u'Počet klientů – uživatelů alkoholu CELKEM'), drug(DRUGS.ALCOHOL)),
+            (_(u'– z toho mužů'), alcohol_users.filter(sex=SEXES.MALE).count()),
+            (_(u'Průměrný věk klientů – uživatelů alkoholu'),
+                self._get_average_age(alcohol_users)),
+            (_(u'Počet klientů – uživatelů tabáku CELKEM'), drug(DRUGS.TOBACCO)),
+            (_(u'– z toho mužů'), tobacco_users.filter(sex=SEXES.MALE).count()),
+            (_(u'Průměrný věk klientů – uživatelů tabáku'),
+                self._get_average_age(tobacco_users)),
+            (_(u'Počet klientů – patologických hráčů CELKEM'), 0),
+            (_(u'– z toho mužů'), 0),
+            (_(u'Průměrný věk klientů – patologických hráčů'), 0),
+            (_(u'Odhad počtu neidentifikovaných klientů – uživatelů drog'
+                u' a patologických hráčů'), 0),
+            (_(u'– z toho injekčních uživatelů drog'), 0),
+            (_(u'– z toho se základní drogou opiáty a/nebo pervitin'), 0),
+            (_(u'Odhad počtu klientů ve zprostředkovaném kontaktu'), 0),
+            (_(u'Počet klientů - neuživatelů drog, rodinných příslušníků'
+                u' a blízkých osob uživatelů'), non_drug_users.count()),
+            # Note that tobacco users are counted already within non alcohol users.
+            (_(u'Celkový počet všech klientů'), (non_alcohol_users.count() +
+                alcohol_users.count() + non_drug_users.count())),
+        ]
+
 
     def _get_data_services(self):
         """Get data rows for the 'services' kind."""
@@ -128,7 +220,7 @@ class GovCouncilReport(BaseReport):
         directly_encountered_clients_count = len(set(
             direct_client_encounters.values_list('person_id', flat=True)))
 
-        return [ # (<Service name>, <persons count>, <services count>)
+        return [ # (<service name>, <persons count>, <services count>)
             (_(u'Osobní kontakt s klienty'), directly_encountered_clients_count,
                 direct_client_encounters.count()),
             (_(u'– z toho prvních kontaktů'), clients(IncomeExamination),
