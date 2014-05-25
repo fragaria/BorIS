@@ -3,7 +3,7 @@ from datetime import date
 from django.test import TestCase
 from nose import tools
 
-from boris.classification import SEXES, DRUG_APPLICATION_TYPES, \
+from boris.classification import SEXES, DRUGS, DRUG_APPLICATION_TYPES, \
     ANONYMOUS_TYPES, DISEASES
 from boris.clients.models import Anonymous
 from boris.syringes.models import SyringeCollection
@@ -21,7 +21,7 @@ from boris.reporting.reports.monthly_stats import AllClientEncounters, \
     AnonymousAggregation, NonIvClientEncounters
 from boris.reporting.core import make_key
 from boris.reporting.management.install_views import install_views
-from test_boris.helpers import get_tst_town, get_tst_drug, get_tst_client, create_service
+from test_boris.helpers import get_tst_town, get_tst_client, create_service
 
 
 def create_encounter(person, date, town=None):
@@ -54,7 +54,7 @@ class TestEncounterAggregations(TestCase):
         install_views('tests')
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
-        self.drug = get_tst_drug()
+        self.drug = DRUGS.HEROIN
 
         # clients
         self.client1 = get_tst_client('c1', {'town': self.town1, 'primary_drug': self.drug})
@@ -138,7 +138,7 @@ class TestServiceAggregations(TestCase):
         install_views('tests')
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
-        self.drug = get_tst_drug()
+        self.drug = DRUGS.HEROIN
 
         # persons
         self.client1 = get_tst_client('c1', {'town': self.town1, 'primary_drug': self.drug})
@@ -284,7 +284,7 @@ class TestEncounterTotals(TestCase):
         install_views('tests')
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
-        self.drug = get_tst_drug()
+        self.drug = DRUGS.HEROIN
 
         # clients
         self.client1 = get_tst_client('c1', {'town': self.town1, })

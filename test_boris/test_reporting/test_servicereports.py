@@ -2,11 +2,11 @@ from datetime import date
 
 from django.test import TestCase
 
+from boris.classification import DRUGS
 from boris.reporting.reports.services import ServiceReport
 from boris.services.models import (Address, UtilityWork, SocialWork,
     InformationService, HarmReduction, service_list)
-from test_boris.helpers import (get_tst_town, get_tst_client, get_tst_drug,
-    create_service)
+from test_boris.helpers import get_tst_town, get_tst_client, create_service
 
 
 def normalize_stats(stats):
@@ -25,7 +25,7 @@ def normalize_stats(stats):
 class TestServiceReports(TestCase):
 
     def setUp(self):
-        drug = get_tst_drug()
+        drug = DRUGS.HEROIN
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
         self.client1 = get_tst_client('c1', {'town': self.town1, 'primary_drug': drug})

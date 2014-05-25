@@ -207,7 +207,7 @@ class GovCouncilReport(BaseReport):
                 u' a patologických hráčů'), 0),
             (_(u'– z toho injekčních uživatelů drog'), 0),
             (_(u'– z toho se základní drogou opiáty a/nebo pervitin'), 0),
-            (_(u'Odhad počtu klientů ve zprostředkovaném kontaktu'), 0),
+            (_(u'Odhad počtu klientů ve zprostředkovaném kontaktu'), ''),
             (_(u'Počet klientů - neuživatelů drog, rodinných příslušníků'
                 u' a blízkých osob uživatelů'), non_drug_users.count()),
             # Note that tobacco users are counted already within non alcohol users.
