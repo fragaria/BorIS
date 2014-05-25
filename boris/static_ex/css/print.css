@@ -1,0 +1,152 @@
+#header,
+html[xmlns] #nav,
+.footer,
+.module .add-item,
+.cbutton,
+.tools,
+.related-remove,
+.related-lookup,
+.add-another,
+.ui-datepicker-trigger,
+.ui-timepicker-trigger,
+.help {
+    display: none !important;
+}
+
+body {
+    padding: 0 20px;
+}
+
+*::selection,
+*::-moz-selection {
+    color: transparent;
+    background: transparent;
+}
+
+/* Inputs */
+input[type=text],
+input[type=button],
+input[type=email],
+input[type=password],
+textarea,
+button,
+select,
+div.autocomplete-wrapper-m2m,
+div.autocomplete-wrapper-fk input.ui-autocomplete-input {
+    border: 0;
+    box-shadow: none;
+    background: #fff;
+    padding: 0 !important;
+    -webkit-appearance: none;
+}
+
+input[type=checkbox],
+input[type=radio] {
+    width: 13px;
+    height: 13px;
+    border: 1px #000 solid;
+    border-radius: 0px;
+    background-color: #fff;
+    -webkit-appearance: none;
+}
+
+input[type=checkbox]:checked:before,
+input[type=radio]:checked:before {
+    content: '\2713';
+    font-size: 15px;
+    line-height: 13px;
+}
+
+/* Fieldsets */
+.module {
+    border: 0;
+    background: none;
+}
+
+.module.changelist-filters,
+.module.date-hierarchy,
+.module.pagination {
+    display: none;
+}
+
+fieldset.module .row {
+    padding: 10px 0 !important;
+}
+
+fieldset.module .row.cells {
+    white-space: normal;
+}
+
+.group h2, .module h2 {
+    background: none;
+    border: 0;
+    padding: 10px 0;
+}
+
+/* Tables */
+table,
+table td,
+table th {
+    background: #fff !important;
+    border-radius: 0 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+}
+
+table th.sorted a {
+    border-top: 0;
+}
+
+
+/* Collapsibles */
+.group.collapse {
+    border: 0 !important;
+    padding-top: 50px;
+}
+
+.collapse h2.collapse-handler, .collapse h2.collapse-handler:hover {
+    background: none;
+    border: 0;
+}
+
+.collapse.closed .module.table .thead {
+    display: table-header-group;
+    border: 0;
+}
+
+.collapse.closed .module.table .tbody {
+    display: table-row-group;
+    border: 0;
+}
+
+.collapse.closed .module.table .th,
+.collapse.closed .module.table .td {
+    display: table-cell;
+    background: none;
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+    padding: 10px 0;
+}
+
+.collapse.closed .module.table .tr {
+    display: table-row;
+    border: 0;
+}
+
+.collapse.closed .module.table .td.tools,
+.collapse.closed .module.table .th.prejit,
+.collapse.closed .module.table .td.goto_link,
+.collapse.closed .module.table .tbody.empty-form {
+    display: none !important;
+}
+
+.collapse.closed .module.table .td * {
+    display: inherit;
+}
+
+.collapse.closed .module.table {
+    width: 100%;
+    margin: 0 0 -2px;
+    display: table;
+}

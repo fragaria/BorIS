@@ -3,5 +3,6 @@
 
 {% block object-tools-items %}
     <li><a href="{% url admin:services_encounter_add %}?person_id={{ original.pk }}">{% trans "Přidat kontakt" %}</a></li>
+    <li><a href="" onclick="window.print(); return false;">{% trans "Vytisknout" %}</a></li>
     {{ block.super }}
 {% endblock %}

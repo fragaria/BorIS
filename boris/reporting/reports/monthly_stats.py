@@ -169,7 +169,7 @@ class SyringeCollectionCount(SumAggregation):
 
 
 class MonthlyStatsByTown(Report):
-    title = _(u'Měsíční statistiky podle města')
+    title = _(u'Měsíční')
     description = _(u'Statistika rozdělená <strong>podle měsíců</strong>. Pro '
         u'každý měsíc zobrazuje sledované informace pro jednotlivá <strong>města</strong>.')
     grouping = ('month', 'town')
@@ -230,7 +230,7 @@ class MonthlyStatsByTown(Report):
 
 
 class MonthlyStatsByDistrict(MonthlyStatsByTown):
-    title = _(u'Měsíční statistiky podle okresu')
+    title = _(u'Okresy: měsíční')
     description = _(u'Statistika rozdělená <strong>podle měsíců</strong>. Pro '
         u'každý měsíc zobrazuje sledované informace pro jednotlivé <strong>okresy</strong>.')
     grouping = ('month', 'town__district')
