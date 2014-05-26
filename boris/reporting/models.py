@@ -20,6 +20,7 @@ class SearchEncounter(models.Model):
     client_sex = models.PositiveSmallIntegerField()
     primary_drug = models.ForeignKey(Drug, related_name='+', on_delete=DO_NOTHING)
     primary_drug_usage = models.PositiveSmallIntegerField()
+    performed_on = models.DateField()
     month = models.SmallIntegerField()
     year = models.SmallIntegerField()
 
@@ -33,6 +34,7 @@ class SearchService(models.Model):
     encounter = models.ForeignKey(Encounter, related_name='+', on_delete=DO_NOTHING)
     content_type_model = models.CharField(max_length=255)
     town = models.ForeignKey(Town, related_name='+', on_delete=DO_NOTHING)
+    performed_on = models.DateField()
     month = models.SmallIntegerField()
     year = models.SmallIntegerField()
     is_client = models.BooleanField()
@@ -45,6 +47,7 @@ class SearchService(models.Model):
 class SearchSyringeCollection(models.Model):
     count = models.SmallIntegerField()
     town = models.ForeignKey(Town, related_name='+', on_delete=DO_NOTHING)
+    performed_on = models.DateField()
     month = models.SmallIntegerField()
     year = models.SmallIntegerField()
 

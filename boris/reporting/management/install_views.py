@@ -3,13 +3,11 @@ from os.path import dirname, join
 from django.db import connection
 from django.db.models.signals import post_syncdb
 
+import boris.reporting.models
 from boris import reporting
 
 
 def install_views(app, **kwargs):
-    if app != 'services' and app != 'tests':
-        return  # Avoid repeated runs and dependency problems.
-
     print "Installing reporting views ..."
 
     cursor = connection.cursor()
@@ -20,5 +18,4 @@ def install_views(app, **kwargs):
     finally:
         sql_file.close()
 
-
-post_syncdb.connect(install_views)
+post_syncdb.connect(install_views, sender=boris.reporting.models)

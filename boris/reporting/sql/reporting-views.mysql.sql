@@ -5,6 +5,7 @@ SELECT
 	services_encounter.person_id,
 	services_encounter.where_id AS town_id,
 	services_encounter.is_by_phone,
+	services_encounter.performed_on as performed_on,
 	YEAR(services_encounter.performed_on) AS year,
 	MONTH(services_encounter.performed_on) AS month,
 	clients_client.person_ptr_id is NOT NULL AS is_client,
@@ -29,6 +30,7 @@ SELECT
 	django_content_type.model AS content_type_model,
 	services_encounter.where_id AS town_id,
 	services_encounter.person_id AS person_id,
+  services_encounter.performed_on as performed_on,
 	YEAR(services_encounter.performed_on) AS year,
 	MONTH(services_encounter.performed_on) AS month,
 	clients_client.person_ptr_id is NOT NULL AS is_client,
@@ -48,6 +50,7 @@ SELECT
 	id as id,
 	count as count,
 	town_id,
+	date as performed_on,
 	MONTH(`date`) AS month,
 	YEAR(`date`) AS year
 FROM

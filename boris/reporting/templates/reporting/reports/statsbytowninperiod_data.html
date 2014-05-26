@@ -1,0 +1,21 @@
+{% with data=report.get_data %}
+    <table cellpadding="50" cellspacing="0" border="1">
+        <tbody>
+        <tr>
+            <th>{% block col_title %}{{ report.date_from|date }} - {{ report.date_to|date }}{% endblock %}</th>
+            {% for town in report.towns %}
+                <th>{{ town.title }}</th>
+            {% endfor %}
+        </tr>
+        {% for aggregation in data %}
+            <tr>
+                <td>{{ aggregation.0 }}</td>
+                {% for town_val in aggregation.1 %}
+                    <td>{{ town_val }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table> 
+    <br />
+{% endwith %}

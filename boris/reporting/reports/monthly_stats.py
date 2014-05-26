@@ -168,12 +168,7 @@ class SyringeCollectionCount(SumAggregation):
     model = SearchSyringeCollection
 
 
-class MonthlyStatsByTown(Report):
-    title = _(u'Měsíční')
-    description = _(u'Statistika rozdělená <strong>podle měsíců</strong>. Pro '
-        u'každý měsíc zobrazuje sledované informace pro jednotlivá <strong>města</strong>.')
-    grouping = ('month', 'town')
-    grouping_total = ('month',)
+class ClientReportBase(Report):
     aggregation_classes = [
         AllClientEncounters,
         MaleClientEncounters,
@@ -196,6 +191,14 @@ class MonthlyStatsByTown(Report):
         GatheredSyringes,
         IssuedSyringes
     ]
+
+
+class MonthlyStatsByTown(ClientReportBase):
+    title = _(u'Měsíční')
+    description = _(u'Statistika rozdělená <strong>podle měsíců</strong>. Pro '
+        u'každý měsíc zobrazuje sledované informace pro jednotlivá <strong>města</strong>.')
+    grouping = ('month', 'town')
+    grouping_total = ('month',)
 
     def get_filename(self):
         return 'stat_mesicni_podle_mesta.xls'
@@ -226,6 +229,33 @@ class MonthlyStatsByTown(Report):
                     ) for town in self.columns
                 ] + [self.get_sum(aggregation, month)]) for aggregation in self.aggregations
             ]) for month in self.months()
+        ]
+
+
+class StatsByTownInPeriod(ClientReportBase):
+    title = _(u'Volitelné')
+    description = _(u'Statistika rozdělená <strong>podle měst</strong> dle zadaného volitelného období.')
+    grouping = ('town',)
+    grouping_total = ()
+
+    def __init__(self, date_from, date_to, towns, *args, **kwargs):
+        self.date_from = date_from
+        self.date_to = date_to
+        self.towns = towns
+        self.additional_filtering = {
+            'performed_on__gte': date_from,
+            'performed_on__lte': date_to,
+            'town__in': towns
+        }
+        super(StatsByTownInPeriod, self).__init__()
+
+    def get_data(self):
+        return [
+            (aggregation.title, [
+                aggregation.get_val(
+                    make_key((('town', town.pk),))
+                ) for town in self.towns
+            ]) for aggregation in self.aggregations
         ]
 
 
