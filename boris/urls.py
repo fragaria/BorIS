@@ -1,16 +1,21 @@
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-
-from boris.reporting.admin import interface
-
 from django.contrib import admin
+
+from boris.reporting import admin as reporting
+
+
 admin.autodiscover()
 
 urlpatterns = patterns('',
     # Django grappelli
     (r'^grappelli/', include('grappelli.urls')),
 
-    (r'^reporting/', include(interface.urls)),
+    (r'^reporting/towns/', include(reporting.towns.urls)),
+    (r'^reporting/services/', include(reporting.services.urls)),
+    (r'^reporting/clients/', include(reporting.clients.urls)),
+    (r'^reporting/hygiene/', include(reporting.hygiene.urls)),
+
     (r'^services/', include('boris.services.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:

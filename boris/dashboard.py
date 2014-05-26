@@ -55,8 +55,23 @@ class CustomIndexDashboard(Dashboard):
             collapsible=False,
             children=[
                 {
-                    'title': _(u'Vytvořit výstup'),
-                    'url': reverse('reporting_base'),
+                    'title': _(u'Vytvořit výstup měst'),
+                    'url': reverse('reporting_towns'),
+                    'external': False,
+                },
+                {
+                    'title': _(u'Vytvořit výstup výkonů'),
+                    'url': reverse('reporting_services'),
+                    'external': False,
+                },
+                {
+                    'title': _(u'Vytvořit výstup klientů'),
+                    'url': reverse('reporting_clients'),
+                    'external': False,
+                },
+                {
+                    'title': _(u'Vytvořit výstup pro hygienu'),
+                    'url': reverse('reporting_hygiene'),
                     'external': False,
                 },
             ]

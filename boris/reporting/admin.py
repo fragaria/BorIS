@@ -1,3 +1,5 @@
+# -*- coding: utf8 -*-
+
 from django.conf.urls.defaults import url, patterns
 from django.contrib import admin
 from django.core.urlresolvers import reverse
@@ -55,30 +57,49 @@ def interfacetab_factory(report_cls, form_cls, form_prefix, template='reporting/
     return cls
 
 
-class ReportingInterface(object):
-    """
-    Separate report forms are splitted to tabs in admin, this
-    class handles management of these forms.
+"""
+Separate report forms are splitted to tabs in admin, this
+class handles management of these forms.
 
-    Tabs are defined as ReportInterfaceTab subclasses listed in
-    `tabs` attribute.
-    """
+Tabs are defined as ReportInterfaceTab subclasses listed in
+`tabs` attribute.
+"""
+
+class TownReportingInterface(object):
     tabs = (
         interfacetab_factory(MonthlyStatsByTown, forms.MonthlyStatsForm, 'monthbytown'),
         interfacetab_factory(YearlyStatsByTown, forms.MonthlyStatsForm, 'yearbytown'),
         interfacetab_factory(MonthlyStatsByDistrict, forms.MonthlyStatsForm, 'monthbydistrict'),
         interfacetab_factory(YearlyStatsByDistrict, forms.MonthlyStatsForm, 'yearbydistrict'),
+    )
+
+
+class ServicesReportingInterface(object):
+    tabs = (
         interfacetab_factory(ServiceReport, forms.ServiceForm, 'services'),
+    )
+
+
+class ClientsReportingInterface(object):
+    tabs = (
         interfacetab_factory(ClientReport, forms.BaseReportForm, 'clients'),
+    )
+
+
+class HygieneReportingInterface(object):
+    tabs = (
         interfacetab_factory(HygieneReport, forms.HygieneForm, 'hygiene'),
     )
 
 
 class ReportingInterfaceHandler(object):
     """Class-based view for showing reporting interface."""
+    id = 'base'
+    title = None
+    interface_class = None
 
     def __call__(self, request, tab_class=None):
-        interface = ReportingInterface()
+        interface = self.interface_class()
         tabs = SortedDict()
 
         for t in interface.tabs:
@@ -97,7 +118,7 @@ class ReportingInterfaceHandler(object):
                 form = tab.form(prefix=tab.form_prefix)
             tabs[tab] = form
 
-        ctx = {'tabs': tabs.items(), 'interface': interface}
+        ctx = {'tabs': tabs.items(), 'interface': interface, 'name': self.title}
         return render(request, 'reporting/interface.html', ctx)
 
     def get_urls(self):
@@ -106,11 +127,11 @@ class ReportingInterfaceHandler(object):
         there is one extra URL for base view.
         """
 
-        interface = ReportingInterface()
+        interface = self.interface_class()
 
         urlpatterns = patterns('',
             url('^$', admin.site.admin_view(self.__call__, cacheable=True),
-                name='reporting_base')
+                name='reporting_%s' % self.id)
         )
 
         for t in interface.tabs:
@@ -123,5 +144,33 @@ class ReportingInterfaceHandler(object):
         return urlpatterns, 'reporting', None
     urls = property(get_urls)
 
-interface = ReportingInterfaceHandler()
 
+class TownReportingInterfaceHandler(ReportingInterfaceHandler):
+    id = 'towns'
+    title = u'Města'
+    interface_class = TownReportingInterface
+
+
+class ServicesReportingInterfaceHandler(ReportingInterfaceHandler):
+    id = 'services'
+    title = u'Výkony'
+    interface_class = ServicesReportingInterface
+
+
+class ClientReportingInterfaceHandler(ReportingInterfaceHandler):
+    id = 'clients'
+    title = u'Klienti'
+    interface_class = ClientsReportingInterface
+
+
+class HygieneReportingInterfaceHandler(ReportingInterfaceHandler):
+    id = 'hygiene'
+    title = u'Hygiena'
+    interface_class = HygieneReportingInterface
+
+
+
+towns = TownReportingInterfaceHandler()
+services = ServicesReportingInterfaceHandler()
+clients = ClientReportingInterfaceHandler()
+hygiene = HygieneReportingInterfaceHandler()

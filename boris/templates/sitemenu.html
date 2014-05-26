@@ -12,7 +12,10 @@
     {% url "admin:clients_region_changelist" as regions %}
     {% url "admin:clients_drug_changelist" as drugs %}
     {% url "admin:clients_riskybehavior_changelist" as riskybehavior %}
-    {% url "reporting_base" as reporting %}
+    {% url "reporting_towns" as reporting_towns %}
+    {% url "reporting_services" as reporting_services %}
+    {% url "reporting_clients" as reporting_clients %}
+    {% url "reporting_hygiene" as reporting_hygiene %}
 
     <li class="{% active "/" %}"><a href="/">{% trans "Nástěnka" %}</a></li>
     <li class="{% active clients %}"><a href="{{ clients }}">{% trans "Klienti" %}</a></li>
@@ -20,7 +23,15 @@
     <li class="{% active anonymous %}"><a href="{{ anonymous }}">{% trans "Anonymní kontakty" %}</a></li>
     <li class="{% active practitioners %}"><a href="{{ practitioners }}">{% trans "Odborné kontakty" %}</a></li>
     <li class="{% active syringecollection %}"><a href="{{ syringecollection }}">{% trans "Sběr stříkaček" %}</a></li>
-    <li class="{% active reporting %}"><a href="{{ reporting }}">{% trans "Výstupy" %}</a></li>
+    <li>
+        <a href="#">{% trans "Výstupy" %}</a>
+        <ul>
+            <li class="{% active reporting_towns %}"><a href="{{ reporting_towns }}">{% trans "Města" %}</a></li>
+            <li class="{% active reporting_services %}"><a href="{{ reporting_services }}">{% trans "Výkony" %}</a></li>
+            <li class="{% active reporting_clients %}"><a href="{{ reporting_clients }}">{% trans "Klienti" %}</a></li>
+            <li class="{% active reporting_hygiene %}"><a href="{{ reporting_hygiene }}">{% trans "Hygiena" %}</a></li>
+        </ul>
+    </li>
     {% if request.user.is_superuser %}
     <li class="{% active towns districts regions drugs riskybehavior %}">
         <a href="#">{% trans "Nastavení" %}</a>
