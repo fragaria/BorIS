@@ -159,7 +159,8 @@ class GovCouncilReport(BaseReport):
         """Get data rows for the 'clients' kind."""
         drug = lambda *drugs: self._get_primary_drug_users(*drugs).count()
 
-        non_alcohol_users = self._get_all_drug_users().exclude(primary_drug=DRUGS.ALCOHOL)
+        non_alcohol_users = self._get_all_drug_users().exclude(
+            primary_drug__in=(DRUGS.ALCOHOL, DRUGS.TOBACCO))
         alcohol_users = self._get_primary_drug_users(DRUGS.ALCOHOL)
         tobacco_users = self._get_primary_drug_users(DRUGS.TOBACCO)
         non_drug_users = self._get_clients_non_drug_users()
@@ -212,7 +213,8 @@ class GovCouncilReport(BaseReport):
                 u' a blízkých osob uživatelů'), non_drug_users.count()),
             # Note that tobacco users are counted already within non alcohol users.
             (_(u'Celkový počet všech klientů'), (non_alcohol_users.count() +
-                alcohol_users.count() + non_drug_users.count())),
+                tobacco_users.count() + alcohol_users.count() +
+                non_drug_users.count())),
         ]
 
 
