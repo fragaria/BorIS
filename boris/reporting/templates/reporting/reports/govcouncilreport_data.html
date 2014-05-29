@@ -1,15 +1,12 @@
 <table cellpadding="50" cellspacing="0" border="1">
     <tbody>
-    <tr>
-		{% if report_kind == 'services' %}
+    {% if report_kind == 'services' %}
+        <tr>
 			<th>Služba</th>
 			<th>Počet osob, které danou službu využily</th>
 			<th>Počet výkonů</th>
-		{% else %} {# there's no header in case of the clients' report type? #}
-			<th></th>
-			<th></th>
-		{% endif %}
-    </tr>
+        </tr>
+    {% endif %}{# there's no header in case of the clients' report type? #}
     {% for row in rows %}
         <tr>
 			{% for value in row %}
