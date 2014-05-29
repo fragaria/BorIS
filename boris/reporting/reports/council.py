@@ -188,7 +188,8 @@ class GovCouncilReport(BaseReport):
             (_(u'– z toho se základní drogou kokain/crack'), drug(DRUGS.COCAINE)),
             (_(u'– z toho se základní drogou kanabinoidy'), drug(DRUGS.THC)),
             (_(u'– z toho se základní drogou extáze'), drug(DRUGS.ECSTASY)),
-            (_(u'– z toho se základní drogou halucinogeny'), drug(DRUGS.ECSTASY)), # FIXME: Resolve the duplicity.
+            (_(u'– z toho se základní drogou halucinogeny'), drug(DRUGS.LSD) +
+                drug(DRUGS.PSYLOCIBE)),
             (_(u'– z toho se základní drogou těkavé látky'),
                 drug(DRUGS.INHALER_DRUGS)),
             (_(u'Průměrný věk klientů – uživatelů nealkoholových drog'),

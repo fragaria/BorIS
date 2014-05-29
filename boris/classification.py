@@ -63,7 +63,7 @@ DRUGS = Choices( # (Numbers reflect the old drug ids.)
     (4, 'SUBUTEX_LEGAL', u'Subutex, Ravata, Buprenorphine alkaloid - legálně'),
     (5, 'TOBACCO', u'Tabák'),
     (8, 'THC', u'THC'),
-    (9, 'ECSTASY', u'Extáze, LSD, lysohlávky'),
+    (9, 'ECSTASY', u'Extáze'),
     (10, 'DESIGNER_DRUGS', u'Designer drugs'),
     (11, 'HEROIN', u'Heroin'),
     (12, 'BRAUN', u'Braun a jiné opiáty'),
@@ -77,6 +77,8 @@ DRUGS = Choices( # (Numbers reflect the old drug ids.)
     (20, 'COCAINE', u'Kokain, crack'),
     (21, 'SUBOXONE', u'Suboxone'),
     (22, 'VENDAL', u'Vendal'),
+    (23, 'LSD', u'LSD'),
+    (24, 'PSYLOCIBE', u'Lysohlávky'),
 )
 DRUG_APPLICATION_FREQUENCY = Choices(
     (1, 'LESS_THAN_3X_A_MONTH', u'méně než 3x měsíčně'),
