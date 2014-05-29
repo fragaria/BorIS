@@ -1,6 +1,6 @@
 from django.db import models
 
-from boris.clients.models import Person, Town, Drug
+from boris.clients.models import Person, Town
 from boris.services.models.core import Service, Encounter
 
 DO_NOTHING = models.DO_NOTHING
@@ -18,7 +18,7 @@ class SearchEncounter(models.Model):
     is_sex_partner = models.BooleanField()
     is_by_phone = models.BooleanField()
     client_sex = models.PositiveSmallIntegerField()
-    primary_drug = models.ForeignKey(Drug, related_name='+', on_delete=DO_NOTHING)
+    primary_drug = models.PositiveSmallIntegerField()
     primary_drug_usage = models.PositiveSmallIntegerField()
     performed_on = models.DateField()
     month = models.SmallIntegerField()

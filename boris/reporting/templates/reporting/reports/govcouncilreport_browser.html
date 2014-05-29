@@ -1,0 +1,21 @@
+{% extends "print_base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "RVKPP - výkony" %} {{ block.super }}{% endblock %}
+{% block content_title %}<h1>{% if report_kind == 'services' %}{% trans 'RVKPP - tabulka výkony' %}{% else %}{% trans 'RVKPP - tabulka klienti' %}{% endif %}</h1>{% endblock %}
+
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        body { padding: 0 20px; }
+        table td { padding: 5px 5px; }
+    </style>
+{% endblock %}
+
+{% block content %}
+    {% if date_from and date_to %}
+        <p style="margin-bottom: 20px;">{{ date_from|date:"j.n.Y" }} - {{ date_to|date:"j.n.Y" }}</p>
+    {% endif %}
+    {% include "reporting/reports/govcouncilreport_data.html" %}
+{% endblock %}

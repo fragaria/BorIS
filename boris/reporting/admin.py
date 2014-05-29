@@ -16,6 +16,7 @@ from boris.reporting.reports.services import ServiceReport
 from boris.reporting.reports.clients import ClientReport
 from boris.reporting.reports.yearly_stats import YearlyStatsByMonth, YearlyStatsByTown, \
     YearlyStatsByDistrict
+from boris.reporting.reports.council import GovCouncilReport
 
 
 class ReportingInterfaceTab(object):
@@ -90,6 +91,7 @@ class ClientsReportingInterface(object):
 class HygieneReportingInterface(object):
     tabs = (
         interfacetab_factory(HygieneReport, forms.HygieneForm, 'hygiene'),
+        interfacetab_factory(GovCouncilReport, forms.GovCouncilForm, 'council'),
     )
 
 

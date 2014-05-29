@@ -10,7 +10,7 @@ SELECT
 	MONTH(services_encounter.performed_on) AS month,
 	clients_client.person_ptr_id is NOT NULL AS is_client,
 	clients_client.sex AS client_sex,
-	clients_client.primary_drug_id,
+	clients_client.primary_drug,
 	clients_client.primary_drug_usage,
 	clients_client.close_person as is_close_person,
 	clients_client.sex_partner as is_sex_partner,
