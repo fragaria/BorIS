@@ -69,7 +69,6 @@ DRUGS = Choices( # (Numbers reflect the old drug ids.)
     (12, 'BRAUN', u'Braun a jiné opiáty'),
     (13, 'RAW_OPIUM', u'Surové opium'),
     (14, 'SUBUTEX_ILLEGAL', u'Subutex, Ravata, Buprenorphine alkaloid - ilegálně'),
-    (15, 'CIGARETTES', u'Cigarety'),
     (16, 'ALCOHOL', u'Alkohol',),
     (17, 'INHALER_DRUGS', u'Inhalační látky, ředidla'),
     (18, 'MEDICAMENTS', u'Medikamenty'),
