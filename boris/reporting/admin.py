@@ -87,11 +87,15 @@ class ClientsReportingInterface(object):
         interfacetab_factory(ClientReport, forms.BaseReportForm, 'clients'),
     )
 
+class GovCouncilReportingInterface(object):
+    tabs = (
+        interfacetab_factory(GovCouncilReport, forms.GovCouncilForm, 'govcouncil'),
+    )
+
 
 class HygieneReportingInterface(object):
     tabs = (
         interfacetab_factory(HygieneReport, forms.HygieneForm, 'hygiene'),
-        interfacetab_factory(GovCouncilReport, forms.GovCouncilForm, 'council'),
     )
 
 
@@ -171,9 +175,15 @@ class HygieneReportingInterfaceHandler(ReportingInterfaceHandler):
     title = u'Hygiena'
     interface_class = HygieneReportingInterface
 
+class GovCouncilReportingInterfaceHandler(ReportingInterfaceHandler):
+    id = 'govcouncil'
+    title = u'RVKPP'
+    interface_class = GovCouncilReportingInterface
+
 
 
 towns = TownReportingInterfaceHandler()
 services = ServicesReportingInterfaceHandler()
 clients = ClientReportingInterfaceHandler()
 hygiene = HygieneReportingInterfaceHandler()
+govcouncil = GovCouncilReportingInterfaceHandler()
