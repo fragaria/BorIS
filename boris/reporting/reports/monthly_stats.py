@@ -66,7 +66,6 @@ class AnonymousAggregation(NonDistinctCountAggregation, EncounterAggregation):
     }
 
 
-
 class AllAddresses(ServiceAggregation):
     title = _(u'Počet oslovených')
     aggregation_dbcol = 'id'
@@ -241,11 +240,11 @@ class StatsByTownInPeriod(ClientReportBase):
     def __init__(self, date_from, date_to, towns, *args, **kwargs):
         self.date_from = date_from
         self.date_to = date_to
-        self.towns = towns
+        self.towns = towns or Town.objects.all()
         self.additional_filtering = {
             'performed_on__gte': date_from,
             'performed_on__lte': date_to,
-            'town__in': towns
+            'town__in': self.towns
         }
         super(StatsByTownInPeriod, self).__init__()
 
@@ -255,7 +254,7 @@ class StatsByTownInPeriod(ClientReportBase):
                 aggregation.get_val(
                     make_key((('town', town.pk),))
                 ) for town in self.towns
-            ]) for aggregation in self.aggregations
+            ] + [aggregation.get_val(make_key(()))]) for aggregation in self.aggregations
         ]
 
 

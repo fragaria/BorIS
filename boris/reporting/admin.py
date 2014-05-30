@@ -66,6 +66,7 @@ Tabs are defined as ReportInterfaceTab subclasses listed in
 `tabs` attribute.
 """
 
+
 class TownReportingInterface(object):
     tabs = (
         interfacetab_factory(MonthlyStatsByTown, forms.MonthlyStatsForm, 'monthbytown'),

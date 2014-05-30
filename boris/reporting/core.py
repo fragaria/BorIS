@@ -128,6 +128,7 @@ class Aggregation(object):
     model = None
 
     def __init__(self, report):
+        print self.filtering, report.additional_filtering
         self._filtering = self._prepare_expression(self.filtering)
         self._excludes = self._prepare_expression(self.excludes)
 
@@ -150,8 +151,7 @@ class Aggregation(object):
             self._vals = defaultdict(int)
 
             for grouping in (self.report.grouping, self.report.grouping_total):
-                vals = qset.values(*grouping).order_by().annotate(
-                        total=self.get_annotation_func())
+                vals = qset.values(*grouping).order_by().annotate(total=self.get_annotation_func())
 
                 for value in vals:
                     key = make_key((k, value[k]) for k in grouping)
