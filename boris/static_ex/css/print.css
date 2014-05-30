@@ -15,6 +15,11 @@ html[xmlns] #nav,
 
 body {
     padding: 0 20px;
+    font-size: 11px !important;
+}
+
+body p {
+    font-size: 11px !important;
 }
 
 *::selection,
@@ -37,6 +42,7 @@ div.autocomplete-wrapper-fk input.ui-autocomplete-input {
     box-shadow: none;
     background: #fff;
     padding: 0 !important;
+    font-size: 11px !important;
     -webkit-appearance: none;
 }
 
@@ -47,6 +53,7 @@ input[type=radio] {
     border: 1px #000 solid;
     border-radius: 0px;
     background-color: #fff;
+    font-size: 11px !important;
     -webkit-appearance: none;
 }
 
@@ -70,7 +77,12 @@ input[type=radio]:checked:before {
 }
 
 fieldset.module .row {
-    padding: 10px 0 !important;
+    padding: 5px 0 !important;
+}
+
+fieldset.module .cell {
+    padding-top: 5px;
+    padding-right: 10px;
 }
 
 fieldset.module .row.cells {
@@ -101,7 +113,7 @@ table th.sorted a {
 /* Collapsibles */
 .group.collapse {
     border: 0 !important;
-    padding-top: 50px;
+    padding-top: 10px;
 }
 
 .collapse h2.collapse-handler, .collapse h2.collapse-handler:hover {
@@ -123,10 +135,11 @@ table th.sorted a {
 .collapse.closed .module.table .td {
     display: table-cell;
     background: none;
+    border-bottom: 0;
     border-left: 0;
     border-right: 0;
     border-radius: 0;
-    padding: 10px 0;
+    padding: 0;
 }
 
 .collapse.closed .module.table .tr {
@@ -149,4 +162,16 @@ table th.sorted a {
     width: 100%;
     margin: 0 0 -2px;
     display: table;
+}
+
+
+/* Individual pages */
+.change-form h1 {
+    display: none;
+}
+
+
+.clients-client .row.anamnesis_link,
+.clients-client #notes .tr.new {
+    display: none;
 }

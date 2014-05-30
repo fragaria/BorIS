@@ -150,3 +150,9 @@ table th.sorted a {
     margin: 0 0 -2px;
     display: table;
 }
+
+
+/* Individual pages */
+.change-form h1 {
+    display: none;
+}
