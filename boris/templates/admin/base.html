@@ -43,21 +43,21 @@
 
         {% if debug %}
             <!-- Grappelli Main JS -->
-            <script src="{% static 'grappelli/js/grappelli.js' %}" type="text/javascript"></script>
+            <script src="{% static 'grappelli/js/grappelli/grappelli.js' %}" type="text/javascript"></script>
             <!-- Grappelli jQuery Plugins, Widgets -->
-            <script src="{% static 'grappelli/js/jquery.grp_collapsible.js' %}" type="text/javascript"></script>
-            <script src="{% static 'grappelli/js/jquery.grp_collapsible_group.js' %}" type="text/javascript"></script>
-            <script src="{% static 'grappelli/js/jquery.grp_timepicker.js' %}" type="text/javascript"></script>
-            <script src="{% static 'grappelli/js/jquery.grp_related_fk.js' %}" type="text/javascript"></script>
-            <script src="{% static 'grappelli/js/jquery.grp_related_m2m.js' %}" type="text/javascript"></script>
-            <script src="{% static 'grappelli/js/jquery.grp_related_generic.js' %}" type="text/javascript"></script>
-            <script src="{% static 'grappelli/js/jquery.grp_autocomplete_fk.js' %}" type="text/javascript"></script>
-            <script src="{% static 'grappelli/js/jquery.grp_autocomplete_m2m.js' %}" type="text/javascript"></script>
-            <script src="{% static 'grappelli/js/jquery.grp_autocomplete_generic.js' %}" type="text/javascript"></script>
-            <script src="{% static 'grappelli/js/jquery.grp_inline.js' %}" type="text/javascript"></script>
+            <script src="{% static 'grappelli/js/grappelli/jquery.grp_collapsible.js' %}" type="text/javascript"></script>
+            <script src="{% static 'grappelli/js/grappelli/jquery.grp_collapsible_group.js' %}" type="text/javascript"></script>
+            <script src="{% static 'grappelli/js/grappelli/jquery.grp_timepicker.js' %}" type="text/javascript"></script>
+            <script src="{% static 'grappelli/js/grappelli/jquery.grp_related_fk.js' %}" type="text/javascript"></script>
+            <script src="{% static 'grappelli/js/grappelli/jquery.grp_related_m2m.js' %}" type="text/javascript"></script>
+            <script src="{% static 'grappelli/js/grappelli/jquery.grp_related_generic.js' %}" type="text/javascript"></script>
+            <script src="{% static 'grappelli/js/grappelli/jquery.grp_autocomplete_fk.js' %}" type="text/javascript"></script>
+            <script src="{% static 'grappelli/js/grappelli/jquery.grp_autocomplete_m2m.js' %}" type="text/javascript"></script>
+            <script src="{% static 'grappelli/js/grappelli/jquery.grp_autocomplete_generic.js' %}" type="text/javascript"></script>
+            <script src="{% static 'grappelli/js/grappelli/jquery.grp_inline.js' %}" type="text/javascript"></script>
         {% else %}
             <!-- Grappelli Minified -->
-            <script src="{% static 'grappelli/js/grappelli.min.js' %}" type="text/javascript"></script>
+            <script src="{% static 'grappelli/js/grappelli/grappelli.min.js' %}" type="text/javascript"></script>
         {% endif %}
         <script type="text/javascript" charset="utf-8">
             var jQuery = grp.jQuery.noConflict(true);
