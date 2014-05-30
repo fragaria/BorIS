@@ -116,7 +116,7 @@
         // TRUSTED EDITORS SHOULD KNOW WHAT TO DO
         
         // GRAPPELLI CUSTOM: submit on select
-        $(options.actionSelect).attr("ui-autocomplete", "off").change(function(evt){
+        $(options.actionSelect).attr("autocomplete", "off").change(function(evt){
             $(this).parents("form").submit();
         });
         

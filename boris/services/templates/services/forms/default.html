@@ -5,8 +5,8 @@
     {% block rendered_form %}
         {{ form|render:"services/inc/inline_better_form.html" }}
     {% endblock %}
-    <div class="row cells-2 cells">
-        <div class="cell">
+    <div class="grp-row cells-2 grp-cells">
+        <div class="grp-cell">
             <a id="service-form-submit" onclick="ui.cleanForm(); return false;" class="cbutton">{% trans "Storno" %}</a>
             <a id="service-form-submit" onclick="ui.saveForm(); return false;" class="cbutton high1">{% trans "Uložit výkon" %}</a>
             {% if is_edit %}

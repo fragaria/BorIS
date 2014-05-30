@@ -2,13 +2,13 @@
 {% load i18n %}
 {% block module_content %}
     {% for child in module.children %}
-        <div class="row">
-            {% if child.admin_url %}<a href="{{ child.admin_url }}">{{ child.title }}</a>{% else %}{{ child.title }}{% endif %}
+        <div class="grp-row">
+            {% if child.admin_url %}<a href="{{ child.admin_url }}"><strong>{{ child.title }}</strong></a>{% else %}{{ child.title }}{% endif %}
             {% if child.add_url or child.admin_url %}
-                <ul class="actions">
-                    {% if child.add_url %}<li class="add-link"><a href="{{ child.add_url }}">{% trans "Add" %}</a></li>{% endif %}
-                    {% if child.admin_url %}<li class="change-link"><a href="{{ child.admin_url }}">{% trans "Change" %}</a></li>{% endif %}
-                    <li class="add-link"><a href="{% url 'admin:services_encounter_add' %}">{% trans "Přidat kontakt" %}</a></li>
+                <ul class="grp-actions">
+                    {% if child.add_url %}<li class="grp-add-link"><a href="{{ child.add_url }}">{% trans "Add" %}</a></li>{% endif %}
+                    {% if child.admin_url %}<li class="grp-change-link"><a href="{{ child.admin_url }}">{% trans "Change" %}</a></li>{% endif %}
+                    <li class="grp-add-link"><a href="{% url 'admin:services_encounter_add' %}">{% trans "Přidat kontakt" %}</a></li>
                 </ul>
             {% endif %}
         </div>

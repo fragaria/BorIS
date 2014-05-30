@@ -1,9 +1,9 @@
 {% extends "admin/clients/person/change_form.html" %}
-{% load i18n services %}
+{% load i18n services admin_static %}
 
 {% block extrahead %}
     {{ block.super }}
-    <link href="{{ STATIC_URL}}css/clients.css" rel="stylesheet" type="text/css" media="screen" />
+    <link href="{% static 'css/clients.css' %}" rel="stylesheet" type="text/css" media="screen" />
 
     <script type="text/javascript">
         function dismissAddAnamnesisPopup(win, newId, newRepr) {
