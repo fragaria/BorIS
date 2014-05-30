@@ -1,0 +1,36 @@
+/* LOGIN FORM */
+
+div.g-centered {
+    top: -220px;
+    position: relative;
+}
+
+.grp-login span.help {
+    font-size: 10px;
+    display: block;
+}
+
+/* Login screen */
+body.grp-login #grp-header, body.grp-login #grp-context-navigation, body.grp-login #grp-content-title {
+    display: block;
+}
+#grp-content-container {
+    width: 100%;
+}
+div.grp-login {
+    position: absolute;
+    top: 52px;
+}
+div.grp-login .grp-submit-row>ul>li input.grp-button { opacity: 1; }
+div.grp-login fieldset.grp-module .grp-row label { color: #eee; }
+div.grp-login fieldset.grp-module {
+    background: #333;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+div.grp-login .grp-module .grp-row:not(tr) {
+    border-bottom: 1px solid #222;
+    border-top: 1px solid #444;
+}

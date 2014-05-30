@@ -1,0 +1,15 @@
+#grp-header { display: none; }
+table { border-bottom: 0; }
+table, table tbody tr td, table tbody tr th {
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+}
+td, th {
+    vertical-align: top;
+    font-size: 11px;
+    line-height: 15px;
+}
+table td, table th {
+    padding: 10px 10px 9px 10px;
+}

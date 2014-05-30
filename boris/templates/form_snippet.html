@@ -16,12 +16,12 @@
         {{ field.errors }}
         {{ field }}
     {% else %}
-        <div class="row cells-2 cells">
-            <div class="cell {% if field.errors %}errors{% endif %}">
-                <div class="column span-4">
+        <div class="grp-row cells-2 grp-cells">
+            <div class="grp-cell {% if field.errors %}errors{% endif %}">
+                <div class="grp-column span-4">
                     <label for="{{ field.auto_id }}" {% if field.field.required %}class="required"{% endif %}>{{ field.label }}:</label>
                 </div>
-                <div class="column span-flexible">
+                <div class="grp-column span-flexible">
                     {{ field }}
                     {{ field.errors }}
                     {% if field.help_text %}

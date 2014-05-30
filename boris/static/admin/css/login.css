@@ -1,17 +1,7 @@
 /* LOGIN FORM */
 
-div.g-centered {
-    top: -220px;
-    position: relative;
-}
-
-h2 {
-    visibility: hidden;
-}
-
-
 body.login {
-    background: #ee2e92;
+    background: #eee;
 }
 
 .login #container {

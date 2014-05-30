@@ -13,7 +13,6 @@ def orig_submit_row(context):
     is_popup = context['is_popup']
     save_as = context['save_as']
     return {
-        'onclick_attrib': (change and 'onclick="submitOrderForm();"' or ''),
         'show_delete_link': (not is_popup and context['has_delete_permission']
                               and (change or ('show_delete' in context and context['show_delete']))),
         'show_save_as_new': not is_popup and change and save_as,
@@ -60,8 +59,7 @@ def submit_row(context):
             data['show_save_and_add_another'])
 
     if 'BO_SHOW_SAVE_AND_CONT' in context:
-        data['show_save_and_continue'] = (context['BO_SHOW_SAVE_AND_CONT'] and
-                                          data['show_save_and_continue'])
+        data['show_save_and_continue'] = context['BO_SHOW_SAVE_AND_CONT']
 
     if context.get('BO_FORCE_SHOW_DELETE', False) is True:
         data['show_delete_link'] = True

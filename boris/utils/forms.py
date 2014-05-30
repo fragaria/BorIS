@@ -19,10 +19,10 @@ def adminform_formfield(db_field, **kwargs):
 
     if isinstance(db_field, (models.ForeignKey, models.ManyToManyField)):
         if isinstance(db_field, models.ForeignKey):
-            kwargs['widget'] = widgets.ForeignKeyRawIdWidget(db_field.rel)
+            kwargs['widget'] = widgets.ForeignKeyRawIdWidget(db_field.rel, admin.site)
 
         elif isinstance(db_field, models.ManyToManyField):
-            kwargs['widget'] = widgets.ManyToManyRawIdWidget(db_field.rel)
+            kwargs['widget'] = widgets.ManyToManyRawIdWidget(db_field.rel, admin.site)
         formfield = db_field.formfield(**kwargs)
 
         if formfield:

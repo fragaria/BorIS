@@ -1,17 +1,15 @@
 {% load i18n %}
-<div class="module footer">
-    <ul class="submit-row">
-        {% if show_delete_link %}<li class="left delete-link-container"><a href="delete/" class="delete-link">{% if delete_caption %}{% trans delete_caption %}{% else %}{% trans "Delete" %}{% endif %}</a></li>{% endif %}
-
-        {% if show_save and show_save_and_continue %}
-            <li class="submit-button-container"><input type="submit" value="{% if save_caption %}{% trans save_caption %}{% else %}{% trans 'Save' %}{% endif %}" class="default" name="_continue" {{ onclick_attrib }}/></li>
-            <li class="submit-button-container"><input type="submit" value="{% if save_and_cont_caption %}{% trans save_and_cont_caption %}{% else %}{% trans 'Uložit a vrátit se na seznam' %}{% endif %}" name="_save" {{ onclick_attrib }}/></li>
-        {% else %}
-            {% if show_save %}<li class="submit-button-container"><input type="submit" value="{% if save_caption %}{% trans save_caption %}{% else %}{% trans 'Save' %}{% endif %}" class="default" name="_save" {{ onclick_attrib }}/></li>{% endif %}
-            {% if show_save_and_continue %}<li class="submit-button-container"><input type="submit" value="{% if save_caption %}{% trans save_caption %}{% else %}{% trans 'Save' %}{% endif %}" class="default" name="_continue" {{ onclick_attrib }}/></li>{% endif %}
+<footer class="grp-module grp-submit-row grp-fixed-footer">
+    <header style="display:none"><h1>Submit Options</h1></header>
+    <ul>
+        {% autoescape off %}
+        {% if show_delete_link %}
+            <li class="grp-float-left"><a href="delete/" class="grp-button grp-delete-link">{% if delete_caption %}{% trans delete_caption %}{% else %}{% trans "Delete" %}{% endif %}</a></li>
         {% endif %}
-        {% if show_save_as_new %}<li class="submit-button-container"><input type="submit" value="{% if save_as_new_caption %}{% trans save_as_new_caption %}{% else %}{% trans 'Save as new' %}{% endif %}" name="_saveasnew" {{ onclick_attrib }}/></li>{% endif %}
-        {% if show_save_and_add_another %}<li class="submit-button-container"><input type="submit" value="{% if save_and_add_another_caption %}{% trans save_and_add_another_caption %}{% else %}{% trans 'Save and add another' %}{% endif %}" name="_addanother" {{ onclick_attrib }} /></li>{% endif %}
-
+        {% if show_save %}<li><input type="submit" value="{% if save_caption %}{% trans save_caption %}{% else %}{% trans 'Save' %}{% endif %}" class="grp-button grp-default" name="_save"/></li>{% endif %}
+        {% if show_save_and_continue %}<li><input type="submit" value="{% if save_and_cont_caption %}{% trans save_and_cont_caption %}{% else %}{% trans 'Save and continue editing' %}{% endif %}" class="grp-button {% if not show_save %}grp-default{% endif %}" name="_continue"/></li>{% endif %}
+        {% if show_save_as_new %}<li><input type="submit" value="{% if save_as_new_caption %}{% trans save_as_new_caption %}{% else %}{% trans 'Save as new' %}{% endif %}" class="grp-button" name="_saveasnew"/></li>{% endif %}
+        {% if show_save_and_add_another %}<li><input type="submit" value="{% if save_and_add_another_caption %}{% trans save_and_add_another_caption %}{% else %}{% trans 'Save and add another' %}{% endif %}" class="grp-button" name="_addanother"/></li>{% endif %}
+        {% endautoescape %}
     </ul><br clear="all" />
-</div>
+</footer>

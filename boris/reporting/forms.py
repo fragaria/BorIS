@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django import forms
+from django.contrib import admin
 from django.contrib.admin.widgets import AdminDateWidget, ForeignKeyRawIdWidget
 from django.utils.translation import ugettext_lazy as _
 
@@ -39,7 +40,7 @@ class ServiceForm(ReportForm):
                                            required=False)
     person = forms.ModelChoiceField(label=_(u'Osoba'),
         queryset=Person.objects.all(), required=False,
-        widget=ForeignKeyRawIdWidget(Encounter.person.field.rel, None))
+        widget=ForeignKeyRawIdWidget(Encounter.person.field.rel, admin.site))
 
 
 class HygieneForm(ReportForm):

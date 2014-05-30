@@ -1,13 +1,13 @@
-{% load i18n services %}
+{% load i18n services admin_static %}
 
 <div id="service-interface">
-<fieldset class="module">
+<fieldset class="grp-module">
     <h2>{% trans "Nový výkon" %}</h2>
 
-    <div class="row cells-2 cells">
-        <div class="cell">
-            <div class="column span-4"><label>{% trans "Zvolte druh výkonu:" %}</label></div>
-            <div class="column span-flexible">
+    <div class="grp-row cells-2 grp-cells">
+        <div class="grp-cell">
+            <div class="grp-column span-4"><label>{% trans "Zvolte druh výkonu:" %}</label></div>
+            <div class="grp-column span-flexible">
                 <select id="service-selector">
                     {% for s in service_list %}
                         {% render_service_option s encounter %}
@@ -22,16 +22,16 @@
 </fieldset>
 
 
-<div class="group tabular">
+<div class="grp-group grp-tabular">
     <h2>{% trans "Provedené výkony" %}</h2>
-    <div class="table module dynamic-form">
-        <div class="module thead dynamic-form">
-            <div class="tr">
-                <div class="th">{% trans "Název" %}</div>
-                <div class="th">{% trans "Akce" %}</div>
+    <div class="grp-table grp-module grp-dynamic-form">
+        <div class="grp-module grp-thead grp-dynamic-form">
+            <div class="grp-tr">
+                <div class="grp-th">{% trans "Název" %}</div>
+                <div class="grp-th">{% trans "Akce" %}</div>
             </div>
         </div>
-        <div class="module tbody dynamic-form" id="done-services">
+        <div class="grp-module grp-tbody grp-dynamic-form" id="done-services">
 
         </div>
     </div>
@@ -44,8 +44,8 @@
     var ui = null;
 </script>
 
-<link rel="stylesheet" href="{{ STATIC_URL }}css/tipsy.css" />
-<script src="{{ STATIC_URL }}js/jquery.tipsy.js" type="text/javascript"></script>
+<link rel="stylesheet" href="{% static 'css/tipsy.css' %}" />
+<script src="{% static 'js/jquery.tipsy.js' %}" type="text/javascript"></script>
 
 <script type="text/javascript">
     function ServiceUI(encounterId) {
@@ -65,7 +65,7 @@
         };
 
         this.performedServiceCount = function () {
-            return $('#done-services .tr').length;
+            return $('#done-services .grp-tr').length;
         }
 
         this.getHandlerUrl = function (serviceId, serviceClass) {
