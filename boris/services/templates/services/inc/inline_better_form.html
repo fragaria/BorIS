@@ -4,9 +4,9 @@
 {% block fields %}
 {% for fieldset in form.fieldsets %}
     {% block fieldset %}
-        {% if fieldset.legend %}<div class="row"><legend><strong>{{ fieldset.legend }}</strong></legend></div>{% endif %}
+        {% if fieldset.legend %}<div class="grp-row"><legend><strong>{{ fieldset.legend }}</strong></legend></div>{% endif %}
         {% if "inline" in fieldset.classes %}
-            <div class="row cells-2 cells">
+            <div class="grp-row cells-2 grp-cells">
         {% endif %}
         {% for field in fieldset %}
             {% if field.is_hidden %}
@@ -14,17 +14,17 @@
                 {{ field }}
             {% else %}
                 {% if not "inline" in fieldset.classes %}
-                    <div class="row cells-2 cells">
+                    <div class="grp-row cells-2 grp-cells">
                 {% endif %}
-                <div class="cell{% if field.errors %} errors{% endif %}">
-                    <div class="column {% block fieldclasses %}span-4{% endblock %}">
+                <div class="grp-cell{% if field.errors %} errors{% endif %}">
+                    <div class="grp-column {% block fieldclasses %}span-4{% endblock %}">
                         <label for="{{ field.auto_id }}" {% if field.field.required %}class="required"{% endif %}>{{ field.label }}:</label>
                     </div>
-                    <div class="column span-flexible">
+                    <div class="grp-column span-flexible">
                         {{ field }}
                         {{ field.errors }}
                         {% if field.help_text %}
-                            <p class="help">{{ field.help_text }}</p>
+                            <p class="grp-help">{{ field.help_text }}</p>
                         {% endif %}
                     </div>
                 </div>

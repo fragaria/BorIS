@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -146,7 +146,7 @@ class AnamnesisAdmin(BorisBaseAdmin):
             return super(AnamnesisAdmin, self).response_add(request, obj, post_url_continue)
 
     def response_change(self, request, obj):
-        if "_popup" in request.REQUEST:
+        if "_popup" in request.REQUEST and not '_continue' in request.REQUEST.dicts[0]:
             return HttpResponse('<script type="text/javascript">window.close();</script>')
         else:
             return super(AnamnesisAdmin, self).response_change(request, obj)
@@ -155,7 +155,7 @@ class AnamnesisAdmin(BorisBaseAdmin):
         return True
 
     def force_show_delete(self, obj):
-        return obj.pk is not None
+        return obj and obj.pk is not None
 
 
 class PersonAdmin(BorisBaseAdmin):
@@ -230,7 +230,7 @@ class ClientAdmin(AddContactAdmin):
             ('primary_drug', 'primary_drug_usage'),
             ('first_contact_verbose', 'last_contact_verbose'),
             'anamnesis_link',
-            )}),
+        )}),
     )
     raw_id_fields = ('town',)
     autocomplete_lookup_fields = {

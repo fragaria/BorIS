@@ -2,9 +2,9 @@
 
 {% for s in services_done %}
 {% with s.cast as casted %}
-<div class="tr">
-    <div class="td"><strong>{{ s.title }}</strong></div>
-    <div class="td">
+<div class="grp-tr">
+    <div class="grp-td"><strong>{{ s.title }}</strong></div>
+    <div class="grp-td">
         {% if casted.is_editable %}
             <a class="cbutton" onclick="ui.loadForm({{ s.pk }}, '{{ casted.class_name }}'); return false;">{% trans "Zobrazit" %}</a>
             <a class="cbutton high1" onclick="ui.loadForm({{ s.pk }}, '{{ casted.class_name }}'); return false;">{% trans "Upravit" %}</a>

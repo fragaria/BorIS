@@ -19,7 +19,7 @@ service_list.allow_tags = True
 
 class EncounterInline(admin.TabularInline):
     model = Encounter
-    classes = ('collapse closed',)
+    classes = ('grp-collapse', 'grp-closed',)
     fieldsets = (
         (None, {
             'fields': ('performed_on', 'where', 'performed_by_verbose',
@@ -102,7 +102,7 @@ class EncounterAdmin(BorisBaseAdmin):
         if redir_prefill is not None:
             return redir_prefill
         return super(EncounterAdmin, self).response_add(request, obj,
-            post_url_continue)
+            post_url_continue % obj.id)
 
     def _prefill_by_encounter(self, db_field, kwargs, encounter_id):
         if db_field.name in ('person', 'where', 'performed_by', 'performed_on'):
@@ -155,11 +155,18 @@ class EncounterAdmin(BorisBaseAdmin):
             return db_field.formfield(**kwargs)
         return super(EncounterAdmin, self).formfield_for_dbfield(db_field, **kwargs)
 
-    def show_save_and_add_another(self, obj): return bool(obj.pk)
+    def show_save_and_add_another(self, obj):
+        return bool(obj and obj.pk)
+
+    def show_save(self, obj):
+        return False
+
+    def show_save_and_continue(self, obj):
+        return True
 
     def button_captions(self, obj):
-        if not obj.pk:
-            return {'BO_SAVE_CAPTION': _(u'Přidat výkony')}
+        if not obj or not obj.pk:
+            return {'BO_SAVE_AND_CONT_CAPTION': _(u'Přidat výkony')}
         return {}
 
 EncounterAdmin.service_list = service_list

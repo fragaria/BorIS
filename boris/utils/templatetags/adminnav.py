@@ -32,6 +32,6 @@ class NavSelectedNode(template.Node):
 
             if (cpath == '/' or cpath == '') and not (path == '/' or path == ''):
                 return ""
-            if path.startswith(cpath):
+            if cpath and path.startswith(cpath):
                 return 'active'
         return ""

@@ -1,14 +1,14 @@
 {% extends "admin/clients/person/change_form.html" %}
-{% load i18n services %}
+{% load i18n services admin_static %}
 
 {% block extrahead %}
     {{ block.super }}
-    <link href="{{ STATIC_URL}}css/clients.css" rel="stylesheet" type="text/css" media="screen" />
+    <link href="{% static 'css/clients.css' %}" rel="stylesheet" type="text/css" media="screen" />
 
     <script type="text/javascript">
         function dismissAddAnamnesisPopup(win, newId, newRepr) {
-            django.jQuery('#add_id_anamnesis').attr('href', '/clients/anamnesis/' + newId + '/');
-            django.jQuery('#add_id_anamnesis').html('{% trans "Zobrazit" %}');
+            grp.jQuery('#add_id_anamnesis').attr('href', '/clients/anamnesis/' + newId + '/');
+            grp.jQuery('#add_id_anamnesis').html('{% trans "Zobrazit" %}');
             win.close();
             return false;
         }
@@ -20,8 +20,8 @@
 
             $(document).ready(function () {
                 $('#id_close_person,#id_sex_partner').change(function () {
-                    var close_person = $('#id_close_person').attr('checked') == 'checked';
-                    var sex_partner = $('#id_sex_partner').attr('checked') == 'checked';
+                    var close_person = $('#id_close_person').checked == 'checked';
+                    var sex_partner = $('#id_sex_partner').checked == 'checked';
                     if (close_person || sex_partner) {
                         $('#id_primary_drug option[value=""]').show();
                         $('#id_primary_drug').val('');
@@ -58,7 +58,7 @@
                 });
             });
             
-        })(django.jQuery);
+        })(grp.jQuery);
     </script>
 {% endblock %}
 

@@ -1,4 +1,9 @@
 {% extends "admin/base_site.html" %}
+{% load admin_static %}
 
 {% block header %}{% endblock %}
 {% block messages %}{% endblock %}
+{% block extrastyle %}
+    {{ block.super }}
+    <link href="{% static 'css/print.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}

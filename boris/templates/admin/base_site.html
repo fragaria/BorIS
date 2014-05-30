@@ -1,11 +1,18 @@
 {% extends "admin/base.html" %}
 {% load i18n grp_tags %}
+{% load admin_static %}
 
 {% block stylesheets %}
     {{ block.super }}
     <link href="{{ STATIC_URL }}css/custom.css" rel="stylesheet" type="text/css" media="screen, projection" />
     <link href="{{ STATIC_URL }}css/sitemenu.css" rel="stylesheet" type="text/css" media="screen, projection" />
     <link href="{{ STATIC_URL }}css/print.css" rel="stylesheet" type="text/css" media="print" />
+    {% if is_popup %}
+        <link href="{% static 'css/popup.css' %}" rel="stylesheet" type="text/css" />
+    {% endif %}
+    {% if not user.is_authenticated %}
+        <link href="{% static 'css/login.css' %}" rel="stylesheet" type="text/css" />
+    {% endif %}
 {% endblock %}
 
 {% block title %}{{ title }} | {% trans 'BorIS' %}{% endblock %}
