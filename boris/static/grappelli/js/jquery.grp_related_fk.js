@@ -18,9 +18,11 @@
                 }
                 // add placeholder
                 $parent.find('a.related-lookup').after(options.placeholder);
+                // add related class
+                $this.addClass('grp-has-related-lookup');
                 // lookup
                 lookup_id($this, options); // lookup when loading page
-                $this.bind("change focus keyup blur", function() { // id-handler
+                $this.bind("change focus keyup", function() { // id-handler
                     lookup_id($this, options);
                 });
             });
@@ -43,9 +45,10 @@
         $.getJSON(options.lookup_url, {
             object_id: elem.val(),
             app_label: grappelli.get_app_label(elem),
-            model_name: grappelli.get_model_name(elem)
+            model_name: grappelli.get_model_name(elem),
+            query_string: grappelli.get_query_string(elem)
         }, function(data) {
-            if (data[0].label == "") {
+            if (data[0].label === "") {
                 text.hide();
             } else {
                 text.show();

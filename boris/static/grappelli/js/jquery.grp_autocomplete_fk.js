@@ -10,11 +10,16 @@
             options = $.extend({}, $.fn.grp_autocomplete_fk.defaults, options);
             return this.each(function() {
                 var $this = $(this);
+                // assign attributes
+                $this.attr({
+                    "tabindex": "-1",
+                    "readonly": "readonly"
+                }).addClass("grp-autocomplete-hidden-field");
                 // remove djangos object representation (if given)
-                if ($this.next().next() && $this.next().next().attr("class") != "errorlist") $this.next().next().remove();
+                if ($this.next().next() && $this.next().next().attr("class") != "errorlist" && $this.next().next().attr("class") != "grp-help") $this.next().next().remove();
                 // build autocomplete wrapper
                 $this.next().after(loader).after(remove_link($this.attr('id')));
-                $this.parent().wrapInner("<div class='autocomplete-wrapper-fk'></div>");
+                $this.parent().wrapInner("<div class='grp-autocomplete-wrapper-fk'></div>");
                 $this.parent().prepend("<input id='" + $this.attr("id") + "-autocomplete' type='text' class='vTextField' value='' />");
                 // extend options
                 options = $.extend({
@@ -26,7 +31,7 @@
                 // lookup
                 lookup_id($this, options); // lookup when loading page
                 lookup_autocomplete($this, options); // autocomplete-handler
-                $this.bind("change focus keyup blur", function() { // id-handler
+                $this.bind("change focus keyup", function() { // id-handler
                     lookup_id($this, options);
                 });
                 // labels
@@ -44,46 +49,42 @@
             return methods.init.apply(this, arguments);
         } else {
             $.error('Method ' +  method + ' does not exist on jQuery.grp_autocomplete_fk');
-        };
+        }
         return false;
     };
     
     var loader = function() {
-        var loader = $('<div class="loader">loader</div>');
+        var loader = $('<div class="grp-loader">loader</div>');
         return loader;
     };
     
     var remove_link = function(id) {
-        var removelink = $('<a class="related-remove"></a>');
+        var removelink = $('<a class="grp-related-remove"></a>');
         removelink.attr('id', 'remove_'+id);
         removelink.attr('href', 'javascript://');
         removelink.attr('onClick', 'return removeRelatedObject(this);');
         removelink.hover(function() {
-            $(this).parent().toggleClass("autocomplete-preremove");
+            $(this).parent().toggleClass("grp-autocomplete-preremove");
         });
         return removelink;
     };
     
     var lookup_autocomplete = function(elem, options) {
         options.wrapper_autocomplete.find("input:first")
-            .bind("keydown", function(event) { // don't navigate away from the field on tab when selecting an item
-                var w = $(this).data("ui-autocomplete");
-                if (event.keyCode === $.ui.keyCode.TAB && $(w.menu.element).css('display') != "none") { 
-                    if (!w.menu.active) {
-                        w.menu.active = $(w.menu.element).find('li:first');
-                    }
-                    w.menu.active.click()
-                    event.preventDefault();
-                }
+            .bind("focus", function() {
+                options.wrapper_autocomplete.addClass("grp-state-focus");
+            })
+            .bind("blur", function() {
+                options.wrapper_autocomplete.removeClass("grp-state-focus");
             })
             .autocomplete({
-                minLength: 2,
-                delay: 100,
+                minLength: 1,
+                delay: 1000,
                 source: function(request, response) {
                     $.ajax({
                         url: options.autocomplete_lookup_url,
                         dataType: 'json',
-                        data: "term=" + request.term + "&app_label=" + grappelli.get_app_label(elem) + "&model_name=" + grappelli.get_model_name(elem) + "&query_string=" + grappelli.get_query_string(elem),
+                        data: "term=" + encodeURIComponent(request.term) + "&app_label=" + grappelli.get_app_label(elem) + "&model_name=" + grappelli.get_model_name(elem) + "&query_string=" + grappelli.get_query_string(elem),
                         beforeSend: function (XMLHttpRequest) {
                             options.loader.show();
                         },
@@ -108,10 +109,17 @@
                 }
             })
             .data("ui-autocomplete")._renderItem = function(ul,item) {
-                return $("<li></li>")
-                    .data( "ui-item.autocomplete", item )
-                    .append( "<a>" + item.label)
-                    .appendTo(ul);
+                if (!item.value) {
+                    return $("<li></li>")
+                        .data( "item.autocomplete", item )
+                        .append( "<span class='error'>" + item.label)
+                        .appendTo(ul);
+                } else {
+                    return $("<li></li>")
+                        .data( "item.autocomplete", item )
+                        .append( "<a>" + item.label)
+                        .appendTo(ul);
+                }
             };
     };
     
@@ -133,4 +141,4 @@
         lookup_url: ''
     };
     
-})(django.jQuery);
+})(grp.jQuery);
