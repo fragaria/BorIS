@@ -14,6 +14,7 @@
     {% url "reporting_towns" as reporting_towns %}
     {% url "reporting_services" as reporting_services %}
     {% url "reporting_clients" as reporting_clients %}
+    {% url "reporting_yearly" as reporting_yearly %}
     {% url "reporting_hygiene" as reporting_hygiene %}
     {% url "reporting_govcouncil" as reporting_govcouncil %}
 
@@ -26,9 +27,10 @@
     <li>
         <a href="#">{% trans "Výstupy" %}</a>
         <ul>
-            <li class="{% active reporting_towns %}"><a href="{{ reporting_towns }}">{% trans "Města" %}</a></li>
+            <li class="{% active reporting_towns %}"><a href="{{ reporting_towns }}">{% trans "Města/okresy" %}</a></li>
             <li class="{% active reporting_services %}"><a href="{{ reporting_services }}">{% trans "Výkony" %}</a></li>
             <li class="{% active reporting_clients %}"><a href="{{ reporting_clients }}">{% trans "Klienti" %}</a></li>
+            <li class="{% active reporting_yearly %}"><a href="{{ reporting_yearly }}">{% trans "Roční" %}</a></li>
             <li class="{% active reporting_hygiene %}"><a href="{{ reporting_hygiene }}">{% trans "Hygiena" %}</a></li>
             <li class="{% active reporting_govcouncil %}"><a href="{{ reporting_govcouncil }}">{% trans "RVKPP" %}</a></li>
         </ul>

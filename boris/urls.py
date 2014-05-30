@@ -14,6 +14,7 @@ urlpatterns = patterns('',
     (r'^reporting/towns/', include(reporting.towns.urls)),
     (r'^reporting/services/', include(reporting.services.urls)),
     (r'^reporting/clients/', include(reporting.clients.urls)),
+    (r'^reporting/yearly/', include(reporting.yearly.urls)),
     (r'^reporting/hygiene/', include(reporting.hygiene.urls)),
     (r'^reporting/govcouncil/', include(reporting.govcouncil.urls)),
 

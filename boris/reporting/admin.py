@@ -87,6 +87,13 @@ class ClientsReportingInterface(object):
         interfacetab_factory(ClientReport, forms.BaseReportForm, 'clients'),
     )
 
+
+class YearlyReportingInterface(object):
+    tabs = (
+        interfacetab_factory(YearlyStatsByMonth, forms.MonthlyStatsForm, 'yearly'),
+    )
+
+
 class GovCouncilReportingInterface(object):
     tabs = (
         interfacetab_factory(GovCouncilReport, forms.GovCouncilForm, 'govcouncil'),
@@ -154,7 +161,7 @@ class ReportingInterfaceHandler(object):
 
 class TownReportingInterfaceHandler(ReportingInterfaceHandler):
     id = 'towns'
-    title = u'Města'
+    title = u'Města a okresy'
     interface_class = TownReportingInterface
 
 
@@ -170,10 +177,17 @@ class ClientReportingInterfaceHandler(ReportingInterfaceHandler):
     interface_class = ClientsReportingInterface
 
 
+class YearlyReportingInterfaceHandler(ReportingInterfaceHandler):
+    id = 'yearly'
+    title = u'Roční'
+    interface_class = YearlyReportingInterface
+
+
 class HygieneReportingInterfaceHandler(ReportingInterfaceHandler):
     id = 'hygiene'
     title = u'Hygiena'
     interface_class = HygieneReportingInterface
+
 
 class GovCouncilReportingInterfaceHandler(ReportingInterfaceHandler):
     id = 'govcouncil'
@@ -185,5 +199,6 @@ class GovCouncilReportingInterfaceHandler(ReportingInterfaceHandler):
 towns = TownReportingInterfaceHandler()
 services = ServicesReportingInterfaceHandler()
 clients = ClientReportingInterfaceHandler()
+yearly = YearlyReportingInterfaceHandler()
 hygiene = HygieneReportingInterfaceHandler()
 govcouncil = GovCouncilReportingInterfaceHandler()
