@@ -182,7 +182,8 @@ class GovCouncilReport(BaseReport):
                 drug(DRUGS.METHAMPHETAMINE)),
             (_(u'– z toho se základní drogou opiáty a/nebo pervitin'),
                 drug(DRUGS.HEROIN, DRUGS.SUBUTEX_LEGAL, DRUGS.SUBUTEX_ILLEGAL,
-                    DRUGS.SUBOXONE, DRUGS.METHADONE, DRUGS.METHAMPHETAMINE)),
+                    DRUGS.SUBOXONE, DRUGS.METHADONE, DRUGS.METHAMPHETAMINE, DRUGS.VENDAL,
+                    DRUGS.BRAUN, DRUGS.RAW_OPIUM)),
             (_(u'Z počtu „opiáty a/nebo pervitin“ odhadované procento'
                 u' polyvalentních uživatelů opiátů a pervitinu'), ''),
             (_(u'– z toho se základní drogou kokain/crack'), drug(DRUGS.COCAINE)),

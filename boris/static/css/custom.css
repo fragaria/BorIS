@@ -94,3 +94,7 @@ ul.messagelist { top: 5px; }
 .ui-tabs-nav { border: 0 !important; }
 .ui-tabs-panel.ui-widget-content { border: 0 !important; }
 .ui-tabs-panel fieldset.module { border-radius: 0 5px 5px 5px; }
+
+#nav {
+    z-index: 1100 !important;
+}

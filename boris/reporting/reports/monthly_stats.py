@@ -246,16 +246,18 @@ class StatsByTownInPeriod(ClientReportBase):
             'performed_on__lte': date_to,
             'town__in': self.towns
         }
-        super(StatsByTownInPeriod, self).__init__()
+        super(StatsByTownInPeriod, self).__init__(*args, **kwargs)
 
     def get_data(self):
-        return [
-            (aggregation.title, [
-                aggregation.get_val(
-                    make_key((('town', town.pk),))
-                ) for town in self.towns
-            ] + [aggregation.get_val(make_key(()))]) for aggregation in self.aggregations
-        ]
+        data = [(aggregation.title,
+                 [aggregation.get_val(make_key((('town', town.pk),))) for town in self.towns] +
+                 [aggregation.get_val(make_key(()))]) for aggregation in self.aggregations]
+        for row in data:  # group by incorrectly calcuates sum for all towns, so we'll count it here :(
+            total = 0
+            for cell in row[1][0:-1]:
+                total += cell
+            row[1][-1] = total
+        return data
 
 
 class MonthlyStatsByDistrict(MonthlyStatsByTown):
