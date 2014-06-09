@@ -23,6 +23,8 @@ class SearchEncounter(models.Model):
     performed_on = models.DateField()
     month = models.SmallIntegerField()
     year = models.SmallIntegerField()
+    # "grouping_constant" is used in aggregations where grand totals are needed.
+    grouping_constant = models.SmallIntegerField() # Is always 1.
 
     class Meta:
         managed = False
@@ -39,6 +41,7 @@ class SearchService(models.Model):
     year = models.SmallIntegerField()
     is_client = models.BooleanField()
     is_anonymous = models.BooleanField()
+    grouping_constant = models.SmallIntegerField() # Is always 1.
 
     class Meta:
         managed = False
@@ -50,6 +53,7 @@ class SearchSyringeCollection(models.Model):
     performed_on = models.DateField()
     month = models.SmallIntegerField()
     year = models.SmallIntegerField()
+    grouping_constant = models.SmallIntegerField() # Is always 1.
 
     class Meta:
         managed = False
