@@ -1,21 +1,33 @@
+from operator import methodcaller
 from os.path import dirname, join
 
 from django.db import connection
-from django.db.models.signals import post_syncdb
 
-import boris.reporting.models
+from south import migration
+from south.signals import post_migrate
+
 from boris import reporting
 
 
+# Get a list of all the apps that use migrations.
+APPS_TO_WAIT_FOR = map(methodcaller('app_label'), migration.all_migrations())
+
+
 def install_views(app, **kwargs):
-    print "Installing reporting views ..."
+    global APPS_TO_WAIT_FOR
 
-    cursor = connection.cursor()
-    sql_file = open(join(dirname(reporting.__file__), 'sql', 'reporting-views.mysql.sql'), 'r')
+    APPS_TO_WAIT_FOR.remove(app)
 
-    try:
-        cursor.execute(sql_file.read())
-    finally:
-        sql_file.close()
+    if len(APPS_TO_WAIT_FOR) == 0:
+        print "Installing reporting views ..."
 
-post_syncdb.connect(install_views, sender=boris.reporting.models)
+        cursor = connection.cursor()
+        sql_file = open(join(dirname(reporting.__file__), 'sql', 'reporting-views.mysql.sql'), 'r')
+
+        try:
+            cursor.execute(sql_file.read())
+        finally:
+            sql_file.close()
+
+
+post_migrate.connect(install_views)
