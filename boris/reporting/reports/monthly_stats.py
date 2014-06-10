@@ -249,10 +249,12 @@ class StatsByTownInPeriod(ClientReportBase):
         super(StatsByTownInPeriod, self).__init__(*args, **kwargs)
 
     def get_data(self):
-        return [(aggregation.title,
-                 [aggregation.get_val(make_key((('town', town.pk),))) for town in self.towns] +
-                 [aggregation.get_val(make_key((('grouping_constant', 1),)))])
-                 for aggregation in self.aggregations]
+        return [
+            (aggregation.title, [
+                aggregation.get_val(make_key((('town', town.pk),))) for town in self.towns
+            ] + [aggregation.get_val(make_key((('grouping_constant', 1),)))]
+            ) for aggregation in self.aggregations
+        ]
 
 
 class MonthlyStatsByDistrict(MonthlyStatsByTown):
