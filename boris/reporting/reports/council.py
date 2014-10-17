@@ -101,16 +101,12 @@ class GovCouncilReport(BaseReport):
         }
         return Encounter.objects.filter(**filtering).count()
 
-    def _get_performed_tests_count(self, disease=None):
-        filtering = {'test_execution': True}
-        if disease is not None:
-            filtering['disease'] = disease
+    def _get_performed_tests_count(self, disease):
+        filtering = {'disease': disease}
         return self._get_services(DiseaseTest).filter(**filtering).count()
 
-    def _get_tested_clients_count(self, disease=None):
-        filtering = {'test_execution': True}
-        if disease is not None:
-            filtering['disease'] = disease
+    def _get_tested_clients_count(self, disease):
+        filtering = {'disease': disease}
         person_ids = self._get_services(DiseaseTest).filter(
             **filtering).values_list('encounter__person_id', flat=True)
         anonymous_ids = self._get_anonymous_ids()
@@ -279,8 +275,8 @@ class GovCouncilReport(BaseReport):
             (_(u'– nalezené injekční jehly'), 'xxx', self._get_syringes_count()),
             (_(u'Hygienický servis'), 0, 0),
             (_(u'Potravinový servis'), 0, 0),
-            (_(u'Testování na inf. nemoci'), self._get_tested_clients_count(),
-                self._get_performed_tests_count()),
+            (_(u'Testování na inf. nemoci'), clients(DiseaseTest),
+                services(DiseaseTest)),
             (_(u'– z toho na HIV'), self._get_tested_clients_count(DISEASES.HIV),
                 self._get_performed_tests_count(DISEASES.HIV)),
             (_(u'– z toho na HCV'), self._get_tested_clients_count(DISEASES.VHC),
