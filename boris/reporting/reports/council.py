@@ -23,10 +23,11 @@ class GovCouncilReport(BaseReport):
     description = (u'Tiskový výstup pro Radu vlády '
         u'pro koordinaci protidrogové politiky.')
 
-    def __init__(self, date_from, date_to, kind):
+    def __init__(self, date_from, date_to, kind, towns):
         self.datetime_from = datetime.combine(date_from, time(0))
         self.datetime_to = datetime.combine(date_to, time(23, 59, 59))
         self.kind = 'clients' if int(kind) == 1 else 'services'
+        self.towns = towns
 
     def get_filename(self):
         if self.kind == 'clients':
@@ -45,6 +46,8 @@ class GovCouncilReport(BaseReport):
             'encounter__performed_on__gte': self.datetime_from,
             'encounter__performed_on__lte': self.datetime_to,
         }
+        if self.towns:
+            filtering['encounter__where__in'] = self.towns
         return service_cls.objects.filter(**filtering)
 
     def _get_service_count(self, service_cls):
@@ -71,6 +74,8 @@ class GovCouncilReport(BaseReport):
             'encounter__performed_on__lte': self.datetime_to,
             'encounter__person__in': anonymous_ids,
         }
+        if self.towns:
+            filtering['encounter__where__in'] = self.towns
         return service_cls.objects.filter(**filtering).count()
 
     def _get_syringes_count(self):
@@ -78,6 +83,8 @@ class GovCouncilReport(BaseReport):
             'date__gte': self.datetime_from,
             'date__lte': self.datetime_to,
         }
+        if self.towns:
+            filtering['town__in'] = self.towns
         return SyringeCollection.objects.filter(**filtering).aggregate(Sum(
             'count'))['count__sum']
 
@@ -87,6 +94,8 @@ class GovCouncilReport(BaseReport):
             'performed_on__lte': self.datetime_to,
             'is_by_phone': False,
         }
+        if self.towns:
+            filtering['where__in'] = self.towns
         exclude = {'person__in': self._get_anonymous_ids()}
         return Encounter.objects.filter(**filtering).exclude(**exclude)
 
@@ -122,6 +131,8 @@ class GovCouncilReport(BaseReport):
             'performed_on__gte': self.datetime_from,
             'performed_on__lte': self.datetime_to,
         }
+        if self.towns:
+            filtering['where__in'] = self.towns
         encounters = Encounter.objects.filter(**filtering)
         clients = encounters.values_list('person', flat=True)
         return Client.objects.filter(pk__in=clients).exclude(primary_drug=None)
@@ -132,6 +143,8 @@ class GovCouncilReport(BaseReport):
             'performed_on__gte': self.datetime_from,
             'performed_on__lte': self.datetime_to,
         }
+        if self.towns:
+            filtering['where__in'] = self.towns
         encounters = Encounter.objects.filter(**filtering)
         clients = encounters.values_list('person', flat=True)
         return Client.objects.filter(pk__in=clients).filter(
@@ -304,6 +317,7 @@ class GovCouncilReport(BaseReport):
                 'date_from': self.datetime_from,
                 'date_to': self.datetime_to,
                 'report_kind': self.kind,
+                'towns': [t.title for t in self.towns],
             },
             context_instance=RequestContext(request)
         )

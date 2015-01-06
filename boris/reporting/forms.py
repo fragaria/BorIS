@@ -60,3 +60,6 @@ class GovCouncilForm(ReportForm):
     kind = forms.ChoiceField(((1, u'Klienti'), (2, u'Výkony')),
                              label=_(u'Druh výstupu'), widget=forms.RadioSelect,
                              initial=1)
+    towns = forms.ModelMultipleChoiceField(label=_(u'Město'),
+                                           queryset=Town.objects.all(),
+                                           required=False)
