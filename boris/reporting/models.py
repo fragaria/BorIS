@@ -37,8 +37,8 @@ class SearchService(models.Model):
     performed_on = models.DateField()
     month = models.SmallIntegerField()
     year = models.SmallIntegerField()
-    is_client = models.BooleanField()
-    is_anonymous = models.BooleanField()
+    is_client = models.BooleanField(default=None)
+    is_anonymous = models.BooleanField(default=None)
 
     class Meta:
         managed = False

@@ -68,7 +68,7 @@ class HandleForm(object):
                     'content': render_to_string(form.template_list, ctx,
                         context_instance=RequestContext(request))
                 }
-            return HttpResponse(anyjson.dumps(resp), mimetype='application/json')
+            return HttpResponse(anyjson.dumps(resp), content_type='application/json')
         else:
             return render(request, ctx['form'].template_list, ctx)
 

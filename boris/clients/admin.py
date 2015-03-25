@@ -206,6 +206,7 @@ class PractitionerContactAdmin(BorisBaseAdmin):
         'fk': ['town', ]
     }
     ordering = ('-date', 'person_or_institution')
+    fields = ('person_or_institution', 'town', 'date', 'note', 'users')
 
     @textual(_(u'Kdo'))
     def user_list(self, obj):

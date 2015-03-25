@@ -46,7 +46,7 @@
         var formIndex = elem.find("[id^='id_" + options.prefix + "']").attr('id');
         if (!formIndex) { return -1; }
         return parseInt(regex.exec(formIndex)[1], 10);
-    }
+    };
     
     updateFormIndex = function(elem, options, replace_regex, replace_with) {
         elem.find(':input,span,table,iframe,label,a,ul,p,img,div').each(function() {
@@ -185,11 +185,15 @@
     hideAddButtons = function(elem, options) {
         var addButtons = elem.find("a." + options.addCssClass);
         addButtons.hide().parents('.grp-add-item').hide();
+        // last row with stacked/tabular
+        addButtons.closest('.grp-module.grp-transparent').hide();
     };
     
     showAddButtons = function(elem, options) {
         var addButtons = elem.find("a." + options.addCssClass);
         addButtons.show().parents('.grp-add-item').show();
+        // last row with stacked/tabular
+        addButtons.closest('.grp-module.grp-transparent').show();
     };
     
 })(grp.jQuery);

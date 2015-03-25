@@ -13,28 +13,22 @@ var django = {
     "jQuery": grp.jQuery.noConflict(true)
 };
 
-// var jQuery = grp.jQuery.noConflict(true);
+var inputTypes = [
+    "[type='search']",
+    "[type='email']",
+    "[type='url']",
+    "[type='tel']",
+    "[type='number']",
+    "[type='range']",
+    "[type='date']",
+    "[type='month']",
+    "[type='week']",
+    "[type='time']",
+    "[type='datetime']",
+    "[type='datetime-local']",
+    "[type='color']"].join(",");
 
 (function($) {
-	// set jQuery UI datepicker defaults
-	$.datepicker.regional['us'] = {
-        closeText : gettext('Done'),
-        prevText : gettext('Prev'),
-        nextText : gettext('Next'),
-        currentText : gettext('Today'),
-        monthNames : [gettext('January'), gettext('February'), gettext('March'), gettext('April'), gettext('May'), gettext('June'), gettext('July'), gettext('August'), gettext('September'), gettext('October'), gettext('November'), gettext('December')],
-        monthNamesShort : [gettext('Jan'), gettext('Feb'), gettext('Mar'), gettext('Apr'), gettext('May'), gettext('Jun'), gettext('Jul'), gettext('Aug'), gettext('Sep'), gettext('Oct'), gettext('Nov'), gettext('Dec')],
-        dayNames : [gettext('Sunday'), gettext('Monday'), gettext('Tuesday'), gettext('Wednesday'), gettext('Thursday'), gettext('Friday'), gettext('Saturday')],
-        dayNamesShort : [gettext('Sun'), gettext('Mon'), gettext('Tue'), gettext('Wed'), gettext('Thu'), gettext('Fri'), gettext('Sat')],
-        dayNamesMin : [gettext('Su'), gettext('Mo'), gettext('Tu'), gettext('We'), gettext('Th'), gettext('Fr'), gettext('Sa')],
-        weekHeader : gettext('Wk'),
-        dateFormat : gettext('yy-mm-dd'),
-        firstDay : gettext('7'),
-        isRTL : false,
-        showMonthAfterYear : false,
-        yearSuffix : ''
-    };
-    $.datepicker.setDefaults($.datepicker.regional['us']);
     
     // dateformat
     grappelli.getFormat = function(type) {
@@ -45,6 +39,18 @@ var django = {
             });
             return format;
         }
+    };
+
+    // remove types: search, email, url, tel, number, range, date
+    // month, week, time, datetime, datetime-local, color
+    // because of browser inconsistencies
+    /*jshint multistr: true */
+    grappelli.cleanInputTypes = function() {
+        $("form").each(function(){
+            $(this).find(':input').filter(inputTypes).each(function(){
+                $(this).attr("type", "text");
+            });
+        });
     };
     
     // datepicker, timepicker init
@@ -84,20 +90,13 @@ var django = {
         // HACK: adds an event listener to the today button of datepicker
         // if clicked today gets selected and datepicker hides.
         // use on() because couldn't find hook after datepicker generates it's complete dom.
-        $(".ui-datepicker-current").on('click', function() {
+        $(document).on('click', '.ui-datepicker-current', function() {
             $.datepicker._selectDate(grappelli.datepicker_instance);
             grappelli.datepicker_instance = null;
         });
         
         // init timepicker
         $("input[class*='vTimeField']:not([id*='__prefix__'])").grp_timepicker();
-
-        // now-button for both date and time
-        // $("<button class='ui-datetime-now' />").insertAfter("button.ui-timepicker-trigger");
-        // $(".ui-datetime-now").on('click', function() {
-        //     alert("Now for date and time: grappelli.js line 68 ff.");
-        //     return false
-        // });
         
     };
     

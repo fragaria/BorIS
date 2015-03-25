@@ -351,16 +351,10 @@
 				});
 			}
 
-			dom.remove('fullpage_styles');
-
-			if (styles) {
+			if (styles)
 				dom.add(self.editor.getDoc().getElementsByTagName('head')[0], 'style', {id : 'fullpage_styles'}, styles);
-
-				// Needed for IE 6/7
-				elm = dom.get('fullpage_styles');
-				if (elm.styleSheet)
-					elm.styleSheet.cssText = styles;
-			}
+			else
+				dom.remove('fullpage_styles');
 		},
 
 		_getDefaultHeader : function() {
@@ -373,7 +367,7 @@
 			header += '\n<html>\n<head>\n';
 
 			if (value = editor.getParam('fullpage_default_title'))
-				header += '<title>' + value + '</title>\n';
+				header += '<title>' + v + '</title>\n';
 
 			if (value = editor.getParam('fullpage_default_encoding'))
 				header += '<meta http-equiv="Content-Type" content="text/html; charset=' + value + '" />\n';

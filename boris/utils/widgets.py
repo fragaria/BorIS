@@ -15,9 +15,9 @@ class SplitDateWidget(SelectDateWidget):
     if we did, admin would work only when web servery is just refreshed,
     on second view, it would be wasted :(
     """
-    def __init__(self, attrs=None, required=False):
+    def __init__(self, attrs=None):
         super(SplitDateWidget, self).__init__(
-            attrs=attrs, required=required,
+            attrs=attrs,
             years=reversed(range(date.today().year - 100,
                                  date.today().year + 1))
         )
