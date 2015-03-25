@@ -235,8 +235,8 @@ class Anamnesis(TimeStampedModel, AdminLinkMixin):
         default=EMPLOYMENT_TYPES.UNKNOWN, verbose_name=_(u'Zaměstnání / škola'))
     education = models.PositiveSmallIntegerField(choices=EDUCATION_LEVELS,
         default=EDUCATION_LEVELS.UNKNOWN, verbose_name=_(u'Vzdělání'))
-    been_cured_before = models.BooleanField(verbose_name=_(u'Dříve léčen'))
-    been_cured_currently = models.BooleanField(verbose_name=_(u'Nyní léčen'))
+    been_cured_before = models.BooleanField(verbose_name=_(u'Dříve léčen'), default=None)
+    been_cured_currently = models.BooleanField(verbose_name=_(u'Nyní léčen'), default=None)
 
     @property
     def birth_year(self):
@@ -332,7 +332,7 @@ class DrugUsage(models.Model):
     first_try_application = models.PositiveSmallIntegerField(choices=DRUG_APPLICATION_TYPES,
         verbose_name=_(u'Způsob prvního užití'))
     was_first_illegal = models.NullBooleanField(verbose_name=_(u'První neleg. droga'))
-    is_primary = models.BooleanField(verbose_name=_(u'Primární droga'))
+    is_primary = models.BooleanField(verbose_name=_(u'Primární droga'), default=None)
     note = models.TextField(null=True, blank=True, verbose_name=_(u'Poznámka'))
 
     def __unicode__(self):
