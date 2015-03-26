@@ -1,13 +1,13 @@
 {% extends "admin/base_site.html" %}
-{% load i18n admin_modify adminmedia grp_tags reporting_tags %}
+{% load i18n admin_modify grp_tags reporting_tags admin_static %}
 
 {% block title %}{% trans "Výstupy" %}{{ block.super }}{% endblock %}
 
 {% block javascripts %}
     {{ block.super }}
-    <script src="{{ STATIC_URL }}js/jquery.cookie.js" type="text/javascript"></script>
-    <script src="{% admin_media_prefix %}js/grappelli/jquery.grp_inline.js" type="text/javascript"></script>
-    <script src="{% admin_media_prefix %}js/admin/RelatedObjectLookups.js" type="text/javascript"></script>
+    <script src="{% static 'js/jquery.cookie.js' %}" type="text/javascript"></script>
+    <script src="{% static 'grappelli/js/grappelli/jquery.grp_inline.js' %}" type="text/javascript"></script>
+    <script src="{% static 'grappelli/js/admin/RelatedObjectLookups.js' %}" type="text/javascript"></script>
     <script type="text/javascript" charset="utf-8">
         (function($) {
             $(document).ready(function() {
@@ -18,7 +18,7 @@
                     autocomplete_lookup_url:"/grappelli/lookup/autocomplete/"
                 });
             });
-        })(django.jQuery);
+        })(grp.jQuery);
     </script>
     <style>
         .form-container input {
@@ -54,8 +54,8 @@
     </div>
 
     <script type="text/javascript">
-        django.jQuery(document).ready(function () {
-            django.jQuery('#tabs').tabs({cookie: {expires: 1}});
+        grp.jQuery(document).ready(function () {
+            grp.jQuery('#tabs').tabs({cookie: {expires: 1}});
         });
     </script>
 {% endblock %}

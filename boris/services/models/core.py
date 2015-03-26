@@ -123,7 +123,7 @@ class ServiceOptions(object):
             return ((None, {'fields': fields}),)
 
 
-class ServiceMetaclass(models.Model.__metaclass__):
+class ServiceMetaclass(type(models.Model)):
     registered_services = []
 
     def __new__(cls, name, bases, attrs):

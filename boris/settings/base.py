@@ -104,6 +104,8 @@ INSTALLED_APPS = [
     'form_utils',
     'raven.contrib.django.raven_compat',
 
+    'boris',
+
     'boris.clients',
     'boris.services',
     'boris.reporting',

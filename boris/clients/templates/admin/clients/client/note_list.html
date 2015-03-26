@@ -1,12 +1,12 @@
-{% load i18n %}
+{% load i18n admin_static %}
 
 {% if not add %}
 
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.tmpl.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.autocsrf.js"></script>
+<script type="text/javascript" src="{% static 'js/jquery.tmpl.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/jquery.autocsrf.js' %}"></script>
 <script type="text/javascript">
 function add_new_note() {
-    
+
     (function ($) {
         if ($('#new_note_text').val() == '') {
             alert('{% trans "Vyplňte prosím text poznámky." %}');
@@ -14,7 +14,7 @@ function add_new_note() {
         }
         $.ajax({
             type : 'POST',
-            url : '{% url admin:clients_add_note %}',
+            url : '{% url "admin:clients_add_note" %}',
             dataType: 'json',
             data : {
                 'text': $('#new_note_text').val(),
@@ -26,7 +26,7 @@ function add_new_note() {
                 if (typeof(data.error) != 'undefined'){
                     alert(data.error);
                 } else {
-                    $('#notes div.tr').eq(0).after($('#note_template').tmpl(data));
+                    $('#notes div.grp-tr').eq(0).after($('#note_template').tmpl(data));
                     $('#new_note_text').val('');
                 }
             },
@@ -34,62 +34,62 @@ function add_new_note() {
                 alert('{% trans "Došlo k chybě při přidávání poznámky." %}');
             }
         });
-    })(django.jQuery);
+    })(grp.jQuery);
 }
 
 function delete_note(link, note_id) {
-    
+
     (function ($) {
         $.ajax({
                 type : 'GET',
                 url : '/clients/client/delete-note/' + note_id + '/',
                 success : function (data) {
-                    $(link).parents('div.tr').remove();
+                    $(link).parents('div.grp-tr').remove();
                 },
                 error : function () {
                     alert('{% trans "Došlo k chybě při mazání poznámky." %}');
                 }
         });
-    })(django.jQuery);
+    })(grp.jQuery);
 }
 
 </script>
-    
+
 <script id="note_template" type="text/x-jquery-tmpl">
-<div class="tr">
-    <div class="td"><p><strong>${author}</strong></p></div>
-    <div class="td"><p>${datetime}</p></div>
-    <div class="td wrap_lines"><p>${text}</p></div>
-    <div class="td"><p><a onclick="delete_note(this, ${id}); return false;" class="cbutton warn">{% trans "Smazat" %}</a></p></div>
+<div class="grp-tr">
+    <div class="grp-td"><p><strong>${author}</strong></p></div>
+    <div class="grp-td"><p>${datetime}</p></div>
+    <div class="grp-td wrap_lines"><p>${text}</p></div>
+    <div class="grp-td"><p><a onclick="delete_note(this, ${id}); return false;" class="cbutton warn">{% trans "Smazat" %}</a></p></div>
 </div>
 </script>
-    
-<div class="group tabular collapse closed" id="notes_wrap">
-    <h2 class="collapse-handler">{% trans "Poznámky ke klientovi" %}</h2>
-    <div class="table module dynamic-form">
-        <div class="module thead dynamic-form">
-            <div class="tr">
-                <div class="th">{% trans "Autor" %}</div>
-                <div class="th">{% trans "Datum" %}</div>
-                <div class="th">{% trans "Text" %}</div>
+<br style="clear: both" />
+<div class="grp-group grp-tabular grp-collapse grp-closed" id="notes_wrap">
+    <h2 class="grp-collapse-handler">{% trans "Poznámky ke klientovi" %}</h2>
+    <div class="grp-table grp-module grp-dynamic-form">
+        <div class="grp-module grp-thead grp-dynamic-form">
+            <div class="grp-tr">
+                <div class="grp-th">{% trans "Autor" %}</div>
+                <div class="grp-th">{% trans "Datum" %}</div>
+                <div class="grp-th">{% trans "Text" %}</div>
             </div>
         </div>
-        <div class="module tbody dynamic-form" id="notes">
-            <div class="tr new">
-                <div class="td">{% trans "Autorem jste vy." %}</div>
-                <div class="td">
+        <div class="grp-module grp-tbody grp-dynamic-form" id="notes">
+            <div class="grp-tr new">
+                <div class="grp-td">{% trans "Autorem jste vy." %}</div>
+                <div class="grp-td">
                     <input value="{{ current_date }}" class="vDateField" type="text" id="new_note_date" size="10" name="datetime_0" />
                     <input value="{{ current_time }}" class="vTimeField" type="text" id="new_note_time" size="5" name="datetime_1" />
                 </div>
-                <div class="td"><textarea id="new_note_text" style="width: 50%; margin-right: 20px;"></textarea><a class="cbutton" onclick="add_new_note(); return false;">{% trans "Přidat poznámku" %}</a></div>
-                <div class="td">&nbsp;</div>
+                <div class="grp-td"><textarea id="new_note_text" style="width: 50%; margin-right: 20px;"></textarea><a class="cbutton" onclick="add_new_note(); return false;">{% trans "Přidat poznámku" %}</a></div>
+                <div class="grp-td">&nbsp;</div>
             </div>
             {% for note in original.notes.all %}
-            <div class="tr">
-                <div class="td"><p><strong>{{ note.author }}</strong></p></div>
-                <div class="td"><p>{{ note.datetime|date:"DATETIME_FORMAT" }}</p></div>
-                <div class="td wrap_lines"><p>{{ note.text }}</p></div>
-                <div class="td">{% if note.author == request.user or request.user.is_superuser %}<p><a onclick="delete_note(this, {{ note.pk }}); return false;" class="cbutton warn">{% trans "Smazat" %}</a></p>{% endif %}</div>
+            <div class="grp-tr">
+                <div class="grp-td"><p><strong>{{ note.author }}</strong></p></div>
+                <div class="grp-td"><p>{{ note.datetime|date:"DATETIME_FORMAT" }}</p></div>
+                <div class="grp-td wrap_lines"><p>{{ note.text }}</p></div>
+                <div class="grp-td">{% if note.author == request.user or request.user.is_superuser %}<p><a onclick="delete_note(this, {{ note.pk }}); return false;" class="cbutton warn">{% trans "Smazat" %}</a></p>{% endif %}</div>
             </div>
             {% endfor %}
         </div>

@@ -1,7 +1,7 @@
 {% load i18n adminnav %}
-{% load url from future %}
 {% if user.is_authenticated %}
 <ul id="nav">
+    {% url "admin:index" as index %}
     {% url "admin:clients_client_changelist" as clients %}
     {% url "admin:clients_anonymous_changelist" as anonymous %}
     {% url "admin:clients_practitionercontact_changelist" as practitioners %}
@@ -18,7 +18,7 @@
     {% url "reporting_hygiene" as reporting_hygiene %}
     {% url "reporting_govcouncil" as reporting_govcouncil %}
 
-    <li class="{% active "/" %}"><a href="/">{% trans "Nástěnka" %}</a></li>
+    <li class="{% active index %}"><a href="{{ index }}">{% trans "Nástěnka" %}</a></li>
     <li class="{% active clients %}"><a href="{{ clients }}">{% trans "Klienti" %}</a></li>
     <li class="{% active contacts %}"><a href="{{ contacts }}">{% trans "Kontakty" %}</a></li>
     <li class="{% active anonymous %}"><a href="{{ anonymous }}">{% trans "Anonymní kontakty" %}</a></li>

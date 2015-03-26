@@ -66,7 +66,7 @@ setup(
         'django-model-utils',
         'django-form-utils',
         'raven==1.4.6',
-        'fragapy==1.2.3',
+        'fragapy==1.2.5',
         'gunicorn',
     ],
     setup_requires=[
