@@ -129,18 +129,10 @@ class IncomeExamination(Service):
 
 class DiseaseTest(Service):
 
-    pre_test_advice = models.BooleanField(default=False,
-        verbose_name=_(u'Předtestové poradenství'))
-    test_execution = models.BooleanField(default=False,
-        verbose_name=_(u'Provedení testu'))
-    post_test_advice = models.BooleanField(default=False,
-        verbose_name=_(u'Potestové poradenství'))
-
-    disease = models.PositiveSmallIntegerField(null=True, blank=True,
-        choices=DISEASES, verbose_name=_(u'Testované onemocnění'))
-    sign = models.CharField(null=True, blank=True, max_length=1,
-        choices=DISEASE_TEST_SIGN, default=DISEASE_TEST_SIGN.INCONCLUSIVE,
-        verbose_name=_(u'Stav'))
+    disease = models.PositiveSmallIntegerField(choices=DISEASES,
+        default=DISEASES.HIV, verbose_name=_(u'Testované onemocnění'))
+    sign = models.CharField(max_length=1, choices=DISEASE_TEST_SIGN,
+        default=DISEASE_TEST_SIGN.INCONCLUSIVE, verbose_name=_(u'Stav'))
 
     class Meta:
         app_label = 'services'
@@ -150,45 +142,11 @@ class DiseaseTest(Service):
     class Options:
         codenumber = 8
         limited_to = ('Client',)
-        form_template = 'services/forms/diseasetest.html'
-        fieldsets = (
-            (None, {'fields': ('encounter', 'pre_test_advice', 'test_execution',
-                        'post_test_advice'),
-                    'classes': ('inline',)}),
-            (_(u'Parametry testu'), {'fields': ('disease', 'sign',),
-                                    'classes': ('inline',)}),
-        )
 
     def _prepare_title(self):
-        ticked = []
-        if self.pre_test_advice or self.post_test_advice:
-            ticked.append(u'poradenství')
-        if self.test_execution:
-            ticked.append(u'test')
-        return _(u'%s: %s' % (self.service.title, ', '.join(ticked)))
-
-    @classmethod
-    def _get_stats(cls, filtering):
-        boolean_fields = ('pre_test_advice', 'test_execution', 'post_test_advice')
-        return chain(
-            super(DiseaseTest, cls)._get_stats(filtering),
-            _boolean_stats(cls, filtering, boolean_fields)
-        )
-
-    def clean(self):
-        super(DiseaseTest, self).clean()
-        msg = None
-        if not (self.pre_test_advice or self.test_execution or self.post_test_advice):
-            msg = (u'Vyberte alespoň jednu možnost: předtestové poradenství'
-                u'/provedení testu/potestové poradenství.')
-        if self.test_execution and not (self.disease and self.sign):
-            msg = u'Zadejte prosím parametry testu (testované onemocnění a stav).'
-        if not self.test_execution and (self.disease or self.sign):
-            msg = u'Nelze zadávat parametry testu, pokud test nebyl proveden.'
-        if msg is not None:
-            raise ValidationError(msg)
-
-
+        return _(u'%(title)s: %(disease)s') % {
+            'title': self.service.title, 'disease': self.get_disease_display()
+        }
 
 class AsistService(Service):
     ASIST_TYPES = Choices(
@@ -226,7 +184,7 @@ class InformationService(Service):
     cure_possibilities = models.BooleanField(default=False,
         verbose_name=_(u'5) možnosti léčby'))
     literature = models.BooleanField(default=False,
-        verbose_name=_(u'6) literatura'))
+        verbose_name=_(u'6) tištěný informační materiál'))
     other = models.BooleanField(default=False, verbose_name=_(u'7) ostatní'))
 
     class Meta:
@@ -270,8 +228,8 @@ class CrisisIntervention(Service):
     class Meta:
         app_label = 'services'
         proxy = True
-        verbose_name = _(u'Krizová intervence')
-        verbose_name_plural = _(u'Krizové intervence')
+        verbose_name = _(u'Pomoc v krizi')
+        verbose_name_plural = _(u'Pomoci v krizi')
 
     class Options:
         codenumber = 7
@@ -317,13 +275,11 @@ class UtilityWork(Service):
         ('cc', 'CONTACT_CENTER', ugettext(u'2) Kontaktní centrum')),
         ('mf', 'MEDICAL_FACILITY', ugettext(u'3) Léčebná zařízení')),
         ('ep', 'EXCHANGE_PROGRAMME', ugettext(u'4) Výměnný pogram')),
-        ('crc', 'CRISIS_CENTER', ugettext(u'5) Krizové centrum')),
-        ('t', 'TESTS', ugettext(u'6) Testy')),
-        ('hs', 'HEALTHCARE_SERVICES', ugettext(u'7) Zdravotní služby')),
-        ('ss', 'SOCIAL_SERVICES', ugettext(u'8) Sociální služby')),
-        ('no', 'NO_REF', ugettext(u'9) Péče ukončena dohodou s klientem bez odkazu a zprostředkování')),
-        ('can', 'CANCEL', ugettext(u'10) Dohoduntý kontakt neproběhl / event. péče ukončena klientem bez dohody')),
-        ('o', 'OTHER', ugettext(u'11) jiné'))
+        ('t', 'TESTS', ugettext(u'5) Testy')),
+        ('hs', 'HEALTHCARE_SERVICES', ugettext(u'6) Zdravotní služby')),
+        ('ss', 'SOCIAL_SERVICES', ugettext(u'7) Sociální služby')),
+        ('can', 'CANCEL', ugettext(u'8) Dohoduntý kontakt neproběhl / event. péče ukončena klientem bez dohody')),
+        ('o', 'OTHER', ugettext(u'9) jiné'))
     )
 
     refs = MultiSelectField(max_length=40, choices=REF_TYPES, verbose_name=_(u'Odkazy'))
@@ -394,7 +350,7 @@ class IncomeFormFillup(Service):
         verbose_name_plural = _(u'Vyplnění IN-COME dotazníků')
 
     class Options:
-        codenumber = 14
+        codenumber = 11
         limited_to = ('Client',)
 
 

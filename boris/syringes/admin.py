@@ -15,6 +15,7 @@ class SyringeCollectionAdmin(BorisBaseAdmin):
     list_filter = ('date', 'town', 'persons')
     date_hierarchy = 'date'
     fields = ('count', 'town', 'date', 'location', 'persons')
+    ordering = ('-date',)
 
     @textual(_(u'Kdo'))
     def user_list(self, obj):

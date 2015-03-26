@@ -305,6 +305,15 @@ class ClientAdmin(AddContactAdmin):
     anamnesis_link.allow_tags = True
     anamnesis_link.short_description = _(u'Anamnéza')
 
+    def button_captions(self, obj):
+        if obj.pk:
+            # Avoid misunderstandings when deleting inline encounters.
+            return {
+                'BO_SAVE_CAPTION': _(u'Uložit změny'),
+                'BO_DELETE_CAPTION': _(u'Odstranit klienta')
+            }
+        return {}
+
 
 admin.site.register(Region, EnumAdmin)
 admin.site.register(District, EnumAdmin)

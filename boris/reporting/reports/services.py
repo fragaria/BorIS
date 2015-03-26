@@ -37,8 +37,12 @@ class ServiceReport(BaseReport):
         ]
 
     def get_stats(self):
-        enc_count = Encounter.objects.filter(**self.enc_filtering).count()
-        return [(None, ((u'Počet kontaktů', enc_count),))] + self._get_service_stats()
+        encounters = Encounter.objects.filter(**self.enc_filtering)
+        all_enc_count = encounters.count()
+        direct_enc_count = encounters.filter(is_by_phone=False).count()
+        encounter_stats = (u'Počet kontaktů (z toho přímých)', '%i (%i)' % (
+            all_enc_count, direct_enc_count))
+        return [(None, (encounter_stats,))] + self._get_service_stats()
 
     def render(self, request, display_type):
         return loader.render_to_string(

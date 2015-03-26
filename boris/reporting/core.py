@@ -128,7 +128,6 @@ class Aggregation(object):
     model = None
 
     def __init__(self, report):
-        print self.filtering, report.additional_filtering
         self._filtering = self._prepare_expression(self.filtering)
         self._excludes = self._prepare_expression(self.excludes)
 

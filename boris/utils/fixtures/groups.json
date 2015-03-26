@@ -76,11 +76,6 @@
           "district"
         ],
         [
-          "change_drug",
-          "clients",
-          "drug"
-        ],
-        [
           "change_drugusage",
           "clients",
           "drugusage"

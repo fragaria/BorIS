@@ -78,6 +78,7 @@ DRUGS = Choices( # (Numbers reflect the old drug ids.)
     (22, 'VENDAL', u'Vendal'),
     (23, 'LSD', u'LSD'),
     (24, 'PSYLOCIBE', u'Lysohlávky'),
+    (25, 'UNKNOWN', u'Neznámo'),
 )
 DRUG_APPLICATION_FREQUENCY = Choices(
     (1, 'LESS_THAN_3X_A_MONTH', u'méně než 3x měsíčně'),

@@ -235,7 +235,7 @@ class StatsByTownInPeriod(ClientReportBase):
     title = _(u'Volitelné')
     description = _(u'Statistika rozdělená <strong>podle měst</strong> dle zadaného volitelného období.')
     grouping = ('town',)
-    grouping_total = ()
+    grouping_total = ('grouping_constant',)
 
     def __init__(self, date_from, date_to, towns, *args, **kwargs):
         self.date_from = date_from
@@ -246,15 +246,14 @@ class StatsByTownInPeriod(ClientReportBase):
             'performed_on__lte': date_to,
             'town__in': self.towns
         }
-        super(StatsByTownInPeriod, self).__init__()
+        super(StatsByTownInPeriod, self).__init__(*args, **kwargs)
 
     def get_data(self):
         return [
             (aggregation.title, [
-                aggregation.get_val(
-                    make_key((('town', town.pk),))
-                ) for town in self.towns
-            ] + [aggregation.get_val(make_key(()))]) for aggregation in self.aggregations
+                aggregation.get_val(make_key((('town', town.pk),))) for town in self.towns
+            ] + [aggregation.get_val(make_key((('grouping_constant', 1),)))]
+            ) for aggregation in self.aggregations
         ]
 
 

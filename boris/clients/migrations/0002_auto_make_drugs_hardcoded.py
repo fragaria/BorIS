@@ -8,6 +8,11 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Remove the foreign key constraints.
+        db.delete_foreign_key('clients_client', 'primary_drug_id')
+        db.delete_foreign_key('clients_drugusage', 'drug_id')
+
+
         # Deleting model 'Drug'
         db.delete_table('clients_drug')
 
