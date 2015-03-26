@@ -10,7 +10,6 @@
     {% url "admin:clients_town_changelist" as towns %}
     {% url "admin:clients_district_changelist" as districts %}
     {% url "admin:clients_region_changelist" as regions %}
-    {% url "admin:clients_riskybehavior_changelist" as riskybehavior %}
     {% url "reporting_towns" as reporting_towns %}
     {% url "reporting_services" as reporting_services %}
     {% url "reporting_clients" as reporting_clients %}
@@ -36,13 +35,12 @@
         </ul>
     </li>
     {% if request.user.is_superuser %}
-    <li class="{% active towns districts regions riskybehavior %}">
+    <li class="{% active towns districts regions %}">
         <a href="#">{% trans "Nastavení" %}</a>
         <ul>
             <li><a href="{{ towns }}">{% trans "Města" %}</a></li>
             <li><a href="{{ districts }}">{% trans "Okresy" %}</a></li>
             <li><a href="{{ regions }}">{% trans "Kraje" %}</a></li>
-            <li><a href="{{ riskybehavior }}">{% trans "Riziková chování" %}</a></li>
         </ul>
     </li>
     {% endif %}
