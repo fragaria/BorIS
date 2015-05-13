@@ -1,273 +1,245 @@
 # -*- coding: utf-8 -*-
-from south.utils import datetime_utils as datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+from __future__ import unicode_literals
+
+from django.db import models, migrations
+import datetime
+import fragapy.fields.models
+import fragapy.common.models.adminlink
+import django.utils.timezone
+from django.conf import settings
+import model_utils.fields
 
 
-class Migration(SchemaMigration):
+class Migration(migrations.Migration):
 
-    def forwards(self, orm):
-        # Adding model 'Encounter'
-        db.create_table('services_encounter', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('person', self.gf('django.db.models.fields.related.ForeignKey')(related_name='encounters', to=orm['clients.Person'])),
-            ('performed_on', self.gf('django.db.models.fields.DateField')(default=datetime.date.today)),
-            ('where', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['clients.Town'])),
-            ('is_by_phone', self.gf('django.db.models.fields.BooleanField')(default=False)),
-        ))
-        db.send_create_signal('services', ['Encounter'])
+    dependencies = [
+        ('clients', '0001_initial'),
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('contenttypes', '0001_initial'),
+    ]
 
-        # Adding M2M table for field performed_by on 'Encounter'
-        m2m_table_name = db.shorten_name('services_encounter_performed_by')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('encounter', models.ForeignKey(orm['services.encounter'], null=False)),
-            ('user', models.ForeignKey(orm['auth.user'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['encounter_id', 'user_id'])
-
-        # Adding model 'Service'
-        db.create_table('services_service', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('created', self.gf('model_utils.fields.AutoCreatedField')(default=datetime.datetime.now)),
-            ('modified', self.gf('model_utils.fields.AutoLastModifiedField')(default=datetime.datetime.now)),
-            ('encounter', self.gf('django.db.models.fields.related.ForeignKey')(related_name='services', to=orm['services.Encounter'])),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('content_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contenttypes.ContentType'])),
-        ))
-        db.send_create_signal('services', ['Service'])
-
-        # Adding model 'HarmReduction'
-        db.create_table('services_harmreduction', (
-            ('service_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['services.Service'], unique=True, primary_key=True)),
-            ('in_count', self.gf('django.db.models.fields.PositiveSmallIntegerField')(default=0)),
-            ('out_count', self.gf('django.db.models.fields.PositiveSmallIntegerField')(default=0)),
-            ('svip_person_count', self.gf('django.db.models.fields.PositiveSmallIntegerField')(default=0)),
-            ('standard', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('acid', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('alternatives', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('condoms', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('stericup', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('other', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('pregnancy_test', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('medical_supplies', self.gf('django.db.models.fields.BooleanField')(default=False)),
-        ))
-        db.send_create_signal('services', ['HarmReduction'])
-
-        # Adding model 'DiseaseTest'
-        db.create_table('services_diseasetest', (
-            ('service_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['services.Service'], unique=True, primary_key=True)),
-            ('pre_test_advice', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('test_execution', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('post_test_advice', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('disease', self.gf('django.db.models.fields.PositiveSmallIntegerField')(null=True, blank=True)),
-            ('sign', self.gf('django.db.models.fields.CharField')(default='i', max_length=1, null=True, blank=True)),
-        ))
-        db.send_create_signal('services', ['DiseaseTest'])
-
-        # Adding model 'AsistService'
-        db.create_table('services_asistservice', (
-            ('service_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['services.Service'], unique=True, primary_key=True)),
-            ('where', self.gf('fragapy.fields.models.MultiSelectField')(max_length=10)),
-            ('note', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
-        ))
-        db.send_create_signal('services', ['AsistService'])
-
-        # Adding model 'InformationService'
-        db.create_table('services_informationservice', (
-            ('service_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['services.Service'], unique=True, primary_key=True)),
-            ('safe_usage', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('safe_sex', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('medical', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('socio_legal', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('cure_possibilities', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('literature', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('other', self.gf('django.db.models.fields.BooleanField')(default=False)),
-        ))
-        db.send_create_signal('services', ['InformationService'])
-
-        # Adding model 'SocialWork'
-        db.create_table('services_socialwork', (
-            ('service_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['services.Service'], unique=True, primary_key=True)),
-            ('socio_legal', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('counselling', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('service_mediation', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('other', self.gf('django.db.models.fields.BooleanField')(default=False)),
-        ))
-        db.send_create_signal('services', ['SocialWork'])
-
-        # Adding model 'UtilityWork'
-        db.create_table('services_utilitywork', (
-            ('service_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['services.Service'], unique=True, primary_key=True)),
-            ('refs', self.gf('fragapy.fields.models.MultiSelectField')(max_length=40)),
-        ))
-        db.send_create_signal('services', ['UtilityWork'])
-
-
-    def backwards(self, orm):
-        # Deleting model 'Encounter'
-        db.delete_table('services_encounter')
-
-        # Removing M2M table for field performed_by on 'Encounter'
-        db.delete_table(db.shorten_name('services_encounter_performed_by'))
-
-        # Deleting model 'Service'
-        db.delete_table('services_service')
-
-        # Deleting model 'HarmReduction'
-        db.delete_table('services_harmreduction')
-
-        # Deleting model 'DiseaseTest'
-        db.delete_table('services_diseasetest')
-
-        # Deleting model 'AsistService'
-        db.delete_table('services_asistservice')
-
-        # Deleting model 'InformationService'
-        db.delete_table('services_informationservice')
-
-        # Deleting model 'SocialWork'
-        db.delete_table('services_socialwork')
-
-        # Deleting model 'UtilityWork'
-        db.delete_table('services_utilitywork')
-
-
-    models = {
-        'auth.group': {
-            'Meta': {'object_name': 'Group'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '80'}),
-            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
-        },
-        'auth.permission': {
-            'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')", 'unique_together': "(('content_type', 'codename'),)", 'object_name': 'Permission'},
-            'codename': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
-        },
-        'auth.user': {
-            'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
-            'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
-            'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
-        },
-        'clients.district': {
-            'Meta': {'object_name': 'District'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'region': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['clients.Region']"}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '100', 'db_index': 'True'})
-        },
-        'clients.person': {
-            'Meta': {'object_name': 'Person'},
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
-            'created': ('model_utils.fields.AutoCreatedField', [], {'default': 'datetime.datetime.now'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'modified': ('model_utils.fields.AutoLastModifiedField', [], {'default': 'datetime.datetime.now'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '255', 'db_index': 'True'})
-        },
-        'clients.region': {
-            'Meta': {'object_name': 'Region'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '100', 'db_index': 'True'})
-        },
-        'clients.town': {
-            'Meta': {'object_name': 'Town'},
-            'district': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['clients.District']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '100', 'db_index': 'True'})
-        },
-        'contenttypes.contenttype': {
-            'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
-            'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
-        },
-        'services.asistservice': {
-            'Meta': {'ordering': "('encounter',)", 'object_name': 'AsistService', '_ormbases': ['services.Service']},
-            'note': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'service_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['services.Service']", 'unique': 'True', 'primary_key': 'True'}),
-            'where': ('fragapy.fields.models.MultiSelectField', [], {'max_length': '10'})
-        },
-        'services.diseasetest': {
-            'Meta': {'ordering': "('encounter',)", 'object_name': 'DiseaseTest', '_ormbases': ['services.Service']},
-            'disease': ('django.db.models.fields.PositiveSmallIntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'post_test_advice': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'pre_test_advice': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'service_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['services.Service']", 'unique': 'True', 'primary_key': 'True'}),
-            'sign': ('django.db.models.fields.CharField', [], {'default': "'i'", 'max_length': '1', 'null': 'True', 'blank': 'True'}),
-            'test_execution': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
-        },
-        'services.encounter': {
-            'Meta': {'ordering': "('-performed_on',)", 'object_name': 'Encounter'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_by_phone': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'performed_by': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.User']", 'symmetrical': 'False'}),
-            'performed_on': ('django.db.models.fields.DateField', [], {'default': 'datetime.date.today'}),
-            'person': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'encounters'", 'to': "orm['clients.Person']"}),
-            'where': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['clients.Town']"})
-        },
-        'services.harmreduction': {
-            'Meta': {'ordering': "('encounter',)", 'object_name': 'HarmReduction', '_ormbases': ['services.Service']},
-            'acid': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'alternatives': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'condoms': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'in_count': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '0'}),
-            'medical_supplies': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'other': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'out_count': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '0'}),
-            'pregnancy_test': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'service_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['services.Service']", 'unique': 'True', 'primary_key': 'True'}),
-            'standard': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'stericup': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'svip_person_count': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '0'})
-        },
-        'services.informationservice': {
-            'Meta': {'ordering': "('encounter',)", 'object_name': 'InformationService', '_ormbases': ['services.Service']},
-            'cure_possibilities': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'literature': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'medical': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'other': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'safe_sex': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'safe_usage': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'service_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['services.Service']", 'unique': 'True', 'primary_key': 'True'}),
-            'socio_legal': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
-        },
-        'services.service': {
-            'Meta': {'ordering': "('encounter',)", 'object_name': 'Service'},
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
-            'created': ('model_utils.fields.AutoCreatedField', [], {'default': 'datetime.datetime.now'}),
-            'encounter': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'services'", 'to': "orm['services.Encounter']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'modified': ('model_utils.fields.AutoLastModifiedField', [], {'default': 'datetime.datetime.now'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '255'})
-        },
-        'services.socialwork': {
-            'Meta': {'ordering': "('encounter',)", 'object_name': 'SocialWork', '_ormbases': ['services.Service']},
-            'counselling': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'other': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'service_mediation': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'service_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['services.Service']", 'unique': 'True', 'primary_key': 'True'}),
-            'socio_legal': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
-        },
-        'services.utilitywork': {
-            'Meta': {'ordering': "('encounter',)", 'object_name': 'UtilityWork', '_ormbases': ['services.Service']},
-            'refs': ('fragapy.fields.models.MultiSelectField', [], {'max_length': '40'}),
-            'service_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['services.Service']", 'unique': 'True', 'primary_key': 'True'})
-        }
-    }
-
-    complete_apps = ['services']
+    operations = [
+        migrations.CreateModel(
+            name='Encounter',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('performed_on', models.DateField(default=datetime.date.today, verbose_name='Kdy')),
+                ('is_by_phone', models.BooleanField(default=False, verbose_name='Telefonick\xfd kontakt')),
+                ('performed_by', models.ManyToManyField(to=settings.AUTH_USER_MODEL, verbose_name='Kdo')),
+                ('person', models.ForeignKey(related_name='encounters', verbose_name='Osoba', to='clients.Person')),
+                ('where', models.ForeignKey(verbose_name='Kde', to='clients.Town')),
+            ],
+            options={
+                'ordering': ('-performed_on',),
+                'verbose_name': 'Kontakt',
+                'verbose_name_plural': 'Kontakty',
+            },
+            bases=(models.Model, fragapy.common.models.adminlink.AdminLinkMixin),
+        ),
+        migrations.CreateModel(
+            name='Service',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, verbose_name='created', editable=False)),
+                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, verbose_name='modified', editable=False)),
+                ('title', models.CharField(verbose_name='N\xe1zev', max_length=255, editable=False)),
+            ],
+            options={
+                'ordering': ('encounter',),
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='InformationService',
+            fields=[
+                ('service_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='services.Service')),
+                ('safe_usage', models.BooleanField(default=False, verbose_name='1) bezpe\u010dn\xe9 u\u017e\xedv\xe1n\xed')),
+                ('safe_sex', models.BooleanField(default=False, verbose_name='2) bezpe\u010dn\xfd sex')),
+                ('medical', models.BooleanField(default=False, verbose_name='3) zdravotn\xed')),
+                ('socio_legal', models.BooleanField(default=False, verbose_name='4) soci\xe1ln\u011b-pr\xe1vn\xed')),
+                ('cure_possibilities', models.BooleanField(default=False, verbose_name='5) mo\u017enosti l\xe9\u010dby')),
+                ('literature', models.BooleanField(default=False, verbose_name='6) ti\u0161t\u011bn\xfd informa\u010dn\xed materi\xe1l')),
+                ('other', models.BooleanField(default=False, verbose_name='7) ostatn\xed')),
+            ],
+            options={
+                'verbose_name': 'Informa\u010dn\xed servis',
+                'verbose_name_plural': 'Informa\u010dn\xed servis',
+            },
+            bases=('services.service',),
+        ),
+        migrations.CreateModel(
+            name='HarmReduction',
+            fields=[
+                ('service_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='services.Service')),
+                ('in_count', models.PositiveSmallIntegerField(default=0, verbose_name='IN')),
+                ('out_count', models.PositiveSmallIntegerField(default=0, verbose_name='OUT')),
+                ('svip_person_count', models.PositiveSmallIntegerField(default=0, verbose_name='po\u010det osob ve SVIP')),
+                ('standard', models.BooleanField(default=False, help_text='steriln\xed voda, filtry, alkoholov\xe9 tampony', verbose_name='1) standard')),
+                ('acid', models.BooleanField(default=False, verbose_name='3) kyselina')),
+                ('alternatives', models.BooleanField(default=False, help_text='alobal, kapsle, \u0161\u0148up\xe1tka', verbose_name='2) alternativy')),
+                ('condoms', models.BooleanField(default=False, verbose_name='4) prezervativy')),
+                ('stericup', models.BooleanField(default=False, verbose_name='5) St\xe9ri-cup/filt')),
+                ('other', models.BooleanField(default=False, verbose_name='6) jin\xfd materi\xe1l')),
+                ('pregnancy_test', models.BooleanField(default=False, verbose_name='7) t\u011bhotensk\xfd test')),
+                ('medical_supplies', models.BooleanField(default=False, help_text='masti, n\xe1plasti, buni\u010dina, vitam\xedny, \u0161krtidlo...', verbose_name='8) zdravotn\xed')),
+            ],
+            options={
+                'verbose_name': 'Harm Reduction',
+                'verbose_name_plural': 'Harm Reduction',
+            },
+            bases=('services.service',),
+        ),
+        migrations.CreateModel(
+            name='DiseaseTest',
+            fields=[
+                ('service_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='services.Service')),
+                ('disease', models.PositiveSmallIntegerField(default=1, verbose_name='Testovan\xe9 onemocn\u011bn\xed', choices=[(1, 'HIV'), (2, 'VHA'), (3, 'VHB'), (4, 'VHC'), (5, 'Syfilis')])),
+                ('sign', models.CharField(default=b'i', max_length=1, verbose_name='Stav', choices=[(b'p', 'Pozitivn\xed'), (b'n', 'Negativn\xed'), (b'r', 'Reaktivn\xed'), (b'i', 'Test nepr\u016fkazn\xfd')])),
+            ],
+            options={
+                'verbose_name': 'Testov\xe1n\xed infek\u010dn\xedch nemoc\xed',
+                'verbose_name_plural': 'Testov\xe1n\xed infek\u010dn\xedch nemoc\xed',
+            },
+            bases=('services.service',),
+        ),
+        migrations.CreateModel(
+            name='AsistService',
+            fields=[
+                ('service_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='services.Service')),
+                ('where', fragapy.fields.models.MultiSelectField(max_length=10, verbose_name='Kam', choices=[(b'm', 'zdravotn\xed'), (b's', 'soci\xe1ln\xed'), (b'f', 'l\xe9\u010debn\xe9 za\u0159\xedzen\xed'), (b'o', 'jin\xe9')])),
+                ('note', models.TextField(null=True, verbose_name='Pozn\xe1mka', blank=True)),
+            ],
+            options={
+                'verbose_name': 'Doprovod klienta',
+                'verbose_name_plural': 'Doprovod klient\u016f',
+            },
+            bases=('services.service',),
+        ),
+        migrations.CreateModel(
+            name='SocialWork',
+            fields=[
+                ('service_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='services.Service')),
+                ('socio_legal', models.BooleanField(default=False, verbose_name='a) soci\xe1ln\u011b-pr\xe1vn\xed')),
+                ('counselling', models.BooleanField(default=False, verbose_name='b) p\u0159edl\xe9\u010debn\xe9 indiviu\xe1ln\xed poradenstv\xed')),
+                ('service_mediation', models.BooleanField(default=False, verbose_name='c) zprost\u0159edkov\xe1n\xed dal\u0161\xedch slu\u017eeb')),
+                ('other', models.BooleanField(default=False, verbose_name='d) jin\xe1')),
+            ],
+            options={
+                'verbose_name': 'P\u0159\xedpadov\xe1 pr\xe1ce',
+                'verbose_name_plural': 'P\u0159\xedpadov\xe9 pr\xe1ce',
+            },
+            bases=('services.service',),
+        ),
+        migrations.CreateModel(
+            name='UtilityWork',
+            fields=[
+                ('service_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='services.Service')),
+                ('refs', fragapy.fields.models.MultiSelectField(max_length=40, verbose_name='Odkazy', choices=[(b'fp', '1) Terenn\xed programy'), (b'cc', '2) Kontaktn\xed centrum'), (b'mf', '3) L\xe9\u010debn\xe1 za\u0159\xedzen\xed'), (b'ep', '4) V\xfdm\u011bnn\xfd pogram'), (b't', '5) Testy'), (b'hs', '6) Zdravotn\xed slu\u017eby'), (b'ss', '7) Soci\xe1ln\xed slu\u017eby'), (b'can', '8) Dohodunt\xfd kontakt neprob\u011bhl / event. p\xe9\u010de ukon\u010dena klientem bez dohody'), (b'o', '9) jin\xe9')])),
+            ],
+            options={
+                'verbose_name': 'Odkazy',
+                'verbose_name_plural': 'Odkazy',
+            },
+            bases=('services.service',),
+        ),
+        migrations.AddField(
+            model_name='service',
+            name='content_type',
+            field=models.ForeignKey(editable=False, to='contenttypes.ContentType'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='service',
+            name='encounter',
+            field=models.ForeignKey(related_name='services', verbose_name='Kontakt', to='services.Encounter'),
+            preserve_default=True,
+        ),
+        migrations.CreateModel(
+            name='Address',
+            fields=[
+            ],
+            options={
+                'verbose_name': 'Osloven\xed',
+                'proxy': True,
+                'verbose_name_plural': 'Osloven\xed',
+            },
+            bases=('services.service',),
+        ),
+        migrations.CreateModel(
+            name='BasicMedicalTreatment',
+            fields=[
+            ],
+            options={
+                'verbose_name': 'Z\xe1kladn\xed zdravotn\xed o\u0161et\u0159en\xed',
+                'proxy': True,
+                'verbose_name_plural': 'Z\xe1kladn\xed zdravotn\xed o\u0161et\u0159en\xed',
+            },
+            bases=('services.service',),
+        ),
+        migrations.CreateModel(
+            name='ContactWork',
+            fields=[
+            ],
+            options={
+                'verbose_name': 'Kontaktn\xed pr\xe1ce',
+                'proxy': True,
+                'verbose_name_plural': 'Kontaktn\xed pr\xe1ce',
+            },
+            bases=('services.service',),
+        ),
+        migrations.CreateModel(
+            name='CrisisIntervention',
+            fields=[
+            ],
+            options={
+                'verbose_name': 'Pomoc v krizi',
+                'proxy': True,
+                'verbose_name_plural': 'Pomoci v krizi',
+            },
+            bases=('services.service',),
+        ),
+        migrations.CreateModel(
+            name='IncomeExamination',
+            fields=[
+            ],
+            options={
+                'verbose_name': 'Prvn\xed kontakt',
+                'proxy': True,
+                'verbose_name_plural': 'Prvn\xed kontakty',
+            },
+            bases=('services.service',),
+        ),
+        migrations.CreateModel(
+            name='IncomeFormFillup',
+            fields=[
+            ],
+            options={
+                'verbose_name': 'Vypln\u011bn\xed IN-COME dotazn\xedku',
+                'proxy': True,
+                'verbose_name_plural': 'Vypln\u011bn\xed IN-COME dotazn\xedk\u016f',
+            },
+            bases=('services.service',),
+        ),
+        migrations.CreateModel(
+            name='IndividualCounseling',
+            fields=[
+            ],
+            options={
+                'verbose_name': 'Z\xe1kladn\xed poradenstv\xed',
+                'proxy': True,
+                'verbose_name_plural': 'Z\xe1kladn\xed poradenstv\xed',
+            },
+            bases=('services.service',),
+        ),
+        migrations.CreateModel(
+            name='PhoneUsage',
+            fields=[
+            ],
+            options={
+                'verbose_name': 'Pou\u017eit\xed telefonu klientem',
+                'proxy': True,
+                'verbose_name_plural': 'Pou\u017eit\xed telefonu klientem',
+            },
+            bases=('services.service',),
+        ),
+    ]

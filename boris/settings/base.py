@@ -100,7 +100,7 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
 
-    'south',
+#    'south',  # TODO delete
     'form_utils',
     'raven.contrib.django.raven_compat',
 

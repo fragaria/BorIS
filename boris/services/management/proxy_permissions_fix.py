@@ -1,4 +1,5 @@
 import sys
+from django.apps import apps
 
 from django.contrib.auth.management import _get_all_permissions
 from django.contrib.auth.models import Permission
@@ -19,7 +20,12 @@ def create_proxy_permissions(app, created_models, verbosity, **kwargs):
         We do so by unregistering the `update_contenttypes` `post_syncdb` signal and calling
         it in here just before doing everything.
     """
-    update_contenttypes(app, created_models, verbosity, **kwargs)
+
+    try:
+        boris_config = apps.get_app_config('boris')
+    except:
+        raise EnvironmentError('Cannot find app `boris`. App configs are: %s' % apps.get_app_configs())
+    update_contenttypes(boris_config, verbosity, **kwargs)
     app_models = models.get_models(app)
     # This will hold the permissions we're looking for as
     # (content_type, (codename, name))
@@ -35,7 +41,7 @@ def create_proxy_permissions(app, created_models, verbosity, **kwargs):
             app_label, model = opts.app_label, opts.object_name.lower()
             ctype = ContentType.objects.get_by_natural_key(app_label, model)
             ctypes.add(ctype)
-            for perm in _get_all_permissions(opts):
+            for perm in _get_all_permissions(opts, model):  # TODO model or contenttype?
                 searched_perms.append((ctype, perm))
 
     # Find all the Permissions that have a content_type for a model we're

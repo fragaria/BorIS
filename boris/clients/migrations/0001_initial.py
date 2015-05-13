@@ -1,386 +1,272 @@
 # -*- coding: utf-8 -*-
-from south.utils import datetime_utils as datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+from __future__ import unicode_literals
+
+from django.db import models, migrations
+import datetime
+import model_utils.fields
+import fragapy.common.models.adminlink
+import django.utils.timezone
+from django.conf import settings
 
 
-class Migration(SchemaMigration):
+class Migration(migrations.Migration):
 
-    def forwards(self, orm):
-        # Adding model 'Drug'
-        db.create_table('clients_drug', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=100, db_index=True)),
-        ))
-        db.send_create_signal('clients', ['Drug'])
+    dependencies = [
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('contenttypes', '0001_initial'),
+    ]
 
-        # Adding model 'Region'
-        db.create_table('clients_region', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=100, db_index=True)),
-        ))
-        db.send_create_signal('clients', ['Region'])
-
-        # Adding model 'District'
-        db.create_table('clients_district', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=100, db_index=True)),
-            ('region', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['clients.Region'])),
-        ))
-        db.send_create_signal('clients', ['District'])
-
-        # Adding model 'Town'
-        db.create_table('clients_town', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=100, db_index=True)),
-            ('district', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['clients.District'])),
-        ))
-        db.send_create_signal('clients', ['Town'])
-
-        # Adding model 'Person'
-        db.create_table('clients_person', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('created', self.gf('model_utils.fields.AutoCreatedField')(default=datetime.datetime.now)),
-            ('modified', self.gf('model_utils.fields.AutoLastModifiedField')(default=datetime.datetime.now)),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=255, db_index=True)),
-            ('content_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contenttypes.ContentType'])),
-        ))
-        db.send_create_signal('clients', ['Person'])
-
-        # Adding model 'PractitionerContact'
-        db.create_table('clients_practitionercontact', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('person_or_institution', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('town', self.gf('django.db.models.fields.related.ForeignKey')(related_name='+', to=orm['clients.Town'])),
-            ('date', self.gf('django.db.models.fields.DateField')()),
-            ('note', self.gf('django.db.models.fields.TextField')(blank=True)),
-        ))
-        db.send_create_signal('clients', ['PractitionerContact'])
-
-        # Adding M2M table for field users on 'PractitionerContact'
-        m2m_table_name = db.shorten_name('clients_practitionercontact_users')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('practitionercontact', models.ForeignKey(orm['clients.practitionercontact'], null=False)),
-            ('user', models.ForeignKey(orm['auth.user'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['practitionercontact_id', 'user_id'])
-
-        # Adding model 'Anonymous'
-        db.create_table('clients_anonymous', (
-            ('person_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['clients.Person'], unique=True, primary_key=True)),
-            ('drug_user_type', self.gf('django.db.models.fields.PositiveSmallIntegerField')()),
-            ('sex', self.gf('django.db.models.fields.PositiveSmallIntegerField')()),
-        ))
-        db.send_create_signal('clients', ['Anonymous'])
-
-        # Adding unique constraint on 'Anonymous', fields ['sex', 'drug_user_type']
-        db.create_unique('clients_anonymous', ['sex', 'drug_user_type'])
-
-        # Adding model 'Client'
-        db.create_table('clients_client', (
-            ('person_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['clients.Person'], unique=True, primary_key=True)),
-            ('code', self.gf('django.db.models.fields.CharField')(unique=True, max_length=63)),
-            ('sex', self.gf('django.db.models.fields.PositiveSmallIntegerField')()),
-            ('first_name', self.gf('django.db.models.fields.CharField')(max_length=63, null=True, blank=True)),
-            ('last_name', self.gf('django.db.models.fields.CharField')(max_length=63, null=True, blank=True)),
-            ('birthdate', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
-            ('birthdate_year_only', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('town', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['clients.Town'])),
-            ('primary_drug', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['clients.Drug'], null=True, blank=True)),
-            ('primary_drug_usage', self.gf('django.db.models.fields.PositiveSmallIntegerField')(null=True, blank=True)),
-            ('close_person', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('sex_partner', self.gf('django.db.models.fields.BooleanField')(default=False)),
-        ))
-        db.send_create_signal('clients', ['Client'])
-
-        # Adding model 'Anamnesis'
-        db.create_table('clients_anamnesis', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('created', self.gf('model_utils.fields.AutoCreatedField')(default=datetime.datetime.now)),
-            ('modified', self.gf('model_utils.fields.AutoLastModifiedField')(default=datetime.datetime.now)),
-            ('client', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['clients.Client'], unique=True)),
-            ('filled_when', self.gf('django.db.models.fields.DateField')()),
-            ('filled_where', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['clients.Town'])),
-            ('author', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-            ('nationality', self.gf('django.db.models.fields.PositiveSmallIntegerField')(default=4)),
-            ('ethnic_origin', self.gf('django.db.models.fields.PositiveSmallIntegerField')(default=3)),
-            ('living_condition', self.gf('django.db.models.fields.PositiveSmallIntegerField')(default=7)),
-            ('accomodation', self.gf('django.db.models.fields.PositiveSmallIntegerField')(default=8)),
-            ('lives_with_junkies', self.gf('django.db.models.fields.NullBooleanField')(null=True, blank=True)),
-            ('employment', self.gf('django.db.models.fields.PositiveSmallIntegerField')(default=8)),
-            ('education', self.gf('django.db.models.fields.PositiveSmallIntegerField')(default=7)),
-            ('been_cured_before', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('been_cured_currently', self.gf('django.db.models.fields.BooleanField')(default=False)),
-        ))
-        db.send_create_signal('clients', ['Anamnesis'])
-
-        # Adding model 'ClientNote'
-        db.create_table('clients_clientnote', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('author', self.gf('django.db.models.fields.related.ForeignKey')(related_name='notes_added', to=orm['auth.User'])),
-            ('client', self.gf('django.db.models.fields.related.ForeignKey')(related_name='notes', to=orm['clients.Client'])),
-            ('datetime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
-            ('text', self.gf('django.db.models.fields.TextField')()),
-        ))
-        db.send_create_signal('clients', ['ClientNote'])
-
-        # Adding model 'DrugUsage'
-        db.create_table('clients_drugusage', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('drug', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['clients.Drug'])),
-            ('anamnesis', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['clients.Anamnesis'])),
-            ('application', self.gf('django.db.models.fields.PositiveSmallIntegerField')()),
-            ('frequency', self.gf('django.db.models.fields.PositiveSmallIntegerField')()),
-            ('first_try_age', self.gf('django.db.models.fields.PositiveSmallIntegerField')()),
-            ('first_try_iv_age', self.gf('django.db.models.fields.PositiveSmallIntegerField')(null=True, blank=True)),
-            ('first_try_application', self.gf('django.db.models.fields.PositiveSmallIntegerField')()),
-            ('was_first_illegal', self.gf('django.db.models.fields.NullBooleanField')(null=True, blank=True)),
-            ('is_primary', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('note', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
-        ))
-        db.send_create_signal('clients', ['DrugUsage'])
-
-        # Adding unique constraint on 'DrugUsage', fields ['drug', 'anamnesis']
-        db.create_unique('clients_drugusage', ['drug_id', 'anamnesis_id'])
-
-        # Adding model 'RiskyManners'
-        db.create_table('clients_riskymanners', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('behavior', self.gf('django.db.models.fields.PositiveIntegerField')()),
-            ('anamnesis', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['clients.Anamnesis'])),
-            ('periodicity_in_past', self.gf('django.db.models.fields.PositiveIntegerField')(null=True, blank=True)),
-            ('periodicity_in_present', self.gf('django.db.models.fields.PositiveIntegerField')(null=True, blank=True)),
-        ))
-        db.send_create_signal('clients', ['RiskyManners'])
-
-        # Adding unique constraint on 'RiskyManners', fields ['behavior', 'anamnesis']
-        db.create_unique('clients_riskymanners', ['behavior', 'anamnesis_id'])
-
-        # Adding model 'DiseaseTest'
-        db.create_table('clients_diseasetest', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('anamnesis', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['clients.Anamnesis'])),
-            ('disease', self.gf('django.db.models.fields.PositiveSmallIntegerField')()),
-            ('result', self.gf('django.db.models.fields.SmallIntegerField')(default=0)),
-        ))
-        db.send_create_signal('clients', ['DiseaseTest'])
-
-        # Adding unique constraint on 'DiseaseTest', fields ['disease', 'anamnesis']
-        db.create_unique('clients_diseasetest', ['disease', 'anamnesis_id'])
-
-
-    def backwards(self, orm):
-        # Removing unique constraint on 'DiseaseTest', fields ['disease', 'anamnesis']
-        db.delete_unique('clients_diseasetest', ['disease', 'anamnesis_id'])
-
-        # Removing unique constraint on 'RiskyManners', fields ['behavior', 'anamnesis']
-        db.delete_unique('clients_riskymanners', ['behavior', 'anamnesis_id'])
-
-        # Removing unique constraint on 'DrugUsage', fields ['drug', 'anamnesis']
-        db.delete_unique('clients_drugusage', ['drug_id', 'anamnesis_id'])
-
-        # Removing unique constraint on 'Anonymous', fields ['sex', 'drug_user_type']
-        db.delete_unique('clients_anonymous', ['sex', 'drug_user_type'])
-
-        # Deleting model 'Drug'
-        db.delete_table('clients_drug')
-
-        # Deleting model 'Region'
-        db.delete_table('clients_region')
-
-        # Deleting model 'District'
-        db.delete_table('clients_district')
-
-        # Deleting model 'Town'
-        db.delete_table('clients_town')
-
-        # Deleting model 'Person'
-        db.delete_table('clients_person')
-
-        # Deleting model 'PractitionerContact'
-        db.delete_table('clients_practitionercontact')
-
-        # Removing M2M table for field users on 'PractitionerContact'
-        db.delete_table(db.shorten_name('clients_practitionercontact_users'))
-
-        # Deleting model 'Anonymous'
-        db.delete_table('clients_anonymous')
-
-        # Deleting model 'Client'
-        db.delete_table('clients_client')
-
-        # Deleting model 'Anamnesis'
-        db.delete_table('clients_anamnesis')
-
-        # Deleting model 'ClientNote'
-        db.delete_table('clients_clientnote')
-
-        # Deleting model 'DrugUsage'
-        db.delete_table('clients_drugusage')
-
-        # Deleting model 'RiskyManners'
-        db.delete_table('clients_riskymanners')
-
-        # Deleting model 'DiseaseTest'
-        db.delete_table('clients_diseasetest')
-
-
-    models = {
-        'auth.group': {
-            'Meta': {'object_name': 'Group'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '80'}),
-            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
-        },
-        'auth.permission': {
-            'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')", 'unique_together': "(('content_type', 'codename'),)", 'object_name': 'Permission'},
-            'codename': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
-        },
-        'auth.user': {
-            'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
-            'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
-            'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
-        },
-        'clients.anamnesis': {
-            'Meta': {'object_name': 'Anamnesis'},
-            'accomodation': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '8'}),
-            'author': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
-            'been_cured_before': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'been_cured_currently': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'client': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['clients.Client']", 'unique': 'True'}),
-            'created': ('model_utils.fields.AutoCreatedField', [], {'default': 'datetime.datetime.now'}),
-            'drugs': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['clients.Drug']", 'through': "orm['clients.DrugUsage']", 'symmetrical': 'False'}),
-            'education': ('django.db.models.fields.PositiveSmallIntegerField', [], {}),
-            'employment': ('django.db.models.fields.PositiveSmallIntegerField', [], {}),
-            'ethnic_origin': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '3'}),
-            'filled_when': ('django.db.models.fields.DateField', [], {}),
-            'filled_where': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['clients.Town']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'lives_with_junkies': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'}),
-            'living_condition': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '7'}),
-            'modified': ('model_utils.fields.AutoLastModifiedField', [], {'default': 'datetime.datetime.now'}),
-            'nationality': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '4'})
-        },
-        'clients.anonymous': {
-            'Meta': {'unique_together': "(('sex', 'drug_user_type'),)", 'object_name': 'Anonymous', '_ormbases': ['clients.Person']},
-            'drug_user_type': ('django.db.models.fields.PositiveSmallIntegerField', [], {}),
-            'person_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['clients.Person']", 'unique': 'True', 'primary_key': 'True'}),
-            'sex': ('django.db.models.fields.PositiveSmallIntegerField', [], {})
-        },
-        'clients.client': {
-            'Meta': {'object_name': 'Client', '_ormbases': ['clients.Person']},
-            'birthdate': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
-            'birthdate_year_only': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'close_person': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'code': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '63'}),
-            'first_name': ('django.db.models.fields.CharField', [], {'max_length': '63', 'null': 'True', 'blank': 'True'}),
-            'last_name': ('django.db.models.fields.CharField', [], {'max_length': '63', 'null': 'True', 'blank': 'True'}),
-            'person_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['clients.Person']", 'unique': 'True', 'primary_key': 'True'}),
-            'primary_drug': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['clients.Drug']", 'null': 'True', 'blank': 'True'}),
-            'primary_drug_usage': ('django.db.models.fields.PositiveSmallIntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'sex': ('django.db.models.fields.PositiveSmallIntegerField', [], {}),
-            'sex_partner': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'town': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['clients.Town']"})
-        },
-        'clients.clientnote': {
-            'Meta': {'ordering': "('-datetime', '-id')", 'object_name': 'ClientNote'},
-            'author': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'notes_added'", 'to': "orm['auth.User']"}),
-            'client': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'notes'", 'to': "orm['clients.Client']"}),
-            'datetime': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'text': ('django.db.models.fields.TextField', [], {})
-        },
-        'clients.diseasetest': {
-            'Meta': {'unique_together': "(('disease', 'anamnesis'),)", 'object_name': 'DiseaseTest'},
-            'anamnesis': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['clients.Anamnesis']"}),
-            'disease': ('django.db.models.fields.PositiveSmallIntegerField', [], {}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'result': ('django.db.models.fields.SmallIntegerField', [], {'default': '0'})
-        },
-        'clients.district': {
-            'Meta': {'object_name': 'District'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'region': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['clients.Region']"}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '100', 'db_index': 'True'})
-        },
-        'clients.drug': {
-            'Meta': {'object_name': 'Drug'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '100', 'db_index': 'True'})
-        },
-        'clients.drugusage': {
-            'Meta': {'unique_together': "(('drug', 'anamnesis'),)", 'object_name': 'DrugUsage'},
-            'anamnesis': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['clients.Anamnesis']"}),
-            'application': ('django.db.models.fields.PositiveSmallIntegerField', [], {}),
-            'drug': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['clients.Drug']"}),
-            'first_try_age': ('django.db.models.fields.PositiveSmallIntegerField', [], {}),
-            'first_try_application': ('django.db.models.fields.PositiveSmallIntegerField', [], {}),
-            'first_try_iv_age': ('django.db.models.fields.PositiveSmallIntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'frequency': ('django.db.models.fields.PositiveSmallIntegerField', [], {}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_primary': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'note': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'was_first_illegal': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'})
-        },
-        'clients.person': {
-            'Meta': {'object_name': 'Person'},
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
-            'created': ('model_utils.fields.AutoCreatedField', [], {'default': 'datetime.datetime.now'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'modified': ('model_utils.fields.AutoLastModifiedField', [], {'default': 'datetime.datetime.now'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '255', 'db_index': 'True'})
-        },
-        'clients.practitionercontact': {
-            'Meta': {'object_name': 'PractitionerContact'},
-            'date': ('django.db.models.fields.DateField', [], {}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'note': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'person_or_institution': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'town': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'+'", 'to': "orm['clients.Town']"}),
-            'users': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.User']", 'symmetrical': 'False'})
-        },
-        'clients.region': {
-            'Meta': {'object_name': 'Region'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '100', 'db_index': 'True'})
-        },
-        'clients.riskymanners': {
-            'Meta': {'unique_together': "(('behavior', 'anamnesis'),)", 'object_name': 'RiskyManners'},
-            'anamnesis': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['clients.Anamnesis']"}),
-            'behavior': ('django.db.models.fields.PositiveIntegerField', [], {}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'periodicity_in_past': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'periodicity_in_present': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True', 'blank': 'True'})
-        },
-        'clients.town': {
-            'Meta': {'object_name': 'Town'},
-            'district': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['clients.District']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '100', 'db_index': 'True'})
-        },
-        'contenttypes.contenttype': {
-            'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
-            'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
-        }
-    }
-
-    complete_apps = ['clients']
+    operations = [
+        migrations.CreateModel(
+            name='Anamnesis',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, verbose_name='created', editable=False)),
+                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, verbose_name='modified', editable=False)),
+                ('filled_when', models.DateField(verbose_name='Datum kontaktu')),
+                ('nationality', models.PositiveSmallIntegerField(default=4, verbose_name='St\xe1tn\xed p\u0159\xedslu\u0161nost', choices=[(1, '\u010cesk\xe1 republika'), (2, 'Jin\xe9 - EU'), (3, 'Jin\xe9 - non-EU'), (4, 'Nezn\xe1mo')])),
+                ('ethnic_origin', models.PositiveSmallIntegerField(default=3, verbose_name='Etnick\xe1 p\u0159\xedslu\u0161nost', choices=[(1, 'Ne-romsk\xe1'), (2, 'Romsk\xe1'), (3, 'Nesledov\xe1no')])),
+                ('living_condition', models.PositiveSmallIntegerField(default=7, verbose_name='Bydlen\xed (s k\xfdm klient \u017eije)', choices=[(1, 'S\xe1m'), (2, 'S rodi\u010di/rodinou'), (3, 'S p\u0159\xe1teli'), (4, 'S partnerem'), (5, 'S partnerem a d\xedt\u011btem'), (6, 'S\xe1m s d\xedt\u011btem'), (7, 'Nen\xed zn\xe1mo')])),
+                ('accomodation', models.PositiveSmallIntegerField(default=8, verbose_name='Bydlen\xed (kde klient \u017eije)', choices=[(1, 'Doma (u rodi\u010d\u016f)'), (2, 'Vlastn\xed byt (i pronajat\xfd)'), (3, 'Ciz\xed byt'), (4, 'Ubytovna'), (5, 'Squat'), (6, 'Kas\xe1rna'), (7, 'Bez domova, na ulici'), (8, 'Nen\xed zn\xe1mo')])),
+                ('lives_with_junkies', models.NullBooleanField(verbose_name='\u017dije klient s osobou u\u017e\xedvaj\xedc\xed drogy?')),
+                ('employment', models.PositiveSmallIntegerField(default=8, verbose_name='Zam\u011bstn\xe1n\xed / \u0161kola', choices=[(1, 'Pravideln\xe9 zam.'), (2, '\u0160kola'), (3, 'P\u0159\xedle\u017eitostn\xe1 pr\xe1ce'), (4, 'Registrov\xe1n na \xdaP'), (5, 'Bez zam\u011bstn\xe1n\xed'), (6, 'D\xe1vky SZ'), (8, 'Nen\xed zn\xe1mo')])),
+                ('education', models.PositiveSmallIntegerField(default=7, verbose_name='Vzd\u011bl\xe1n\xed', choices=[(1, 'Z\xe1kladn\xed'), (2, 'Vyu\u010den'), (3, 'St\u0159edn\xed s maturitou'), (4, 'Vy\u0161\u0161\xed odborn\xe9'), (5, 'Vysoko\u0161kolsk\xe9'), (6, 'Neukon\u010den\xe9 z\xe1kladn\xed'), (7, 'Nen\xed zn\xe1mo')])),
+                ('been_cured_before', models.BooleanField(default=None, verbose_name='D\u0159\xedve l\xe9\u010den')),
+                ('been_cured_currently', models.BooleanField(default=None, verbose_name='Nyn\xed l\xe9\u010den')),
+                ('author', models.ForeignKey(verbose_name='Vyplnil', to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+                'verbose_name': 'Anamn\xe9za',
+                'verbose_name_plural': 'Anamn\xe9zy',
+            },
+            bases=(models.Model, fragapy.common.models.adminlink.AdminLinkMixin),
+        ),
+        migrations.CreateModel(
+            name='ClientNote',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('datetime', models.DateTimeField(default=datetime.datetime.now, verbose_name='Datum a \u010das')),
+                ('text', models.TextField(verbose_name='Text')),
+                ('author', models.ForeignKey(related_name='notes_added', verbose_name='Autor', to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+                'ordering': ('-datetime', '-id'),
+                'verbose_name': 'Pozn\xe1mka',
+                'verbose_name_plural': 'Pozn\xe1mky',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='DiseaseTest',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('disease', models.PositiveSmallIntegerField(verbose_name='Testovan\xe9 onemocn\u011bn\xed', choices=[(1, 'HIV'), (2, 'VHA'), (3, 'VHB'), (4, 'VHC'), (5, 'Syfilis')])),
+                ('result', models.SmallIntegerField(default=0, verbose_name='V\xfdsledek testu', choices=[(0, 'Nezn\xe1mo, zda testov\xe1n'), (1, 'Testov\xe1n - pozitivn\xed'), (2, 'Testov\xe1n - negativn\xed'), (3, 'Testov\xe1n - v\xfdsledek nezn\xe1m\xfd'), (4, 'Nikdy netestov\xe1n'), (5, 'Nevyzvedl v\xfdsledek')])),
+                ('anamnesis', models.ForeignKey(to='clients.Anamnesis')),
+            ],
+            options={
+                'verbose_name': 'Vy\u0161et\u0159en\xed onemocn\u011bn\xed',
+                'verbose_name_plural': 'Vy\u0161et\u0159en\xed onemocn\u011bn\xed',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='District',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('title', models.CharField(max_length=100, verbose_name='N\xe1zev', db_index=True)),
+            ],
+            options={
+                'verbose_name': 'Okres',
+                'verbose_name_plural': 'Okresy',
+            },
+            bases=(models.Model, fragapy.common.models.adminlink.AdminLinkMixin),
+        ),
+        migrations.CreateModel(
+            name='DrugUsage',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('drug', models.PositiveSmallIntegerField(verbose_name='Droga', choices=[(3, 'Pervitin, jin\xe9 amfetaminy'), (4, 'Subutex, Ravata, Buprenorphine alkaloid - leg\xe1ln\u011b'), (5, 'Tab\xe1k'), (8, 'THC'), (9, 'Ext\xe1ze'), (10, 'Designer drugs'), (11, 'Heroin'), (12, 'Braun a jin\xe9 opi\xe1ty'), (13, 'Surov\xe9 opium'), (14, 'Subutex, Ravata, Buprenorphine alkaloid - ileg\xe1ln\u011b'), (16, 'Alkohol'), (17, 'Inhala\u010dn\xed l\xe1tky, \u0159edidla'), (18, 'Medikamenty'), (19, 'Metadon'), (20, 'Kokain, crack'), (21, 'Suboxone'), (22, 'Vendal'), (23, 'LSD'), (24, 'Lysohl\xe1vky'), (25, 'Nezn\xe1mo')])),
+                ('application', models.PositiveSmallIntegerField(verbose_name='Aplikace', choices=[(1, 'injek\u010dn\u011b do \u017e\xedly'), (2, 'injek\u010dn\u011b do svalu'), (3, '\xfastn\u011b'), (4, 'sniff (\u0161\u0148up\xe1n\xed)'), (5, 'kou\u0159en\xed'), (6, 'inhalace'), (7, 'Nen\xed zn\xe1mo')])),
+                ('frequency', models.PositiveSmallIntegerField(verbose_name='\u010cetnost', choices=[(1, 'm\xe9n\u011b ne\u017e 3x m\u011bs\xed\u010dn\u011b'), (2, '1x t\xfddn\u011b'), (3, 'v\xedkendov\u011b'), (4, 'obden'), (5, 'denn\u011b'), (6, '2-3x denn\u011b'), (7, 'v\xedce ne\u017e 3x denn\u011b'), (8, 'neu\u017eita d\xe9le ne\u017e 6 m\u011bs\xedc\u016f'), (10, 'neu\u017eita posledn\xed 3 m\u011bs\xedce'), (11, 'neu\u017eita v posledn\xedm m\u011bs\xedci'), (12, 'Nen\xed zn\xe1mo')])),
+                ('first_try_age', models.PositiveSmallIntegerField(verbose_name='Prvn\xed u\u017eit\xed (v\u011bk)')),
+                ('first_try_iv_age', models.PositiveSmallIntegerField(null=True, verbose_name='Prvn\xed i.v. u\u017eit\xed (v\u011bk)', blank=True)),
+                ('first_try_application', models.PositiveSmallIntegerField(verbose_name='Zp\u016fsob prvn\xedho u\u017eit\xed', choices=[(1, 'injek\u010dn\u011b do \u017e\xedly'), (2, 'injek\u010dn\u011b do svalu'), (3, '\xfastn\u011b'), (4, 'sniff (\u0161\u0148up\xe1n\xed)'), (5, 'kou\u0159en\xed'), (6, 'inhalace'), (7, 'Nen\xed zn\xe1mo')])),
+                ('was_first_illegal', models.NullBooleanField(verbose_name='Prvn\xed neleg. droga')),
+                ('is_primary', models.BooleanField(default=None, verbose_name='Prim\xe1rn\xed droga')),
+                ('note', models.TextField(null=True, verbose_name='Pozn\xe1mka', blank=True)),
+                ('anamnesis', models.ForeignKey(verbose_name='Anamn\xe9za', to='clients.Anamnesis')),
+            ],
+            options={
+                'verbose_name': 'U\u017e\xedvan\xe1 droga',
+                'verbose_name_plural': 'U\u017e\xedvan\xe9 drogy',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Person',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, verbose_name='created', editable=False)),
+                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, verbose_name='modified', editable=False)),
+                ('title', models.CharField(verbose_name='N\xe1zev', max_length=255, editable=False, db_index=True)),
+            ],
+            options={
+                'verbose_name': 'Osoba',
+                'verbose_name_plural': 'Osoby',
+            },
+            bases=(models.Model, fragapy.common.models.adminlink.AdminLinkMixin),
+        ),
+        migrations.CreateModel(
+            name='Client',
+            fields=[
+                ('person_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='clients.Person')),
+                ('code', models.CharField(unique=True, max_length=63, verbose_name='K\xf3d')),
+                ('sex', models.PositiveSmallIntegerField(verbose_name='Pohlav\xed', choices=[(1, '\u017eena'), (2, 'mu\u017e')])),
+                ('first_name', models.CharField(max_length=63, null=True, verbose_name='Jm\xe9no', blank=True)),
+                ('last_name', models.CharField(max_length=63, null=True, verbose_name='P\u0159\xedjmen\xed', blank=True)),
+                ('birthdate', models.DateField(help_text='Pokud zn\xe1te pouze rok, za\u0161krtn\u011bte pol\xed\u010dko `Zn\xe1m\xfd pouze rok`.', null=True, verbose_name='Datum narozen\xed', blank=True)),
+                ('birthdate_year_only', models.BooleanField(default=False, verbose_name='Zn\xe1m\xfd pouze rok')),
+                ('primary_drug', models.PositiveSmallIntegerField(blank=True, null=True, verbose_name='Prim\xe1rn\xed droga', choices=[(3, 'Pervitin, jin\xe9 amfetaminy'), (4, 'Subutex, Ravata, Buprenorphine alkaloid - leg\xe1ln\u011b'), (5, 'Tab\xe1k'), (8, 'THC'), (9, 'Ext\xe1ze'), (10, 'Designer drugs'), (11, 'Heroin'), (12, 'Braun a jin\xe9 opi\xe1ty'), (13, 'Surov\xe9 opium'), (14, 'Subutex, Ravata, Buprenorphine alkaloid - ileg\xe1ln\u011b'), (16, 'Alkohol'), (17, 'Inhala\u010dn\xed l\xe1tky, \u0159edidla'), (18, 'Medikamenty'), (19, 'Metadon'), (20, 'Kokain, crack'), (21, 'Suboxone'), (22, 'Vendal'), (23, 'LSD'), (24, 'Lysohl\xe1vky'), (25, 'Nezn\xe1mo')])),
+                ('primary_drug_usage', models.PositiveSmallIntegerField(blank=True, null=True, verbose_name='Zp\u016fsob aplikace', choices=[(1, 'injek\u010dn\u011b do \u017e\xedly'), (2, 'injek\u010dn\u011b do svalu'), (3, '\xfastn\u011b'), (4, 'sniff (\u0161\u0148up\xe1n\xed)'), (5, 'kou\u0159en\xed'), (6, 'inhalace'), (7, 'Nen\xed zn\xe1mo')])),
+                ('close_person', models.BooleanField(default=False, verbose_name='Osoba bl\xedzk\xe1 (rodi\u010de apod.)')),
+                ('sex_partner', models.BooleanField(default=False, verbose_name='Sexu\xe1ln\xed partner')),
+            ],
+            options={
+                'verbose_name': 'Klient',
+                'verbose_name_plural': 'Klienti',
+            },
+            bases=('clients.person',),
+        ),
+        migrations.CreateModel(
+            name='Anonymous',
+            fields=[
+                ('person_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='clients.Person')),
+                ('drug_user_type', models.PositiveSmallIntegerField(verbose_name='Typ', choices=[(1, 'neu\u017eivatel'), (2, 'neIV'), (3, 'IV'), (4, 'rodi\u010d')])),
+                ('sex', models.PositiveSmallIntegerField(verbose_name='Pohlav\xed', choices=[(1, '\u017eena'), (2, 'mu\u017e')])),
+            ],
+            options={
+                'verbose_name': 'Anonym',
+                'verbose_name_plural': 'Anonymov\xe9',
+            },
+            bases=('clients.person',),
+        ),
+        migrations.CreateModel(
+            name='PractitionerContact',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('person_or_institution', models.CharField(max_length=255, verbose_name='Osoba nebo instituce')),
+                ('date', models.DateField(verbose_name='Kdy')),
+                ('note', models.TextField(verbose_name='Pozn\xe1mka', blank=True)),
+            ],
+            options={
+                'verbose_name': 'Odborn\xfd kontakt',
+                'verbose_name_plural': 'Odborn\xe9 kontakty',
+            },
+            bases=(models.Model, fragapy.common.models.adminlink.AdminLinkMixin),
+        ),
+        migrations.CreateModel(
+            name='Region',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('title', models.CharField(max_length=100, verbose_name='N\xe1zev', db_index=True)),
+            ],
+            options={
+                'verbose_name': 'Kraj',
+                'verbose_name_plural': 'Kraje',
+            },
+            bases=(models.Model, fragapy.common.models.adminlink.AdminLinkMixin),
+        ),
+        migrations.CreateModel(
+            name='RiskyManners',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('behavior', models.PositiveIntegerField(choices=[(1, 'Sd\xedlen\xed n\xe1\u010din\xed'), (2, 'Nechr\xe1n\u011bn\xfd sex'), (3, 'Sd\xedlen\xed jehel'), (4, 'Nitro\u017eiln\xed aplikace'), (5, 'Rizikov\xe1 aplikace'), (6, 'P\u0159ed\xe1vkov\xe1n\xed'), (7, 'Zdravotn\xed komplikace')])),
+                ('periodicity_in_past', models.PositiveIntegerField(blank=True, null=True, verbose_name='Jak \u010dasto v minulosti', choices=[(1, 'Nikdy'), (2, 'Jednor\xe1zov\u011b'), (3, 'Opakovan\u011b '), (4, 'Nen\xed zn\xe1mo')])),
+                ('periodicity_in_present', models.PositiveIntegerField(blank=True, null=True, verbose_name='Jak \u010dasto v p\u0159\xedtomnosti', choices=[(1, 'Nikdy'), (2, 'Jednor\xe1zov\u011b'), (3, 'Opakovan\u011b '), (4, 'Nen\xed zn\xe1mo')])),
+                ('anamnesis', models.ForeignKey(verbose_name='Anamn\xe9za', to='clients.Anamnesis')),
+            ],
+            options={
+                'verbose_name': 'Rizikov\xe9 chov\xe1n\xed',
+                'verbose_name_plural': 'Rizikov\xe1 chov\xe1n\xed',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Town',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('title', models.CharField(max_length=100, verbose_name='N\xe1zev', db_index=True)),
+                ('district', models.ForeignKey(verbose_name='Okres', to='clients.District')),
+            ],
+            options={
+                'verbose_name': 'M\u011bsto',
+                'verbose_name_plural': 'M\u011bsta',
+            },
+            bases=(models.Model, fragapy.common.models.adminlink.AdminLinkMixin),
+        ),
+        migrations.AlterUniqueTogether(
+            name='riskymanners',
+            unique_together=set([('behavior', 'anamnesis')]),
+        ),
+        migrations.AddField(
+            model_name='practitionercontact',
+            name='town',
+            field=models.ForeignKey(related_name='+', verbose_name='M\u011bsto', to='clients.Town'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='practitionercontact',
+            name='users',
+            field=models.ManyToManyField(to=settings.AUTH_USER_MODEL, verbose_name='Kdo'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='person',
+            name='content_type',
+            field=models.ForeignKey(editable=False, to='contenttypes.ContentType'),
+            preserve_default=True,
+        ),
+        migrations.AlterUniqueTogether(
+            name='drugusage',
+            unique_together=set([('drug', 'anamnesis')]),
+        ),
+        migrations.AddField(
+            model_name='district',
+            name='region',
+            field=models.ForeignKey(verbose_name='Kraj', to='clients.Region'),
+            preserve_default=True,
+        ),
+        migrations.AlterUniqueTogether(
+            name='diseasetest',
+            unique_together=set([('disease', 'anamnesis')]),
+        ),
+        migrations.AddField(
+            model_name='clientnote',
+            name='client',
+            field=models.ForeignKey(related_name='notes', verbose_name='Klient', to='clients.Client'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='client',
+            name='town',
+            field=models.ForeignKey(verbose_name='M\u011bsto', to='clients.Town'),
+            preserve_default=True,
+        ),
+        migrations.AlterUniqueTogether(
+            name='anonymous',
+            unique_together=set([('sex', 'drug_user_type')]),
+        ),
+        migrations.AddField(
+            model_name='anamnesis',
+            name='client',
+            field=models.OneToOneField(verbose_name='Klient', to='clients.Client'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='anamnesis',
+            name='filled_where',
+            field=models.ForeignKey(verbose_name='M\u011bsto kontaktu', to='clients.Town'),
+            preserve_default=True,
+        ),
+    ]
