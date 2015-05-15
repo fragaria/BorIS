@@ -1,6 +1,5 @@
 from datetime import date
 
-from django.test import TestCase
 from nose import tools
 
 from boris.classification import SEXES, DRUGS, DRUG_APPLICATION_TYPES, \
@@ -21,7 +20,7 @@ from boris.reporting.reports.monthly_stats import AllClientEncounters, \
     AnonymousAggregation, NonIvClientEncounters
 from boris.reporting.core import make_key
 from boris.reporting.management.install_views import install_views
-from test_boris.helpers import get_tst_town, get_tst_client, create_service
+from boris.tests.helpers import (get_tst_town, get_tst_client, create_service, InitialDataTestCase)
 
 
 def create_encounter(person, date, town=None):
@@ -47,11 +46,11 @@ class MockYearlyReport(object):
     additional_filtering = {'year': 2011}
 
 
-class TestEncounterAggregations(TestCase):
+class TestEncounterAggregations(InitialDataTestCase):
     """ Mostly encounter aggregations are tested here. """
 
     def setUp(self):
-        install_views('tests')
+        install_views('')
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
         self.drug = DRUGS.HEROIN
@@ -131,11 +130,11 @@ class TestEncounterAggregations(TestCase):
         tools.assert_equals(aggregation.get_val(key), 1)  # 0
 
 
-class TestServiceAggregations(TestCase):
+class TestServiceAggregations(InitialDataTestCase):
     """ Mostly service aggregations are tested here. """
 
     def setUp(self):
-        install_views('tests')
+        install_views('')
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
         self.drug = DRUGS.HEROIN
@@ -236,13 +235,13 @@ class TestServiceAggregations(TestCase):
         tools.assert_equals(aggregation.get_val(key), 1)
 
 
-class TestMixedAggregations(TestCase):
+class TestMixedAggregations(InitialDataTestCase):
     """
     In these aggregations, both encounters and services are taken into account.
     """
 
     def setUp(self):
-        install_views('tests')
+        install_views('')
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
 
@@ -279,9 +278,9 @@ class TestMixedAggregations(TestCase):
         tools.assert_equals(aggregation.get_val(key), 2)
 
 
-class TestEncounterTotals(TestCase):
+class TestEncounterTotals(InitialDataTestCase):
     def setUp(self):
-        install_views('tests')
+        install_views('')
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
         self.drug = DRUGS.HEROIN
@@ -329,9 +328,9 @@ class TestEncounterTotals(TestCase):
         tools.assert_equals(aggregation.get_val(key), 1)
 
 
-class TestServiceTotals(TestCase):
+class TestServiceTotals(InitialDataTestCase):
     def setUp(self):
-        install_views('tests')
+        install_views('')
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
 
@@ -362,9 +361,9 @@ class TestServiceTotals(TestCase):
         tools.assert_equals(aggregation.get_val(key), 20)
 
 
-class TestSyringeCollection(TestCase):
+class TestSyringeCollection(InitialDataTestCase):
     def setUp(self):
-        install_views('tests')
+        install_views('')
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
 

@@ -1,12 +1,12 @@
-from django.test import TestCase
 from nose import tools
 from django.core.urlresolvers import reverse
 
 from boris.clients.models import ClientNote
-from test_boris.helpers import get_tst_usr, get_tst_client
+from boris.tests.helpers import get_tst_usr, get_tst_client
+from boris.tests.helpers import InitialDataTestCase
 
 
-class TestClientNote(TestCase):
+class TestClientNote(InitialDataTestCase):
     def setUp(self):
         self.my_client = get_tst_client()
         self.user = get_tst_usr()

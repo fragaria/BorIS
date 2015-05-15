@@ -4,20 +4,16 @@ import sys
 from django.core.handlers.wsgi import WSGIRequest
 from django.core.servers.basehttp import ServerHandler
 from django.http import Http404
-
 from django.test import TestCase
 from nose import tools
 
 from boris.classification import DRUGS
-import boris
 from boris.reporting.reports.services import ServiceReport
 from boris.services import views
-
 from boris.services.models import (Address, UtilityWork, SocialWork,
     InformationService, HarmReduction, service_list, Encounter)
 from boris.services.views import HandleForm
-from test_boris.helpers import (get_tst_town, get_tst_client, get_tst_drug,
-    create_service)
+from boris.tests.helpers import (get_tst_town, get_tst_client, create_service)
 
 
 def normalize_stats(stats):
@@ -115,7 +111,7 @@ class TestServiceReports(TestCase):
 
 class TestServices(TestCase):
     def setUp(self):
-        drug = get_tst_drug()
+        drug = DRUGS.HEROIN
         self.town1 = get_tst_town()
         self.client1 = get_tst_client('c1', {'town': self.town1, 'primary_drug': drug})
         self.harm_reduction = create_service(HarmReduction, self.client1, date(2011, 11, 1), self.town1)

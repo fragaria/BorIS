@@ -8,8 +8,7 @@ from nose import tools
 
 from boris.services.models.core import Service, service_list, get_model_for_class_name
 from boris.clients.models import Client, Anonymous
-
-from models import DummyServiceClass, ModelDummy
+from models import DummyServiceClass, ModelDummy, DummyLimitedServiceClass, Dummy1, Dummy2
 
 
 class TestServiceMetaClass(TestCase):
@@ -33,16 +32,6 @@ class TestServiceMetaClass(TestCase):
 
 class TestServiceOptions(TestCase):
     def setUp(self):
-        class DummyServiceClass(Service):
-            class Options:
-                description_template = 'services/desc/aaa.html'
-                is_available = lambda client: True if client == 1 else False
-
-        class DummyLimitedServiceClass(Service):
-            class Options:
-                limited_to = ('Client',)
-                is_available = lambda client: not hasattr(client, 'failme')
-
         self.subcls = DummyServiceClass
         self.subcls_limited = DummyLimitedServiceClass
 
@@ -70,14 +59,6 @@ class TestServiceOptions(TestCase):
 
 class TestUtilityMethods(TestCase):
     def setUp(self):
-        class Dummy1(Service):
-            class Options:
-                is_available = lambda client: False
-
-        class Dummy2(Service):
-            class Options:
-                is_available = lambda client: True
-
         self.d1 = Dummy1
         self.d2 = Dummy2
 

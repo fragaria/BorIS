@@ -42,7 +42,7 @@ class ServiceReport(BaseReport):
         direct_enc_count = encounters.filter(is_by_phone=False).count()
         encounter_stats = (u'Počet kontaktů (z toho přímých)', '%i (%i)' % (
             all_enc_count, direct_enc_count))
-        return [(None, (encounter_stats,))] + self._get_service_stats()
+        return [(None, (encounter_stats,))] if all_enc_count > 0 else [] + self._get_service_stats()
 
     def render(self, request, display_type):
         return loader.render_to_string(

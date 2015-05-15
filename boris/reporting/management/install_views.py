@@ -14,20 +14,13 @@ APPS_TO_WAIT_FOR = map(methodcaller('app_label'), migration.all_migrations())
 
 
 def install_views(app, **kwargs):
-    global APPS_TO_WAIT_FOR
+    cursor = connection.cursor()
+    sql_file = open(join(dirname(reporting.__file__), 'sql', 'reporting-views.mysql.sql'), 'r')
 
-    APPS_TO_WAIT_FOR.remove(app)
-
-    if len(APPS_TO_WAIT_FOR) == 0:
-        print "Installing reporting views ..."
-
-        cursor = connection.cursor()
-        sql_file = open(join(dirname(reporting.__file__), 'sql', 'reporting-views.mysql.sql'), 'r')
-
-        try:
-            cursor.execute(sql_file.read())
-        finally:
-            sql_file.close()
+    try:
+        cursor.execute(sql_file.read())
+    finally:
+        sql_file.close()
 
 
 post_migrate.connect(install_views)
