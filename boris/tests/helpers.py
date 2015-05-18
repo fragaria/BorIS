@@ -37,7 +37,7 @@ def get_tst_client(code='borivoj22', cdata=None):
     if cdata:
         client_data.update(cdata)
 
-    return Client.objects.update_or_create(**client_data)[0]
+    return Client.objects.create(**client_data)
 
 
 def get_tst_usr(username='strachkvas'):
@@ -48,7 +48,7 @@ def get_tst_usr(username='strachkvas'):
         'is_superuser': True,
     }
 
-    user, _ = User.objects.update_or_create(**user_data)
+    user = User.objects.create(**user_data)
 
     password = 'heslo'
     user.set_password(password)
@@ -62,7 +62,7 @@ def get_tst_usr(username='strachkvas'):
 def create_service(service_class, person, date, town, kwargs_dict=None, is_by_phone=False):
     if not kwargs_dict:
         kwargs_dict = {}
-    e, _ = Encounter.objects.get_or_create(person=person, performed_on=date, where=town, is_by_phone=is_by_phone)
+    e = Encounter.objects.create(person=person, performed_on=date, where=town, is_by_phone=is_by_phone)
     service_kwargs = copy(kwargs_dict)
     service_kwargs.update({
         'encounter': e,
@@ -70,7 +70,7 @@ def create_service(service_class, person, date, town, kwargs_dict=None, is_by_ph
                                                                service_class.__name__),
     })
 
-    return service_class.objects.get_or_create(**service_kwargs)[0]
+    return service_class.objects.create(**service_kwargs)
 
 
 class InitialDataTestCase(TestCase):
