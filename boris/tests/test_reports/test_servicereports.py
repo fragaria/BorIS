@@ -1,3 +1,5 @@
+# -*- encoding: utf8 -*-
+
 from datetime import date
 import sys
 
@@ -83,7 +85,7 @@ class TestServiceReports(TestCase):
         filtering = {'date_to': date(2010, 1, 1)}
         r = ServiceReport(**filtering)
         stats = normalize_stats(r.get_stats())
-        expected = {}
+        expected = {None: ((u'Počet kontaktů (z toho přímých)', '0 (0)'), )}
         self.assertEqual(stats, expected)
 
     def test_filter_by_town(self):
