@@ -49,7 +49,7 @@
                 $('#id_close_person').change();
                 
                 $('#id_birthdate_year_only').change(function () {
-                    if ($(this).attr('checked') == 'checked') {
+                    if (this.checked) {
                         $('#id_birthdate_day, #id_birthdate_month').val('1');
                         $('#id_birthdate_day, #id_birthdate_month').addClass('inactive');
                     } else {
