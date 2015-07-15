@@ -59,6 +59,12 @@
             <!-- Grappelli Minified -->
             <script src="{% static 'grappelli/js/grappelli.min.js' %}" type="text/javascript"></script>
         {% endif %}
+
+        <script type="text/javascript" charset="utf-8">
+            var url = "{% static 'grappelli/jquery/i18n/ui.datepicker-cs.js' %}";
+            grp.jQuery.getScript(url);
+        </script>
+
         <script type="text/javascript" charset="utf-8">
             var jQuery = grp.jQuery.noConflict(true);
             (function($) {
