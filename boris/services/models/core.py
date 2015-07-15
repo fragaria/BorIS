@@ -6,6 +6,7 @@ Created on 2.10.2011
 '''
 from datetime import date
 import operator
+from django.conf import settings
 
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
@@ -100,6 +101,7 @@ class ServiceOptions(object):
         self.fieldsets = None
         self.codenumber = 0  # Code number to be displayed in the forms.
         self.include_in_reports = True
+        self.required_modules = ['base']
 
     def get_description_template_list(self):
         return (self.description_template, 'services/desc/default.html')
@@ -141,6 +143,11 @@ class ServiceMetaclass(type(models.Model)):
 
         if attrs_service_meta:
             service_meta.update(attrs_service_meta.__dict__)
+
+        modules = service_meta['available_in_modules'] if 'available_in_modules' in service_meta else ['base']
+        available = any([m in settings.ACTIVE_MODULES for m in modules])
+        if not available:
+            service_meta['is_available'] = lambda person: False
 
         def specific_person_passes_test(person_classes, func, person):
             if person.cast().__class__.__name__ in person_classes:

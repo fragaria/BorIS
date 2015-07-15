@@ -1,0 +1,7 @@
+body.dark-blue #nav .active a {
+    background: linear-gradient(to bottom, #267a97, #05516a);
+}
+
+body.light-blue #nav .active a {
+    background: linear-gradient(to bottom,  #39bae5, #098FBC);
+}

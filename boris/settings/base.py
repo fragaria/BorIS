@@ -1,7 +1,33 @@
 # -*- coding: utf-8 -*-
 from os.path import dirname, join, abspath
+from django.utils.functional import curry
 
 import boris
+
+
+def get_module_config(modules):
+    config = {}
+    for m in modules:
+        config.update(MODULES[m])
+    return config
+
+ACTIVE_MODULES = ['base']
+USING_K = lambda: 'k' in ACTIVE_MODULES
+ACTIVE_MODULE_CONFIG = curry(get_module_config, ACTIVE_MODULES)
+
+# Use in any template i.e. ACTIVE_MODULE_CONFIG.UPLOAD_FILES
+MODULES = {
+    'base': {
+        'UPLOAD_FILES': False,
+        'SKIN': 'light-blue',
+        'HEADER_SUFFIX': None,
+    },
+    'k': {
+        'UPLOAD_FILES': True,
+        'SKIN': 'dark-blue',
+        'HEADER_SUFFIX': u'verze pro K-centra',
+    },
+}
 
 PROJECT_ROOT = abspath(dirname(boris.__file__))
 
@@ -62,6 +88,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'django.core.context_processors.media',
     'django.core.context_processors.static',
+    'boris.utils.context_processors.active_modules'
 )
 
 TEMPLATE_DIRS = (
