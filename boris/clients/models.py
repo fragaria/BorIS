@@ -162,6 +162,9 @@ class Anonymous(Person):
         return service.class_name() == 'Address'
 
 
+def get_client_card_filename(instance, filename):
+    return 'client_notes/%s/%s' % (instance.code, filename)
+
 class Client(Person):
     code = models.CharField(max_length=63, unique=True, verbose_name=_(u'Kód'))
     sex = models.PositiveSmallIntegerField(choices=SEXES, verbose_name=_(u'Pohlaví'))
@@ -182,6 +185,7 @@ class Client(Person):
         verbose_name=_(u'Osoba blízká (rodiče apod.)'))
     sex_partner = models.BooleanField(default=False,
         verbose_name=_(u'Sexuální partner'))
+    client_card = models.FileField(verbose_name=u'Klientská karta', blank=True, null=True, upload_to=get_client_card_filename)
 
     class Meta:
         verbose_name = _(u'Klient')
@@ -211,6 +215,12 @@ class Client(Person):
     def save(self, *args, **kwargs):
         if self.code:
             self.code = self.code.upper()
+        try:
+            old_instance = Client.objects.get(id=self.id)
+            if old_instance.client_card != self.client_card:
+                old_instance.client_card.delete(save=False)
+        except Client.DoesNotExist:
+            pass
         super(Client, self).save(*args, **kwargs)
 
 

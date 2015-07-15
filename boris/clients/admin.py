@@ -231,6 +231,7 @@ class ClientAdmin(AddContactAdmin):
             ('primary_drug', 'primary_drug_usage'),
             ('first_contact_verbose', 'last_contact_verbose'),
             'anamnesis_link',
+            'client_card'
         )}),
     )
     raw_id_fields = ('town',)
