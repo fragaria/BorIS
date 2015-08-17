@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 from django.template import loader
 from django.template.context import RequestContext
 
@@ -33,7 +34,8 @@ class ServiceReport(BaseReport):
 
     def _get_service_stats(self):
         return [
-            service.get_stats(self.filtering) for service in service_list(self.person) if service.service.include_in_reports
+            service.get_stats(self.filtering) for service in service_list(self.person)
+            if service.service.include_in_reports and any([m in settings.ACTIVE_MODULES for m in service.service.available_in_modules])
         ]
 
     def get_stats(self):
