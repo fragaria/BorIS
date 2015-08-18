@@ -14,8 +14,9 @@ from django.utils.html import escape, escapejs
 
 from boris.clients.models import Client, Town, Anamnesis, DrugUsage, \
     RiskyManners, Region, District, DiseaseTest, Anonymous, \
-    PractitionerContact, Person
+    PractitionerContact, Person, GroupContact
 from boris.clients.forms import ReadOnlyWidget
+from boris.clients.utils import ReadOnlyAdmin
 from boris.clients.views import add_note, delete_note
 from boris.services.admin import EncounterInline
 from boris.utils.admin import BorisBaseAdmin, textual
@@ -216,6 +217,29 @@ class PractitionerContactAdmin(BorisBaseAdmin):
         return bool(obj.pk)
 
 
+# this class assumes being readonly. should this change, the GroupContact's postsave signal needs to be taken care of
+class GroupContactAdmin(ReadOnlyAdmin):
+    list_display = ('date', 'town', 'name', 'note', 'user_list', 'client_count')
+    list_filter = ('date', 'town', 'users')
+    date_hierarchy = 'date'
+    search_fields = ('name', 'note')
+    raw_id_fields = ('town',)
+    autocomplete_lookup_fields = {
+        'fk': ['town', ]
+    }
+    ordering = ('-date', 'name')
+    fields = ('name', 'town', 'date', 'note', 'users', 'clients')
+    filter_horizontal = ('clients', )
+
+    @textual(_(u'Kdo'))
+    def user_list(self, obj):
+        return u'<br />'.join([unicode(s) for s in obj.users.all()])
+
+    @textual(_(u'Počet klientů'))
+    def client_count(self, obj):
+        return obj.clients.count()
+
+
 class ClientAdmin(AddContactAdmin):
     list_display = ('code', 'first_name_display', 'last_name_display', 'sex',
                     'town', 'encounter_count')
@@ -320,6 +344,7 @@ admin.site.register(District, EnumAdmin)
 admin.site.register(Town, EnumAdmin)
 admin.site.register(Person, PersonAdmin)
 admin.site.register(PractitionerContact, PractitionerContactAdmin)
+admin.site.register(GroupContact, GroupContactAdmin)
 admin.site.register(Anonymous, AnonymousAdmin)
 admin.site.register(Client, ClientAdmin)
 admin.site.register(Anamnesis, AnamnesisAdmin)

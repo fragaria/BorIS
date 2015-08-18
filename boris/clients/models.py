@@ -3,19 +3,21 @@ import datetime
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import m2m_changed
+from django.dispatch import receiver
 from django.utils.dateformat import format
 from django.utils.formats import date_format, get_format
 from django.utils.translation import ugettext_lazy as _
-
 from model_utils.models import TimeStampedModel
 from fragapy.common.models.adminlink import AdminLinkMixin
+from django.contrib.contenttypes.models import ContentType
 
 from boris.classification import SEXES, NATIONALITIES, \
     ETHNIC_ORIGINS, LIVING_CONDITIONS, ACCOMODATION_TYPES, EMPLOYMENT_TYPES, \
     DRUG_APPLICATION_FREQUENCY, DRUG_APPLICATION_TYPES, \
     DISEASES, DISEASE_TEST_RESULTS, EDUCATION_LEVELS, ANONYMOUS_TYPES, \
     RISKY_BEHAVIOR_KIND, RISKY_BEHAVIOR_PERIODICITY, DRUGS
-from django.contrib.contenttypes.models import ContentType
+from boris.services.models import GroupCounselling, Encounter
 
 
 class IndexedStringEnum(models.Model, AdminLinkMixin):
@@ -142,6 +144,43 @@ class PractitionerContact(models.Model, AdminLinkMixin):
             'town': self.town,
             'date': date_format(self.date)
         }
+
+
+class GroupContact(models.Model, AdminLinkMixin):
+    '''
+    A model for convenient work with group counselling service.
+    '''
+    users = models.ManyToManyField('auth.User', verbose_name=_('Kdo'))
+    clients = models.ManyToManyField('clients.Client', verbose_name=_('Klienti'))
+    name = models.CharField(max_length=255,
+                            verbose_name=_(u'Název skupiny'))
+    town = models.ForeignKey('clients.Town', related_name='+', verbose_name=_(u'Město'))
+    date = models.DateField(verbose_name=_(u'Kdy'))
+    note = models.TextField(verbose_name=_(u'Poznámka'), blank=True)
+
+    class Meta:
+        verbose_name = u'Skupinový kontakt'
+        verbose_name_plural = u'Skupinové kontakty'
+
+    def __unicode__(self):
+        return u'GroupContact %s, %s, %s' % (self.id, self.town, self.date)
+
+
+@receiver(m2m_changed, sender=GroupContact.clients.through)
+def save_group_contact(sender, instance, action, *args, **kwargs):
+    # @attention: this is done only once for each group contact (when saving for the first time).
+    # the model is readonly, so no further saves can occur
+    if action == 'post_add':
+        # group contact serves as a way to create many group counselling encounters at a time
+        for client in instance.clients.all():
+            e, created = Encounter.objects.get_or_create(person=client, performed_on=instance.date, where=instance.town,
+                                                         is_by_phone=False)
+            if created:
+                for u in instance.users.all():
+                    e.performed_by.add(u)
+                e.save()
+                ct = ContentType.objects.get_for_model(instance)
+                GroupCounselling.objects.create(title=instance.name, encounter=e, content_type=ct)
 
 
 class Anonymous(Person):

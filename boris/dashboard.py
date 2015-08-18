@@ -5,6 +5,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from grappelli.dashboard import modules, Dashboard
 from grappelli.dashboard.modules import ModelList
+from boris import settings
+
 
 class PersonModelList(ModelList):
     template = 'dashboard/person_model_list.html'
@@ -27,16 +29,18 @@ class CustomIndexDashboard(Dashboard):
             ),
         ))
 
+        models = ('boris.services.models.core.Encounter', 'boris.clients.models.Anamnesis',
+                  'boris.clients.models.PractitionerContact')
+
+        if settings.ACTIVE_MODULE_CONFIG()['USE_GROUP_CONTACTS']:
+            models += ('boris.clients.models.GroupContact', )
+
+        models += ('boris.syringes.models.SyringeCollection',)
         self.children.append(modules.ModelList(
             _(u'Rychlé akce'),
             collapsible=False,
             column=1,
-            models=(
-                'boris.services.models.core.Encounter',
-                'boris.clients.models.Anamnesis',
-                'boris.clients.models.PractitionerContact',
-                'boris.syringes.models.SyringeCollection'
-            ),
+            models=models,
         ))
 
         if user.is_superuser:
