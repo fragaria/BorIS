@@ -104,9 +104,9 @@ class Migration(migrations.Migration):
             fields=[
             ],
             options={
-                'verbose_name': 'Uzav\u0159en\xed dohody o poskytov\xe1n\xed soci\xe1ln\xedch slu\u017eeb',
+                'verbose_name': 'Uzav\u0159en\xed dohody o poskyt. soc. slu\u017eeb',
                 'proxy': True,
-                'verbose_name_plural': 'Uzav\u0159en\xed dohod o poskytov\xe1n\xed soci\xe1ln\xedch slu\u017eeb',
+                'verbose_name_plural': 'Uzav\u0159en\xed dohod o poskyt. soc. slu\u017eeb',
             },
             bases=('services.service',),
         ),
