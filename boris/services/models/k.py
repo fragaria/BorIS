@@ -146,8 +146,8 @@ class SocialServicesAgreement(Service):
     class Meta:
         app_label = 'services'
         proxy = True
-        verbose_name = _(u'Uzavření dohody o poskytování sociálních služeb')  # The verbose_name of service is longer than 39 characters
-        verbose_name_plural = _(u'Uzavření dohod o poskytování sociálních služeb')
+        verbose_name = _(u'Uzavření dohody o poskytování soc. služeb')
+        verbose_name_plural = _(u'Uzavření dohod o poskytování soc. služeb')
 
     class Options:
         codenumber = 110
