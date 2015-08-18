@@ -163,7 +163,8 @@ class GroupContact(models.Model, AdminLinkMixin):
         verbose_name_plural = u'Skupinové kontakty'
 
     def __unicode__(self):
-        return u'GroupContact %s, %s, %s' % (self.id, self.town, self.date)
+        town = self.town.name if self.town else '---'
+        return u'GroupContact %s, %s, %s' % (self.id, town, self.date)
 
 
 @receiver(m2m_changed, sender=GroupContact.clients.through)
