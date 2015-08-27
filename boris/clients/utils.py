@@ -18,3 +18,10 @@ class ReadOnlyAdmin(BorisBaseAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+    def __init__(self, *args, **kwargs):
+        super(ReadOnlyAdmin, self).__init__(*args, **kwargs)
+        if 'actions_display' in self.list_display:
+            ld = list(self.list_display)
+            ld.remove('actions_display')
+            self.list_display = tuple(ld)
