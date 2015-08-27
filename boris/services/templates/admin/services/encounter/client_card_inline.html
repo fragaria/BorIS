@@ -1,0 +1,12 @@
+{% extends 'admin/edit_inline/tabular.html' %}
+{% load i18n %}
+{% block add-tools-upper %}
+{% endblock %}
+
+{% block add-tools-lower %}
+	{% if not add %}
+        <div class="grp-row">
+            <a href="javascript://" class="grp-add-handler"><strong>{% trans 'Přidat soubor' %}</strong></a>
+        </div>
+	{% endif %}
+{% endblock %}

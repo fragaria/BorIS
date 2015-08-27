@@ -202,9 +202,6 @@ class Anonymous(Person):
         return service.class_name() == 'Address'
 
 
-def get_client_card_filename(instance, filename):
-    return 'client_notes/%s/%s' % (instance.code, filename)
-
 class Client(Person):
     code = models.CharField(max_length=63, unique=True, verbose_name=_(u'Kód'))
     sex = models.PositiveSmallIntegerField(choices=SEXES, verbose_name=_(u'Pohlaví'))
@@ -225,7 +222,6 @@ class Client(Person):
         verbose_name=_(u'Osoba blízká (rodiče apod.)'))
     sex_partner = models.BooleanField(default=False,
         verbose_name=_(u'Sexuální partner'))
-    client_card = models.FileField(verbose_name=u'Klientská karta', blank=True, null=True, upload_to=get_client_card_filename)
 
     class Meta:
         verbose_name = _(u'Klient')
@@ -255,12 +251,6 @@ class Client(Person):
     def save(self, *args, **kwargs):
         if self.code:
             self.code = self.code.upper()
-        try:
-            old_instance = Client.objects.get(id=self.id)
-            if old_instance.client_card != self.client_card:
-                old_instance.client_card.delete(save=False)
-        except Client.DoesNotExist:
-            pass
         super(Client, self).save(*args, **kwargs)
 
 
@@ -428,3 +418,29 @@ class DiseaseTest(models.Model):
         verbose_name_plural = _(u'Vyšetření onemocnění')
         unique_together = ('disease', 'anamnesis')
 
+
+def get_client_card_filename(instance, filename):
+    return 'client_notes/%s/%s' % (instance.client.code, filename)
+
+
+class ClientCard(models.Model):
+    client = models.ForeignKey(Client, related_name='client_card')
+    file = models.FileField(upload_to=get_client_card_filename)
+
+    class Meta:
+        verbose_name = u'Klientská karta'
+        verbose_name_plural = u'Klientská karta'  # makes more sense from user's perspective
+
+    def save(self, *args, **kwargs):
+        try:
+            old_instance = ClientCard.objects.get(id=self.id)
+            if old_instance.file != self.file:
+                old_instance.file.delete(save=False)
+        except ClientCard.DoesNotExist:
+            pass
+
+        super(ClientCard, self).save(*args, **kwargs)
+
+    def delete(self, using=None):
+        self.file.delete(save=False)
+        super(ClientCard, self).delete(using=using)

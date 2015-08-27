@@ -14,7 +14,7 @@ from django.utils.html import escape, escapejs
 
 from boris.clients.models import Client, Town, Anamnesis, DrugUsage, \
     RiskyManners, Region, District, DiseaseTest, Anonymous, \
-    PractitionerContact, Person, GroupContact
+    PractitionerContact, Person, GroupContact, ClientCard
 from boris.clients.forms import ReadOnlyWidget
 from boris.clients.utils import ReadOnlyAdmin
 from boris.clients.views import add_note, delete_note
@@ -240,6 +240,13 @@ class GroupContactAdmin(ReadOnlyAdmin):
         return obj.clients.count()
 
 
+class ClientCardInline(admin.StackedInline):
+    model = ClientCard
+    classes = ('grp-collapse', 'grp-closed',)
+    template = 'admin/services/encounter/client_card_inline.html'
+    extra = 0
+
+
 class ClientAdmin(AddContactAdmin):
     list_display = ('code', 'first_name_display', 'last_name_display', 'sex',
                     'town', 'encounter_count')
@@ -255,7 +262,6 @@ class ClientAdmin(AddContactAdmin):
             ('primary_drug', 'primary_drug_usage'),
             ('first_contact_verbose', 'last_contact_verbose'),
             'anamnesis_link',
-            'client_card'
         )}),
     )
     raw_id_fields = ('town',)
@@ -263,7 +269,7 @@ class ClientAdmin(AddContactAdmin):
         'fk': ['town', ]
     }
     readonly_fields = (u'anamnesis_link', 'first_contact_verbose', 'last_contact_verbose')
-    inlines = (EncounterInline,)
+    inlines = (ClientCardInline, EncounterInline,)
 
     @textual(_(u'Jméno'), 'first_name')
     def first_name_display(self, obj):
