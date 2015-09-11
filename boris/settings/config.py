@@ -13,6 +13,13 @@ DATABASES = {
         'NAME': 'boris.db',
         'USER': '',
         'PASSWORD': '',
+        'OPTIONS': {
+            'charset': 'utf8',
+            'init_command': 'SET '
+                'storage_engine=MyISAM,'
+                'character_set_connection=utf8,'
+                'collation_connection=utf8_general_ci'
+        },
     },
 }
 
