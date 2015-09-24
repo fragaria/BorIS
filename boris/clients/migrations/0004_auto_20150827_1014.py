@@ -23,8 +23,4 @@ class Migration(migrations.Migration):
             },
             bases=(models.Model,),
         ),
-        migrations.RemoveField(
-            model_name='client',
-            name='client_card',
-        ),
     ]
