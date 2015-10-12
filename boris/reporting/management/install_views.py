@@ -1,16 +1,9 @@
-from operator import methodcaller
 from os.path import dirname, join
 
 from django.db import connection
-
-from south import migration
 from south.signals import post_migrate
 
 from boris import reporting
-
-
-# Get a list of all the apps that use migrations.
-APPS_TO_WAIT_FOR = map(methodcaller('app_label'), migration.all_migrations())
 
 
 def install_views(app, **kwargs):
