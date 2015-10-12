@@ -60,13 +60,13 @@ setup(
     ],
     install_requires=[
         'setuptools>=0.6b1',
-        'Django==1.3.1',
-        'south>=0.7',
-        'django-grappelli>=2.3.7',
+        'Django==1.7.2',
+        'south==0.8.4',
+        'django-grappelli>=2.6.3',
         'django-model-utils',
         'django-form-utils',
-        'raven==1.4.6',
-        'fragapy==1.2.5',
+        'raven>=3.3.3',
+        'fragapy==1.2.6',
         'gunicorn',
     ],
     setup_requires=[
