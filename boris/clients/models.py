@@ -420,7 +420,7 @@ class DiseaseTest(models.Model):
 
 
 def get_client_card_filename(instance, filename):
-    return 'client_notes/%s/%s' % (instance.client.code, filename)
+    return 'client_notes/%s/%s' % (instance.client.pk, filename)
 
 
 class ClientCard(models.Model):
