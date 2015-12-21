@@ -18,6 +18,7 @@ from boris.clients.models import Client, Town, Anamnesis, DrugUsage, \
 from boris.clients.forms import ReadOnlyWidget
 from boris.clients.utils import ReadOnlyAdmin
 from boris.clients.views import add_note, delete_note
+from boris.services.models import Encounter
 from boris.services.admin import EncounterInline
 from boris.utils.admin import BorisBaseAdmin, textual
 from boris.utils.widgets import SplitDateWidget
@@ -246,11 +247,36 @@ class ClientCardInline(admin.StackedInline):
     template = 'admin/services/encounter/client_card_inline.html'
     extra = 0
 
+def get_encounter_filter(level):
+    # Level is "year", "month" or "day".
+    #
+    # TODO: somehow filter also by neighbouring filters
+    #   Ideas:
+    #       - encode the whole date into a single query parameter
+    #       - or read other query parameters from the request object
+
+    class EncounterFilterKlass(admin.SimpleListFilter):
+        title = _('Encounter ' + level) # TODO
+
+        # Parameter for the filter that will be used in the URL query.
+        parameter_name = '_encounters__performed_on__' + level
+
+        def lookups(self, request, model_admin):
+            entries = [date.year for date in Encounter.objects.dates('performed_on', level)]
+            return [(entry, entry) for entry in entries]
+
+        def queryset(self, request, queryset):
+            if self.value():
+                kwargs = {'encounters__performed_on__' + level: self.value()}
+                return queryset.filter(**kwargs).distinct()
+    return EncounterFilterKlass
+
 
 class ClientAdmin(AddContactAdmin):
     list_display = ('code', 'first_name_display', 'last_name_display', 'sex',
                     'town', 'encounter_count')
-    list_filter = ('town', 'sex', 'primary_drug')
+    list_filter = ('town', 'sex', 'primary_drug', get_encounter_filter('year'),
+                   get_encounter_filter('month'), get_encounter_filter('day'))
     search_fields = ('code', 'first_name', 'last_name')
     fieldsets = (
         (_(u'Základní informace'), {'fields': (

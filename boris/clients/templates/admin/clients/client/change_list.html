@@ -1,0 +1,3 @@
+{% extends "admin/change_list.html" %}
+{% load encounter_date_hierarchy %}
+{% block date_hierarchy %}{% encounter_date_hierarchy cl %}{% endblock %}
