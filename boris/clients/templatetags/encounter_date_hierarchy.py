@@ -11,6 +11,22 @@ from django.template import Library
 register = Library()
 
 
+def filter_dates(dates, year, month=None):
+    """
+    Filter dates by the given year and month.
+
+    """
+    try:
+        year = int(year)
+        month = int(month) if month else None
+    except ValueError:
+        return []
+    return [
+        date for date in dates
+        if date.year == year and (date.month == month or not month)
+    ]
+
+
 @register.inclusion_tag('admin/date_hierarchy.html')
 def encounter_date_hierarchy(cl):
     """
@@ -59,6 +75,9 @@ def encounter_date_hierarchy(cl):
     elif year_lookup and month_lookup:
         days = cl.queryset.filter(**{year_field: year_lookup, month_field: month_lookup})
         days = filter(bool, getattr(days, dates_or_datetimes)(field_name, 'day'))
+        # Dates need to be filtered because of the 1:n relationship
+        # (e.g. one client has multiple associated encounters.)
+        days = filter_dates(days, year_lookup, month_lookup)
         return {
             'show': True,
             'back': {
@@ -73,6 +92,7 @@ def encounter_date_hierarchy(cl):
     elif year_lookup:
         months = cl.queryset.filter(**{year_field: year_lookup})
         months = filter(bool, getattr(months, dates_or_datetimes)(field_name, 'month'))
+        months = filter_dates(months, year_lookup)
         return {
             'show': True,
             'back': {

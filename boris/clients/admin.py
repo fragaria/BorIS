@@ -249,11 +249,6 @@ class ClientCardInline(admin.StackedInline):
 
 def get_encounter_filter(level):
     # Level is "year", "month" or "day".
-    #
-    # TODO: somehow filter also by neighbouring filters
-    #   Ideas:
-    #       - encode the whole date into a single query parameter
-    #       - or read other query parameters from the request object
 
     class EncounterFilterKlass(admin.SimpleListFilter):
         title = _('Encounter ' + level) # TODO
