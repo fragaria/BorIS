@@ -28,7 +28,7 @@ def filter_dates(dates, year, month=None):
 
 
 @register.inclusion_tag('admin/date_hierarchy.html')
-def encounter_date_hierarchy(cl):
+def related_date_hierarchy(cl, field_name):
     """
     Date hierarchy tag for client encounter dates.
 
@@ -36,11 +36,7 @@ def encounter_date_hierarchy(cl):
     django/contrib/admin/templatetags/admin_list.py.
 
     """
-    dates_or_datetimes = 'dates' # TODO
-
-    # For now, the field name is hardcoded - can be coverted to a parameter
-    # of this tag if a generalization can be made to work.
-    field_name = 'encounters__performed_on'
+    dates_or_datetimes = 'dates' # Only works with date fields.
 
     year_field = '%s__year' % field_name
     month_field = '%s__month' % field_name

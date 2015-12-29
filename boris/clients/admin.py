@@ -18,7 +18,6 @@ from boris.clients.models import Client, Town, Anamnesis, DrugUsage, \
 from boris.clients.forms import ReadOnlyWidget
 from boris.clients.utils import ReadOnlyAdmin
 from boris.clients.views import add_note, delete_note
-from boris.services.models import Encounter
 from boris.services.admin import EncounterInline
 from boris.utils.admin import BorisBaseAdmin, textual
 from boris.utils.widgets import SplitDateWidget
