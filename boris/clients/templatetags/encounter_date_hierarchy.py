@@ -45,10 +45,10 @@ def encounter_date_hierarchy(cl):
     year_field = '%s__year' % field_name
     month_field = '%s__month' % field_name
     day_field = '%s__day' % field_name
-    field_generic = '_%s__' % field_name # Use the '_' prefix to bypass validations tied to valid field names.
-    year_lookup = cl.params.get('_' + year_field)
-    month_lookup = cl.params.get('_' + month_field)
-    day_lookup = cl.params.get('_' + day_field)
+    field_generic = '%s__' % field_name
+    year_lookup = cl.params.get(year_field)
+    month_lookup = cl.params.get(month_field)
+    day_lookup = cl.params.get(day_field)
 
     link = lambda filters: cl.get_query_string(filters, [field_generic])
 
@@ -67,7 +67,7 @@ def encounter_date_hierarchy(cl):
         return {
             'show': True,
             'back': {
-                'link': link({'_' + year_field: year_lookup, '_' + month_field: month_lookup}),
+                'link': link({year_field: year_lookup, month_field: month_lookup}),
                 'title': capfirst(formats.date_format(day, 'YEAR_MONTH_FORMAT'))
             },
             'choices': [{'title': capfirst(formats.date_format(day, 'MONTH_DAY_FORMAT'))}]
@@ -81,11 +81,11 @@ def encounter_date_hierarchy(cl):
         return {
             'show': True,
             'back': {
-                'link': link({'_' + year_field: year_lookup}),
+                'link': link({year_field: year_lookup}),
                 'title': str(year_lookup)
             },
             'choices': [{
-                'link': link({'_' + year_field: year_lookup, '_' + month_field: month_lookup, '_' + day_field: day.day}),
+                'link': link({year_field: year_lookup, month_field: month_lookup, day_field: day.day}),
                 'title': capfirst(formats.date_format(day, 'MONTH_DAY_FORMAT'))
             } for day in days]
         }
@@ -100,7 +100,7 @@ def encounter_date_hierarchy(cl):
                 'title': _('All dates')
             },
             'choices': [{
-                'link': link({'_' + year_field: year_lookup, '_' + month_field: month.month}),
+                'link': link({year_field: year_lookup, month_field: month.month}),
                 'title': capfirst(formats.date_format(month, 'YEAR_MONTH_FORMAT'))
             } for month in months]
         }
@@ -109,7 +109,7 @@ def encounter_date_hierarchy(cl):
         return {
             'show': True,
             'choices': [{
-                'link': link({'_' + year_field: str(year.year)}),
+                'link': link({year_field: str(year.year)}),
                 'title': str(year.year),
             } for year in years]
         }
