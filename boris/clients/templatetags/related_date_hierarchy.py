@@ -50,8 +50,14 @@ def related_date_hierarchy(cl, field_name):
 
     if not (year_lookup or month_lookup or day_lookup):
         # select appropriate start level
-        date_range = cl.queryset.aggregate(first=models.Min(field_name),
-                                            last=models.Max(field_name))
+        #
+        # Note: min_field_name and max_field_name are here because of
+        # AddContactAdmin.encounter_count - pure field_name does not work
+        # as Django tampers with "encounters" internally somehow.
+        min_field_name = field_name.replace('__', '_') + '_min'
+        max_field_name = field_name.replace('__', '_') + '_max'
+        date_range = cl.queryset.aggregate(first=models.Min(min_field_name),
+                                            last=models.Max(max_field_name))
         if date_range['first'] and date_range['last']:
             if date_range['first'].year == date_range['last'].year:
                 year_lookup = date_range['first'].year
