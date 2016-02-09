@@ -178,6 +178,7 @@ class AddContactAdmin(BorisBaseAdmin):
     def encounter_count(self, obj):
         return obj.ecnt
     encounter_count.short_description = _(u'Počet kontaktů')
+    encounter_count.admin_order_field = 'ecnt'
 
     def add_contact_button(self, obj):
         return u'<a href="%s" class="changelink cbutton high1">%s</a>' % (
