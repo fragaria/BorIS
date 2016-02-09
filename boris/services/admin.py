@@ -52,6 +52,7 @@ EncounterInline.service_list = service_list
 class EncounterAdmin(BorisBaseAdmin):
     list_display = ('person_link', 'performed_on', 'where', 'is_by_phone',
         'service_list')
+    list_display_links = None
     list_filter = ('performed_on', 'where', 'is_by_phone')
     search_fields = ('person__title', 'where__title',
         'performed_by__username', 'performed_by__first_name',
@@ -68,7 +69,6 @@ class EncounterAdmin(BorisBaseAdmin):
 
     def __init__(self, *args, **kwargs):
         super(EncounterAdmin, self).__init__(*args, **kwargs)
-        self.list_display_links = () # See http://stackoverflow.com/a/1982474
 
     def person_link(self, obj):
         """Redefined "person" pointing to the person's page."""
@@ -76,10 +76,6 @@ class EncounterAdmin(BorisBaseAdmin):
         return u'<a href="%s">%s</a>' % (person.get_admin_url(), person)
     person_link.allow_tags = True
     person_link.short_description = _('Osoba')
-
-    def get_list_display_links(self, request, list_display):
-        """Supress showing of list display links"""
-        return ()
 
     def _prepare_for_prefilling(self, request, obj):
         """Enable field pre-filling based on existing records."""
