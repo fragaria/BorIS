@@ -271,7 +271,7 @@ class SocialWork(Service):
 
 class UtilityWork(Service):
     REF_TYPES = Choices(
-        ('fp', 'FIELD_PROGRAMME', ugettext(u'1) Terenní programy')),
+        ('fp', 'FIELD_PROGRAMME', ugettext(u'1) Terénní programy')),
         ('cc', 'CONTACT_CENTER', ugettext(u'2) Kontaktní centrum')),
         ('mf', 'MEDICAL_FACILITY', ugettext(u'3) Léčebná zařízení')),
         ('ep', 'EXCHANGE_PROGRAMME', ugettext(u'4) Výměnný pogram')),
@@ -279,7 +279,8 @@ class UtilityWork(Service):
         ('hs', 'HEALTHCARE_SERVICES', ugettext(u'6) Zdravotní služby')),
         ('ss', 'SOCIAL_SERVICES', ugettext(u'7) Sociální služby')),
         ('can', 'CANCEL', ugettext(u'8) Dohoduntý kontakt neproběhl / event. péče ukončena klientem bez dohody')),
-        ('o', 'OTHER', ugettext(u'9) jiné'))
+        ('sub', 'SUBSTITUTION', ugettext(u'9) Substituce')),
+        ('o', 'OTHER', ugettext(u'10) jiné'))
     )
 
     refs = MultiSelectField(max_length=40, choices=REF_TYPES, verbose_name=_(u'Odkazy'))
