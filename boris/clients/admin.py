@@ -168,16 +168,16 @@ class AddContactAdmin(BorisBaseAdmin):
     list_actions = ('change_button', 'add_contact_button')
 
     def queryset(self, request):
-        qs = super(AddContactAdmin, self).queryset(request)
-        return qs.annotate(ecnt=models.Count('encounters', distinct=True),
-                # The following two annotations are utilized by `related_date_hierarchy`.
-                encounters_performed_on_min=models.Min('encounters__performed_on'),
-                encounters_performed_on_max=models.Max('encounters__performed_on'))
+        return super(AddContactAdmin, self).queryset(request).extra(
+            select={
+                'ecnt': 'SELECT COUNT(*) FROM services_encounter '
+                        'WHERE services_encounter.person_id = clients_person.id'
+            }
+        )
 
     def encounter_count(self, obj):
         return obj.ecnt
     encounter_count.short_description = _(u'Počet kontaktů')
-    encounter_count.admin_order_field = 'ecnt'
 
     def add_contact_button(self, obj):
         return u'<a href="%s" class="changelink cbutton high1">%s</a>' % (
