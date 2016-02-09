@@ -187,6 +187,8 @@ class AddContactAdmin(BorisBaseAdmin):
 
 
 class AnonymousAdmin(AddContactAdmin):
+    list_actions = ('add_contact_button',)
+    actions = None
     change_form_template = 'admin/clients/person/change_form.html'
     inlines = (EncounterInline,)
     readonly_fields = ('drug_user_type', 'sex')
