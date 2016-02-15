@@ -237,14 +237,16 @@ class CrisisIntervention(Service):
 
 
 class SocialWork(Service):
-    socio_legal = models.BooleanField(default=False,
-        verbose_name=_(u'a) sociálně-právní'))
+    social = models.BooleanField(default=False,
+        verbose_name=_(u'a) sociální'))
+    legal = models.BooleanField(default=False,
+        verbose_name=_(u'b) trestně-právní'))
     counselling = models.BooleanField(default=False,
-        verbose_name=_(u'b) předléčebné indiviuální poradenství'))
+        verbose_name=_(u'c) předléčebné indiviuální poradenství'))
     service_mediation = models.BooleanField(default=False,
-        verbose_name=_(u'c) zprostředkování dalších služeb'))
+        verbose_name=_(u'd) zprostředkování dalších služeb'))
     other = models.BooleanField(default=False,
-        verbose_name=_(u'd) jiná'))
+        verbose_name=_(u'e) jiná'))
 
     class Meta:
         app_label = 'services'
@@ -256,7 +258,7 @@ class SocialWork(Service):
         limited_to = ('Client',)
         fieldsets = (
             (None, {
-                'fields': ('encounter', 'socio_legal', 'counselling',
+                'fields': ('encounter', 'social', 'legal', 'counselling',
                     'service_mediation', 'other'),
                 'classes': ('inline',)
             }),
@@ -265,7 +267,7 @@ class SocialWork(Service):
     @classmethod
     def _get_stats(cls, filtering):
         return super(SocialWork, cls)._get_stats(filtering) + (
-            _boolean_stats(cls, filtering, ('socio_legal', 'counselling',
+            _boolean_stats(cls, filtering, ('social', 'legal', 'counselling',
                                             'service_mediation', 'other')))
 
 
