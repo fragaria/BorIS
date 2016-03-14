@@ -62,7 +62,7 @@ for codename in codenames:
 
 # Run the proxy permissions fix hook.
 services = get_app('services')
-proxy_permissions_fix.create_proxy_permissions(services, get_models(services), 2)
+proxy_permissions_fix.delete_proxy_permissions(services, get_models(services), 2)
 
 # Delete the obsolete contenttypes.
 contenttypes = (
