@@ -274,6 +274,10 @@ class ClientAdmin(AddContactAdmin):
     readonly_fields = (u'anamnesis_link', 'first_contact_verbose', 'last_contact_verbose')
     inlines = (ClientCardInline, EncounterInline,)
 
+    def __init__(self, *args, **kwargs):
+        super(ClientAdmin, self).__init__(*args, **kwargs)
+        self.list_display += ('anamnesis_link',)
+
     @textual(_(u'Jméno'), 'first_name')
     def first_name_display(self, obj):
         return obj.first_name
@@ -334,7 +338,7 @@ class ClientAdmin(AddContactAdmin):
             return u'<a class="cbutton" href="%s?client_id=%s" onclick="return showAddAnotherPopup(this);">%s</a>' % (
                 obj.anamnesis.get_admin_url(), obj.pk, _(u'Zobrazit'))
         else:
-            return '<a class="cbutton" href="%s?client_id=%s" id="add_id_anamnesis" onclick="return showAddAnotherPopup(this);">%s</a>' % (
+            return '<a class="cbutton high1" href="%s?client_id=%s" id="add_id_anamnesis" onclick="return showAddAnotherPopup(this);">%s</a>' % (
                 reverse('admin:clients_anamnesis_add'), obj.pk, _(u'Přidat anamnézu'))
     anamnesis_link.allow_tags = True
     anamnesis_link.short_description = _(u'Anamnéza')
