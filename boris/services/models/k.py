@@ -15,7 +15,7 @@ class GroupCounselling(Service):
         verbose_name_plural = _(u'Skupinová poradenství')
 
     class Options:
-        codenumber = 100
+        codenumber = 15
         limited_to = ('Client', )
 
     @classmethod
@@ -35,7 +35,7 @@ class ContactRoom(Service):
         verbose_name_plural = _(u'Kontaktní místnosti')
 
     class Options:
-        codenumber = 101
+        codenumber = 16
         limited_to = ('Client', )
 
 
@@ -53,7 +53,7 @@ class HygienicService(Service):
         verbose_name_plural = _(u'Hygienické servisy')
 
     class Options:
-        codenumber = 102
+        codenumber = 17
         form_template = 'services/forms/small_cells.html'
         limited_to = ('Client', )
         fieldsets = (
@@ -80,7 +80,7 @@ class InternetUsage(Service):
         verbose_name_plural = _(u'Použití internetu klientem')
 
     class Options:
-        codenumber = 103
+        codenumber = 18
         limited_to = ('Client', )
 
 
@@ -92,7 +92,7 @@ class WorkTherapy(Service):
         verbose_name_plural = _(u'Pracovní terapie (samospráva)')
 
     class Options:
-        codenumber = 104
+        codenumber = 19
         limited_to = ('Client', )
 
 
@@ -104,7 +104,7 @@ class WorkTherapyMeeting(Service):
         verbose_name_plural = _(u'Schůzka pracovní terapie (samosprávy)')
 
     class Options:
-        codenumber = 105
+        codenumber = 20
         limited_to = ('Client', )
 
 
@@ -116,7 +116,7 @@ class CommunityWork(Service):
         verbose_name_plural = _(u'Obecně prospěšné práce')
 
     class Options:
-        codenumber = 106
+        codenumber = 21
         limited_to = ('Client', )
 
 
@@ -128,7 +128,7 @@ class PostUsage(Service):
         verbose_name_plural = _(u'Pošty')
 
     class Options:
-        codenumber = 108
+        codenumber = 22
         limited_to = ('Client', )
 
 
@@ -140,7 +140,7 @@ class SocialServicesAgreement(Service):
         verbose_name_plural = _(u'Uzavření dohod o poskyt. soc. služeb')
 
     class Options:
-        codenumber = 109
+        codenumber = 23
         limited_to = ('Client', )
 
 
@@ -152,7 +152,7 @@ class FoodService(Service):
         verbose_name_plural = _(u'Potravinový servis')
 
     class Options:
-        codenumber = 110
+        codenumber = 24
         limited_to = ('Client', )
 
 
@@ -164,7 +164,7 @@ class PregnancyTest(Service):
         verbose_name_plural = _(u'Těhotenský test')
 
     class Options:
-        codenumber = 111
+        codenumber = 25
         limited_to = ('Client', )
 
 
@@ -176,5 +176,5 @@ class Breathalyzer(Service):
         verbose_name_plural = _(u'Alkotester')
 
     class Options:
-        codenumber = 112
+        codenumber = 26
         limited_to = ('Client', )

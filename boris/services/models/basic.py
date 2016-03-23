@@ -356,5 +356,5 @@ class PhoneUsage(Service):
         verbose_name_plural = _(u'Použití telefonu klientem')
 
     class Options:
-        codenumber = 15
+        codenumber = 14
         limited_to = ('Client',)
