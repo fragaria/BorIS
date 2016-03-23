@@ -7,7 +7,7 @@ Created on 2.10.2011
 from collections import defaultdict
 from itertools import chain
 
-from django.core.exceptions import ValidationError
+from django.conf import settings
 from django.db import models
 from django.db.models import Sum, Max, Avg
 from django.utils.translation import ugettext_lazy as _, ugettext
@@ -272,18 +272,7 @@ class SocialWork(Service):
 
 
 class UtilityWork(Service):
-    REF_TYPES = Choices(
-        ('fp', 'FIELD_PROGRAMME', ugettext(u'1) Terénní programy')),
-        ('cc', 'CONTACT_CENTER', ugettext(u'2) Kontaktní centrum')),
-        ('mf', 'MEDICAL_FACILITY', ugettext(u'3) Léčebná zařízení')),
-        ('ep', 'EXCHANGE_PROGRAMME', ugettext(u'4) Výměnný pogram')),
-        ('t', 'TESTS', ugettext(u'5) Testy')),
-        ('hs', 'HEALTHCARE_SERVICES', ugettext(u'6) Zdravotní služby')),
-        ('ss', 'SOCIAL_SERVICES', ugettext(u'7) Sociální služby')),
-        ('can', 'CANCEL', ugettext(u'8) Dohoduntý kontakt neproběhl / event. péče ukončena klientem bez dohody')),
-        ('sub', 'SUBSTITUTION', ugettext(u'9) Substituce')),
-        ('o', 'OTHER', ugettext(u'10) jiné'))
-    )
+    REF_TYPES = Choices(*[(c[0], c[1], ugettext(c[2])) for c in settings.UTILITY_WORK_CHOICES])
 
     refs = MultiSelectField(max_length=40, choices=REF_TYPES, verbose_name=_(u'Odkazy'))
 

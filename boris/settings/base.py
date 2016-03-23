@@ -170,3 +170,15 @@ RAVEN_CONFIG = {
 }
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
+UTILITY_WORK_CHOICES = [('fp', 'FIELD_PROGRAMME', u'1) Terénní programy'),
+                        ('cc', 'CONTACT_CENTER', u'2) Kontaktní centrum'),
+                        ('mf', 'MEDICAL_FACILITY', u'3) Léčebná zařízení'),
+                        ('ep', 'EXCHANGE_PROGRAMME', u'4) Výměnný program'),
+                        ('t', 'TESTS', u'5) Testy'),
+                        ('hs', 'HEALTHCARE_SERVICES', u'6) Zdravotní služby'),
+                        ('ss', 'SOCIAL_SERVICES', u'7) Sociální služby'),
+                        ('can', 'CANCEL',
+                         u'8) Dohoduntý kontakt neproběhl / event. péče ukončena klientem bez dohody'),
+                        ('sub', 'SUBSTITUTION', u'9) Substituce'),
+                        ('o', 'OTHER', u'10) jiné')]
