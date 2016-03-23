@@ -49,11 +49,11 @@ def _avg_int(model, filtering, field):
     return model.objects.filter(**filtering).aggregate(Avg(field))['%s__avg' % field] or 0
 
 
-
 class HarmReduction(Service):
     in_count = models.PositiveSmallIntegerField(default=0, verbose_name=_(u'IN'))
     out_count = models.PositiveSmallIntegerField(default=0, verbose_name=_(u'OUT'))
     svip_person_count = models.PositiveSmallIntegerField(default=0, verbose_name=_(u'počet osob ve SVIP'))
+    capsule_count = models.PositiveIntegerField(default=0, verbose_name=_(u'počet vydaných kapslí'))
 
     standard = models.BooleanField(default=False,
         verbose_name=_(u'1) standard'),
@@ -83,7 +83,7 @@ class HarmReduction(Service):
         limited_to = ('Client',)
         fieldsets = (
             (None, {'fields': ('in_count', 'out_count', 'svip_person_count',
-                               'encounter'),
+                               'capsule_count', 'encounter'),
                     'classes': ('inline',)}),
             (_(u'Harm Reduction'), {'fields': ('standard', 'alternatives',
                                                'acid', 'condoms', 'stericup',
@@ -113,6 +113,8 @@ class HarmReduction(Service):
                 'svip_person_count')))),),
             ((_(u'Nejvyšší počet osob ve SVIP'), _max_int(cls, filtering,
                 'svip_person_count')),),
+            ((_(u'Počet vydaných kapslí'), _sum_int(cls, filtering,
+                'capsule_count')),),
         )
 
 
