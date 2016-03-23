@@ -5,31 +5,6 @@ from django.utils.functional import curry
 import boris
 
 
-def get_module_config(modules):
-    config = {}
-    for m in modules:
-        config.update(MODULES[m])
-    return config
-
-ACTIVE_MODULES = ['base']
-ACTIVE_MODULE_CONFIG = curry(get_module_config, ACTIVE_MODULES)
-
-# Use in any template i.e. ACTIVE_MODULE_CONFIG.UPLOAD_FILES
-MODULES = {
-    'base': {
-        'UPLOAD_FILES': False,
-        'USE_GROUP_CONTACTS': False,
-        'SKIN': 'light-blue',
-        'HEADER_SUFFIX': None,
-    },
-    'k': {
-        'UPLOAD_FILES': True,
-        'USE_GROUP_CONTACTS': True,
-        'SKIN': 'dark-blue',
-        'HEADER_SUFFIX': u'verze pro K-centra',
-    },
-}
-
 PROJECT_ROOT = abspath(dirname(boris.__file__))
 
 gettext = lambda s: s
@@ -89,7 +64,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'django.core.context_processors.media',
     'django.core.context_processors.static',
-    'boris.utils.context_processors.active_modules'
 )
 
 TEMPLATE_DIRS = (

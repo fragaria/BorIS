@@ -8,6 +8,8 @@ from django.core.management import execute_from_command_line
 
 
 # fix PYTHONPATH and DJANGO_SETTINGS for us
+# django settings module
+DJANGO_SETTINGS_MODULE = '%s.%s' % (split(abspath(dirname(__file__)))[1], 'settings')
 # pythonpath dirs
 PYTHONPATH = [
     join(dirname(__file__), pardir),
@@ -18,16 +20,9 @@ for p in PYTHONPATH:
     if p not in sys.path:
         sys.path.insert(0, p)
 
-# django settings module
-default_settings_module = '%s.%s' % (split(abspath(dirname(__file__)))[1], 'settings')
-try:
-    # django needs this env variable
-    if os.environ['DJANGO_SETTINGS_MODULE'] is None:
-        raise KeyError
-except KeyError, e:
-    os.environ['DJANGO_SETTINGS_MODULE'] = default_settings_module
+# django needs this env variable
+os.environ['DJANGO_SETTINGS_MODULE'] = DJANGO_SETTINGS_MODULE
 
 
 if __name__ == "__main__":
     execute_from_command_line()
-

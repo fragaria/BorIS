@@ -30,12 +30,9 @@ class CustomIndexDashboard(Dashboard):
         ))
 
         models = ('boris.services.models.core.Encounter', 'boris.clients.models.Anamnesis',
-                  'boris.clients.models.PractitionerContact')
+                  'boris.clients.models.PractitionerContact', 'boris.clients.models.GroupContact',
+                  'boris.syringes.models.SyringeCollection',)
 
-        if settings.ACTIVE_MODULE_CONFIG()['USE_GROUP_CONTACTS']:
-            models += ('boris.clients.models.GroupContact', )
-
-        models += ('boris.syringes.models.SyringeCollection',)
         self.children.append(modules.ModelList(
             _(u'Rychlé akce'),
             collapsible=False,
