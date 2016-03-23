@@ -127,19 +127,6 @@ class CommunityWork(Service):
         available_in_modules = ['k', ]
 
 
-class ParentAdvisory(Service):
-    class Meta:
-        app_label = 'services'
-        proxy = True
-        verbose_name = _(u'Poradenství pro rodiče')
-        verbose_name_plural = _(u'Poradenství pro rodiče')
-
-    class Options:
-        codenumber = 107
-        limited_to = ('Client', )
-        available_in_modules = ['k', ]
-
-
 class PostUsage(Service):
     class Meta:
         app_label = 'services'
@@ -165,3 +152,41 @@ class SocialServicesAgreement(Service):
         limited_to = ('Client', )
         available_in_modules = ['k', ]
 
+
+class FoodService(Service):
+    class Meta:
+        app_label = 'services'
+        proxy = True
+        verbose_name = _(u'Potravinový servis')
+        verbose_name_plural = _(u'Potravinový servis')
+
+    class Options:
+        codenumber = 110
+        limited_to = ('Client', )
+        available_in_modules = ['k', ]
+
+
+class PregnancyTest(Service):
+    class Meta:
+        app_label = 'services'
+        proxy = True
+        verbose_name = _(u'Těhotenský test')
+        verbose_name_plural = _(u'Těhotenský test')
+
+    class Options:
+        codenumber = 111
+        limited_to = ('Client', )
+        available_in_modules = ['k', ]
+
+
+class Breathalyzer(Service):
+    class Meta:
+        app_label = 'services'
+        proxy = True
+        verbose_name = _(u'Alkotester')
+        verbose_name_plural = _(u'Alkotester')
+
+    class Options:
+        codenumber = 112
+        limited_to = ('Client', )
+        available_in_modules = ['k', ]
