@@ -409,6 +409,7 @@ class DiseaseTest(models.Model):
         verbose_name=_(u'Testované onemocnění'))
     result = models.SmallIntegerField(choices=DISEASE_TEST_RESULTS,
         default=DISEASE_TEST_RESULTS.UNKNOWN, verbose_name=_(u'Výsledek testu'))
+    date = models.DateField(verbose_name=_(u'Datum'), null=True, blank=True, default=datetime.datetime.now)
 
     def __unicode__(self):
         return unicode(self.disease)
@@ -416,7 +417,6 @@ class DiseaseTest(models.Model):
     class Meta:
         verbose_name = _(u'Vyšetření onemocnění')
         verbose_name_plural = _(u'Vyšetření onemocnění')
-        unique_together = ('disease', 'anamnesis')
 
 
 def get_client_card_filename(instance, filename):
