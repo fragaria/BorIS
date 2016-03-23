@@ -101,7 +101,6 @@ class ServiceOptions(object):
         self.fieldsets = None
         self.codenumber = 0  # Code number to be displayed in the forms.
         self.include_in_reports = True
-        self.available_in_modules = ['base']
 
     def get_description_template_list(self):
         return (self.description_template, 'services/desc/default.html')

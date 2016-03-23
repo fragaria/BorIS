@@ -35,7 +35,7 @@ class ServiceReport(BaseReport):
     def _get_service_stats(self):
         return [
             service.get_stats(self.filtering) for service in service_list(self.person)
-            if service.service.include_in_reports and any([m in settings.ACTIVE_MODULES for m in service.service.available_in_modules])
+            if service.service.include_in_reports
         ]
 
     def get_stats(self):

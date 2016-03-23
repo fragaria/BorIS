@@ -17,7 +17,6 @@ class GroupCounselling(Service):
     class Options:
         codenumber = 100
         limited_to = ('Client', )
-        available_in_modules = ['k', ]
 
     @classmethod
     def get_stats(cls, filtering):
@@ -38,7 +37,6 @@ class ContactRoom(Service):
     class Options:
         codenumber = 101
         limited_to = ('Client', )
-        available_in_modules = ['k', ]
 
 
 class HygienicService(Service):
@@ -58,7 +56,6 @@ class HygienicService(Service):
         codenumber = 102
         form_template = 'services/forms/small_cells.html'
         limited_to = ('Client', )
-        available_in_modules = ['k', ]
         fieldsets = (
             (None, {
                 'fields': ('encounter', 'clothing_wash', 'shower', 'social_clothing'),
@@ -85,7 +82,6 @@ class InternetUsage(Service):
     class Options:
         codenumber = 103
         limited_to = ('Client', )
-        available_in_modules = ['k', ]
 
 
 class WorkTherapy(Service):
@@ -98,7 +94,6 @@ class WorkTherapy(Service):
     class Options:
         codenumber = 104
         limited_to = ('Client', )
-        available_in_modules = ['k', ]
 
 
 class WorkTherapyMeeting(Service):
@@ -111,7 +106,6 @@ class WorkTherapyMeeting(Service):
     class Options:
         codenumber = 105
         limited_to = ('Client', )
-        available_in_modules = ['k', ]
 
 
 class CommunityWork(Service):
@@ -124,7 +118,6 @@ class CommunityWork(Service):
     class Options:
         codenumber = 106
         limited_to = ('Client', )
-        available_in_modules = ['k', ]
 
 
 class PostUsage(Service):
@@ -137,7 +130,6 @@ class PostUsage(Service):
     class Options:
         codenumber = 108
         limited_to = ('Client', )
-        available_in_modules = ['k', ]
 
 
 class SocialServicesAgreement(Service):
@@ -150,7 +142,6 @@ class SocialServicesAgreement(Service):
     class Options:
         codenumber = 109
         limited_to = ('Client', )
-        available_in_modules = ['k', ]
 
 
 class FoodService(Service):
@@ -163,7 +154,6 @@ class FoodService(Service):
     class Options:
         codenumber = 110
         limited_to = ('Client', )
-        available_in_modules = ['k', ]
 
 
 class PregnancyTest(Service):
@@ -176,7 +166,6 @@ class PregnancyTest(Service):
     class Options:
         codenumber = 111
         limited_to = ('Client', )
-        available_in_modules = ['k', ]
 
 
 class Breathalyzer(Service):
@@ -189,4 +178,3 @@ class Breathalyzer(Service):
     class Options:
         codenumber = 112
         limited_to = ('Client', )
-        available_in_modules = ['k', ]
