@@ -23,9 +23,7 @@
     <li class="{% active contacts %}"><a href="{{ contacts }}">{% trans "Kontakty" %}</a></li>
     <li class="{% active anonymous %}"><a href="{{ anonymous }}">{% trans "Anonymní kontakty" %}</a></li>
     <li class="{% active practitioners %}"><a href="{{ practitioners }}">{% trans "Odborné kontakty" %}</a></li>
-    {% if ACTIVE_MODULE_CONFIG.USE_GROUP_CONTACTS %}
-        <li class="{% active group_contact %}"><a href="{{ group_contact }}">{% trans "Skupinové kontakty" %}</a></li>
-    {% endif %}
+    <li class="{% active group_contact %}"><a href="{{ group_contact }}">{% trans "Skupinové kontakty" %}</a></li>
     <li class="{% active syringecollection %}"><a href="{{ syringecollection }}">{% trans "Sběr stříkaček" %}</a></li>
     <li>
         <a href="#">{% trans "Výstupy" %}</a>
