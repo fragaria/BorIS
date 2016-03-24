@@ -344,7 +344,7 @@ class ClientAdmin(AddContactAdmin):
     anamnesis_link.short_description = _(u'Anamnéza')
 
     def button_captions(self, obj):
-        if obj.pk:
+        if obj and obj.pk:
             # Avoid misunderstandings when deleting inline encounters.
             return {
                 'BO_SAVE_CAPTION': _(u'Uložit změny'),
