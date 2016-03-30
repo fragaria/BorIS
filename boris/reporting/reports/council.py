@@ -251,8 +251,6 @@ class GovCouncilReport(BaseReport):
 
         group_contacts = self._get_group_contacts()
         group_clients = group_contacts.values_list('clients', flat=True).distinct()
-        group_clients_count = group_clients.count()
-        group_contact_count = group_contacts.aggregate(Count('clients'))['clients__count']
 
         return [ # (<service name>, <persons count>, <services count>)
             (_(u'Osobní kontakt s klienty'), directly_encountered_clients_count,
@@ -268,7 +266,7 @@ class GovCouncilReport(BaseReport):
             (_(u'Individuální poradenství'), clients(IndividualCounseling),
                 services(IndividualCounseling)),
             (_(u'Individuální psychoterapie'), 0, 0),
-            (_(u'Skupinové kontakty'), group_clients_count, group_contact_count),
+            (_(u'Skupinové poradenství'), group_clients.count(), group_contacts.count()),
             (_(u'Skupinová psychoterapie'), 0, 0),
             (_(u'Krizová intervence'), clients(CrisisIntervention),
                 services(CrisisIntervention)),
