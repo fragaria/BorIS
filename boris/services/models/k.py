@@ -7,6 +7,10 @@ from boris.services.models.basic import _boolean_stats
 from .core import Service
 
 
+def _group_service_title(instance, service):
+    return service._meta.verbose_name + ': ' + instance.name
+
+
 class GroupCounselling(Service):
     class Meta:
         app_label = 'services'

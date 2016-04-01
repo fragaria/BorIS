@@ -84,6 +84,23 @@ class Encounter(models.Model, AdminLinkMixin):
     def __unicode__(self):
         return unicode(self.person)
 
+    def save(self, *args, **kwargs):
+        if self.group_contact:
+            self.where = self.group_contact.town
+            self.performed_on = self.group_contact.date
+            res = super(Encounter, self).save(*args, **kwargs)
+            existing = self.performed_by.values_list('id', flat=True)
+            to_keep = self.group_contact.users.values_list('id', flat=True)
+            to_delete = set(existing) - set(to_keep)
+            to_create = set(to_keep) - set(existing)
+            for pk in to_create:
+                self.performed_by.add(pk)
+            for pk in to_delete:
+                self.performed_by.remove(pk)
+            return res
+        else:
+            return super(Encounter, self).save(*args, **kwargs)
+
 
 class ServiceOptions(object):
     """
@@ -247,6 +264,13 @@ class Service(TimeStampedModel):
         # proxy models content types, use get_by_natural key as a workaround
         return ContentType.objects.get_by_natural_key(cls._meta.app_label,
                                                       cls._meta.object_name.lower())
+
+    def save(self, *args, **kwargs):
+        if self.encounter.group_contact:
+            from boris.services.models.k import _group_service_title
+            from boris.services.models import GroupCounselling
+            self.title = _group_service_title(self.encounter.group_contact, GroupCounselling)
+        return super(Service, self).save(*args, **kwargs)
 
     def clean(self):
         super(Service, self).clean()

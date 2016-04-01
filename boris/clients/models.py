@@ -17,6 +17,7 @@ from boris.classification import SEXES, NATIONALITIES, \
     DISEASES, DISEASE_TEST_RESULTS, EDUCATION_LEVELS, ANONYMOUS_TYPES, \
     RISKY_BEHAVIOR_KIND, RISKY_BEHAVIOR_PERIODICITY, DRUGS
 from boris.services.models import GroupCounselling, Encounter
+from boris.services.models.k import _group_service_title
 
 
 class IndexedStringEnum(models.Model, AdminLinkMixin):
@@ -166,31 +167,35 @@ class GroupContact(models.Model, AdminLinkMixin):
         return u'Skupinovy kontakt %s, %s, %s' % (self.name, town, self.date)
 
 
-def __group_service_title(instance, service):
-    return service._meta.verbose_name.__unicode__() + ': ' + instance.name
-
-
 def __get_or_create_encounter(client, instance, services):
-    e, created = Encounter.objects.get_or_create(person=client, performed_on=instance.date, where=instance.town,
-                                                 is_by_phone=False, group_contact=instance)
+    e, created = Encounter.objects.get_or_create(person=client, is_by_phone=False, group_contact=instance,
+                                                 defaults={'performed_on': instance.date, 'where': instance.town})
     if created:
-        for u in instance.users.all():
-            e.performed_by.add(u)
-        e.save()
         for service in services:
             ct = service.service.model.real_content_type()
-            service.objects.create(title=__group_service_title(instance, service), encounter=e, content_type=ct)
+            service.objects.create(title=_group_service_title(instance, service), encounter=e, content_type=ct)
     return e, created
 
 
 def __delete_group_encounters(encs, group_contact):
     for encounter in encs:
         services = encounter.services.all()
-        group_services = services.filter(title=__group_service_title(group_contact, GroupCounselling))
+        group_services = __filter_group_services(group_contact, services)
         if services.count() == 1 and group_services.exists():
             encounter.delete()
         else:
             group_services.delete()
+
+
+def __filter_group_services(group_contact, services):
+    return services.filter(content_type=GroupCounselling.real_content_type())
+
+
+def __correct_contact(encs, instance):
+    for encounter in encs:
+        for service in __filter_group_services(instance, encounter.services):
+            service.save()
+        encounter.save()
 
 
 @receiver(signals.m2m_changed, sender=GroupContact.clients.through)
@@ -208,6 +213,7 @@ def create_group_encounters(sender, instance, action, *args, **kwargs):
 def delete_excess_group_encounters(sender, instance, *args, **kwargs):
     # this signal is used for deleting encounters for removed clients
     all_encs = Encounter.objects.filter(group_contact=instance)
+    __correct_contact(all_encs, instance)
     to_delete = set(all_encs.values_list('person', flat=True)) - set(instance.clients.values_list('pk', flat=True))
     for client_pk in to_delete:
         encs = all_encs.filter(person__pk=client_pk)
