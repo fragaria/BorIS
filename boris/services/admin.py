@@ -67,9 +67,6 @@ class EncounterAdmin(BorisBaseAdmin):
         'fk': ['where', 'person']
     }
 
-    def __init__(self, *args, **kwargs):
-        super(EncounterAdmin, self).__init__(*args, **kwargs)
-
     def person_link(self, obj):
         """Redefined "person" pointing to the person's page."""
         person = obj.person.cast()

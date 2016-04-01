@@ -220,8 +220,7 @@ class PractitionerContactAdmin(BorisBaseAdmin):
         return bool(obj.pk)
 
 
-# this class assumes being readonly. should this change, the GroupContact's postsave signal needs to be taken care of
-class GroupContactAdmin(ReadOnlyAdmin):
+class GroupContactAdmin(BorisBaseAdmin):
     list_display = ('date', 'town', 'name', 'note', 'user_list', 'client_count')
     list_filter = ('date', 'town', 'users')
     date_hierarchy = 'date'

@@ -9,6 +9,7 @@ import operator
 
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.db.models import SET_NULL
 from django.utils.encoding import force_unicode
 from django.utils.functional import curry
 from django.utils.translation import ugettext_lazy as _
@@ -64,6 +65,9 @@ class Encounter(models.Model, AdminLinkMixin):
     where = models.ForeignKey('clients.Town', verbose_name=_(u'Kde'))
     is_by_phone = models.BooleanField(default=False, verbose_name=_(
         u'Telefonický kontakt'))
+    group_contact = models.ForeignKey('clients.GroupContact',
+        verbose_name=_(u'Přidružená skupina'), null=True, blank=True,
+                                      on_delete=SET_NULL)
 
     objects = EncounterManager()
 

@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 import datetime
-
-from django.db import models
 from django.contrib.auth.models import User
-from django.db.models.signals import m2m_changed
+from django.contrib.contenttypes.models import ContentType
+from django.db import models
+from django.db.models import signals
 from django.dispatch import receiver
 from django.utils.dateformat import format
 from django.utils.formats import date_format, get_format
 from django.utils.translation import ugettext_lazy as _
-from model_utils.models import TimeStampedModel
 from fragapy.common.models.adminlink import AdminLinkMixin
-from django.contrib.contenttypes.models import ContentType
+from model_utils.models import TimeStampedModel
 
 from boris.classification import SEXES, NATIONALITIES, \
     ETHNIC_ORIGINS, LIVING_CONDITIONS, ACCOMODATION_TYPES, EMPLOYMENT_TYPES, \
@@ -167,21 +166,58 @@ class GroupContact(models.Model, AdminLinkMixin):
         return u'Skupinovy kontakt %s, %s, %s' % (self.name, town, self.date)
 
 
-@receiver(m2m_changed, sender=GroupContact.clients.through)
-def save_group_contact(sender, instance, action, *args, **kwargs):
-    # @attention: this is done only once for each group contact (when saving for the first time).
-    # the model is readonly, so no further saves can occur
-    if action == 'post_add':
-        # group contact serves as a way to create many group counselling encounters at a time
-        for client in instance.clients.all():
-            e, created = Encounter.objects.get_or_create(person=client, performed_on=instance.date, where=instance.town,
-                                                         is_by_phone=False)
-            if created:
-                for u in instance.users.all():
-                    e.performed_by.add(u)
-                e.save()
-                ct = ContentType.objects.get_for_model(instance)
-                GroupCounselling.objects.create(title=instance.name, encounter=e, content_type=ct)
+def __group_service_title(instance, service):
+    return service._meta.verbose_name.__unicode__() + ': ' + instance.name
+
+
+def __get_or_create_encounter(client, instance, services):
+    e, created = Encounter.objects.get_or_create(person=client, performed_on=instance.date, where=instance.town,
+                                                 is_by_phone=False, group_contact=instance)
+    if created:
+        for u in instance.users.all():
+            e.performed_by.add(u)
+        e.save()
+        for service in services:
+            ct = service.service.model.real_content_type()
+            service.objects.create(title=__group_service_title(instance, service), encounter=e, content_type=ct)
+    return e, created
+
+
+def __delete_group_encounters(encs, group_contact):
+    for encounter in encs:
+        services = encounter.services.all()
+        group_services = services.filter(title=__group_service_title(group_contact, GroupCounselling))
+        if services.count() == 1 and group_services.exists():
+            encounter.delete()
+        else:
+            group_services.delete()
+
+
+@receiver(signals.m2m_changed, sender=GroupContact.clients.through)
+def create_group_encounters(sender, instance, action, *args, **kwargs):
+    # group contact serves as a way to create many group counselling encounters at a time
+    # this signal is used for creating encounters
+    for client in instance.clients.all():
+        __get_or_create_encounter(client, instance, [GroupCounselling])
+    if instance.clients.exists():
+        # this is needed because django sends signals pretty erratically :(
+        delete_excess_group_encounters(sender, instance)
+
+
+@receiver(signals.post_save, sender=GroupContact)
+def delete_excess_group_encounters(sender, instance, *args, **kwargs):
+    # this signal is used for deleting encounters for removed clients
+    all_encs = Encounter.objects.filter(group_contact=instance)
+    to_delete = set(all_encs.values_list('person', flat=True)) - set(instance.clients.values_list('pk', flat=True))
+    for client_pk in to_delete:
+        encs = all_encs.filter(person__pk=client_pk)
+        __delete_group_encounters(encs, instance)
+
+
+@receiver(signals.pre_delete, sender=GroupContact)
+def save_group_contact3(sender, instance, using, signal, *args, **kwargs):
+    encs = Encounter.objects.filter(group_contact=instance)
+    __delete_group_encounters(encs, instance)
 
 
 class Anonymous(Person):

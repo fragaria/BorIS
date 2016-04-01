@@ -18,14 +18,6 @@ class GroupCounselling(Service):
         codenumber = 15
         limited_to = ('Client', )
 
-    @classmethod
-    def get_stats(cls, filtering):
-        return super(GroupCounselling, cls).get_stats(filtering)
-
-    @classmethod
-    def _get_stats(cls, filtering):
-        return super(GroupCounselling, cls)._get_stats(filtering)
-
 
 class ContactRoom(Service):
     class Meta:
