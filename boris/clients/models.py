@@ -62,6 +62,17 @@ class Town(IndexedStringEnum):
         return u'%s (%s)' % (self.title, unicode(self.district.title))
 
 
+class GroupContactType(IndexedStringEnum):
+    key = models.SmallIntegerField(verbose_name=_(u'Kód'))
+
+    class Meta:
+        verbose_name = _(u'Typ skupiny')
+        verbose_name_plural = _(u'Typy skupin')
+
+    def __unicode__(self):
+        return u'%s) %s' % (self.key, unicode(self.title))
+
+
 class Person(TimeStampedModel, AdminLinkMixin):
     # title enables us to easily print subclass __unicode__ values from Person
     title = models.CharField(max_length=255, editable=False,
@@ -157,6 +168,8 @@ class GroupContact(models.Model, AdminLinkMixin):
     town = models.ForeignKey('clients.Town', related_name='+', verbose_name=_(u'Město'))
     date = models.DateField(verbose_name=_(u'Kdy'))
     note = models.TextField(verbose_name=_(u'Poznámka'), blank=True)
+    type = models.ForeignKey('clients.GroupContactType', related_name='+', verbose_name=_(u'Typ'),
+                             default=1)
 
     class Meta:
         verbose_name = u'Skupinový kontakt'

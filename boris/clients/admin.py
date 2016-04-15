@@ -14,9 +14,8 @@ from django.utils.html import escape, escapejs
 
 from boris.clients.models import Client, Town, Anamnesis, DrugUsage, \
     RiskyManners, Region, District, DiseaseTest, Anonymous, \
-    PractitionerContact, Person, GroupContact, ClientCard
+    PractitionerContact, Person, GroupContact, ClientCard, GroupContactType
 from boris.clients.forms import ReadOnlyWidget
-from boris.clients.utils import ReadOnlyAdmin
 from boris.clients.views import add_note, delete_note
 from boris.services.admin import EncounterInline
 from boris.utils.admin import BorisBaseAdmin, textual
@@ -221,8 +220,8 @@ class PractitionerContactAdmin(BorisBaseAdmin):
 
 
 class GroupContactAdmin(BorisBaseAdmin):
-    list_display = ('date', 'town', 'name', 'note', 'user_list', 'client_count')
-    list_filter = ('date', 'town', 'users')
+    list_display = ('date', 'town', 'name', 'type', 'note', 'user_list', 'client_count')
+    list_filter = ('date', 'town', 'type', 'users')
     date_hierarchy = 'date'
     search_fields = ('name', 'note')
     raw_id_fields = ('town',)
@@ -230,7 +229,7 @@ class GroupContactAdmin(BorisBaseAdmin):
         'fk': ['town', ]
     }
     ordering = ('-date', 'name')
-    fields = ('name', 'town', 'date', 'note', 'users', 'clients')
+    fields = ('name', 'type', 'town', 'date', 'note', 'users', 'clients')
     filter_horizontal = ('clients', )
 
     @textual(_(u'Kdo'))
@@ -240,6 +239,11 @@ class GroupContactAdmin(BorisBaseAdmin):
     @textual(_(u'Počet klientů'))
     def client_count(self, obj):
         return obj.clients.count()
+
+
+class GroupContactTypeAdmin(EnumAdmin):
+    list_display = ('key', 'title')
+    ordering = ('key',)
 
 
 class ClientCardInline(admin.StackedInline):
@@ -355,6 +359,7 @@ class ClientAdmin(AddContactAdmin):
 admin.site.register(Region, EnumAdmin)
 admin.site.register(District, EnumAdmin)
 admin.site.register(Town, EnumAdmin)
+admin.site.register(GroupContactType, GroupContactTypeAdmin)
 admin.site.register(Person, PersonAdmin)
 admin.site.register(PractitionerContact, PractitionerContactAdmin)
 admin.site.register(GroupContact, GroupContactAdmin)

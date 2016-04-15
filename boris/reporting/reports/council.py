@@ -2,7 +2,7 @@
 """Report for the Czech Government Council for Drug Policy Coordination."""
 from datetime import datetime, date, time
 
-from django.db.models import Q, Sum, Count
+from django.db.models import Q, Sum
 from django.template import loader
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
@@ -14,7 +14,7 @@ from boris.reporting.core import BaseReport
 from boris.services.models import (Encounter, Address, ContactWork,
                                    IncomeFormFillup, IndividualCounseling, CrisisIntervention, SocialWork,
                                    HarmReduction, BasicMedicalTreatment, InformationService,
-                                   IncomeExamination, DiseaseTest, GroupCounselling)
+                                   IncomeExamination, DiseaseTest)
 from boris.syringes.models import SyringeCollection
 
 

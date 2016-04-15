@@ -11,6 +11,7 @@
     {% url "admin:clients_town_changelist" as towns %}
     {% url "admin:clients_district_changelist" as districts %}
     {% url "admin:clients_region_changelist" as regions %}
+    {% url "admin:clients_groupcontacttype_changelist" as groupcontacttype %}
     {% url "reporting_towns" as reporting_towns %}
     {% url "reporting_services" as reporting_services %}
     {% url "reporting_clients" as reporting_clients %}
@@ -43,6 +44,7 @@
             <li><a href="{{ towns }}">{% trans "Města" %}</a></li>
             <li><a href="{{ districts }}">{% trans "Okresy" %}</a></li>
             <li><a href="{{ regions }}">{% trans "Kraje" %}</a></li>
+            <li><a href="{{ groupcontacttype }}">{% trans "Typy skupin" %}</a></li>
         </ul>
     </li>
     {% endif %}

@@ -156,4 +156,4 @@ UTILITY_WORK_CHOICES = [('fp', 'FIELD_PROGRAMME', u'1) Terénní programy'),
                          u'8) Dohoduntý kontakt neproběhl / event. péče ukončena klientem bez dohody'),
                         ('sub', 'SUBSTITUTION', u'9) Substituce'),
                         ('amb', 'AMBULANT_TREATMENT', u'10) Ambulantní léčba'),
-                        ('o', 'OTHER', u'10) jiné')]
+                        ('o', 'OTHER', u'11) jiné')]

@@ -1,14 +1,25 @@
 # -*- coding: utf-8 -*-
 from itertools import chain
-from django.utils.translation import ugettext_lazy as _
-from django.db import models
-from boris.services.models.basic import _boolean_stats
 
+from django.db import models
+from django.utils.translation import ugettext_lazy as _
+
+from boris.services.models.basic import _boolean_stats
 from .core import Service
 
 
 def _group_service_title(instance, service):
-    return service._meta.verbose_name + ': ' + instance.name
+    return service._meta.verbose_name + ' (%s): %s' % (instance.type.title, instance.name)
+
+
+def _group_counselling_stats(model, filtering, _type):
+    """Get stats for choice fields for any service class."""
+    stats = []
+    filtering_bln = {'encounter__group_contact__type__key': _type.key}
+    filtering_bln.update(filtering)
+    cnt = model.objects.filter(**filtering_bln).values_list('encounter__group_contact__pk', flat=True).distinct().count()
+    stats.append((_type, cnt))
+    return stats
 
 
 class GroupCounselling(Service):
@@ -21,6 +32,18 @@ class GroupCounselling(Service):
     class Options:
         codenumber = 15
         limited_to = ('Client', )
+
+    @classmethod
+    def _get_stats(cls, filtering):
+        from boris.clients.models import GroupContactType
+        types = GroupContactType.objects.all()
+        value_stats = []
+        for _type in types:
+            value_stats += _group_counselling_stats(cls, filtering, _type)
+        return chain(  # The total count is computed differently than usually.
+            ((cls.service.title, sum(stat[1] for stat in value_stats)),),
+            value_stats,
+        )
 
 
 class ContactRoom(Service):
