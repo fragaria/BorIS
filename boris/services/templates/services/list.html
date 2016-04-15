@@ -5,14 +5,18 @@
 <div class="grp-tr">
     <div class="grp-td"><strong>{{ s.title }}</strong></div>
     <div class="grp-td">
-        {% if casted.is_editable %}
+        {% if casted.is_editable and encounter.is_editable %}
             <a class="cbutton" onclick="ui.loadForm({{ s.pk }}, '{{ casted.class_name }}'); return false;">{% trans "Zobrazit" %}</a>
             <a class="cbutton high1" onclick="ui.loadForm({{ s.pk }}, '{{ casted.class_name }}'); return false;">{% trans "Upravit" %}</a>
         {% else %}
-            <span class="cbutton placeholder">Zobrazit</span>
-            <span class="cbutton placeholder">Upravit</span>
+            <span class="cbutton placeholder">{% trans "Zobrazit" %}</span>
+            <span class="cbutton placeholder">{% trans "Upravit" %}</span>
         {% endif %}
-        <a class="cbutton  warn" onclick="ui.dropService({{ s.pk }}); return false;">{% trans "Smazat" %}</a>
+        {% if encounter.is_editable %}
+            <a class="cbutton  warn" onclick="ui.dropService({{ s.pk }}); return false;">{% trans "Smazat" %}</a>
+        {% else %}
+            <span class="cbutton placeholder">{% trans "Smazat" %}</span>
+        {% endif %}
     </div>
 </div>
 {% endwith %}

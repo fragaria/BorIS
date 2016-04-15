@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django import forms
 from django.contrib import admin
+from django.contrib.admin.utils import flatten_fieldsets
 from django.http import HttpResponseRedirect
 from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext_lazy as _
@@ -148,13 +149,40 @@ class EncounterAdmin(BorisBaseAdmin):
             return db_field.formfield(**kwargs)
         return super(EncounterAdmin, self).formfield_for_dbfield(db_field, **kwargs)
 
+    def get_readonly_fields(self, request, obj=None):
+        if obj is not None and not obj.is_editable():
+            if self.declared_fieldsets:
+                return flatten_fieldsets(self.declared_fieldsets)
+            else:
+                return list(set(
+                    [field.name for field in self.opts.local_fields] +
+                    [field.name for field in self.opts.local_many_to_many]
+                ))
+        return super(EncounterAdmin, self).get_readonly_fields(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        if obj is not None and not obj.is_editable():
+            return False
+        return super(EncounterAdmin, self).has_change_permission(request, obj=obj)
+
+    def change_button(self, obj):
+        if obj is not None and not obj.is_editable():
+            return u'<a href="%s" class="changelink cbutton">%s</a>' % (
+                obj.get_admin_url(), _('zobrazit'))
+        return u'<a href="%s" class="changelink cbutton">%s</a>' % (
+            obj.get_admin_url(), _('upravit'))
+
     def show_save_and_add_another(self, obj):
+        if obj is not None and not obj.is_editable():
+            return False
         return bool(obj and obj.pk)
 
     def show_save(self, obj):
         return False
 
     def show_save_and_continue(self, obj):
+        if obj is not None and not obj.is_editable():
+            return False
         return True
 
     def button_captions(self, obj):

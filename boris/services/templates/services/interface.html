@@ -1,25 +1,27 @@
 {% load i18n services admin_static %}
 
 <div id="service-interface">
-<fieldset class="grp-module">
-    <h2>{% trans "Nový výkon" %}</h2>
+    {% if encounter.is_editable %}
+        <fieldset class="grp-module">
+            <h2>{% trans "Nový výkon" %}</h2>
 
-    <div class="grp-row cells-2 grp-cells">
-        <div class="grp-cell">
-            <div class="grp-column span-4"><label>{% trans "Zvolte druh výkonu:" %}</label></div>
-            <div class="grp-column span-flexible">
-                <select id="service-selector">
-                    {% for s in service_list %}
-                        {% render_service_option s encounter %}
-                    {% endfor %}
-                </select>
-                <a class="cbutton" onclick="ui.loadForm(); return false;" style="margin-left: 20px;">{% trans "OK" %}</a>
-                <span id="databasemessage" style="margin-left: 20px; font-weight: bold;"></span>
+            <div class="grp-row cells-2 grp-cells">
+                <div class="grp-cell">
+                    <div class="grp-column span-4"><label>{% trans "Zvolte druh výkonu:" %}</label></div>
+                    <div class="grp-column span-flexible">
+                        <select id="service-selector">
+                            {% for s in service_list %}
+                                {% render_service_option s encounter %}
+                            {% endfor %}
+                        </select>
+                        <a class="cbutton" onclick="ui.loadForm(); return false;" style="margin-left: 20px;">{% trans "OK" %}</a>
+                        <span id="databasemessage" style="margin-left: 20px; font-weight: bold;"></span>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-    <div id="service-form-wrap"></div>
-</fieldset>
+            <div id="service-form-wrap"></div>
+        </fieldset>
+    {% endif %}
 
 
 <div class="grp-group grp-tabular">
@@ -66,7 +68,7 @@
 
         this.performedServiceCount = function () {
             return $('#done-services .grp-tr').length;
-        }
+        };
 
         this.getHandlerUrl = function (serviceId, serviceClass) {
             if (! serviceClass)

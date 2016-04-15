@@ -84,22 +84,8 @@ class Encounter(models.Model, AdminLinkMixin):
     def __unicode__(self):
         return unicode(self.person)
 
-    def save(self, *args, **kwargs):
-        if self.group_contact:
-            self.where = self.group_contact.town
-            self.performed_on = self.group_contact.date
-            res = super(Encounter, self).save(*args, **kwargs)
-            existing = self.performed_by.values_list('id', flat=True)
-            to_keep = self.group_contact.users.values_list('id', flat=True)
-            to_delete = set(existing) - set(to_keep)
-            to_create = set(to_keep) - set(existing)
-            for pk in to_create:
-                self.performed_by.add(pk)
-            for pk in to_delete:
-                self.performed_by.remove(pk)
-            return res
-        else:
-            return super(Encounter, self).save(*args, **kwargs)
+    def is_editable(self):
+        return self.group_contact is None
 
 
 class ServiceOptions(object):

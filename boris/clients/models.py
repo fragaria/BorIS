@@ -167,13 +167,30 @@ class GroupContact(models.Model, AdminLinkMixin):
         return u'Skupinovy kontakt %s, %s, %s' % (self.name, town, self.date)
 
 
+def __sync_many(e, instance, src_attr, target_attr):
+    existing = getattr(e, src_attr).values_list('id', flat=True)
+    to_keep = getattr(instance, target_attr).values_list('id', flat=True)
+    to_delete = set(existing) - set(to_keep)
+    to_create = set(to_keep) - set(existing)
+    for pk in to_create:
+        getattr(e, src_attr).add(pk)
+    for pk in to_delete:
+        getattr(e, src_attr).remove(pk)
+
+
 def __get_or_create_encounter(client, instance, services):
     e, created = Encounter.objects.get_or_create(person=client, is_by_phone=False, group_contact=instance,
                                                  defaults={'performed_on': instance.date, 'where': instance.town})
-    if created:
-        for service in services:
-            ct = service.service.model.real_content_type()
-            service.objects.create(title=_group_service_title(instance, service), encounter=e, content_type=ct)
+    __sync_many(e, instance, 'performed_by', 'users')
+    e.performed_on = instance.date
+    e.where = instance.town
+    e.save()
+
+    for service in services:
+        ct = service.service.model.real_content_type()
+        s, _ = service.objects.get_or_create(encounter=e, content_type=ct)
+        s.title = _group_service_title(instance, service)
+        s.save()
     return e, created
 
 
@@ -213,7 +230,6 @@ def create_group_encounters(sender, instance, action, *args, **kwargs):
 def delete_excess_group_encounters(sender, instance, *args, **kwargs):
     # this signal is used for deleting encounters for removed clients
     all_encs = Encounter.objects.filter(group_contact=instance)
-    __correct_contact(all_encs, instance)
     to_delete = set(all_encs.values_list('person', flat=True)) - set(instance.clients.values_list('pk', flat=True))
     for client_pk in to_delete:
         encs = all_encs.filter(person__pk=client_pk)
