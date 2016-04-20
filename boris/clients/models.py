@@ -163,8 +163,6 @@ class GroupContact(models.Model, AdminLinkMixin):
     '''
     users = models.ManyToManyField('auth.User', verbose_name=_('Kdo'))
     clients = models.ManyToManyField('clients.Client', verbose_name=_('Klienti'))
-    name = models.CharField(max_length=255,
-                            verbose_name=_(u'Název skupiny'))
     town = models.ForeignKey('clients.Town', related_name='+', verbose_name=_(u'Město'))
     date = models.DateField(verbose_name=_(u'Kdy'))
     note = models.TextField(verbose_name=_(u'Poznámka'), blank=True)
@@ -177,7 +175,7 @@ class GroupContact(models.Model, AdminLinkMixin):
 
     def __unicode__(self):
         town = self.town.title if hasattr(self, 'town') and self.town else '---'
-        return u'Skupinovy kontakt %s, %s, %s' % (self.name, town, self.date)
+        return u'Skupinový kontakt %s, %s, %s' % (self.type.title, town, self.date)
 
 
 def __sync_many(e, instance, src_attr, target_attr):

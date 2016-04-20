@@ -9,7 +9,7 @@ from .core import Service
 
 
 def _group_service_title(instance, service):
-    return service._meta.verbose_name + ' (%s): %s' % (instance.type.title, instance.name)
+    return service._meta.verbose_name + ' (%s)' % instance.type.title
 
 
 def _group_counselling_stats(model, filtering, _type):

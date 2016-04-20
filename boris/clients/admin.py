@@ -220,16 +220,16 @@ class PractitionerContactAdmin(BorisBaseAdmin):
 
 
 class GroupContactAdmin(BorisBaseAdmin):
-    list_display = ('date', 'town', 'name', 'type', 'note', 'user_list', 'client_count')
+    list_display = ('date', 'town', 'type', 'note', 'user_list', 'client_count')
     list_filter = ('date', 'town', 'type', 'users')
     date_hierarchy = 'date'
-    search_fields = ('name', 'note')
+    search_fields = ('note',)
     raw_id_fields = ('town',)
     autocomplete_lookup_fields = {
         'fk': ['town', ]
     }
-    ordering = ('-date', 'name')
-    fields = ('name', 'type', 'town', 'date', 'note', 'users', 'clients')
+    ordering = ('-date', 'type__title')
+    fields = ('type', 'town', 'date', 'note', 'users', 'clients')
     filter_horizontal = ('clients', )
 
     @textual(_(u'Kdo'))
