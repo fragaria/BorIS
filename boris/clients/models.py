@@ -499,8 +499,8 @@ class ClientCard(models.Model):
     file = models.FileField(upload_to=get_client_card_filename)
 
     class Meta:
-        verbose_name = u'Klientská karta'
-        verbose_name_plural = u'Klientská karta'  # makes more sense from user's perspective
+        verbose_name = u'Přílohy'  # makes more sense from user's perspective
+        verbose_name_plural = u'Přílohy'
 
     def save(self, *args, **kwargs):
         try:
