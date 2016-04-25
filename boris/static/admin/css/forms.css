@@ -362,6 +362,3 @@ body.popup .submit-row {
 .empty-form {
     display: none;
 }
-textarea, select {
-    overflow: scroll;
-}

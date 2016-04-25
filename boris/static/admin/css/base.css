@@ -838,3 +838,6 @@ table#change-history tbody th {
     color: #666;
 }
 
+.grp-row.textarea, .grp-row.select {
+    overflow: scroll;
+}
