@@ -197,6 +197,6 @@ header#grp-header #grp-navigation ul#grp-user-tools>li a#remove_id_globalsearch_
 .ui-tabs-panel.ui-widget-content { border: 0 !important; }
 .ui-tabs-panel fieldset.grp-module { border-radius: 0 5px 5px 5px; }
 
-.grp-row.textarea, .grp-row.select {
+.selector select[multiple=multiple] {
     overflow: scroll;
 }
