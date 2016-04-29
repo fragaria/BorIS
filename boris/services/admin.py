@@ -163,7 +163,7 @@ class EncounterAdmin(BorisBaseAdmin):
     def has_delete_permission(self, request, obj=None):
         if obj is not None and not obj.is_editable():
             return False
-        return super(EncounterAdmin, self).has_change_permission(request, obj=obj)
+        return super(EncounterAdmin, self).has_delete_permission(request, obj=obj)
 
     def change_button(self, obj):
         if obj is not None and not obj.is_editable():
