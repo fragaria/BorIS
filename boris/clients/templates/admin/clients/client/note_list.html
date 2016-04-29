@@ -1,9 +1,9 @@
-{% load i18n admin_static %}
+{% load i18n admin_static sstatic %}
 
 {% if not add %}
 
-<script type="text/javascript" src="{% static 'js/jquery.tmpl.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/jquery.autocsrf.js' %}"></script>
+<script type="text/javascript" src="{% sstatic 'js/jquery.tmpl.min.js' %}"></script>
+<script type="text/javascript" src="{% sstatic 'js/jquery.autocsrf.js' %}"></script>
 <script type="text/javascript">
 function add_new_note() {
 

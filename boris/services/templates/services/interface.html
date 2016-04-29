@@ -1,4 +1,4 @@
-{% load i18n services admin_static %}
+{% load i18n services admin_static sstatic %}
 
 <div id="service-interface">
     {% if encounter.is_editable %}
@@ -46,8 +46,8 @@
     var ui = null;
 </script>
 
-<link rel="stylesheet" href="{% static 'css/tipsy.css' %}" />
-<script src="{% static 'js/jquery.tipsy.js' %}" type="text/javascript"></script>
+<link rel="stylesheet" href="{% sstatic 'css/tipsy.css' %}" />
+<script src="{% sstatic 'js/jquery.tipsy.js' %}" type="text/javascript"></script>
 
 <script type="text/javascript">
     function ServiceUI(encounterId) {
