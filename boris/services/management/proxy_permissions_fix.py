@@ -21,7 +21,7 @@ def delete_proxy_permissions(sender, **kwargs):
 
     if sender.name == 'boris.services':
         permissions = Permission.objects.filter(content_type__app_label='services')\
-            .exclude(codename__endswith='_service')
+            .exclude(codename__endswith='_service').exclude(codename__endswith='_groupcontact').exclude(codename__endswith='_encounter')
 
         print "Deleting %s permissions..." % permissions.count()
         permissions.delete()
