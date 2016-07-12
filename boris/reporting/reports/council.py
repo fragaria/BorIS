@@ -14,7 +14,8 @@ from boris.reporting.core import BaseReport
 from boris.services.models import (Encounter, Address, ContactWork,
                                    IncomeFormFillup, IndividualCounseling, CrisisIntervention, SocialWork,
                                    HarmReduction, BasicMedicalTreatment, InformationService,
-                                   IncomeExamination, DiseaseTest)
+                                   IncomeExamination, DiseaseTest, HygienicService, FoodService,
+                                   WorkTherapy, PostUsage, PregnancyTest)
 from boris.syringes.models import SyringeCollection
 
 
@@ -272,7 +273,7 @@ class GovCouncilReport(BaseReport):
                 services(CrisisIntervention)),
             (_(u'Rodinná terapie'), 0, 0),
             (_(u'Skupiny pro rodiče a osoby blízké klientovi'), 0, 0),
-            (_(u'Pracovní terapie'), 0, 0),
+            (_(u'Pracovní terapie'), clients(WorkTherapy), services(WorkTherapy)),
             (_(u'Sociální práce (odkazy, asistence, soc.-právní pomoc, case management)'),
                 clients(SocialWork), services(SocialWork)),
             (_(u'Práce s rodinou'), 0, 0),
@@ -287,7 +288,7 @@ class GovCouncilReport(BaseReport):
                 clients(BasicMedicalTreatment), services(BasicMedicalTreatment)),
             (_(u'Telefonické, písemné a internetové poradenství'), 'xxx',
                 self._get_phone_advice_count()),
-            (_(u'Korespondenční práce'), 0, 0),
+            (_(u'Korespondenční práce'), clients(PostUsage), services(PostUsage)),
             (_(u'Informační servis'), clients(InformationService),
                 services(InformationService) - anon(InformationService)),
             (_(u'Edukativní program/beseda'), 0, 0),
@@ -298,8 +299,8 @@ class GovCouncilReport(BaseReport):
             (_(u'– přijaté injekční jehly'), 'xxx',
                 harm_reductions.aggregate(Sum('in_count'))['in_count__sum']),
             (_(u'– nalezené injekční jehly'), 'xxx', self._get_syringes_count()),
-            (_(u'Hygienický servis'), 0, 0),
-            (_(u'Potravinový servis'), 0, 0),
+            (_(u'Hygienický servis'), clients(HygienicService), services(HygienicService)),
+            (_(u'Potravinový servis'), clients(FoodService), services(FoodService)),
             (_(u'Testování na inf. nemoci'), clients(DiseaseTest),
                 services(DiseaseTest)),
             (_(u'– z toho na HIV'), self._get_tested_clients_count(DISEASES.HIV),
@@ -311,7 +312,7 @@ class GovCouncilReport(BaseReport):
             (_(u'– z toho na syfilis'), self._get_tested_clients_count(
                 DISEASES.SYFILIS), self._get_performed_tests_count(DISEASES.SYFILIS)),
             (_(u'Testy na přítomnost drog'), 0, 0),
-            (_(u'Těhotenský test'), 0, 0),
+            (_(u'Těhotenský test'), clients(PregnancyTest), services(PregnancyTest)),
         ]
 
     def get_data(self):
