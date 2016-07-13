@@ -9,13 +9,13 @@ from django.utils.translation import ugettext as _
 
 from boris.classification import (DISEASES, DRUGS, DRUG_APPLICATION_TYPES,
     SEXES)
-from boris.clients.models import Client, Anonymous, GroupContact
+from boris.clients.models import Client, Anonymous
 from boris.reporting.core import BaseReport
 from boris.services.models import (Encounter, Address, ContactWork,
                                    IncomeFormFillup, IndividualCounseling, CrisisIntervention, SocialWork,
                                    HarmReduction, BasicMedicalTreatment, InformationService,
                                    IncomeExamination, DiseaseTest, HygienicService, FoodService,
-                                   WorkTherapy, PostUsage, PregnancyTest)
+                                   WorkTherapy, PostUsage, PregnancyTest, GroupCounselling)
 from boris.syringes.models import SyringeCollection
 
 
@@ -99,15 +99,6 @@ class GovCouncilReport(BaseReport):
             filtering['where__in'] = self.towns
         exclude = {'person__in': self._get_anonymous_ids()}
         return Encounter.objects.filter(**filtering).exclude(**exclude)
-
-    def _get_group_contacts(self):
-        filtering = {
-            'date__gte': self.datetime_from,
-            'date__lte': self.datetime_to,
-        }
-        if self.towns:
-            filtering['town__in'] = self.towns
-        return GroupContact.objects.filter(**filtering)
 
     def _get_phone_advice_count(self):
         encounter_ids = set()
@@ -250,9 +241,6 @@ class GovCouncilReport(BaseReport):
         directly_encountered_clients_count = len(set(
             direct_client_encounters.values_list('person_id', flat=True)))
 
-        group_contacts = self._get_group_contacts()
-        group_clients = group_contacts.values_list('clients', flat=True).distinct()
-
         return [ # (<service name>, <persons count>, <services count>)
             (_(u'Osobní kontakt s klienty'), directly_encountered_clients_count,
                 direct_client_encounters.count()),
@@ -267,7 +255,7 @@ class GovCouncilReport(BaseReport):
             (_(u'Individuální poradenství'), clients(IndividualCounseling),
                 services(IndividualCounseling)),
             (_(u'Individuální psychoterapie'), 0, 0),
-            (_(u'Skupinové poradenství'), group_clients.count(), group_contacts.count()),
+            (_(u'Skupinové poradenství'), clients(GroupCounselling), services(GroupCounselling)),
             (_(u'Skupinová psychoterapie'), 0, 0),
             (_(u'Krizová intervence'), clients(CrisisIntervention),
                 services(CrisisIntervention)),
