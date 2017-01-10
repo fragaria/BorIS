@@ -247,8 +247,10 @@ class SocialWork(Service):
         verbose_name=_(u'c) předléčebné indiviuální poradenství'))
     service_mediation = models.BooleanField(default=False,
         verbose_name=_(u'd) zprostředkování dalších služeb'))
+    work_with_family = models.BooleanField(default=False,
+        verbose_name=_(u'e) práce s rodinou'))
     other = models.BooleanField(default=False,
-        verbose_name=_(u'e) jiná'))
+        verbose_name=_(u'f) jiná'))
 
     class Meta:
         app_label = 'services'
@@ -261,7 +263,7 @@ class SocialWork(Service):
         fieldsets = (
             (None, {
                 'fields': ('encounter', 'social', 'legal', 'counselling',
-                    'service_mediation', 'other'),
+                    'service_mediation', 'work_with_family', 'other'),
                 'classes': ('inline',)
             }),
         )
@@ -270,7 +272,7 @@ class SocialWork(Service):
     def _get_stats(cls, filtering):
         return super(SocialWork, cls)._get_stats(filtering) + (
             _boolean_stats(cls, filtering, ('social', 'legal', 'counselling',
-                                            'service_mediation', 'other')))
+                                            'service_mediation', 'work_with_family', 'other')))
 
 
 class UtilityWork(Service):
