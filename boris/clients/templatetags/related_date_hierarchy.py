@@ -50,8 +50,10 @@ def related_date_hierarchy(cl, field_name):
 
     if not (year_lookup or month_lookup or day_lookup):
         # select appropriate start level
-        date_range = cl.queryset.aggregate(first=models.Min(field_name),
-                                            last=models.Max(field_name))
+        date_range = {
+            'first': __border_date(cl, min),
+            'last': __border_date(cl, max)
+        }
         if date_range['first'] and date_range['last']:
             if date_range['first'].year == date_range['last'].year:
                 year_lookup = date_range['first'].year
@@ -109,3 +111,10 @@ def related_date_hierarchy(cl, field_name):
                 'title': str(year.year),
             } for year in years]
         }
+
+
+def __border_date(cl, fn):
+    try:
+        return fn([d for d in cl.queryset.values_list('encounters__performed_on', flat=True) if d])
+    except ValueError:
+        return None

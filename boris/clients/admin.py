@@ -5,6 +5,7 @@ from django.conf.urls import patterns, url
 from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models import Count
 from django.forms import Textarea
 from django.http import HttpResponse
 from django.utils.translation import ugettext as _
@@ -253,10 +254,32 @@ class ClientCardInline(admin.StackedInline):
     extra = 0
 
 
+class FirstEncounterListFilter(admin.SimpleListFilter):
+    title = u'První kontakt'
+    parameter_name = 'first_contact'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('ano', u'ano'),
+            ('ne', u'ne'),
+        )
+
+    def queryset(self, request, queryset):
+        opts = {
+            'count__lte': 1
+        }
+        if self.value() == 'ano':
+            queryset = queryset.annotate(count=Count('encounters'))
+            return queryset.filter(**opts)
+        if self.value() == 'ne':
+            queryset = queryset.annotate(count=Count('encounters'))
+            return queryset.exclude(**opts)
+
+
 class ClientAdmin(AddContactAdmin):
     list_display = ('code', 'first_name_display', 'last_name_display', 'sex',
                     'town', 'encounter_count')
-    list_filter = ('town', 'sex', 'primary_drug', 'encounters__performed_on')
+    list_filter = ('town', 'sex', 'primary_drug', 'encounters__performed_on', FirstEncounterListFilter)
     search_fields = ('code', 'first_name', 'last_name')
     fieldsets = (
         (_(u'Základní informace'), {'fields': (
