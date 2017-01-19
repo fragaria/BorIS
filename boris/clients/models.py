@@ -434,11 +434,11 @@ class DrugUsage(models.Model):
         verbose_name=_(u'Aplikace'))
     frequency = models.PositiveSmallIntegerField(choices=DRUG_APPLICATION_FREQUENCY,
         verbose_name=_(u'Četnost'))
-    first_try_age = models.PositiveSmallIntegerField(
+    first_try_age = models.PositiveSmallIntegerField(null=True, blank=True,
         verbose_name=_(u'První užití (věk)'))
     first_try_iv_age = models.PositiveSmallIntegerField(null=True, blank=True,
         verbose_name=_(u'První i.v. užití (věk)'))
-    first_try_application = models.PositiveSmallIntegerField(choices=DRUG_APPLICATION_TYPES,
+    first_try_application = models.PositiveSmallIntegerField(choices=DRUG_APPLICATION_TYPES, null=True, blank=True,
         verbose_name=_(u'Způsob prvního užití'))
     was_first_illegal = models.NullBooleanField(verbose_name=_(u'První neleg. droga'))
     is_primary = models.BooleanField(verbose_name=_(u'Primární droga'), default=None)
