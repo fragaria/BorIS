@@ -19,6 +19,7 @@ from boris.clients.models import Client, Town, Anamnesis, DrugUsage, \
 from boris.clients.forms import ReadOnlyWidget
 from boris.clients.views import add_note, delete_note
 from boris.services.admin import EncounterInline
+from boris.services.models import IncomeExamination
 from boris.utils.admin import BorisBaseAdmin, textual
 from boris.utils.widgets import SplitDateWidget
 
@@ -256,7 +257,7 @@ class ClientCardInline(admin.StackedInline):
 
 class FirstEncounterListFilter(admin.SimpleListFilter):
     title = u'První kontakt'
-    parameter_name = 'first_contact'
+    parameter_name = 'first_encounter'
 
     def lookups(self, request, model_admin):
         return (
@@ -265,15 +266,18 @@ class FirstEncounterListFilter(admin.SimpleListFilter):
         )
 
     def queryset(self, request, queryset):
-        opts = {
-            'count__lte': 1
-        }
+        opts = {}
+        for key in request.GET:
+            # filter `encounter` in IncomeExamination the same way we filter `encounters` in Clients
+            if key.startswith('encounters__'):
+                opts['encounter' + key[10:]] = request.GET[key]
+
         if self.value() == 'ano':
-            queryset = queryset.annotate(count=Count('encounters'))
-            return queryset.filter(**opts)
+            person_ids = IncomeExamination.objects.filter(**opts).values_list('encounter__person_id', flat=True)
+            return queryset.filter(pk__in=person_ids)
         if self.value() == 'ne':
-            queryset = queryset.annotate(count=Count('encounters'))
-            return queryset.exclude(**opts)
+            person_ids = IncomeExamination.objects.filter(**opts).values_list('encounter__person_id', flat=True)
+            return queryset.exclude(pk__in=person_ids)
 
 
 class ClientAdmin(AddContactAdmin):

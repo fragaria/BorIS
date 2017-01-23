@@ -8,6 +8,8 @@ from django.utils.text import capfirst
 from django.utils.translation import ugettext as _
 from django.template import Library
 
+from boris.services.models import IncomeExamination
+
 register = Library()
 
 
@@ -103,7 +105,7 @@ def related_date_hierarchy(cl, field_name):
             } for month in months]
         }
     else:
-        years = filter(bool, getattr(cl.queryset, dates_or_datetimes)(field_name, 'year'))
+        years = __valid_years(cl, dates_or_datetimes, field_name)
         return {
             'show': True,
             'choices': [{
@@ -113,8 +115,21 @@ def related_date_hierarchy(cl, field_name):
         }
 
 
+def __valid_years(cl, dates_or_datetimes, field_name):
+    opts = dict(cl.params)
+    first_encounter = opts.pop('first_encounter', None)  # remove from filter
+    if first_encounter == 'ano':
+        return filter(bool, getattr(IncomeExamination.objects.filter(**opts), dates_or_datetimes)('encounter__performed_on', 'year'))
+    if first_encounter == 'ne':
+        return filter(bool, getattr(IncomeExamination.objects.filter(**opts), dates_or_datetimes)('encounter__performed_on', 'year'))
+    return filter(bool, getattr(cl.queryset, dates_or_datetimes)(field_name, 'year'))
+
+
 def __border_date(cl, fn):
-    try:
-        return fn([d for d in cl.queryset.values_list('encounters__performed_on', flat=True) if d])
-    except ValueError:
-        return None
+    opts = dict(cl.params)
+    first_encounter = opts.pop('first_encounter', None)  # remove from filter
+    if first_encounter == 'ano':
+        return fn([d for d in IncomeExamination.objects.filter(**opts).values_list('encounter__performed_on', flat=True) if d])
+    if first_encounter == 'ne':
+        return fn([d for d in IncomeExamination.objects.exclude(**opts).values_list('encounter__performed_on', flat=True) if d])
+    return fn([d for d in cl.queryset.values_list('encounters__performed_on', flat=True) if d])
