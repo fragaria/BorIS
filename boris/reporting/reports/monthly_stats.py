@@ -8,8 +8,7 @@ from django.db.models import Q
 from django.utils.translation import ugettext as _
 
 from boris.classification import SEXES, ANONYMOUS_TYPES, DISEASES, \
-    DRUG_APPLICATION_TYPES
-
+    DRUG_APPLICATION_TYPES, DRUGS
 from boris.clients.models import Town, District
 from boris.reporting.core import Aggregation, Report, \
     SumAggregation, make_key, NonDistinctCountAggregation
@@ -79,7 +78,17 @@ class AddressesDU(AllAddresses):
     ) & (
         Q(person__client__primary_drug__isnull=False) |
         Q(person__anonymous__drug_user_type__in=(ANONYMOUS_TYPES.IV,
-            ANONYMOUS_TYPES.NON_IV))
+            ANONYMOUS_TYPES.NON_IV, ANONYMOUS_TYPES.THC))
+    )
+
+
+class AddressesDUTHC(AllAddresses):
+    title = _(u'Z toho uživatelů THC')
+    filtering = (
+        Q(content_type_model='address')
+    ) & (
+        Q(person__client__primary_drug__in=(DRUGS.THC,)) |
+        Q(person__anonymous__drug_user_type__in=(ANONYMOUS_TYPES.THC,))
     )
 
 
@@ -178,6 +187,7 @@ class ClientReportBase(Report):
         AnonymousAggregation,
         AllAddresses,
         AddressesDU,
+        AddressesDUTHC,
     ] + disease_tests + [
         EncounterCount,
         ClientEncounterCount,
