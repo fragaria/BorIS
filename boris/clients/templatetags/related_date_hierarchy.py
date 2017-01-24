@@ -8,6 +8,7 @@ from django.utils.text import capfirst
 from django.utils.translation import ugettext as _
 from django.template import Library
 
+from boris.clients.models import Client
 from boris.services.models import IncomeExamination
 
 register = Library()
@@ -50,11 +51,13 @@ def related_date_hierarchy(cl, field_name):
 
     link = lambda filters: cl.get_query_string(filters, [field_generic])
 
+    first_encounter, ie_opts = __filtering(cl)
+
     if not (year_lookup or month_lookup or day_lookup):
         # select appropriate start level
         date_range = {
-            'first': __border_date(cl, min),
-            'last': __border_date(cl, max)
+            'first': __border_date(cl, first_encounter, ie_opts, min),
+            'last': __border_date(cl, first_encounter, ie_opts, max)
         }
         if date_range['first'] and date_range['last']:
             if date_range['first'].year == date_range['last'].year:
@@ -90,9 +93,7 @@ def related_date_hierarchy(cl, field_name):
             } for day in days]
         }
     elif year_lookup:
-        months = cl.queryset.filter(**{year_field: year_lookup})
-        months = filter(bool, getattr(months, dates_or_datetimes)(field_name, 'month'))
-        months = filter_dates(months, year_lookup)
+        months = _valid_months(cl, first_encounter, ie_opts, dates_or_datetimes, field_name, year_field, year_lookup)
         return {
             'show': True,
             'back': {
@@ -105,7 +106,7 @@ def related_date_hierarchy(cl, field_name):
             } for month in months]
         }
     else:
-        years = __valid_years(cl, dates_or_datetimes, field_name)
+        years = __valid_years(cl, first_encounter, ie_opts, dates_or_datetimes, field_name)
         return {
             'show': True,
             'choices': [{
@@ -115,21 +116,47 @@ def related_date_hierarchy(cl, field_name):
         }
 
 
-def __valid_years(cl, dates_or_datetimes, field_name):
-    opts = dict(cl.params)
-    first_encounter = opts.pop('first_encounter', None)  # remove from filter
+def _valid_months(cl, first_encounter, opts, dates_or_datetimes, field_name ,year_field, year_lookup):
+    months = cl.queryset.filter(**{year_field: year_lookup})
+    if first_encounter == 'ano':
+        months = months.filter(id__in=[e for e in IncomeExamination.objects.filter(**opts).values_list('encounter__person', flat=True)])
+    if first_encounter == 'ne':
+        months = months.filter(id__in=[e for e in IncomeExamination.objects.exclude(**opts).values_list('encounter__person', flat=True)])
+    return filter(bool, getattr(months, dates_or_datetimes)(field_name, 'month'))
+
+
+def __valid_years(cl, first_encounter, opts, dates_or_datetimes, field_name):
     if first_encounter == 'ano':
         return filter(bool, getattr(IncomeExamination.objects.filter(**opts), dates_or_datetimes)('encounter__performed_on', 'year'))
     if first_encounter == 'ne':
-        return filter(bool, getattr(IncomeExamination.objects.filter(**opts), dates_or_datetimes)('encounter__performed_on', 'year'))
+        return filter(bool, getattr(IncomeExamination.objects.exclude(**opts), dates_or_datetimes)('encounter__performed_on', 'year'))
     return filter(bool, getattr(cl.queryset, dates_or_datetimes)(field_name, 'year'))
 
 
-def __border_date(cl, fn):
-    opts = dict(cl.params)
-    first_encounter = opts.pop('first_encounter', None)  # remove from filter
-    if first_encounter == 'ano':
-        return fn([d for d in IncomeExamination.objects.filter(**opts).values_list('encounter__performed_on', flat=True) if d])
-    if first_encounter == 'ne':
-        return fn([d for d in IncomeExamination.objects.exclude(**opts).values_list('encounter__performed_on', flat=True) if d])
-    return fn([d for d in cl.queryset.values_list('encounters__performed_on', flat=True) if d])
+def __border_date(cl, first_encounter, opts, fn):
+    try:
+        if first_encounter == 'ano':
+            return fn([d for d in IncomeExamination.objects.filter(**opts).values_list('encounter__performed_on', flat=True) if d])
+        if first_encounter == 'ne':
+            return fn([d for d in IncomeExamination.objects.exclude(**opts).values_list('encounter__performed_on', flat=True) if d])
+        return fn([d for d in cl.queryset.values_list('encounters__performed_on', flat=True) if d])
+    except ValueError:
+        return None
+
+
+def __filtering(cl):
+    """Maps filter to IncomeExamination model so we can filter fields that are otherwise
+        unaccessible through encounter.person (like client.primary_drug)"""
+    opts = {}
+    ids_set = set()
+    first_encounter = cl.params.get('first_encounter', None)
+    for key in cl.params:
+        # filter `encounter` in IncomeExamination the same way we filter `encounters` in Clients
+        if key.startswith('encounters__'):
+            opts['encounter' + key[10:]] = cl.params[key]
+        if key != 'first_encounter':
+            clients = Client.objects.filter(**{key: cl.params[key]})
+            ids_set &= set(clients.values_list('id', flat=True))
+    if bool(ids_set):
+        opts['encounter__person_id__in'] = ids_set
+    return first_encounter, opts
