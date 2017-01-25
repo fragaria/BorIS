@@ -123,7 +123,7 @@ class ClientEncounterCount(EncounterAggregation):
 
 
 class PhoneEncounterCount(EncounterAggregation):
-    title = _(u'z toho telefonický kontakt')
+    title = _(u'z toho nepřímý kontakt')
     filtering = {'is_by_phone': True}
 
 

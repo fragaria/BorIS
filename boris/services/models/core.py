@@ -64,7 +64,7 @@ class Encounter(models.Model, AdminLinkMixin):
     performed_on = models.DateField(default=date.today, verbose_name=_(u'Kdy'))
     where = models.ForeignKey('clients.Town', verbose_name=_(u'Kde'))
     is_by_phone = models.BooleanField(default=False, verbose_name=_(
-        u'Telefonický kontakt'))
+        u'Nepřímý kontakt (telefon, pošta, internet)'))
     group_contact = models.ForeignKey('clients.GroupContact',
         verbose_name=_(u'Přidružená skupina'), null=True, blank=True,
                                       on_delete=SET_NULL)
