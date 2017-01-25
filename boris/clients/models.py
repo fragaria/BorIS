@@ -430,9 +430,9 @@ class DrugUsage(models.Model):
     drug = models.PositiveSmallIntegerField(choices=DRUGS, verbose_name=_(u'Droga'))
     anamnesis = models.ForeignKey(Anamnesis, verbose_name=_(u'Anamnéza'))
 
-    application = models.PositiveSmallIntegerField(choices=DRUG_APPLICATION_TYPES,
+    application = models.PositiveSmallIntegerField(choices=DRUG_APPLICATION_TYPES, null=True, blank=True,
         verbose_name=_(u'Aplikace'))
-    frequency = models.PositiveSmallIntegerField(choices=DRUG_APPLICATION_FREQUENCY,
+    frequency = models.PositiveSmallIntegerField(choices=DRUG_APPLICATION_FREQUENCY, null=True, blank=True,
         verbose_name=_(u'Četnost'))
     first_try_age = models.PositiveSmallIntegerField(null=True, blank=True,
         verbose_name=_(u'První užití (věk)'))
