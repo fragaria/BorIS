@@ -230,8 +230,8 @@ class CrisisIntervention(Service):
     class Meta:
         app_label = 'services'
         proxy = True
-        verbose_name = _(u'Pomoc v krizi')
-        verbose_name_plural = _(u'Pomoci v krizi')
+        verbose_name = _(u'Krizová intervence')
+        verbose_name_plural = _(u'Krizová intervence')
 
     class Options:
         codenumber = 7
@@ -342,8 +342,8 @@ class IncomeFormFillup(Service):
     class Meta:
         app_label = 'services'
         proxy = True
-        verbose_name = _(u'Vyplnění IN-COME dotazníku')
-        verbose_name_plural = _(u'Vyplnění IN-COME dotazníků')
+        verbose_name = _(u'Vstupní zhodnocení stavu klienta')
+        verbose_name_plural = _(u'Vstupní zhodnocení stavu klienta')
 
     class Options:
         codenumber = 11
