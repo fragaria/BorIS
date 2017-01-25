@@ -59,7 +59,7 @@ class Town(IndexedStringEnum):
         verbose_name_plural = _(u'Města')
 
     def __unicode__(self):
-        return u'%s (%s)' % (self.title, unicode(self.district.title))
+        return u'%s' % self.title
 
 
 class GroupContactType(IndexedStringEnum):

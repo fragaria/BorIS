@@ -184,7 +184,7 @@ class AddContactAdmin(BorisBaseAdmin):
     def add_contact_button(self, obj):
         return u'<a href="%s" class="changelink cbutton high1">%s</a>' % (
             reverse('admin:services_encounter_add') + '?person_id=%s' % obj.pk,
-            _(u'přidat kontakt'))
+            _(u'přidat&nbsp;kontakt'))
 
 
 class AnonymousAdmin(AddContactAdmin):
@@ -281,8 +281,9 @@ class FirstEncounterListFilter(admin.SimpleListFilter):
 
 
 class ClientAdmin(AddContactAdmin):
-    list_display = ('code', 'first_name_display', 'last_name_display', 'sex',
+    list_display = ('code', 'first_name_display', 'last_name_display', 'sex', 'primary_drug',
                     'town', 'encounter_count')
+    list_actions = ('add_contact_button',)
     list_filter = ('town', 'sex', 'primary_drug', 'encounters__performed_on', FirstEncounterListFilter)
     search_fields = ('code', 'first_name', 'last_name')
     fieldsets = (
