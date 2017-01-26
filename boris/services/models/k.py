@@ -143,8 +143,8 @@ class PostUsage(Service):
     class Meta:
         app_label = 'services'
         proxy = True
-        verbose_name = _(u'Pošta')
-        verbose_name_plural = _(u'Pošty')
+        verbose_name = _(u'Korespondenční práce')
+        verbose_name_plural = _(u'Korespondenční práce')
 
     class Options:
         codenumber = 22
@@ -196,4 +196,16 @@ class Breathalyzer(Service):
 
     class Options:
         codenumber = 26
+        limited_to = ('Client', )
+
+
+class WorkWithFamily(Service):
+    class Meta:
+        app_label = 'services'
+        proxy = True
+        verbose_name = _(u'Práce s rodinou')
+        verbose_name_plural = _(u'Práce s rodinami')
+
+    class Options:
+        codenumber = 27
         limited_to = ('Client', )
