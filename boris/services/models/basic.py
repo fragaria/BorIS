@@ -243,12 +243,8 @@ class SocialWork(Service):
         verbose_name=_(u'a) sociální'))
     legal = models.BooleanField(default=False,
         verbose_name=_(u'b) trestně-právní'))
-    # counselling = models.BooleanField(default=False,  # moved to IndividualCounselling
-    #     verbose_name=_(u'c) předléčebné indiviuální poradenství'))
     service_mediation = models.BooleanField(default=False,
         verbose_name=_(u'c) zprostředkování dalších služeb'))
-    # work_with_family = models.BooleanField(default=False,  # moved to WorkWithFamily
-    #     verbose_name=_(u'e) práce s rodinou'))
     assistance_service = models.BooleanField(default=False,
         verbose_name=_(u'd) asistenční služba'))
     probation_supervision = models.BooleanField(default=False,
