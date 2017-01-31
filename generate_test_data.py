@@ -9,7 +9,7 @@ from boris.clients.models import Anonymous, Client, Town, District, Region,\
         Drug, Practitioner
 from boris.services.models import Encounter, Service
 from boris.services.models import HarmReduction, IncomeExamination,\
-        InformationService, ContactWork, IndividualCounseling, Address,\
+        InformationService, ContactWork, individualcounselling, Address,\
         PhoneCounseling, DiseaseTest
 
 """
@@ -150,7 +150,7 @@ def generate():
     print "Generating Services..."
     ctypes = {}
     for model in ('harmreduction', 'incomeexamination',
-            'informationservice', 'contactwork', 'individualcounseling',
+            'informationservice', 'contactwork', 'individualcounselling',
             'phonecounseling', 'address', 'diseasetest'):
         ctypes[model] = ContentType.objects.get_by_natural_key('services', model)
     for i in xrange(1, SERVICE_CNT + 1):
@@ -192,10 +192,10 @@ def generate():
         s.save()
 
         fields = {
-            "content_type": ctypes['individualcounseling'],
+            "content_type": ctypes['individualcounselling'],
             "encounter": choice(client_encounters),
         }
-        s = IndividualCounseling(**fields)
+        s = individualcounselling(**fields)
         s.save()
 
         fields = {

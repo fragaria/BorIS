@@ -246,9 +246,9 @@
           "incomeformfillup"
         ],
         [
-          "add_individualcounseling",
+          "add_individualcounselling",
           "services",
-          "individualcounseling"
+          "individualcounselling"
         ],
         [
           "add_service",
@@ -286,9 +286,9 @@
           "incomeformfillup"
         ],
         [
-          "change_individualcounseling",
+          "change_individualcounselling",
           "services",
-          "individualcounseling"
+          "individualcounselling"
         ],
         [
           "change_service",
@@ -326,9 +326,9 @@
           "incomeformfillup"
         ],
         [
-          "delete_individualcounseling",
+          "delete_individualcounselling",
           "services",
-          "individualcounseling"
+          "individualcounselling"
         ],
         [
           "delete_service",

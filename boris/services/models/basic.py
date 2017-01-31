@@ -243,27 +243,31 @@ class SocialWork(Service):
         verbose_name=_(u'a) sociální'))
     legal = models.BooleanField(default=False,
         verbose_name=_(u'b) trestně-právní'))
-    counselling = models.BooleanField(default=False,
-        verbose_name=_(u'c) předléčebné indiviuální poradenství'))
+    # counselling = models.BooleanField(default=False,  # moved to IndividualCounselling
+    #     verbose_name=_(u'c) předléčebné indiviuální poradenství'))
     service_mediation = models.BooleanField(default=False,
-        verbose_name=_(u'd) zprostředkování dalších služeb'))
-    work_with_family = models.BooleanField(default=False,
-        verbose_name=_(u'e) práce s rodinou'))
+        verbose_name=_(u'c) zprostředkování dalších služeb'))
+    # work_with_family = models.BooleanField(default=False,  # moved to WorkWithFamily
+    #     verbose_name=_(u'e) práce s rodinou'))
+    assistance_service = models.BooleanField(default=False,
+        verbose_name=_(u'd) asistenční služba'))
+    probation_supervision = models.BooleanField(default=False,
+        verbose_name=_(u'e) probační dohled'))
     other = models.BooleanField(default=False,
         verbose_name=_(u'f) jiná'))
 
     class Meta:
         app_label = 'services'
-        verbose_name = _(u'Případová práce')
-        verbose_name_plural = _(u'Případové práce')
+        verbose_name = _(u'Sociální práce')
+        verbose_name_plural = _(u'Sociální práce')
 
     class Options:
         codenumber = 6
         limited_to = ('Client',)
         fieldsets = (
             (None, {
-                'fields': ('encounter', 'social', 'legal', 'counselling',
-                    'service_mediation', 'work_with_family', 'other'),
+                'fields': ('encounter', 'social', 'legal', 'service_mediation',
+                            'assistance_service', 'probation_supervision', 'other'),
                 'classes': ('inline',)
             }),
         )
@@ -271,8 +275,8 @@ class SocialWork(Service):
     @classmethod
     def _get_stats(cls, filtering):
         return super(SocialWork, cls)._get_stats(filtering) + (
-            _boolean_stats(cls, filtering, ('social', 'legal', 'counselling',
-                                            'service_mediation', 'work_with_family', 'other')))
+            _boolean_stats(cls, filtering, ('social', 'legal', 'service_mediation',
+                                            'assistance_service', 'probation_supervision', 'other')))
 
 
 class UtilityWork(Service):
@@ -315,16 +319,39 @@ class BasicMedicalTreatment(Service):
         limited_to = ('Client',)
 
 
-class IndividualCounseling(Service):
+class IndividualCounselling(Service):
+    general = models.BooleanField(default=False,
+        verbose_name=_(u'a) obecné'))
+    structured = models.BooleanField(default=False,
+        verbose_name=_(u'b) strukturované'))
+    pre_treatment = models.BooleanField(default=False,
+        verbose_name=_(u'c) předléčebné poradenství'))
+    guarantee_interview = models.BooleanField(default=False,
+        verbose_name=_(u'd) garantský pohovor'))
+    advice_to_parents = models.BooleanField(default=False,
+        verbose_name=_(u'e) poradenství pro rodiče/osoby blízké'))
+
     class Meta:
         app_label = 'services'
-        proxy = True
-        verbose_name = _(u'Základní poradenství')
-        verbose_name_plural = _(u'Základní poradenství')
+        verbose_name = _(u'Individuální poradenství')
+        verbose_name_plural = _(u'Individuální poradenství')
 
     class Options:
         codenumber = 5
         limited_to = ('Client',)
+        fieldsets = (
+            (None, {
+                'fields': ('encounter', 'general', 'structured',
+                           'pre_treatment', 'guarantee_interview', 'advice_to_parents'),
+                'classes': ('inline',)
+            }),
+        )
+
+    @classmethod
+    def _get_stats(cls, filtering):
+        return super(IndividualCounselling, cls)._get_stats(filtering) + (
+            _boolean_stats(cls, filtering, ('general', 'structured', 'pre_treatment',
+                                            'guarantee_interview', 'advice_to_parents')))
 
 
 class Address(Service):

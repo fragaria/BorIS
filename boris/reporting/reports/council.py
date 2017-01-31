@@ -12,10 +12,10 @@ from boris.classification import (DISEASES, DRUGS, DRUG_APPLICATION_TYPES,
 from boris.clients.models import Client, Anonymous
 from boris.reporting.core import BaseReport
 from boris.services.models import (Encounter, Address, ContactWork,
-                                   IncomeFormFillup, IndividualCounseling, CrisisIntervention, SocialWork,
+                                   IncomeFormFillup, IndividualCounselling, CrisisIntervention, SocialWork,
                                    HarmReduction, BasicMedicalTreatment, InformationService,
                                    IncomeExamination, DiseaseTest, HygienicService, FoodService,
-                                   WorkTherapy, PostUsage, PregnancyTest, GroupCounselling)
+                                   WorkTherapy, PostUsage, UrineTest, GroupCounselling)
 from boris.syringes.models import SyringeCollection
 
 
@@ -102,7 +102,7 @@ class GovCouncilReport(BaseReport):
 
     def _get_phone_advice_count(self):
         encounter_ids = set()
-        for cls in (SocialWork, IndividualCounseling, InformationService):
+        for cls in (SocialWork, IndividualCounselling, InformationService):
             services = self._get_services(cls)
             encounter_ids.update(services.values_list('encounter_id', flat=True))
         filtering = { # Time filtering has been performed on the services list.
@@ -252,8 +252,8 @@ class GovCouncilReport(BaseReport):
                 services(ContactWork)),
             (_(u'Vstupní zhodnocení stavu klienta'), clients(IncomeFormFillup),
                 services(IncomeFormFillup)),
-            (_(u'Individuální poradenství'), clients(IndividualCounseling),
-                services(IndividualCounseling)),
+            (_(u'Individuální poradenství'), clients(IndividualCounselling),
+                services(IndividualCounselling)),
             (_(u'Individuální psychoterapie'), 0, 0),
             (_(u'Skupinové poradenství'), clients(GroupCounselling), services(GroupCounselling)),
             (_(u'Skupinová psychoterapie'), 0, 0),
@@ -299,8 +299,8 @@ class GovCouncilReport(BaseReport):
                 self._get_performed_tests_count(DISEASES.VHB)),
             (_(u'– z toho na syfilis'), self._get_tested_clients_count(
                 DISEASES.SYFILIS), self._get_performed_tests_count(DISEASES.SYFILIS)),
-            (_(u'Testy na přítomnost drog'), 0, 0),
-            (_(u'Těhotenský test'), clients(PregnancyTest), services(PregnancyTest)),
+            # (_(u'Testy na přítomnost drog'), clients(UrineTest), services(UrineTest)),
+            # (_(u'Těhotenský test'), clients(UrineTest), services(UrineTest)),
         ]
 
     def get_data(self):
