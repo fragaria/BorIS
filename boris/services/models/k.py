@@ -175,16 +175,26 @@ class FoodService(Service):
         limited_to = ('Client', )
 
 
-class PregnancyTest(Service):
+class UrineTest(Service):
+    drug_test = models.BooleanField(default=False,
+                                    verbose_name=_(u'a) Test na drogy'))
+    pregnancy_test = models.BooleanField(default=False,
+                                         verbose_name=_(u'b) Těhotenský test'))
+
     class Meta:
         app_label = 'services'
-        proxy = True
-        verbose_name = _(u'Těhotenský test')
-        verbose_name_plural = _(u'Těhotenský test')
+        verbose_name = _(u'Orientační test z moči')
+        verbose_name_plural = _(u'Orientační test z moči')
 
     class Options:
         codenumber = 25
         limited_to = ('Client', )
+        fieldsets = (
+            (None, {
+                'fields': ('encounter', 'drug_test', 'pregnancy_test'),
+                'classes': ('inline',)
+            }),
+        )
 
 
 class Breathalyzer(Service):
