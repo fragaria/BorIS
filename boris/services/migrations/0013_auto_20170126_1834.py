@@ -24,7 +24,4 @@ class Migration(migrations.Migration):
             },
             bases=('services.service',),
         ),
-        migrations.DeleteModel(
-            name='PregnancyTest',
-        ),
     ]
