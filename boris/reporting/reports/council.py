@@ -15,7 +15,7 @@ from boris.services.models import (Encounter, Address, ContactWork,
                                    IncomeFormFillup, IndividualCounselling, CrisisIntervention, SocialWork,
                                    HarmReduction, BasicMedicalTreatment, InformationService,
                                    IncomeExamination, DiseaseTest, HygienicService, FoodService,
-                                   WorkTherapy, PostUsage, UrineTest, GroupCounselling)
+                                   WorkTherapy, PostUsage, UrineTest, GroupCounselling, WorkWithFamily)
 from boris.syringes.models import SyringeCollection
 
 
@@ -67,6 +67,18 @@ class GovCouncilReport(BaseReport):
         anonymous_ids = self._get_anonymous_ids()
         return len(set(person_ids) - set(anonymous_ids))
 
+    def _get_queryset_client_count(self, qs):
+        """
+        Return the number of clients in the given Service queryset.
+
+        Anonyms are excluded.
+
+        """
+        person_ids = qs.values_list(
+            'encounter__person_id', flat=True)
+        anonymous_ids = self._get_anonymous_ids()
+        return len(set(person_ids) - set(anonymous_ids))
+
     def _get_anonymous_count(self, service_cls):
         """Return number of services of the given class performed by anonyms."""
         anonymous_ids = self._get_anonymous_ids()
@@ -90,11 +102,16 @@ class GovCouncilReport(BaseReport):
             'count'))['count__sum']
 
     def _get_direct_client_encounters(self):
-        filtering = {
+        return self.__get_client_encounters({'is_by_phone': False})
+
+    def _get_phone_client_encounters(self):
+        return self.__get_client_encounters({'is_by_phone': True})
+
+    def __get_client_encounters(self, filtering):
+        filtering.update({
             'performed_on__gte': self.datetime_from,
             'performed_on__lte': self.datetime_to,
-            'is_by_phone': False,
-        }
+        })
         if self.towns:
             filtering['where__in'] = self.towns
         exclude = {'person__in': self._get_anonymous_ids()}
@@ -168,67 +185,81 @@ class GovCouncilReport(BaseReport):
     def _get_data_clients(self):
         """Get data rows for the 'clients' kind."""
         drug = lambda *drugs: self._get_primary_drug_users(*drugs).count()
-
         non_alcohol_users = self._get_all_drug_users().exclude(
             primary_drug__in=(DRUGS.ALCOHOL, DRUGS.TOBACCO))
         alcohol_users = self._get_primary_drug_users(DRUGS.ALCOHOL)
         tobacco_users = self._get_primary_drug_users(DRUGS.TOBACCO)
         non_drug_users = self._get_clients_non_drug_users()
+        non_substance_users = self._get_primary_drug_users(DRUGS.PATHOLOGICAL_GAMBLING,
+                                                           DRUGS.OTHER_NON_SUBSTANCE_ADDICTION)
 
-        return [ # (<label>, <client_count>)
-            (_(u'Počet klientů s kódem – uživatelů nealkoholových drog CELKEM'),
-                non_alcohol_users.count()),
-            (_(u'– z toho mužů'), non_alcohol_users.filter(sex=SEXES.MALE).count()),
-            (_(u'– z toho injekčních uživatelů drog'), non_alcohol_users.filter(
+        return [  # (<id>, <label>, <client_count>)
+            (_(u'TP - terénní programy'), u'', u''),
+            (_(u'skupina 1'), _(u'Klienti - uživatelé drog, kromě alkoholu (sk. 2) a tabáku (sk. 3)'), u''),
+            (_(u'1.1'), _(u'základní droga heroin'), drug(DRUGS.HEROIN)),
+            (_(u'1.2'), _(
+                u'základní droga buprenorfin - zneužívaný (non lege artis, injekčně, bez indikace lékařem, z černého trhu atd.)'),
+             drug(DRUGS.SUBUTEX_LEGAL, DRUGS.SUBUTEX_ILLEGAL, DRUGS.SUBOXONE)),
+            (_(u'1.3'), _(
+                u'základní droga metadon - zneužívaný (non lege artis, injekčně, bez indikace lékařem, z černého trhu atd.)'),
+             drug(DRUGS.METHADONE)),
+            (_(u'1.4'), _(u'základní droga jiné opiáty (opium, morfium, fentanyl, tramadol etc.)'),
+             drug(DRUGS.VENDAL, DRUGS.RAW_OPIUM, DRUGS.BRAUN)),
+            (_(u'1.5'), _(u'základní droga pervitin'), drug(DRUGS.METHAMPHETAMINE)),
+            (_(u'1.6'), _(u'základní droga kokain/crack'), drug(DRUGS.COCAINE)),
+            (_(u'1.7'), _(u'základní droga kanabinoidy'), drug(DRUGS.THC)),
+            (_(u'1.8'), _(u'základní droga extáze'), drug(DRUGS.ECSTASY)),
+            (_(u'1.9'), _(u'základní droga halucinogeny'), drug(DRUGS.LSD, DRUGS.PSYLOCIBE)),
+            (_(u'1.10'), _(u'základní droga těkavé látky'), drug(DRUGS.INHALER_DRUGS)),
+            (_(u'1.11'), _(u'jiná základní droga, kromě alkoholu a tabáku'),
+             drug(DRUGS.DESIGNER_DRUGS, DRUGS.MEDICAMENTS)),
+            (_(u'1.12'), _(u'celkem klientů - uživatelů drog '), non_alcohol_users.count()),
+            (_(u'1.12.1'), _(u'z toho mužů'), non_alcohol_users.filter(sex=SEXES.MALE).count()),
+            (_(u'1.12.2'), _(u'z toho injekčních uživatelů drog'), non_alcohol_users.filter(
                 primary_drug_usage__in=(DRUG_APPLICATION_TYPES.VEIN_INJECTION,
-                    DRUG_APPLICATION_TYPES.MUSCLE_INJECTION)).count()),
-            (_(u'– z toho se základní drogou heroin'), drug(DRUGS.HEROIN)),
-            (_(u'– z toho se základní drogou buprenorfin – zneužívaný (i.v.'
-                u' aplikace, černý trh)'), drug(DRUGS.SUBUTEX_LEGAL,
-                    DRUGS.SUBUTEX_ILLEGAL, DRUGS.SUBOXONE)),
-            (_(u'– z toho se základní drogou metadon – zneužívaný (i.v.'
-                u' aplikace, černý trh)'), drug(DRUGS.METHADONE)),
-            (_(u'– z toho se základní drogou pervitin'),
-                drug(DRUGS.METHAMPHETAMINE)),
-            (_(u'– z toho se základní drogou opiáty a/nebo pervitin'),
-                drug(DRUGS.HEROIN, DRUGS.SUBUTEX_LEGAL, DRUGS.SUBUTEX_ILLEGAL,
-                    DRUGS.SUBOXONE, DRUGS.METHADONE, DRUGS.METHAMPHETAMINE, DRUGS.VENDAL,
-                    DRUGS.BRAUN, DRUGS.RAW_OPIUM)),
-            (_(u'Z počtu „opiáty a/nebo pervitin“ odhadované procento'
-                u' polyvalentních uživatelů opiátů a pervitinu'), ''),
-            (_(u'– z toho se základní drogou kokain/crack'), drug(DRUGS.COCAINE)),
-            (_(u'– z toho se základní drogou kanabinoidy'), drug(DRUGS.THC)),
-            (_(u'– z toho se základní drogou extáze'), drug(DRUGS.ECSTASY)),
-            (_(u'– z toho se základní drogou halucinogeny'), drug(DRUGS.LSD) +
-                drug(DRUGS.PSYLOCIBE)),
-            (_(u'– z toho se základní drogou těkavé látky'),
-                drug(DRUGS.INHALER_DRUGS)),
-            (_(u'Průměrný věk klientů – uživatelů nealkoholových drog'),
-                self._get_average_age(non_alcohol_users)),
-            (_(u'Počet klientů – uživatelů alkoholu CELKEM'), drug(DRUGS.ALCOHOL)),
-            (_(u'– z toho mužů'), alcohol_users.filter(sex=SEXES.MALE).count()),
-            (_(u'Průměrný věk klientů – uživatelů alkoholu'),
-                self._get_average_age(alcohol_users)),
-            (_(u'Počet klientů – uživatelů tabáku CELKEM'), drug(DRUGS.TOBACCO)),
-            (_(u'– z toho mužů'), tobacco_users.filter(sex=SEXES.MALE).count()),
-            (_(u'Průměrný věk klientů – uživatelů tabáku'),
-                self._get_average_age(tobacco_users)),
-            (_(u'Počet klientů – patologických hráčů CELKEM'), 0),
-            (_(u'– z toho mužů'), 0),
-            (_(u'Průměrný věk klientů – patologických hráčů'), 0),
-            (_(u'Odhad počtu neidentifikovaných klientů – uživatelů drog'
-                u' a patologických hráčů'), 0),
-            (_(u'– z toho injekčních uživatelů drog'), 0),
-            (_(u'– z toho se základní drogou opiáty a/nebo pervitin'), 0),
-            (_(u'Odhad počtu klientů ve zprostředkovaném kontaktu'), ''),
-            (_(u'Počet klientů - neuživatelů drog, rodinných příslušníků'
-                u' a blízkých osob uživatelů'), non_drug_users.count()),
-            # Note that tobacco users are counted already within non alcohol users.
-            (_(u'Celkový počet všech klientů'), (non_alcohol_users.count() +
-                tobacco_users.count() + alcohol_users.count() +
-                non_drug_users.count())),
-        ]
+                                        DRUG_APPLICATION_TYPES.MUSCLE_INJECTION)).count()),
+            (_(u'1.13'), _(u'průměrný věk klientů - uživatelů drog'), self._get_average_age(non_alcohol_users)),
 
+            (_(u'skupina 2'), _(u'Klienti se základní drogou alkohol'), u''),
+            (_(u'2.1'), _(u'celkem klientů se základní drogou alkohol'), alcohol_users.count()),
+            (_(u'2.1.1'), _(u'z toho mužů'), alcohol_users.filter(sex=SEXES.MALE).count()),
+            (_(u'2.2'), _(u'průměrný věk klientů se základní drogou alkohol'), self._get_average_age(alcohol_users)),
+
+            (_(u'skupina 3'), _(u'Klienti se základní drogou tabák'), u''),
+            (_(u'3.1'), _(u'celkem klientů se základní drogou tabák'), tobacco_users.count()),
+            (_(u'3.1.1'), _(u'z toho mužů'), tobacco_users.filter(sex=SEXES.MALE).count()),
+            (_(u'3.2'), _(u'průměrný věk klientů se základní drogou tabák'), self._get_average_age(tobacco_users)),
+
+            (_(u'skupina 4'), _(u'Klienti s diagnózou z oblasti nelátkových závislostí'), u''),
+            (_(u'4.1'), _(u'počet klientů s diagnózou patologické hráčství'),
+             drug(DRUGS.PATHOLOGICAL_GAMBLING)),
+            (_(u'4.2'), _(u'počet klientů s jinou nelátkovou závislostí'),
+             drug(DRUGS.OTHER_NON_SUBSTANCE_ADDICTION)),
+            (_(u'4.3'), _(u'celkem klientů s diagnózou z oblasti nelátkových závislostí'),
+             non_substance_users.count()),
+            (_(u'4.3.1'), _(u'z toho mužů'),
+             non_substance_users.filter(sex=SEXES.MALE).count()),
+            (_(u'4.4'), _(u'průměrný věk klientů s diagnózou z oblasti nelátkových závislostí'),
+             self._get_average_age(non_substance_users)),
+
+            (_(u'skupina 5'), _(u'Identifikovaní klienti programu celkem'), u''),
+            (_(u'5.1'), _(u'Celkem  všech klientů, uživatelů'),
+             self._get_all_drug_users().count()),
+            (_(u'5.1.1'), _(u'z toho prvních kontaktů'), self._get_client_count(IncomeExamination)),
+            (_(u'5.2'),
+             _(u'Celkem ostatních klientů (neuživatelé, rodinní příslušníci, blízcí osob se závislostním problémem)'),
+             non_drug_users.count()),
+            (_(u'5.3'), _(u'Celkem všech klientů (uživatelů i neuživatelů)'),
+             non_drug_users.count() + self._get_all_drug_users().count()),
+
+            (_(u'skupina 6'), _(u'Neidentifikovaní klienti'), u''),
+            (_(u'6.1'), _(u'odhad počtu neidentifikovaných klientů se základní drogou opiáty'), u''),
+            (_(u'6.2'), _(u'odhad počtu neidentifikovaných klientů s základní drogou pervitin'), u''),
+            (_(u'6.3'), _(u'odhad počtu neidentifikovaných klientů - injekčních uživatelů drog'), u''),
+
+            (_(u'skupina 7'), _(u'Klienti ve zprostředkovaném kontaktu'), u''),
+            (_(u'7.1'), _(u'Odhad počtu klientů ve zprostředkovaném kontaktu'), u''),
+        ]
 
     def _get_data_services(self):
         """Get data rows for the 'services' kind."""
@@ -238,69 +269,110 @@ class GovCouncilReport(BaseReport):
 
         harm_reductions = self._get_services(HarmReduction)
         direct_client_encounters = self._get_direct_client_encounters()
+        phone_client_encounters = self._get_phone_client_encounters()
         directly_encountered_clients_count = len(set(
             direct_client_encounters.values_list('person_id', flat=True)))
+        phone_encountered_clients_count = len(set(
+            phone_client_encounters.values_list('person_id', flat=True)))
+
+        pregnancy_test_services = self._get_services(UrineTest).filter(pregnancy_test=True)
+        drug_test_services = self._get_services(UrineTest).filter(drug_test=True)
 
         return [ # (<service name>, <persons count>, <services count>)
-            (_(u'Osobní kontakt s klienty'), directly_encountered_clients_count,
-                direct_client_encounters.count()),
-            (_(u'– z toho prvních kontaktů'), clients(IncomeExamination),
-                services(IncomeExamination) - anon(IncomeExamination)),
-            (_(u'Úkony potřebné pro zajištění práce s klientem'), 'xxx',
-                services(Address)),
-            (_(u'Kontaktní práce'), clients(ContactWork) + anon(ContactWork),
-                services(ContactWork)),
-            (_(u'Vstupní zhodnocení stavu klienta'), clients(IncomeFormFillup),
-                services(IncomeFormFillup)),
-            (_(u'Individuální poradenství'), clients(IndividualCounselling),
-                services(IndividualCounselling)),
-            (_(u'Individuální psychoterapie'), 0, 0),
-            (_(u'Skupinové poradenství'), clients(GroupCounselling), services(GroupCounselling)),
-            (_(u'Skupinová psychoterapie'), 0, 0),
-            (_(u'Krizová intervence'), clients(CrisisIntervention),
-                services(CrisisIntervention)),
-            (_(u'Rodinná terapie'), 0, 0),
-            (_(u'Skupiny pro rodiče a osoby blízké klientovi'), 0, 0),
-            (_(u'Pracovní terapie'), clients(WorkTherapy), services(WorkTherapy)),
+            (_(u'Celkový počet přímých kontaktů s klienty'),
+             directly_encountered_clients_count, direct_client_encounters.count()),
+            (_(u'Celkový počet nepřímých kontaktů s identifikovanými klienty'),
+             phone_encountered_clients_count, phone_client_encounters.count()),
+            (_(u'Úkony potřebné pro zajištění přímé práce s klientem'),
+             'xxx', services(Address)),
+            (_(u'Kontaktní práce'),
+             clients(ContactWork) + anon(ContactWork), services(ContactWork)),
+            (_(u'Vstupní zhodnocení stavu klienta'),
+             clients(IncomeFormFillup), services(IncomeFormFillup)),
+            (_(u'Individuální poradenství'),
+             clients(IndividualCounselling), services(IndividualCounselling)),
+            (_(u'Individuální psychoterapie'),
+             '', ''),
+            (_(u'Skupinové poradenství'),
+             clients(GroupCounselling), services(GroupCounselling)),
+            (_(u'Skupinová psychoterapie'),
+             '', ''),
+            (_(u'Krizová intervence'),
+             clients(CrisisIntervention), services(CrisisIntervention)),
+            (_(u'Rodinná terapie'),
+             '', ''),
+            (_(u'Skupiny pro rodiče a osoby blízké klientovi'),
+             '', ''),
+            (_(u'Pracovní terapie'),
+             clients(WorkTherapy), services(WorkTherapy)),
             (_(u'Sociální práce (odkazy, asistence, soc.-právní pomoc, case management)'),
-                clients(SocialWork), services(SocialWork)),
-            (_(u'Práce s rodinou'), 0, 0),
-            (_(u'Socioterapie'), 0, 0),
-            (_(u'Chráněná práce  / podporované zaměstnání'), 0, 0),
-            (_(u'Psychiatrické vyšetření'), 0, 0),
-            (_(u'Somatické vyšetření'), 0, 0),
-            (_(u'Farmakoterapie'), 0, 0),
-            (_(u'– z toho podání substituční látky'), 0, 0),
-            (_(u'– z toho preskripce substituční látky'), 0, 0),
-            (_(u'Základní zdravotní ošetření (vč. první pomoci, volání ZS)'),
-                clients(BasicMedicalTreatment), services(BasicMedicalTreatment)),
-            (_(u'Telefonické, písemné a internetové poradenství'), 'xxx',
-                self._get_phone_advice_count()),
-            (_(u'Korespondenční práce'), clients(PostUsage), services(PostUsage)),
-            (_(u'Informační servis'), clients(InformationService),
-                services(InformationService) - anon(InformationService)),
-            (_(u'Edukativní program/beseda'), 0, 0),
-            (_(u'Výměnný program'), clients(HarmReduction),
-                services(HarmReduction)),
-            (_(u'– vydané injekční jehly'), 'xxx',
-                harm_reductions.aggregate(Sum('out_count'))['out_count__sum']),
-            (_(u'– přijaté injekční jehly'), 'xxx',
-                harm_reductions.aggregate(Sum('in_count'))['in_count__sum']),
-            (_(u'– nalezené injekční jehly'), 'xxx', self._get_syringes_count()),
-            (_(u'Hygienický servis'), clients(HygienicService), services(HygienicService)),
-            (_(u'Potravinový servis'), clients(FoodService), services(FoodService)),
-            (_(u'Testování na inf. nemoci'), clients(DiseaseTest),
-                services(DiseaseTest)),
-            (_(u'– z toho na HIV'), self._get_tested_clients_count(DISEASES.HIV),
-                self._get_performed_tests_count(DISEASES.HIV)),
-            (_(u'– z toho na HCV'), self._get_tested_clients_count(DISEASES.VHC),
-                self._get_performed_tests_count(DISEASES.VHC)),
-            (_(u'– z toho na HBV'), self._get_tested_clients_count(DISEASES.VHB),
-                self._get_performed_tests_count(DISEASES.VHB)),
-            (_(u'– z toho na syfilis'), self._get_tested_clients_count(
-                DISEASES.SYFILIS), self._get_performed_tests_count(DISEASES.SYFILIS)),
-            # (_(u'Testy na přítomnost drog'), clients(UrineTest), services(UrineTest)),
-            # (_(u'Těhotenský test'), clients(UrineTest), services(UrineTest)),
+             clients(SocialWork), services(SocialWork)),
+            (_(u'Práce s rodinou'),
+             clients(WorkWithFamily), services(WorkWithFamily)),
+            (_(u'Socioterapie'),
+             '', ''),
+            (_(u'Chráněná práce  / podporované zaměstnání'),
+             '', ''),
+            (_(u'Psychiatrické vyšetření'),
+             '', ''),
+            (_(u'Somatické vyšetření'),
+             '', ''),
+            (_(u'Farmakoterapie'),
+             '', ''),
+            (_(u'- z toho podání substituční látky'),
+             '', ''),
+            (_(u'- z toho preskripce substituční látky'),
+             '', ''),
+            (_(u'Základní zdravotní ošetření (vč. první pomoci)'),
+             clients(BasicMedicalTreatment), services(BasicMedicalTreatment)),
+            (_(u'Telefonické, písemné a internetové poradenství'),
+             'xxx', self._get_phone_advice_count()),
+            (_(u'Korespondenční práce'),
+             clients(PostUsage), services(PostUsage)),
+            (_(u'Informační servis'),
+             clients(InformationService), services(InformationService) - anon(InformationService)),
+            (_(u'Edukativní program/beseda'),
+             '', ''),
+            (_(u'Distribuce harm reduction materiálu'),
+             clients(HarmReduction), services(HarmReduction)),
+            (_(u'Počet vydaných injekčních jehel a stříkaček (ks)'),
+             'xxx', harm_reductions.aggregate(Sum('out_count'))['out_count__sum']),
+            (_(u'Počet přijatých injekčních jehel a stříkaček (ks)'),
+             'xxx', harm_reductions.aggregate(Sum('in_count'))['in_count__sum']),
+            (_(u'Počet nalezených injekčních jehel a stříkaček (ks)'),
+             'xxx', self._get_syringes_count()),
+            (_(u'Hygienický servis'),
+             clients(HygienicService), services(HygienicService)),
+            (_(u'Potravinový servis'),
+             clients(FoodService), services(FoodService)),
+            (_(u'Testování na inf. nemoci'),
+             clients(DiseaseTest), services(DiseaseTest)),
+            (_(u'– z toho na HIV'),
+             self._get_tested_clients_count(DISEASES.HIV), self._get_performed_tests_count(DISEASES.HIV)),
+            (_(u'– z toho na HCV'),
+             self._get_tested_clients_count(DISEASES.VHC), self._get_performed_tests_count(DISEASES.VHC)),
+            (_(u'– z toho na HBV'),
+             self._get_tested_clients_count(DISEASES.VHB), self._get_performed_tests_count(DISEASES.VHB)),
+            (_(u'– z toho na syfilis'),
+             self._get_tested_clients_count(DISEASES.SYFILIS), self._get_performed_tests_count(DISEASES.SYFILIS)),
+            (_(u'Orientační test z moči na přítomnost drog'),
+             self._get_queryset_client_count(drug_test_services), drug_test_services.count()),
+            (_(u'Orientační test z moči - těhotenský test'),
+             self._get_queryset_client_count(pregnancy_test_services), pregnancy_test_services.count()),
+            (_(u'Vyšetření adiktologem při zahájení adiktologické péče (38021)'),
+             '', ''),
+            (_(u'Vyšetření adiktologem kontrolní (39022)'),
+             '', ''),
+            (_(u'Minimální kontakt adiktologa s pacientem (38023)'),
+             '', ''),
+            (_(u'Adiktologická terapie individuální (38024)'),
+             '', ''),
+            (_(u'Adiktologická terapie rodinná (38025)'),
+             '', ''),
+            (_(u'Adiktologická terapie skupinová, typ I. pro skupinu max. 9 osob (38026)'),
+             '', ''),
+            (_(u'Celkový čas všech poskytnutných výkonů'),
+             directly_encountered_clients_count + phone_encountered_clients_count, ''),
         ]
 
     def get_data(self):
