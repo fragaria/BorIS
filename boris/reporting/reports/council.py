@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Report for the Czech Government Council for Drug Policy Coordination."""
+import collections
 from datetime import datetime, date, time
 
 from django.db.models import Q, Sum
@@ -15,7 +16,8 @@ from boris.services.models import (Encounter, Address, ContactWork,
                                    IncomeFormFillup, IndividualCounselling, CrisisIntervention, SocialWork,
                                    HarmReduction, BasicMedicalTreatment, InformationService,
                                    IncomeExamination, DiseaseTest, HygienicService, FoodService,
-                                   WorkTherapy, PostUsage, UrineTest, GroupCounselling, WorkWithFamily)
+                                   WorkTherapy, PostUsage, UrineTest, GroupCounselling, WorkWithFamily,
+                                   WorkTherapyMeeting, UtilityWork, AsistService)
 from boris.syringes.models import SyringeCollection
 
 
@@ -51,19 +53,28 @@ class GovCouncilReport(BaseReport):
             filtering['encounter__where__in'] = self.towns
         return service_cls.objects.filter(**filtering)
 
-    def _get_service_count(self, service_cls):
+    def _get_service_count(self, service_classes):
         """Return the number of performed services of the given class."""
-        return self._get_services(service_cls).count()
+        if not isinstance(service_classes, collections.Iterable):
+            service_classes = [service_classes]
+        res = 0
+        for service_cls in service_classes:
+            res += self._get_services(service_cls).count()
+        return res
 
-    def _get_client_count(self, service_cls):
+    def _get_client_count(self, service_classes):
         """
         Return the number of clients with the given service.
 
         Anonyms are excluded.
 
         """
-        person_ids = self._get_services(service_cls).values_list(
-            'encounter__person_id', flat=True)
+        if not isinstance(service_classes, collections.Iterable):
+            service_classes = [service_classes]
+        person_ids = []
+        for service_cls in service_classes:
+            person_ids += self._get_services(service_cls).values_list(
+                'encounter__person_id', flat=True)
         anonymous_ids = self._get_anonymous_ids()
         return len(set(person_ids) - set(anonymous_ids))
 
@@ -304,9 +315,9 @@ class GovCouncilReport(BaseReport):
             (_(u'Skupiny pro rodiče a osoby blízké klientovi'),
              '', ''),
             (_(u'Pracovní terapie'),
-             clients(WorkTherapy), services(WorkTherapy)),
+             clients([WorkTherapy, WorkTherapyMeeting]), services([WorkTherapy, WorkTherapyMeeting])),
             (_(u'Sociální práce (odkazy, asistence, soc.-právní pomoc, case management)'),
-             clients(SocialWork), services(SocialWork)),
+             clients([SocialWork, AsistService, UtilityWork]), services([SocialWork, AsistService, UtilityWork])),
             (_(u'Práce s rodinou'),
              clients(WorkWithFamily), services(WorkWithFamily)),
             (_(u'Socioterapie'),
