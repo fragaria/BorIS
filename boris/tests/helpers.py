@@ -25,7 +25,7 @@ def get_tst_town():
     return get_testing_string_enum(Town, 'Rakovnik', district=get_testing_district())
 
 
-def get_tst_client(code='borivoj22', cdata=None):
+def get_tst_client(code='borivoj23', cdata=None):
     client_data = {
         'code': code,
         'sex': SEXES.MALE,
@@ -71,6 +71,7 @@ def create_service(service_class, person, date, town, kwargs_dict=None, is_by_ph
     })
 
     return service_class.objects.create(**service_kwargs)
+
 
 
 class InitialDataTestCase(TestCase):
