@@ -319,7 +319,7 @@ class GovCouncilReport(BaseReport):
             (_(u'Vstupní zhodnocení stavu klienta'),
              clients(IncomeFormFillup), services(IncomeFormFillup)),
             (_(u'Individuální poradenství'),
-             clients(IndividualCounselling), services(IndividualCounselling)),
+             clients(IndividualCounselling), subservices(IndividualCounselling)),
             (_(u'Individuální psychoterapie'),
              '', ''),
             (_(u'Skupinové poradenství'),
