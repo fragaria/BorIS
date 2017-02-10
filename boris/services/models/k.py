@@ -34,12 +34,14 @@ class GroupCounselling(Service):
         limited_to = ('Client', )
 
     @classmethod
-    def _get_stats(cls, filtering):
+    def _get_stats(cls, filtering, only_subservices=False):
         from boris.clients.models import GroupContactType
         types = GroupContactType.objects.all()
         value_stats = []
         for _type in types:
             value_stats += _group_counselling_stats(cls, filtering, _type)
+        if only_subservices:
+            return chain(value_stats)
         return chain(  # The total count is computed differently than usually.
             ((cls.service.title, sum(stat[1] for stat in value_stats)),),
             value_stats,
@@ -83,8 +85,10 @@ class HygienicService(Service):
         )
 
     @classmethod
-    def _get_stats(cls, filtering):
+    def _get_stats(cls, filtering, only_subservices=False):
         boolean_stats = _boolean_stats(cls, filtering, ('clothing_wash', 'shower', 'social_clothing'))
+        if only_subservices:
+            return chain(boolean_stats)
         return chain( # The total count is computed differently than usually.
                 ((cls.service.title, sum(stat[1] for stat in boolean_stats)),),
                 boolean_stats,

@@ -99,23 +99,18 @@ class HarmReduction(Service):
                                        self.out_count)
 
     @classmethod
-    def _get_stats(cls, filtering):
-        return chain(
-            super(HarmReduction, cls)._get_stats(filtering),
-            _boolean_stats(cls, filtering, ('standard', 'alternatives',
-                                            'acid', 'condoms',
-                                            'stericup', 'other',
-                                            'pregnancy_test',
-                                            'medical_supplies')),
-            ((_field_label(cls, 'in_count'), _sum_int(cls, filtering, 'in_count')),),
-            ((_field_label(cls, 'out_count'), _sum_int(cls, filtering, 'out_count')),),
-            ((_(u'Průměrný počet osob ve SVIP'), int(round(_avg_int(cls, filtering,
-                'svip_person_count')))),),
-            ((_(u'Nejvyšší počet osob ve SVIP'), _max_int(cls, filtering,
-                'svip_person_count')),),
-            ((_(u'Počet vydaných kapslí'), _sum_int(cls, filtering,
-                'capsule_count')),),
-        )
+    def _get_stats(cls, filtering, only_subservices=False):
+        services = super(HarmReduction, cls)._get_stats(filtering, only_subservices)
+        subservices = [_boolean_stats(cls, filtering, (
+        'standard', 'alternatives', 'acid', 'condoms', 'stericup', 'other', 'pregnancy_test', 'medical_supplies')),
+                  ((_field_label(cls, 'in_count'), _sum_int(cls, filtering, 'in_count')),),
+                  ((_field_label(cls, 'out_count'), _sum_int(cls, filtering, 'out_count')),),
+                  ((_(u'Průměrný počet osob ve SVIP'), int(round(_avg_int(cls, filtering, 'svip_person_count')))),),
+                  ((_(u'Nejvyšší počet osob ve SVIP'), _max_int(cls, filtering, 'svip_person_count')),),
+                  ((_(u'Počet vydaných kapslí'), _sum_int(cls, filtering, 'capsule_count')),), ]
+        if only_subservices:
+            return chain(subservices)
+        return chain(services, subservices)
 
 
 class IncomeExamination(Service):
@@ -206,9 +201,11 @@ class InformationService(Service):
         )
 
     @classmethod
-    def _get_stats(cls, filtering):
+    def _get_stats(cls, filtering, only_subservices=False):
         boolean_stats = _boolean_stats(cls, filtering, ('safe_usage', 'safe_sex',
             'medical', 'socio_legal', 'cure_possibilities', 'literature', 'other'))
+        if only_subservices:
+            return chain(boolean_stats)
         return chain( # The total count is computed differently than usually.
                 ((cls.service.title, sum(stat[1] for stat in boolean_stats)),),
                 boolean_stats,
@@ -269,10 +266,13 @@ class SocialWork(Service):
         )
 
     @classmethod
-    def _get_stats(cls, filtering):
-        return super(SocialWork, cls)._get_stats(filtering) + (
-            _boolean_stats(cls, filtering, ('social', 'legal', 'service_mediation',
-                                            'assistance_service', 'probation_supervision', 'other')))
+    def _get_stats(cls, filtering, only_subservices=False):
+        service = super(SocialWork, cls)._get_stats(filtering, only_subservices)
+        subservices = (_boolean_stats(cls, filtering, (
+            'social', 'legal', 'service_mediation', 'assistance_service', 'probation_supervision', 'other')))
+        if only_subservices:
+            return subservices
+        return service + subservices
 
 
 class UtilityWork(Service):
@@ -289,7 +289,7 @@ class UtilityWork(Service):
         codenumber = 12
 
     @classmethod
-    def _get_stats(cls, filtering):
+    def _get_stats(cls, filtering, only_subservices=False):
         """Count all the items in all the MultiSelectFields."""
         objects = cls.objects.filter(**filtering)
         total_count = sum(len(address.refs) for address in objects)
@@ -297,9 +297,12 @@ class UtilityWork(Service):
         for address in objects:
             for choice in address.refs:
                 substats[choice] += 1
+        subservices = ((choice[1], substats[choice[0]]) for choice in cls.REF_TYPES)
+        if only_subservices:
+            return chain(subservices)
         return chain(
             ((cls.service.title, total_count),),
-            ((choice[1], substats[choice[0]]) for choice in cls.REF_TYPES),
+            subservices,
         )
 
 
@@ -344,10 +347,13 @@ class IndividualCounselling(Service):
         )
 
     @classmethod
-    def _get_stats(cls, filtering):
-        return super(IndividualCounselling, cls)._get_stats(filtering) + (
-            _boolean_stats(cls, filtering, ('general', 'structured', 'pre_treatment',
-                                            'guarantee_interview', 'advice_to_parents')))
+    def _get_stats(cls, filtering, only_subservices=False):
+        service = super(IndividualCounselling, cls)._get_stats(filtering, only_subservices)
+        subservices = (_boolean_stats(cls, filtering, (
+            'general', 'structured', 'pre_treatment', 'guarantee_interview', 'advice_to_parents')))
+        if only_subservices:
+            return subservices
+        return service + subservices
 
 
 class Address(Service):
