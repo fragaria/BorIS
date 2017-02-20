@@ -389,3 +389,41 @@ class PhoneUsage(Service):
     class Options:
         codenumber = 14
         limited_to = ('Client',)
+
+
+class WorkForClient(Service):
+    contact_institution = models.BooleanField(default=False,
+        verbose_name=_(u'a) kontakt s institucemi'))
+    message = models.BooleanField(default=False,
+        verbose_name=_(u'b) zpráva, doporučení'))
+    search_information = models.BooleanField(default=False,
+        verbose_name=_(u'c) vyhledávání a zjišťování informací pro klienta'))
+    case_conference = models.BooleanField(default=False,
+        verbose_name=_(u'd) případová konference'))
+
+    class Meta:
+        app_label = 'services'
+        verbose_name = _(u'Práce ve prospěch klienta')
+        verbose_name_plural = _(u'Práce ve prospěch klienta')
+
+    class Options:
+        codenumber = 28
+        form_template = 'services/forms/small_cells.html'
+        fieldsets = (
+            (None, {
+                'fields': ('encounter', 'contact_institution', 'message', 'search_information',
+                    'case_conference'),
+                'classes': ('inline',)
+            }),
+        )
+
+    @classmethod
+    def _get_stats(cls, filtering, only_subservices=False):
+        boolean_stats = _boolean_stats(cls, filtering, ('contact_institution', 'message',
+            'search_information', 'case_conference'))
+        if only_subservices:
+            return chain(boolean_stats)
+        return chain( # The total count is computed differently than usually.
+                ((cls.service.title, sum(stat[1] for stat in boolean_stats)),),
+                boolean_stats,
+        )
