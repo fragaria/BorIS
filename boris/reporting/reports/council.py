@@ -62,6 +62,23 @@ class GovCouncilReport(BaseReport):
             res += self._get_services(service_cls).count()
         return res
 
+    def _get_subservice_count(self, service_classes):
+        """Return the number of performed subservices of the given class.
+        This is used when count of services should be in fact sum of selected subservices"""
+        if not isinstance(service_classes, collections.Iterable):
+            service_classes = [service_classes]
+        filtering = {
+            'encounter__performed_on__gte': self.datetime_from,
+            'encounter__performed_on__lte': self.datetime_to,
+        }
+        if self.towns:
+            filtering['encounter__where__in'] = self.towns
+        res = 0
+        for service_cls in service_classes:
+            stats = service_cls.get_stats(filtering, only_subservices=True)[1]
+            res += sum([stat[1] for stat in stats])
+        return res
+
     def _get_client_count(self, service_classes):
         """
         Return the number of clients with the given service.
@@ -275,6 +292,7 @@ class GovCouncilReport(BaseReport):
     def _get_data_services(self):
         """Get data rows for the 'services' kind."""
         services = self._get_service_count
+        subservices = self._get_subservice_count
         clients = self._get_client_count
         anon = self._get_anonymous_count
 
@@ -301,7 +319,7 @@ class GovCouncilReport(BaseReport):
             (_(u'Vstupní zhodnocení stavu klienta'),
              clients(IncomeFormFillup), services(IncomeFormFillup)),
             (_(u'Individuální poradenství'),
-             clients(IndividualCounselling), services(IndividualCounselling)),
+             clients(IndividualCounselling), subservices(IndividualCounselling)),
             (_(u'Individuální psychoterapie'),
              '', ''),
             (_(u'Skupinové poradenství'),
@@ -317,7 +335,7 @@ class GovCouncilReport(BaseReport):
             (_(u'Pracovní terapie'),
              clients([WorkTherapy, WorkTherapyMeeting]), services([WorkTherapy, WorkTherapyMeeting])),
             (_(u'Sociální práce (odkazy, asistence, soc.-právní pomoc, case management)'),
-             clients([SocialWork, AsistService, UtilityWork]), services([SocialWork, AsistService, UtilityWork])),
+             clients([SocialWork, AsistService, UtilityWork]), services([AsistService]) + subservices([SocialWork, UtilityWork])),
             (_(u'Práce s rodinou'),
              clients(WorkWithFamily), services(WorkWithFamily)),
             (_(u'Socioterapie'),
@@ -341,7 +359,7 @@ class GovCouncilReport(BaseReport):
             (_(u'Korespondenční práce'),
              clients(PostUsage), services(PostUsage)),
             (_(u'Informační servis'),
-             clients(InformationService), services(InformationService) - anon(InformationService)),
+             clients(InformationService), subservices(InformationService)),
             (_(u'Edukativní program/beseda'),
              '', ''),
             (_(u'Distribuce harm reduction materiálu'),
@@ -353,7 +371,7 @@ class GovCouncilReport(BaseReport):
             (_(u'Počet nalezených injekčních jehel a stříkaček (ks)'),
              'xxx', self._get_syringes_count()),
             (_(u'Hygienický servis'),
-             clients(HygienicService), services(HygienicService)),
+             clients(HygienicService), subservices(HygienicService)),
             (_(u'Potravinový servis'),
              clients(FoodService), services(FoodService)),
             (_(u'Testování na inf. nemoci'),

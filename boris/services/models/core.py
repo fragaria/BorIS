@@ -293,16 +293,16 @@ class Service(TimeStampedModel):
         return cls.__name__
 
     @classmethod
-    def get_stats(cls, filtering):
+    def get_stats(cls, filtering, only_subservices=False):
         """
         Return an iterator over statisitics used in service reports.
 
         Returns an iterable over pairs of (<title>, <number>).
         """
-        return (cls, cls._get_stats(filtering),)
+        return (cls, cls._get_stats(filtering, only_subservices),)
 
     @classmethod
-    def _get_stats(cls, filtering):
+    def _get_stats(cls, filtering, only_subservices=False):
         title = cls.service.title
         cnt = cls.objects.filter(**filtering).count()
         return ((title, cnt),)
