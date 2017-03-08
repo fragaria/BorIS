@@ -82,6 +82,10 @@ DRUGS = Choices( # (Numbers reflect the old drug ids.)
     (26, 'PATHOLOGICAL_GAMBLING', u'Patologické hráčství'),
     (27, 'OTHER_NON_SUBSTANCE_ADDICTION', u'Jiná nelátková závislost'),
 )
+
+# Disable `application`, `first_try_application` and `primary_drug_usage` fields for these drugs
+NON_APPLICATION_DRUGS = ['26', '27']
+
 DRUG_APPLICATION_FREQUENCY = Choices(
     (1, 'LESS_THAN_3X_A_MONTH', u'méně než 3x měsíčně'),
     (2, 'ONCE_A_WEEK', u'1x týdně'),

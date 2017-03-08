@@ -35,16 +35,12 @@
                     return true;
                 });
                 $('#id_primary_drug').change(function () {
-                    if ($(this).val() == '') {
-                        $('#id_primary_drug_usage option[value!=]').hide();
-                        $('#id_primary_drug_usage').val('');
+                    if (NON_APPLICATION_DRUGS.indexOf($(this).val()) !== -1) {
+                        $('.grp-cell.primary_drug_usage select').prop('disabled', true);
                     } else {
-                        $('#id_primary_drug_usage option[value!=]').show();
-                        if ($('#id_primary_drug_usage option:selected:first').val() == "") {
-                             $('#id_primary_drug_usage').val($('#id_primary_drug_usage option[value!=]:first').val());
-                        }
+                        $('.grp-cell.primary_drug_usage select').prop('disabled', false);
                     }
-                    return true; 
+                    return true;
                 });
                 $('#id_close_person').change();
                 

@@ -38,6 +38,7 @@
                 DATE_FORMAT = "{% get_date_format %}",
                 TIME_FORMAT = "{% get_time_format %}",
                 DATETIME_FORMAT = "{% get_datetime_format %}";
+                NON_APPLICATION_DRUGS = {% get_non_application_drugs %};
         </script>
         <!-- jQuery, jQuery-UI -->
         <script src="{% sstatic 'grappelli/jquery/jquery-1.9.1.min.js' %}" type="text/javascript"></script>
@@ -74,9 +75,31 @@
 
         <script type="text/javascript" charset="utf-8">
             var jQuery = grp.jQuery.noConflict(true);
+            function parseItemId(elemId) {
+                // id_drugusage_set-2-application > 2
+                var split = elemId.split('-');
+                if (split.length != 3) return '';
+                return split[1];
+            }
             (function($) {
                 $(document).ready(function() {
                     $("#grp-navigation .grp-collapse").grp_collapsible();
+                    if (location.pathname.indexOf('/clients/anamnesis/') !== -1) {
+                        $('.grp-cell.drug select').change(function () {
+                            var elemId = $(this)[0].id;
+                            var id = parseItemId(elemId);
+
+                            if (NON_APPLICATION_DRUGS.indexOf($(this).val()) !== -1) {
+                                $('#drugusage_set' + id + ' .grp-cell.application select').prop('disabled', true);
+                                $('#drugusage_set' + id + ' .grp-cell.first_try_application select').prop('disabled', true);
+                            } else {
+                                $('#drugusage_set' + id + ' .grp-cell.application select').prop('disabled', false);
+                                $('#drugusage_set' + id + ' .grp-cell.first_try_application select').prop('disabled', false);
+                            }
+                            return true;
+                        });
+                        $('.grp-cell.drug select').change();
+                    }
                 });
             })(grp.jQuery);
         </script>
