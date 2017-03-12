@@ -31,26 +31,32 @@ def convert_social_work(apps, schema_editor):
     IndividualCounseling = apps.get_model('services', 'IndividualCounseling')
     IndividualCounselling = apps.get_model('services', 'IndividualCounselling')
 
-    ct = ContentType.objects.get_by_natural_key('services', 'individualcounseling')
-    for ic in IndividualCounseling.objects.filter(content_type_id=ct.id):
-        _convert(IndividualCounselling, ic, {'general': True})
-        ic.delete()
+    try:
+        ct = ContentType.objects.get_by_natural_key('services', 'individualcounseling')
+        for ic in IndividualCounseling.objects.filter(content_type_id=ct.id):
+            _convert(IndividualCounselling, ic, {'general': True})
+            ic.delete()
+    except ContentType.DoesNotExist:
+        pass  # new installations don't have the ct
 
-    ct = ContentType.objects.get_by_natural_key('services', 'socialwork')
-    for service in SocialWork.objects.filter(Q(counselling=True) | Q(work_with_family=True), content_type_id=ct.id):
-        if service.counselling:
-            _convert(IndividualCounselling, service, {'pre_treatment': True})
-            print 'Converted counselling to IC.pre_treatment %s' % service.encounter
-            service.counselling = False
-        if service.work_with_family:
-            _convert(WorkWithFamily, service)
-            print 'Converted wwf to WorkWithFamily %s' % service.encounter
-            service.work_with_family = False
-        service.save()
-        if not any([getattr(service, attr.attname) for attr in SocialWork._meta.fields
-                    if attr.attname not in ('encounter_id', 'id', 'service_ptr_id', 'content_type_id', 'title', 'created', 'modified')]):
-            print 'Deleting empty SocialWork %s' % service.encounter
-            service.delete()
+    try:
+        ct = ContentType.objects.get_by_natural_key('services', 'socialwork')
+        for service in SocialWork.objects.filter(Q(counselling=True) | Q(work_with_family=True), content_type_id=ct.id):
+            if service.counselling:
+                _convert(IndividualCounselling, service, {'pre_treatment': True})
+                print 'Converted counselling to IC.pre_treatment %s' % service.encounter
+                service.counselling = False
+            if service.work_with_family:
+                _convert(WorkWithFamily, service)
+                print 'Converted wwf to WorkWithFamily %s' % service.encounter
+                service.work_with_family = False
+            service.save()
+            if not any([getattr(service, attr.attname) for attr in SocialWork._meta.fields
+                        if attr.attname not in ('encounter_id', 'id', 'service_ptr_id', 'content_type_id', 'title', 'created', 'modified')]):
+                print 'Deleting empty SocialWork %s' % service.encounter
+                service.delete()
+    except ContentType.DoesNotExist:
+        pass  # new installations don't have the ct
 
 
 def _convert(clazz, s, values=None):

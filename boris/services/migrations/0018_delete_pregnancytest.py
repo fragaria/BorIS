@@ -14,15 +14,18 @@ def convert_tests(apps, schema_editor):
     PregnancyTest = apps.get_model('services', 'PregnancyTest')
     UrineTest = apps.get_model('services', 'UrineTest')
 
-    ct = ContentType.objects.get_by_natural_key('services', 'pregnancytest')
-    for ic in PregnancyTest.objects.filter(content_type_id=ct.id):
-        new = UrineTest(encounter=ic.encounter, title=UrineTest._meta.verbose_name)
-        new.created = ic.created
-        new.modified = ic.modified
-        new.pregnancy_test = True
-        ct = ContentType.objects.get_for_model(new)
-        new.content_type_id = ct.id
-        new.save()
+    try:
+        ct = ContentType.objects.get_by_natural_key('services', 'pregnancytest')
+        for ic in PregnancyTest.objects.filter(content_type_id=ct.id):
+            new = UrineTest(encounter=ic.encounter, title=UrineTest._meta.verbose_name)
+            new.created = ic.created
+            new.modified = ic.modified
+            new.pregnancy_test = True
+            ct = ContentType.objects.get_for_model(new)
+            new.content_type_id = ct.id
+            new.save()
+    except ContentType.DoesNotExist:
+        pass  # new installations don't have the ct
 
 
 class Migration(migrations.Migration):
