@@ -134,5 +134,39 @@
       "sex": 2,
       "drug_user_type": 3
     }
+  },
+  {
+    "model": "clients.person",
+    "pk": 9,
+    "fields": {
+      "content_type": ["clients", "anonymous"],
+      "title": "muž - uživatel THC"
+    }
+  },
+  {
+    "model": "clients.anonymous",
+    "pk": 9,
+    "fields": {
+      "person_ptr": 9,
+      "sex": 2,
+      "drug_user_type": 5
+    }
+  },
+  {
+    "model": "clients.person",
+    "pk": 10,
+    "fields": {
+      "content_type": ["clients", "anonymous"],
+      "title": "žena - uživatelka THC"
+    }
+  },
+  {
+    "model": "clients.anonymous",
+    "pk": 10,
+    "fields": {
+      "person_ptr": 10,
+      "sex": 1,
+      "drug_user_type": 5
+    }
   }
 ]
