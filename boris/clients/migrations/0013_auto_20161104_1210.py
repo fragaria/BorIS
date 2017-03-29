@@ -11,6 +11,7 @@ def create_thc_users(apps, schema_editor):
     AnonymousMig = apps.get_model('clients', 'Anonymous')
     ct = ContentType.objects.get_for_model(AnonymousMig)
 
+    # titles are incorrect, fixed in 0018
     man, created_m = Anonymous.objects.get_or_create(
         sex=1, drug_user_type=5, content_type=ct, title='muž - uživatel THC')
     woman, created_w = Anonymous.objects.get_or_create(
