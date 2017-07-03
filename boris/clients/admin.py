@@ -23,6 +23,8 @@ from boris.services.models import IncomeExamination
 from boris.utils.admin import BorisBaseAdmin, textual
 from boris.utils.widgets import SplitDateWidget
 
+from boris.clients.models import TerrainNotes
+
 
 class DrugUsageInline(admin.StackedInline):
     model = DrugUsage
@@ -221,6 +223,29 @@ class PractitionerContactAdmin(BorisBaseAdmin):
         return bool(obj.pk)
 
 
+class TerrainNotesAdmin(BorisBaseAdmin):
+    list_display = ('date', 'town', 'note_short', 'user_list')
+    list_filter = ('date', 'town', 'users')
+    date_hierarchy = 'date'
+    search_fields = ('note',)
+    raw_id_fields = ('town',)
+    autocomplete_lookup_fields = {
+        'fk': ['town', ]
+    }
+    ordering = ('-date',)
+    fields = ('town', 'date', 'note', 'users')
+
+    @textual(_(u'Kdo'))
+    def user_list(self, obj):
+        return u'<br />'.join([unicode(s) for s in obj.users.all()])
+
+    @textual(_(u'Zápis'))
+    def note_short(self, obj):
+        return (obj.note[:100] + '...') if len(obj.note) > 100 else obj.note
+
+    def show_save_and_add_another(self, obj):
+        return bool(obj.pk)
+
 class GroupContactAdmin(BorisBaseAdmin):
     list_display = ('date', 'town', 'type', 'note', 'user_list', 'client_count')
     list_filter = ('date', 'town', 'type', 'users')
@@ -394,4 +419,5 @@ admin.site.register(GroupContact, GroupContactAdmin)
 admin.site.register(Anonymous, AnonymousAdmin)
 admin.site.register(Client, ClientAdmin)
 admin.site.register(Anamnesis, AnamnesisAdmin)
+admin.site.register(TerrainNotes, TerrainNotesAdmin)
 
