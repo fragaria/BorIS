@@ -18,7 +18,7 @@
     {% url "reporting_yearly" as reporting_yearly %}
     {% url "reporting_hygiene" as reporting_hygiene %}
     {% url "reporting_govcouncil" as reporting_govcouncil %}
-    {% url "terrain_notes" as terrain_notes %}
+    {% url "admin:clients_terrainnotes_changelist" as terrain_notes %}
 
     <li class="{% active index %}"><a href="{{ index }}">{% trans "Nástěnka" %}</a></li>
     <li class="{% active clients %}"><a href="{{ clients }}">{% trans "Klienti" %}</a></li>

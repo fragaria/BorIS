@@ -513,3 +513,14 @@ class ClientCard(models.Model):
     def delete(self, using=None):
         self.file.delete(save=False)
         super(ClientCard, self).delete(using=using)
+
+
+class TerrainNotes(models.Model, AdminLinkMixin):
+    users = models.ManyToManyField('auth.User', verbose_name=_('Kdo'))
+    town = models.ForeignKey('clients.Town', related_name='+', verbose_name=_(u'Město'))
+    date = models.DateField(verbose_name=_(u'Kdy'))
+    note = models.TextField(verbose_name=_(u'Zápis'), blank=True)
+
+    class Meta:
+        verbose_name = _(u'Zápis z terénu')
+        verbose_name_plural = _(u'Zápisy z terénu')
