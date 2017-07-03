@@ -31,7 +31,7 @@ class CustomIndexDashboard(Dashboard):
 
         models = ('boris.services.models.core.Encounter', 'boris.clients.models.Anamnesis',
                   'boris.clients.models.PractitionerContact', 'boris.clients.models.GroupContact',
-                  'boris.syringes.models.SyringeCollection','boris.terain.models.TerainRegistration',)
+                  'boris.syringes.models.SyringeCollection', 'boris.clients.models.TerrainNotes',)
 
         self.children.append(modules.ModelList(
             _(u'Rychlé akce'),
