@@ -19,21 +19,6 @@
         (function ($) {
 
             $(document).ready(function () {
-                $('#id_close_person,#id_sex_partner').change(function () {
-                    var close_person = $('#id_close_person').checked == 'checked';
-                    var sex_partner = $('#id_sex_partner').checked == 'checked';
-                    if (close_person || sex_partner) {
-                        $('#id_primary_drug option[value=""]').show();
-                        $('#id_primary_drug').val('');
-                    } else {
-                        $('#id_primary_drug option[value=""]').hide();
-                        if ($('#id_primary_drug').val() == '') {
-                             $('#id_primary_drug').val($('#id_primary_drug option[value!=]:first').val());
-                        }
-                    }
-                    $('#id_primary_drug').change();
-                    return true;
-                });
                 $('#id_primary_drug').change(function () {
                     if (NON_APPLICATION_DRUGS.indexOf($(this).val()) !== -1) {
                         $('.grp-cell.primary_drug_usage select').prop('disabled', true);
@@ -52,6 +37,18 @@
                         $('#id_birthdate_day, #id_birthdate_month').removeClass('inactive');
                     }
                 });
+
+                $('#id_close_person, #id_sex_partner').change(function () {
+                    var close_person = $('#id_close_person')[0].checked ;
+                    var sex_partner = $('#id_sex_partner')[0].checked ;
+                    if (close_person || sex_partner) {
+                        $('#id_primary_drug, #id_primary_drug_usage').val('');
+                        $("#id_primary_drug, #id_primary_drug_usage").prop('disabled', 'disabled');
+                    } else {
+                        $("#id_primary_drug, #id_primary_drug_usage").removeAttr("disabled")
+                    }
+                });
+                $('#id_close_person, #id_sex_partner').change();
             });
             
         })(grp.jQuery);
