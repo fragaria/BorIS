@@ -1,0 +1,34 @@
+{% load i18n services admin_static sstatic %}
+<link href="{% sstatic 'css/dashboard.css' %}" rel="stylesheet" type="text/css"/>
+<div class="info_box">
+
+    <h2 class="info">Datum prvního kontaktu</h2>
+    <p class="info_data">{{ dashboard.first }}</p>
+</div>
+
+<div class="info_box" >
+<h2 class="info" >Počet klientů od prvního kontaktu</h2>
+    <p class="info_data">{{ dashboard.all_clients }} Klientů</p>
+</div>
+
+<div  class="info_box">
+    <h2   class="info">Počet vydaných stříkaček</h2>
+    <p class="info_data">{{ dashboard.count_syringe }}ks</p>
+</div>
+
+<div class="info_box">
+<h2 class="info">TOP5 Klientů podle počtu kontaktů</h2>
+    <ol>
+        {% for client in dashboard.top_clients_by_enc %}
+            <li class="info_data">{{ client }} {{ client.num_id }}</li>
+        {% endfor %}
+    </ol>
+</div>
+<div class="info_box">
+<h2 class="info">TOP5 Klientů podle rozdílu</h2>
+    <ol>
+        {% for client in dashboard.top_clients_by_syringe_diff %}
+            <li class="info_data">{{ client }} {{ client.num_diff }}</li>
+        {% endfor %}
+    </ol>
+</div>

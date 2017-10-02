@@ -1,0 +1,68 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
+
+    {% load i18n services admin_static sstatic %}
+<link href="{% sstatic 'css/dashboard.css' %}" rel="stylesheet" type="text/css"/>
+<script src="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+
+
+<h1>Počet Kontaktů</h1>
+<div id="encounters"  class="ct-chart ct-perfect-fourth">
+<script>
+new Chartist.Bar('#encounters', {
+  labels: {{ dashboard.months | safe}},
+
+  series: [
+    {{ dashboard.encounters  | safe }},
+
+
+  ]
+}, {
+  fullWidth: true,
+
+});
+</script>
+
+</div>
+
+<h1>Počet nových klientů</h1>
+<div id="persons" class="ct-chart ct-perfect-fourth">
+<script>
+new Chartist.Bar('#persons', {
+  labels: {{ dashboard.months | safe}},
+
+  series: [
+    {{ dashboard.persons  | safe }},
+
+
+  ]
+}, {
+  fullWidth: true,
+  chartPadding: {
+    right: 8
+
+  }
+});
+</script>
+
+</div>
+    <h1>Počet vyměněných stříkaček </h1>
+    <div id="syringe" class="ct-chart ct-perfect-fourth">
+<script>
+new Chartist.Bar('#syringe', {
+  labels: {{ dashboard.months | safe}},
+
+  series: [
+    {{ dashboard.syringe  | safe }},
+
+
+  ]
+}, {
+  fullWidth: true,
+  chartPadding: {
+    right: 8
+
+  }
+});
+</script>
+
+</div>
