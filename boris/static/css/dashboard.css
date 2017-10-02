@@ -1,31 +1,52 @@
-.info_box{background-color: deepskyblue; padding: 10px; border-radius: 3px; margin-bottom: 5px;}
-.info{font-size: 1.5em; color: white; line-height: 17px;}
-.info_data{font-size: 1.3em; color: white; padding-top: 5px;}
+.info_box {
+    background-color: #309bbf;
+    padding: 10px;
+    border-radius: 3px;
+    margin-bottom: 5px;
+}
+
+.info {
+    font-size: 1.5em;
+    color: white;
+    line-height: 17px;
+}
+
+.info_data {
+    font-size: 1.3em;
+    color: white;
+    padding-top: 5px;
+}
+
+.info_data a {
+    color: #fff;
+}
+.info_data a:hover {
+    color: #ccc;
+}
 
 ol {
     list-style: decimal;
-    padding-left: 30px;
+    padding-left: 20px;
 }
- #encounters .ct-series-a .ct-bar {
-              stroke: orange;
 
-            }
+#encounters .ct-series-a .ct-bar {
+    stroke: orange;
 
-          .ct-label {
-               font-size: 10px;
-          }
+}
 
+.ct-label {
+    font-size: 10px;
+}
 
-          #syringe .ct-series-a .ct-bar {
-              stroke: green;
+#syringes .ct-series-a .ct-bar {
+    stroke: green;
 
-            }
-          #encounters{
-              height: 200px;
-           }
-          #persons{
-              height: 200px;
-           }
-          #syringe{
-              height: 200px;
-           }
+}
+
+#encounters, #persons, #syringes {
+    height: 200px;
+}
+
+#grp-content-container > div > #column_2 {
+    width: 360px;
+}
