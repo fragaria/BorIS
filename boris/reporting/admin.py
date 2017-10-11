@@ -85,7 +85,7 @@ class ServicesReportingInterface(object):
 
 class ClientsReportingInterface(object):
     tabs = (
-        interfacetab_factory(ClientReport, forms.BaseReportForm, 'clients'),
+        interfacetab_factory(ClientReport, forms.ClientsForm, 'clients'),
     )
 
 

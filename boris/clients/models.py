@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+from dateutil.relativedelta import relativedelta
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
@@ -271,6 +272,19 @@ class Anonymous(Person):
         return service.class_name() == 'Address'
 
 
+class ClientManager(models.Manager):
+    def filter_by_age(self, age_from=None, age_to=None):
+        today = datetime.date.today()
+        clients = self.all()
+        if age_from is not None:
+            born_to = today - relativedelta(years=age_from)
+            clients = clients.filter(birthdate__lte=born_to)
+        if age_to is not None:
+            born_from = today - relativedelta(years=age_to + 1)
+            clients = clients.filter(birthdate__gt=born_from)
+            return clients
+
+
 class Client(Person):
     code = models.CharField(max_length=63, unique=True, verbose_name=_(u'Kód'))
     sex = models.PositiveSmallIntegerField(choices=SEXES, verbose_name=_(u'Pohlaví'))
@@ -296,6 +310,8 @@ class Client(Person):
         verbose_name = _(u'Klient')
         verbose_name_plural = _(u'Klienti')
 
+    objects = ClientManager()
+
     def __unicode__(self):
         return self.code
 
@@ -305,7 +321,7 @@ class Client(Person):
         if not self.birthdate:
             return None
         age = datetime.date.today() - self.birthdate
-        return int(round(age.days / 365.0))
+        return int(round(age.days / 365.2425)) - 1
 
     @property
     def hygiene_report_code(self):

@@ -30,16 +30,21 @@ class ClientReport(BaseReport):
     columns = (_(u'Klientský kód'), _(u'Pohlaví'), _(u'Věk'), _(u'Město'),
         _(u'Typ klienta'), _(u'Primární droga'))
 
-    def __init__(self, date_from=None, date_to=None, towns=None):
-        client_contenttype = ContentType.objects.get_by_natural_key('clients',
-            'Client')
+    def __init__(self, date_from=None, date_to=None, towns=None, age_to=None, age_from=None):
+        client_contenttype = ContentType.objects.get_by_natural_key('clients', 'Client')
+
+        clients = Client.objects.filter_by_age(age_from, age_to)
+        client_ids = clients.values_list('id', flat=True)
+
         filtering = (
             ('performed_on__gte', date_from),
             ('performed_on__lte', date_to),
             ('where__in', towns),
             ('person__content_type', client_contenttype),
+            ('person_id__in', client_ids),
         )
-        filtering = ((f[0], f[1]) for f in filtering if f[1])
+        filtering = ((f[0], f[1]) for f in filtering if f[1] or
+                     (f[0] == 'person_id__in' and (age_to is not None or age_from is not None)))
         self.filtering = dict(filtering)
         self.date_from = date_from
         self.date_to = date_to
