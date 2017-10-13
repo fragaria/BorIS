@@ -119,7 +119,7 @@ class CustomIndexDashboard(Dashboard):
         # append another link list module for "support".
         self.children.append(modules.LinkList(
             _(u'Výstupy'),
-            column=2,
+            column=3,
             collapsible=False,
             children=[
                 {
@@ -155,7 +155,7 @@ class CustomIndexDashboard(Dashboard):
             _('Recent Actions'),
             limit=5,
             collapsible=False,
-            column=2,
+            column=3,
         ))
 
 
