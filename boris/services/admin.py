@@ -52,7 +52,7 @@ EncounterInline.service_list = service_list
 
 class EncounterAdmin(BorisBaseAdmin):
     list_display = ('person_link', 'performed_on', 'where', 'is_by_phone',
-        'service_list')
+        'service_list', 'note')
     list_display_links = None
     list_filter = ('performed_on', 'where', 'is_by_phone')
     search_fields = ('person__title', 'where__title',
@@ -60,7 +60,7 @@ class EncounterAdmin(BorisBaseAdmin):
         'performed_by__last_name')
     fieldsets = (
         (None, {'fields': (('person', 'performed_on'), ('where', 'is_by_phone'),
-            'performed_by')}),
+            'performed_by', 'note')}),
     )
     raw_id_fields = ('where', 'person')
     date_hierarchy = 'performed_on'
