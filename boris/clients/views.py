@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-
-from django.http import Http404, HttpResponse
+from datetime import datetime
+from django.http import Http404, HttpResponse, JsonResponse
 from django.utils.formats import get_format
 from django.utils.dateformat import format
 from django.utils.translation import ugettext as _
@@ -23,7 +23,7 @@ def add_note(request):
 
     if not form.is_valid():
         if 'datetime' in form.errors:
-            err_msg = _(u'Zadejte prosím platné datum a čas.')
+            err_msg = _(u'Zadejte prosím platný datum a čas.')
         elif 'text' in form.errors:
             err_msg = _(u'Zadejte prosím neprázdný text.')
         elif 'client' in form.errors:
@@ -38,11 +38,26 @@ def add_note(request):
     ret = {
         'id': client_note.pk,
         'author': client_note.author.username,
-        'datetime': format(client_note.datetime, get_format('DATETIME_FORMAT')),
+        'datetime_iso': client_note.datetime.isoformat(),
+        'datetime_formatted': format(client_note.datetime, get_format('DATETIME_FORMAT')),
         'text': client_note.text,
     }
 
     return HttpResponse(serialize(ret))
+
+
+def edit_note(request, note_id):
+    note = ClientNote.objects.get(id=note_id)
+    note.text = request.POST['text']
+    note.datetime = datetime.strptime(request.POST['datetime'], '%d.%m.%Y %H:%M')
+    note.save()
+    return JsonResponse({
+        'text': note.text,
+        'author': note.author_id,
+        'datetime_iso': note.datetime.isoformat(),
+        'datetime_formatted': format(note.datetime, get_format('DATETIME_FORMAT'))
+    })
+
 
 @permission_required('clients.delete_clientnote')
 def delete_note(request, note_id):

@@ -205,3 +205,16 @@ header#grp-header #grp-navigation ul#grp-user-tools>li a#remove_id_globalsearch_
 select, .selector select[multiple=multiple] {
     overflow: scroll;
 }
+
+#notes_wrap .date {
+    width: 150px;
+}
+#notes_wrap textarea {
+    width: 100%;
+}
+#notes_wrap .actions {
+    width: 140px;
+}
+#notes_wrap .iso-date {
+    display: none;
+}

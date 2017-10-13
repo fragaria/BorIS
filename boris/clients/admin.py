@@ -17,7 +17,7 @@ from boris.clients.models import Client, Town, Anamnesis, DrugUsage, \
     RiskyManners, Region, District, DiseaseTest, Anonymous, \
     PractitionerContact, Person, GroupContact, ClientCard, GroupContactType
 from boris.clients.forms import ReadOnlyWidget
-from boris.clients.views import add_note, delete_note
+from boris.clients.views import add_note, delete_note, edit_note
 from boris.services.admin import EncounterInline
 from boris.services.models import IncomeExamination
 from boris.utils.admin import BorisBaseAdmin, textual
@@ -359,6 +359,10 @@ class ClientAdmin(AddContactAdmin):
         my_urls = patterns('',
             url(r'^add-note/$',
                 self.admin_site.admin_view(add_note),
+                name='clients_add_note'
+            ),
+            url(r'^edit-note/(?P<note_id>\d+)/$',
+                self.admin_site.admin_view(edit_note),
                 name='clients_add_note'
             ),
             url(r'^delete-note/(?P<note_id>\d+)/$',

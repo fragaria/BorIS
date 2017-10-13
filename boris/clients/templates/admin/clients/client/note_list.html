@@ -53,14 +53,70 @@ function delete_note(link, note_id) {
     })(grp.jQuery);
 }
 
+var editedNoteId;
+var editedLink;
+function change_note(link, note_id) {
+
+    (function ($) {
+        editedNoteId = note_id;
+        editedLink = link;
+        $('.grp-tr.new').hide();
+        $('.grp-tr.editing').show();
+        var text = $(link).parents(".grp-tr").find(".note_text").text();
+        var client = $(link).parents(".grp-tr").find(".note_author").text();
+        var datetime = $(link).parents(".grp-tr").find(".note_date").text();
+        var dat = datetime.slice(8, 10) + '.' + datetime.slice(5, 7) + '.' + datetime.slice(0, 4);
+        var time = datetime.slice(-8, -3);
+        $('#change_note_text').val(text);
+        $('#change_note_author').text(client);
+        $('#change_note_date').val(dat);
+        $('#change_note_time').val(time);
+    })(grp.jQuery);
+}
+
+function save_note(link) {
+
+    (function ($) {
+        var note_id = editedNoteId;
+        $.ajax({
+                type : 'POST',
+                url : '/clients/client/edit-note/' + note_id + '/',
+                data : {
+                    'text': $('#change_note_text').val(),
+                    'datetime': $('#change_note_date').val() + ' ' + $('#change_note_time').val(),
+                    'client': {{ original.pk }}
+                },
+                success : function (data) {
+                if (typeof(data.error) != 'undefined'){
+                    alert(data.error);
+                } else {
+                    $(editedLink).parents(".grp-tr").find(".note_text").text(data.text);
+                    $(editedLink).parents(".grp-tr").find(".note_date").text(data.datetime_iso);
+                    $(editedLink).parents(".grp-tr").find(".note_date_formatted").text(data.datetime_formatted);
+                    $('#change_note_text').val('');
+                    $('.grp-tr.editing').hide();
+                    $('.grp-tr.new').show();
+                }
+            },
+            error : function () {
+                alert('{% trans "Došlo k chybě při úpravě poznámky." %}');
+            }
+        });
+    })(grp.jQuery);
+}
+
 </script>
 
 <script id="note_template" type="text/x-jquery-tmpl">
 <div class="grp-tr">
-    <div class="grp-td"><p><strong>${author}</strong></p></div>
-    <div class="grp-td"><p>${datetime}</p></div>
-    <div class="grp-td wrap_lines"><p>${text}</p></div>
-    <div class="grp-td"><p><a onclick="delete_note(this, ${id}); return false;" class="cbutton warn">{% trans "Smazat" %}</a></p></div>
+    <div class="grp-td"><p><strong class="note_author">${author}</strong></p></div>
+    <div class="grp-td iso-date"><p class="note_date">${datetime_iso}</p></div>
+    <div class="grp-td"><p class="note_date_formatted">${datetime_formatted}</p></div>
+    <div class="grp-td wrap_lines"><p class="note_text">${text}</p></div>
+    <div class="grp-td"><p>
+        <a onclick="delete_note(this, ${id}); return false;" class="cbutton warn">{% trans "Smazat" %}</a>
+        <a onclick="change_note(this, ${id}); return false;" class="cbutton">{% trans "Upravit" %}</a>
+    </p></div>
 </div>
 </script>
 <br style="clear: both" />
@@ -70,8 +126,9 @@ function delete_note(link, note_id) {
         <div class="grp-module grp-thead grp-dynamic-form">
             <div class="grp-tr">
                 <div class="grp-th">{% trans "Autor" %}</div>
-                <div class="grp-th">{% trans "Datum" %}</div>
+                <div class="grp-th date">{% trans "Datum" %}</div>
                 <div class="grp-th">{% trans "Text" %}</div>
+                <div class="grp-th actions"></div>
             </div>
         </div>
         <div class="grp-module grp-tbody grp-dynamic-form" id="notes">
@@ -81,15 +138,32 @@ function delete_note(link, note_id) {
                     <input value="{{ current_date }}" class="vDateField" type="text" id="new_note_date" size="10" name="datetime_0" />
                     <input value="{{ current_time }}" class="vTimeField" type="text" id="new_note_time" size="5" name="datetime_1" />
                 </div>
-                <div class="grp-td"><textarea id="new_note_text" style="width: 50%; margin-right: 20px;"></textarea><a class="cbutton" onclick="add_new_note(); return false;">{% trans "Přidat poznámku" %}</a></div>
-                <div class="grp-td">&nbsp;</div>
+                <div class="grp-td"><textarea id="new_note_text"></textarea></div>
+                <div class="grp-td"><a class="cbutton" onclick="add_new_note(); return false;">{% trans "Přidat poznámku" %}</a></div>
+            </div>
+            <div class="grp-tr editing" style="display: none;">
+                <div class="grp-td"><span id="change_note_author"></span></div>
+                <div class="grp-td">
+                    <input class="vDateField" type="text" id="change_note_date" size="10" name="datetime_1" />
+                    <input class="vTimeField" type="text" id="change_note_time" size="10" name="datetime_2" />
+                </div>
+                <div class="grp-td"><textarea id="change_note_text"></textarea></div>
+                <div class="grp-td"><a class="cbutton" onclick="save_note(this); return false;">{% trans "Uložit" %}</a></div>
             </div>
             {% for note in original.notes.all %}
             <div class="grp-tr">
-                <div class="grp-td"><p><strong>{{ note.author }}</strong></p></div>
-                <div class="grp-td"><p>{{ note.datetime|date:"DATETIME_FORMAT" }}</p></div>
-                <div class="grp-td wrap_lines"><p>{{ note.text }}</p></div>
-                <div class="grp-td">{% if note.author == request.user or request.user.is_superuser %}<p><a onclick="delete_note(this, {{ note.pk }}); return false;" class="cbutton warn">{% trans "Smazat" %}</a></p>{% endif %}</div>
+                <div class="grp-td"><p><strong class="note_author">{{ note.author }}</strong></p></div>
+                <div class="grp-td iso-date"><p class="note_date">{{ note.datetime|date:"c" }}</p></div>
+                <div class="grp-td"><p class="note_date_formatted">{{ note.datetime|date:"DATETIME_FORMAT" }}</p></div>
+                <div class="grp-td wrap_lines"><p class="note_text">{{ note.text }}</p></div>
+                <div class="grp-td">
+                    {% if note.author == request.user or request.user.is_superuser %}
+                        <p>
+                            <a onclick="delete_note(this, {{ note.pk }}); return false;" class="cbutton warn">{% trans "Smazat" %}</a>
+                            <a onclick="change_note(this, {{ note.pk }}); return false;" class="cbutton">{% trans "Upravit" %}</a>
+                        </p>
+                    {% endif %}
+                </div>
             </div>
             {% endfor %}
         </div>
