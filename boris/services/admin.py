@@ -50,7 +50,17 @@ class EncounterInline(admin.TabularInline):
 EncounterInline.service_list = service_list
 
 
+class EncounterForm(forms.ModelForm):
+    class Meta:
+        model = Encounter
+
+    def __init__(self, *args, **kwargs):
+        super(EncounterForm, self).__init__(*args, **kwargs)
+        self.fields['performed_by'].queryset = self.fields['performed_by'].queryset.filter(is_active=True)
+
+
 class EncounterAdmin(BorisBaseAdmin):
+    form = EncounterForm
     list_display = ('person_link', 'performed_on', 'where', 'is_by_phone',
         'service_list', 'note')
     list_display_links = None
