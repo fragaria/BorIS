@@ -150,6 +150,22 @@ class DiseaseTest(Service):
             'title': self.service.title, 'disease': self.get_disease_display()
         }
 
+    @classmethod
+    def _get_stats(cls, filtering, only_subservices=False):
+        objects = cls.objects.filter(**filtering)
+        total_count = objects.count()
+        substats = defaultdict(int)
+        for sign in DISEASE_TEST_SIGN:
+            substats[sign[0]] = objects.filter(sign=sign[0]).count()
+        subservices = ((choice[1], substats[choice[0]]) for choice in DISEASE_TEST_SIGN)
+        if only_subservices:
+            return chain(subservices)
+        return chain(
+            ((cls.service.title, total_count),),
+            subservices,
+        )
+
+
 class AsistService(Service):
     ASIST_TYPES = Choices(
         ('m', 'MEDICAL', ugettext(u'zdravotní')),
