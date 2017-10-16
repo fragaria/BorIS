@@ -100,8 +100,14 @@ class HarmReduction(Service):
 
     @classmethod
     def _get_stats(cls, filtering, only_subservices=False):
+        services = super(HarmReduction, cls)._get_stats(filtering, only_subservices)
+        if only_subservices:
+            return cls._get_subservices(filtering)
+        return chain(services, cls._get_subservices(filtering))
+
+    @classmethod
+    def _get_subservices(cls, filtering):
         return chain(
-            super(HarmReduction, cls)._get_stats(filtering, only_subservices),
             _boolean_stats(cls, filtering, ('standard', 'alternatives',
                                             'acid', 'condoms',
                                             'stericup', 'other',
@@ -110,11 +116,11 @@ class HarmReduction(Service):
             ((_field_label(cls, 'in_count'), _sum_int(cls, filtering, 'in_count')),),
             ((_field_label(cls, 'out_count'), _sum_int(cls, filtering, 'out_count')),),
             ((_(u'Průměrný počet osob ve SVIP'), int(round(_avg_int(cls, filtering,
-                'svip_person_count')))),),
+                                                                    'svip_person_count')))),),
             ((_(u'Nejvyšší počet osob ve SVIP'), _max_int(cls, filtering,
-                'svip_person_count')),),
+                                                          'svip_person_count')),),
             ((_(u'Počet vydaných kapslí'), _sum_int(cls, filtering,
-                'capsule_count')),),
+                                                    'capsule_count')),),
         )
 
 
