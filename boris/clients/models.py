@@ -282,7 +282,7 @@ class ClientManager(models.Manager):
         if age_to is not None:
             born_from = today - relativedelta(years=age_to + 1)
             clients = clients.filter(birthdate__gt=born_from)
-            return clients
+        return clients
 
 
 class Client(Person):

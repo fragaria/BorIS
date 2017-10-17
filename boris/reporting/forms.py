@@ -35,8 +35,8 @@ class ClientsForm(BaseReportForm):
 
     def clean(self):
         super(ClientsForm, self).clean()
-        if 'age_to' in self.cleaned_data and 'age_from' in self.cleaned_data and \
-                        self.cleaned_data['age_to'] < self.cleaned_data['age_from']:
+        if self.cleaned_data['age_to'] is not None and self.cleaned_data['age_from'] is not None and \
+           self.cleaned_data['age_to'] < self.cleaned_data['age_from']:
             raise ValidationError(_(u'Opravte prosím rozsah věku (do je menší než od).'))
 
     def clean_age_to(self):
