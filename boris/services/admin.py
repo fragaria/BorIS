@@ -24,11 +24,11 @@ class EncounterInline(admin.TabularInline):
     fieldsets = (
         (None, {
             'fields': ('performed_on', 'where', 'performed_by_verbose',
-                'service_count', 'service_list', 'goto_link'),
+                'service_count', 'service_list', 'note', 'goto_link'),
         }),
     )
     readonly_fields = ('performed_by_verbose', 'service_count', 'service_list',
-        'goto_link')
+        'note', 'goto_link')
     extra = 0
     template = 'admin/services/encounter/encounter_inline.html'
 
