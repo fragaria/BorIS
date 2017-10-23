@@ -181,7 +181,7 @@ class GovCouncilReport(BaseReport):
             filtering['where__in'] = self.towns
         encounters = Encounter.objects.filter(**filtering)
         clients = encounters.values_list('person', flat=True)
-        return Client.objects.filter(pk__in=clients).exclude(primary_drug=None)
+        return Client.objects.filter(pk__in=clients, close_person=False, sex_partner=False).exclude(primary_drug=None)
 
     def _get_clients_non_drug_users(self):
         """Return all sex partners and close persons from the given time period."""
