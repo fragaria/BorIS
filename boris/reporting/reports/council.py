@@ -17,7 +17,7 @@ from boris.services.models import (Encounter, Address, ContactWork,
                                    HarmReduction, BasicMedicalTreatment, InformationService,
                                    IncomeExamination, DiseaseTest, HygienicService, FoodService,
                                    WorkTherapy, PostUsage, UrineTest, GroupCounselling, WorkWithFamily,
-                                   WorkTherapyMeeting, UtilityWork, AsistService)
+                                   WorkTherapyMeeting, UtilityWork, AsistService, Service)
 from boris.syringes.models import SyringeCollection
 
 
@@ -207,6 +207,16 @@ class GovCouncilReport(BaseReport):
         this_year = date.today().year
         ages = [this_year - year for year in years]
         return int(round(float(sum(ages)) / len(ages))) if ages else 0
+
+    def _get_services_time(self):
+        __cache = dict()
+        sum = 0
+        for service in self._get_services(Service):
+            ct = service.content_type
+            if ct not in __cache:
+                __cache[ct] = service.get_time_spent()
+            sum += __cache[ct]
+        return sum
 
     # <--
 
@@ -400,8 +410,8 @@ class GovCouncilReport(BaseReport):
              '', ''),
             (_(u'Adiktologická terapie skupinová, typ I. pro skupinu max. 9 osob (38026)'),
              '', ''),
-            (_(u'Celkový čas všech poskytnutných výkonů'),
-             directly_encountered_clients_count + phone_encountered_clients_count, ''),
+            (_(u'Celkový počet/čas všech poskytnutných výkonů (hod)'),
+             directly_encountered_clients_count + phone_encountered_clients_count, '%.2f' % (self._get_services_time() / 60.0)),
         ]
 
     def get_data(self):

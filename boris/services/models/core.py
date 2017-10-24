@@ -289,6 +289,9 @@ class Service(TimeStampedModel):
         skip_fields = ('encounter', 'id', 'service_ptr')
         return any([f.editable for f in self._meta.fields if f.name not in skip_fields])
 
+    def get_time_spent(self):
+        return TimeDotation.get_time_for_type(self.content_type)
+
     @classmethod
     def class_name(cls):
         return cls.__name__
@@ -331,3 +334,21 @@ def get_model_for_class_name(class_name):
         if s.__name__ == class_name:
             return s
     raise ValueError('Service `%s` is not registered' % class_name)
+
+
+class TimeDotation(models.Model, AdminLinkMixin):
+    content_type = models.ForeignKey(ContentType, editable=False, verbose_name=_(u'Typ služby'))
+    minutes = models.PositiveIntegerField(verbose_name=_(u'Počet minut'))
+    default_minutes = models.PositiveIntegerField(verbose_name=_(u'Výchozí počet minut'), editable=False)
+
+    class Meta:
+        app_label = 'services'
+        verbose_name = _(u'Časová dotace')
+        verbose_name_plural = _(u'Časové dotace')
+
+    @classmethod
+    def get_time_for_type(cls, ct):
+        try:
+            return TimeDotation.objects.get(content_type_id=ct.id).minutes
+        except TimeDotation.DoesNotExist:
+            return 0

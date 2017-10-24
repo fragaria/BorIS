@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext_lazy as _
 
-from boris.services.models.core import Encounter
+from boris.services.models.core import Encounter, TimeDotation
 from boris.clients.forms import ReadOnlyWidget
 from boris.clients.models import Person
 from boris.utils.admin import BorisBaseAdmin
@@ -204,3 +204,17 @@ EncounterAdmin.service_list = service_list
 
 
 admin.site.register(Encounter, EncounterAdmin)
+
+
+class TimeDotationAdmin(BorisBaseAdmin):
+    ordering = ('content_type__name', )
+    list_display = ('content_type', 'minutes', 'default_minutes')
+    readonly_fields = ('content_type', 'default_minutes',)
+    fieldsets = (
+        (None, {
+            'fields': ('content_type', 'minutes', 'default_minutes',),
+        }),
+    )
+
+
+admin.site.register(TimeDotation, TimeDotationAdmin)
