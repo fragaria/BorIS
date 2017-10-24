@@ -32,13 +32,13 @@ class AllClientEncounters(EncounterAggregation):
 class IvClientEncounters(AllClientEncounters):
     title = _(u'Z toho injekčních uživatelů drog')
     filtering = {'is_client': True, 'primary_drug_usage': DRUG_APPLICATION_TYPES.VEIN_INJECTION,
-                 'close_person': False, 'sex_partner': False}
+                 'is_close_person': False, 'is_sex_partner': False}
 
 
 class NonIvClientEncounters(AllClientEncounters):
     title = _(u'Z toho neinjekčních uživatelů drog')
     filtering = {'is_client': True, 'primary_drug__isnull': False,
-                 'close_person': False, 'sex_partner': False}
+                 'is_close_person': False, 'is_sex_partner': False}
     excludes = {'primary_drug_usage': DRUG_APPLICATION_TYPES.VEIN_INJECTION}
 
 
@@ -150,8 +150,7 @@ class FirstContactCountIV(FirstContactCount):
     filtering = (
         Q(person__client__primary_drug_usage__in=(DRUG_APPLICATION_TYPES.VEIN_INJECTION,
                                                   DRUG_APPLICATION_TYPES.MUSCLE_INJECTION)) &
-        Q(close_person=False) &
-        Q(sex_partner=False) &
+        Q(is_client=True) &
         Q(content_type_model='incomeexamination')
     ) | (
         Q(person__anonymous__drug_user_type=ANONYMOUS_TYPES.IV) &
