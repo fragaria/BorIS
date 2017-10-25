@@ -160,10 +160,14 @@ class DiseaseTest(Service):
     def _get_stats(cls, filtering, only_subservices=False):
         objects = cls.objects.filter(**filtering)
         total_count = objects.count()
-        substats = defaultdict(int)
-        for sign in DISEASE_TEST_SIGN:
-            substats[sign[0]] = objects.filter(sign=sign[0]).count()
-        subservices = ((choice[1], substats[choice[0]]) for choice in DISEASE_TEST_SIGN)
+        substats = defaultdict(defaultdict)
+        for disease in DISEASES:
+            substats[disease[0]] = defaultdict(int)
+            for sign in DISEASE_TEST_SIGN:
+                substats[disease[0]][sign[0]] = objects.filter(disease=disease[0], sign=sign[0]).count()
+        subservices = []
+        for disease in DISEASES:
+            [subservices.append(('%s: %s' % (disease[1], sign[1]), substats[disease[0]][sign[0]])) for sign in DISEASE_TEST_SIGN]
         if only_subservices:
             return chain(subservices)
         return chain(

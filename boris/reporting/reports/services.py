@@ -34,7 +34,7 @@ class ServiceReport(BaseReport):
 
     def _get_service_stats(self):
         return [
-            service.get_stats(self.filtering) for service in service_list(self.person)
+            service.get_stats(self.filtering) for service in service_list(self.person, diseases_last=True)
             if service.service.include_in_reports
         ]
 

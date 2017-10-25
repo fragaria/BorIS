@@ -312,7 +312,7 @@ class Service(TimeStampedModel):
         return ((title, cnt),)
 
 
-def service_list(person=None):
+def service_list(person=None, diseases_last=False):
     """
     Returns a list of person's services registered in application.
 
@@ -325,7 +325,11 @@ def service_list(person=None):
         )
     else:
         services = Service.registered_services
-    return sorted(services, key=lambda x: x.service.codenumber)
+
+    if diseases_last:
+        return sorted(services, key=lambda x: x.service.codenumber if x.service.codenumber != 8 else 999)
+    else:
+        return sorted(services, key=lambda x: x.service.codenumber)
 
 
 def get_model_for_class_name(class_name):
