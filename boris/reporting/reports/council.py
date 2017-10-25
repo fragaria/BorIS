@@ -309,10 +309,11 @@ class GovCouncilReport(BaseReport):
         harm_reductions = self._get_services(HarmReduction)
         direct_client_encounters = self._get_direct_client_encounters()
         phone_client_encounters = self._get_phone_client_encounters()
-        directly_encountered_clients_count = len(set(
-            direct_client_encounters.values_list('person_id', flat=True)))
-        phone_encountered_clients_count = len(set(
-            phone_client_encounters.values_list('person_id', flat=True)))
+        directly_encountered_client_ids = set(direct_client_encounters.values_list('person_id', flat=True))
+        phone_encountered_client_ids = set(phone_client_encounters.values_list('person_id', flat=True))
+        directly_encountered_clients_count = len(directly_encountered_client_ids)
+        phone_encountered_clients_count = len(phone_encountered_client_ids)
+        total_clients_count = len(directly_encountered_client_ids & phone_encountered_client_ids)
 
         pregnancy_test_services = self._get_services(UrineTest).filter(pregnancy_test=True)
         drug_test_services = self._get_services(UrineTest).filter(drug_test=True)
@@ -411,7 +412,7 @@ class GovCouncilReport(BaseReport):
             (_(u'Adiktologická terapie skupinová, typ I. pro skupinu max. 9 osob (38026)'),
              '', ''),
             (_(u'Celkový počet/čas všech poskytnutných výkonů (hod)'),
-             directly_encountered_clients_count + phone_encountered_clients_count, '%.2f' % (self._get_services_time() / 60.0)),
+             total_clients_count, '%.2f' % (self._get_services_time() / 60.0)),
         ]
 
     def get_data(self):
