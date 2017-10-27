@@ -292,7 +292,7 @@ class Service(TimeStampedModel):
     def get_time_spent(self, filtering):
         from boris.reporting.reports.council import INDIRECT_CONTENT_TYPES
 
-        subservices = self.cast()._get_stats(filtering, only_subservices=True)
+        subservices = self.cast()._get_stats(filtering, only_subservices=True, only_basic=True)
         subservices_count = sum([s[1] for s in subservices])
         if self.encounter.is_by_phone and self.content_type in INDIRECT_CONTENT_TYPES:
             return TimeDotation.get_time_for_type(ContentType.objects.get_for_model(IndirectService)) * subservices_count
@@ -303,16 +303,16 @@ class Service(TimeStampedModel):
         return cls.__name__
 
     @classmethod
-    def get_stats(cls, filtering, only_subservices=False):
+    def get_stats(cls, filtering, only_subservices=False, only_basic=False):
         """
         Return an iterator over statisitics used in service reports.
 
         Returns an iterable over pairs of (<title>, <number>).
         """
-        return (cls, cls._get_stats(filtering, only_subservices),)
+        return (cls, cls._get_stats(filtering, only_subservices, only_basic),)
 
     @classmethod
-    def _get_stats(cls, filtering, only_subservices=False):
+    def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
         title = cls.service.title
         cnt = cls.objects.filter(**filtering).count()
         return ((title, cnt),)

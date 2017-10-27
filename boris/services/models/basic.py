@@ -99,14 +99,22 @@ class HarmReduction(Service):
                                        self.out_count)
 
     @classmethod
-    def _get_stats(cls, filtering, only_subservices=False):
+    def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
         services = super(HarmReduction, cls)._get_stats(filtering, only_subservices)
         if only_subservices:
-            return cls._get_subservices(filtering)
+            return cls._get_subservices(filtering, only_basic)
         return chain(services, cls._get_subservices(filtering))
 
     @classmethod
-    def _get_subservices(cls, filtering):
+    def _get_subservices(cls, filtering, only_basic=False):
+        if only_basic:
+            return chain(
+                _boolean_stats(cls, filtering, ('standard', 'alternatives',
+                                                'acid', 'condoms',
+                                                'stericup', 'other',
+                                                'pregnancy_test',
+                                                'medical_supplies')),
+            )
         return chain(
             _boolean_stats(cls, filtering, ('standard', 'alternatives',
                                             'acid', 'condoms',
@@ -157,7 +165,7 @@ class DiseaseTest(Service):
         }
 
     @classmethod
-    def _get_stats(cls, filtering, only_subservices=False):
+    def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
         objects = cls.objects.filter(**filtering)
         total_count = objects.count()
         substats = defaultdict(defaultdict)
@@ -232,7 +240,7 @@ class InformationService(Service):
         )
 
     @classmethod
-    def _get_stats(cls, filtering, only_subservices=False):
+    def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
         boolean_stats = _boolean_stats(cls, filtering, ('safe_usage', 'safe_sex',
             'medical', 'socio_legal', 'cure_possibilities', 'literature', 'other'))
         if only_subservices:
@@ -297,7 +305,7 @@ class SocialWork(Service):
         )
 
     @classmethod
-    def _get_stats(cls, filtering, only_subservices=False):
+    def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
         service = super(SocialWork, cls)._get_stats(filtering, only_subservices)
         subservices = (_boolean_stats(cls, filtering, (
             'social', 'legal', 'service_mediation', 'assistance_service', 'probation_supervision', 'other')))
@@ -320,7 +328,7 @@ class UtilityWork(Service):
         codenumber = 12
 
     @classmethod
-    def _get_stats(cls, filtering, only_subservices=False):
+    def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
         """Count all the items in all the MultiSelectFields."""
         objects = cls.objects.filter(**filtering)
         total_count = sum(len(address.refs) for address in objects)
@@ -378,7 +386,7 @@ class IndividualCounselling(Service):
         )
 
     @classmethod
-    def _get_stats(cls, filtering, only_subservices=False):
+    def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
         service = super(IndividualCounselling, cls)._get_stats(filtering, only_subservices)
         subservices = (_boolean_stats(cls, filtering, (
             'general', 'structured', 'pre_treatment', 'guarantee_interview', 'advice_to_parents')))
@@ -449,7 +457,7 @@ class WorkForClient(Service):
         )
 
     @classmethod
-    def _get_stats(cls, filtering, only_subservices=False):
+    def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
         boolean_stats = _boolean_stats(cls, filtering, ('contact_institution', 'message',
             'search_information', 'case_conference'))
         if only_subservices:

@@ -88,7 +88,7 @@ class GovCouncilReport(BaseReport):
             filtering['encounter__where__in'] = self.towns
         res = 0
         for service_cls in service_classes:
-            stats = service_cls.get_stats(filtering, only_subservices=True)[1]
+            stats = service_cls.get_stats(filtering, only_subservices=True, only_basic=True)[1]
             res += sum([stat[1] for stat in stats])
         return res
 
@@ -346,7 +346,7 @@ class GovCouncilReport(BaseReport):
             (_(u'Vstupní zhodnocení stavu klienta'),
              clients(IncomeFormFillup), services(IncomeFormFillup)),
             (_(u'Individuální poradenství'),
-             clients(IndividualCounselling), subservices(IndividualCounselling)),
+             clients(IndividualCounselling), self.get_direct_subservice_count(IndividualCounselling)),
             (_(u'Individuální psychoterapie'),
              '', ''),
             (_(u'Skupinové poradenství'),
@@ -362,7 +362,7 @@ class GovCouncilReport(BaseReport):
             (_(u'Pracovní terapie'),
              clients([WorkTherapy, WorkTherapyMeeting]), services([WorkTherapy, WorkTherapyMeeting])),
             (_(u'Sociální práce (odkazy, asistence, soc.-právní pomoc, case management)'),
-             clients([SocialWork, AsistService, UtilityWork]), services([AsistService]) + subservices([SocialWork, UtilityWork])),
+             clients([SocialWork, AsistService, UtilityWork]), services([AsistService]) + self.get_direct_subservice_count(SocialWork) + subservices(UtilityWork)),
             (_(u'Práce s rodinou'),
              clients(WorkWithFamily), services(WorkWithFamily)),
             (_(u'Socioterapie'),
