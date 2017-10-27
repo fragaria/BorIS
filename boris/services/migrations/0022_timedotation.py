@@ -27,6 +27,7 @@ def add_default_times(apps, schema_editor):
         ((apps.get_model('services', 'FoodService')), 20),
         ((apps.get_model('services', 'DiseaseTest')), 30),
         ((apps.get_model('services', 'UrineTest')), 20),
+        ((apps.get_model('services', 'IndirectService')), 10),
     ]
     for data in DATA:
         ct = ContentType.objects.get_by_natural_key(data[0]._meta.app_label,
@@ -44,7 +45,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('contenttypes', '0001_initial'),
-        ('services', '0020_encounter_note'),
+        ('services', '0021_indirectservice'),
     ]
 
     operations = [

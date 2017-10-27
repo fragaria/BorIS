@@ -2,7 +2,7 @@
 """Report for the Czech Government Council for Drug Policy Coordination."""
 import collections
 from datetime import datetime, date, time
-
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q, Sum
 from django.template import loader
 from django.template.context import RequestContext
@@ -20,6 +20,12 @@ from boris.services.models import (Encounter, Address, ContactWork,
                                    WorkTherapyMeeting, UtilityWork, AsistService, Service)
 from boris.syringes.models import SyringeCollection
 
+
+from boris.services.models import SocialWork
+from boris.services.models import IndividualCounselling
+from boris.services.models import InformationService
+INDIRECT_CONTENT_TYPES = [ContentType.objects.get_for_model(cls) for cls in
+                          (SocialWork, IndividualCounselling, InformationService)]
 
 class GovCouncilReport(BaseReport):
     title = u'RVKPP'
@@ -223,13 +229,9 @@ class GovCouncilReport(BaseReport):
         }
         if self.towns:
             filtering['encounter__where__in'] = self.towns
-        __cache = dict()
         sum = 0
         for service in self._get_services(Service):
-            ct = service.content_type
-            if ct not in __cache:
-                __cache[ct] = service.get_time_spent(filtering)
-            sum += __cache[ct]
+            sum += service.get_time_spent(filtering)
         return sum
 
     # <--
