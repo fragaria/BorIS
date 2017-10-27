@@ -322,8 +322,8 @@ class IndirectService(Service):
     # dummy class to enable setting timedotation for indirect encounters
     class Meta:
         app_label = 'services'
-        verbose_name = _(u'Telefonické, písemné a internetové poradenství')
-        verbose_name_plural = _(u'Telefonické, písemné a internetové poradenství')
+        verbose_name = _(u'Telefonické, písemné a internetové p.')
+        verbose_name_plural = _(u'Telefonické, písemné a internetové p.')
 
 
 def service_list(person=None, diseases_last=False):
