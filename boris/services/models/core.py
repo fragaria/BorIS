@@ -289,8 +289,10 @@ class Service(TimeStampedModel):
         skip_fields = ('encounter', 'id', 'service_ptr')
         return any([f.editable for f in self._meta.fields if f.name not in skip_fields])
 
-    def get_time_spent(self):
-        return TimeDotation.get_time_for_type(self.content_type)
+    def get_time_spent(self, filtering):
+        subservices = self.cast()._get_stats(filtering, only_subservices=True)
+        subservices_count = sum([s[1] for s in subservices])
+        return TimeDotation.get_time_for_type(self.content_type) * subservices_count
 
     @classmethod
     def class_name(cls):

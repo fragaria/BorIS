@@ -44,25 +44,30 @@ class GovCouncilReport(BaseReport):
             self._anonymous_ids = Anonymous.objects.values_list('pk', flat=True)
         return self._anonymous_ids
 
-    def _get_services(self, service_cls):
+    def _get_services(self, service_cls, extra_filtering=None):
         filtering = {
             'encounter__performed_on__gte': self.datetime_from,
             'encounter__performed_on__lte': self.datetime_to,
         }
+        if extra_filtering is not None:
+            filtering.update(extra_filtering)
         if self.towns:
             filtering['encounter__where__in'] = self.towns
         return service_cls.objects.filter(**filtering)
 
-    def _get_service_count(self, service_classes):
+    def _get_service_count(self, service_classes, extra_filtering=None):
         """Return the number of performed services of the given class."""
         if not isinstance(service_classes, collections.Iterable):
             service_classes = [service_classes]
         res = 0
         for service_cls in service_classes:
-            res += self._get_services(service_cls).count()
+            res += self._get_services(service_cls, extra_filtering=extra_filtering).count()
         return res
 
-    def _get_subservice_count(self, service_classes):
+    def get_direct_subservice_count(self, service_classes):
+        return self._get_subservice_count(service_classes, extra_filtering={'encounter__is_by_phone': False})
+
+    def _get_subservice_count(self, service_classes, extra_filtering=None):
         """Return the number of performed subservices of the given class.
         This is used when count of services should be in fact sum of selected subservices"""
         if not isinstance(service_classes, collections.Iterable):
@@ -71,6 +76,8 @@ class GovCouncilReport(BaseReport):
             'encounter__performed_on__gte': self.datetime_from,
             'encounter__performed_on__lte': self.datetime_to,
         }
+        if extra_filtering is not None:
+            filtering.update(extra_filtering)
         if self.towns:
             filtering['encounter__where__in'] = self.towns
         res = 0
@@ -79,7 +86,7 @@ class GovCouncilReport(BaseReport):
             res += sum([stat[1] for stat in stats])
         return res
 
-    def _get_client_count(self, service_classes):
+    def _get_client_count(self, service_classes, extra_filtering=None):
         """
         Return the number of clients with the given service.
 
@@ -90,10 +97,13 @@ class GovCouncilReport(BaseReport):
             service_classes = [service_classes]
         person_ids = []
         for service_cls in service_classes:
-            person_ids += self._get_services(service_cls).values_list(
+            person_ids += self._get_services(service_cls, extra_filtering=extra_filtering).values_list(
                 'encounter__person_id', flat=True)
         anonymous_ids = self._get_anonymous_ids()
         return len(set(person_ids) - set(anonymous_ids))
+
+    def _get_direct_client_count(self, service_classes):
+        return self._get_client_count(service_classes, extra_filtering={'encounter__is_by_phone': False})
 
     def _get_queryset_client_count(self, qs):
         """
@@ -146,15 +156,13 @@ class GovCouncilReport(BaseReport):
         return Encounter.objects.filter(**filtering).exclude(**exclude)
 
     def _get_phone_advice_count(self):
-        encounter_ids = set()
+        sum = 0
         for cls in (SocialWork, IndividualCounselling, InformationService):
-            services = self._get_services(cls)
-            encounter_ids.update(services.values_list('encounter_id', flat=True))
-        filtering = { # Time filtering has been performed on the services list.
-            'is_by_phone': True,
-            'id__in': encounter_ids,
-        }
-        return Encounter.objects.filter(**filtering).count()
+            filtering = {
+                'encounter__is_by_phone': True,
+            }
+            sum += self._get_subservice_count(cls, extra_filtering=filtering)
+        return sum
 
     def _get_performed_tests_count(self, disease):
         filtering = {'disease': disease}
@@ -209,12 +217,18 @@ class GovCouncilReport(BaseReport):
         return int(round(float(sum(ages)) / len(ages))) if ages else 0
 
     def _get_services_time(self):
+        filtering = {
+            'encounter__performed_on__gte': self.datetime_from,
+            'encounter__performed_on__lte': self.datetime_to,
+        }
+        if self.towns:
+            filtering['encounter__where__in'] = self.towns
         __cache = dict()
         sum = 0
         for service in self._get_services(Service):
             ct = service.content_type
             if ct not in __cache:
-                __cache[ct] = service.get_time_spent()
+                __cache[ct] = service.get_time_spent(filtering)
             sum += __cache[ct]
         return sum
 
@@ -370,11 +384,11 @@ class GovCouncilReport(BaseReport):
             (_(u'Korespondenční práce'),
              clients(PostUsage), services(PostUsage)),
             (_(u'Informační servis'),
-             clients(InformationService), subservices(InformationService)),
+             self._get_direct_client_count(InformationService), self.get_direct_subservice_count(InformationService)),
             (_(u'Edukativní program/beseda'),
              '', ''),
             (_(u'Distribuce harm reduction materiálu'),
-             clients(HarmReduction), services(HarmReduction)),
+             clients(HarmReduction), subservices(HarmReduction)),
             (_(u'Počet vydaných injekčních jehel a stříkaček (ks)'),
              'xxx', harm_reductions.aggregate(Sum('out_count'))['out_count__sum']),
             (_(u'Počet přijatých injekčních jehel a stříkaček (ks)'),
@@ -386,7 +400,7 @@ class GovCouncilReport(BaseReport):
             (_(u'Potravinový servis'),
              clients(FoodService), services(FoodService)),
             (_(u'Testování na inf. nemoci'),
-             clients(DiseaseTest), services(DiseaseTest)),
+             clients(DiseaseTest), subservices(DiseaseTest)),
             (_(u'– z toho na HIV'),
              self._get_tested_clients_count(DISEASES.HIV), self._get_performed_tests_count(DISEASES.HIV)),
             (_(u'– z toho na HCV'),
