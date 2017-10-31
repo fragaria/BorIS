@@ -390,7 +390,7 @@ class GovCouncilReport(BaseReport):
             (_(u'Edukativní program/beseda'),
              '', ''),
             (_(u'Distribuce harm reduction materiálu'),
-             clients(HarmReduction), subservices(HarmReduction)),
+             clients(HarmReduction), services(HarmReduction)),
             (_(u'Počet vydaných injekčních jehel a stříkaček (ks)'),
              'xxx', harm_reductions.aggregate(Sum('out_count'))['out_count__sum']),
             (_(u'Počet přijatých injekčních jehel a stříkaček (ks)'),
