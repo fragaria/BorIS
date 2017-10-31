@@ -317,6 +317,7 @@ class ClientAdmin(AddContactAdmin):
             ('town',),
             ('first_name', 'last_name'),
             ('birthdate', 'birthdate_year_only'),
+            ('email', 'phone_number'),
             ('close_person', 'sex_partner'),
             ('primary_drug', 'primary_drug_usage'),
             ('first_contact_verbose', 'last_contact_verbose'),
