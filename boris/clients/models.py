@@ -305,7 +305,7 @@ class Client(Person):
         verbose_name=_(u'Osoba blízká (rodiče apod.)'))
     sex_partner = models.BooleanField(default=False,
         verbose_name=_(u'Sexuální partner'))
-    phone_number = models.IntegerField(max_length=20, blank=True, null=True, verbose_name=_(u'Telefonní číslo'))
+    phone_number = models.CharField(max_length=30, blank=True, null=True, verbose_name=_(u'Telefonní číslo'))
     email = models.EmailField(max_length=80, blank=True, null=True, verbose_name=_(u'E-mail'))
 
     class Meta:

@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='client',
             name='phone_number',
-            field=models.IntegerField(max_length=20, null=True, verbose_name='Telefonn\xed \u010d\xedslo', blank=True),
+            field=models.CharField(max_length=30, null=True, verbose_name='Telefonn\xed \u010d\xedslo', blank=True),
             preserve_default=True,
         ),
     ]

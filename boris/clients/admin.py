@@ -310,7 +310,7 @@ class ClientAdmin(AddContactAdmin):
                     'town', 'encounter_count')
     list_actions = ('add_contact_button',)
     list_filter = ('town', 'sex', 'primary_drug', 'encounters__performed_on', FirstEncounterListFilter)
-    search_fields = ('code', 'first_name', 'last_name')
+    search_fields = ('code', 'first_name', 'last_name', 'email', 'phone_number')
     fieldsets = (
         (_(u'Základní informace'), {'fields': (
             ('code', 'sex'),
