@@ -162,7 +162,7 @@ class ReportingInterfaceHandler(object):
 
 class TownReportingInterfaceHandler(ReportingInterfaceHandler):
     id = 'towns'
-    title = u'Města a okresy'
+    title = u'Základní souhrnný'
     interface_class = TownReportingInterface
 
 
