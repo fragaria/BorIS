@@ -230,8 +230,12 @@ class GovCouncilReport(BaseReport):
         if self.towns:
             filtering['encounter__where__in'] = self.towns
         sum = 0
+        content_types = []
         for service in self._get_services(Service):
-            sum += service.get_time_spent(filtering)
+            # prevent double count in case of same service class being multiple on one encounter
+            if service.content_type not in content_types:
+                sum += service.get_time_spent(filtering)
+                content_types.append(service.content_type)
         return sum
 
     # <--
