@@ -18,6 +18,8 @@ def add_default_times(apps, schema_editor):
         ((apps.get_model('services', 'CrisisIntervention')), 30),
         ((apps.get_model('services', 'WorkTherapy')), 60),
         ((apps.get_model('services', 'SocialWork')), 30),
+        ((apps.get_model('services', 'UtilityWork')), 30),
+        ((apps.get_model('services', 'AsistService')), 30),
         ((apps.get_model('services', 'WorkWithFamily')), 30),
         ((apps.get_model('services', 'BasicMedicalTreatment')), 10),
         ((apps.get_model('services', 'PostUsage')), 20),
