@@ -26,6 +26,8 @@ from boris.services.models import IndividualCounselling
 from boris.services.models import InformationService
 INDIRECT_CONTENT_TYPES = [ContentType.objects.get_for_model(cls) for cls in
                           (SocialWork, IndividualCounselling, InformationService)]
+NO_SUBSERVICE_CONTENT_TYPES = [ContentType.objects.get_for_model(cls) for cls in (HarmReduction,)]
+
 
 class GovCouncilReport(BaseReport):
     title = u'RVKPP'
