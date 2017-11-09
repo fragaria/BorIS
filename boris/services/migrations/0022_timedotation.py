@@ -32,6 +32,7 @@ def add_default_times(apps, schema_editor):
         ((apps.get_model('services', 'IndirectService')), 10),
     ]
     for data in DATA:
+        print 'Adding dotation for ct: %s' % data[0]._meta.object_name
         ct = ContentType.objects.get_by_natural_key(data[0]._meta.app_label,
                                                     data[0]._meta.object_name.lower())
         td, _ = TimeDotation.objects.get_or_create(content_type_id=ct.id,
