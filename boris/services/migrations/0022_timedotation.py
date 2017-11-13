@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.contrib.contenttypes.management import update_all_contenttypes
 from django.contrib.contenttypes.models import ContentType
 from django.db import models, migrations
 import fragapy.common.models.adminlink
@@ -8,6 +9,9 @@ import fragapy.common.models.adminlink
 
 def add_default_times(apps, schema_editor):
     TimeDotation = apps.get_model('services', 'TimeDotation')
+
+    # create ct for IndirectService now (otherwise would be created in post_migrate signal, which is too late)
+    update_all_contenttypes(interactive=False)
 
     DATA = [
         ((apps.get_model('services', 'Address')), 60),
