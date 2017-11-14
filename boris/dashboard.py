@@ -39,7 +39,7 @@ class CustomIndexDashboard(Dashboard):
         clients = Client.objects.annotate(num_in=Sum('encounters__services__harmreduction__in_count'),
                                           num_out=Sum('encounters__services__harmreduction__out_count'))
         for client in clients:
-            client.num_diff = (client.num_out or 0) - (client.num_in or 0)
+            client.num_diff = (client.num_in or 0) - (client.num_out or 0)
 
         self.top_clients_by_syringe_diff = sorted(clients, lambda a, b: abs(b.num_diff) - abs(a.num_diff))[:5]
         self.all_clients = Client.objects.aggregate(Count('id')).get('id__count', 0)
@@ -62,13 +62,9 @@ class CustomIndexDashboard(Dashboard):
             enc_count = Encounter.objects.filter(performed_on__month=month, performed_on__year=year).count()
             person_count = Client.objects.filter(created__month=month, created__year=year).count()
 
-            syringe_count = 0
-            syringe_count += HarmReduction.objects.filter(encounter__performed_on__month=month,
-                                                          encounter__performed_on__year=year).aggregate(
+            syringe_count = HarmReduction.objects.filter(encounter__performed_on__month=month,
+                                                         encounter__performed_on__year=year).aggregate(
                                                             Sum('out_count')).get('out_count__sum', 0) or 0
-            syringe_count += HarmReduction.objects.filter(encounter__performed_on__month=month,
-                                                          encounter__performed_on__year=year).aggregate(
-                                                            Sum('in_count')).get('in_count__sum', 0) or 0
 
             self.encounters.append(enc_count)
             self.persons.append(person_count)
