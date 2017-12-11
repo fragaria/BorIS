@@ -107,6 +107,8 @@ class HarmReduction(Service):
 
     @classmethod
     def _get_subservices(cls, filtering, only_basic=False):
+        in_sum = _sum_int(cls, filtering, 'in_count')
+        out_sum = _sum_int(cls, filtering, 'out_count')
         if only_basic:
             return chain(
                 _boolean_stats(cls, filtering, ('standard', 'alternatives',
@@ -121,8 +123,9 @@ class HarmReduction(Service):
                                             'stericup', 'other',
                                             'pregnancy_test',
                                             'medical_supplies')),
-            ((_field_label(cls, 'in_count'), _sum_int(cls, filtering, 'in_count')),),
-            ((_field_label(cls, 'out_count'), _sum_int(cls, filtering, 'out_count')),),
+            ((_field_label(cls, 'in_count'), in_sum),),
+            ((_field_label(cls, 'out_count'), out_sum),),
+            ((_( u'Návratnost stříkaček'), "{:.2f}%".format(float(in_sum) / float(out_sum) * 100)),),
             ((_(u'Průměrný počet osob ve SVIP'), int(round(_avg_int(cls, filtering,
                                                                     'svip_person_count')))),),
             ((_(u'Nejvyšší počet osob ve SVIP'), _max_int(cls, filtering,
