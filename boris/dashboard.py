@@ -45,7 +45,7 @@ class CustomIndexDashboard(Dashboard):
         self.all_clients = Client.objects.aggregate(Count('id')).get('id__count', 0)
         self.top_clients_by_enc = Client.objects.annotate(enc_count=Count('encounters')).order_by('-enc_count')[:5]
         self.count_syringe = HarmReduction.objects.aggregate(Sum('out_count')).get('out_count__sum', 0)
-        self.first_contact = Encounter.objects.order_by('performed_on')[0]
+        self.first_contact = Encounter.objects.order_by('performed_on')[0] if Encounter.objects.order_by('performed_on') else None
 
     def init_with_context(self, context):
         user = context['request'].user
