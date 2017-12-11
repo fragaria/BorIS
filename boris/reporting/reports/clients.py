@@ -30,9 +30,8 @@ class ClientReport(BaseReport):
     columns = (_(u'Klientský kód'), _(u'Pohlaví'), _(u'Věk'), _(u'Město'),
         _(u'Typ klienta'), _(u'Primární droga'))
 
-    def __init__(self, date_from=None, date_to=None, towns=None, age_to=None, age_from=None):
+    def __init__(self, date_from=None, date_to=None, towns=None, services=None, age_to=None, age_from=None):
         client_contenttype = ContentType.objects.get_by_natural_key('clients', 'Client')
-
         clients = Client.objects.filter_by_age(age_from, age_to)
         client_ids = clients.values_list('id', flat=True)
 
@@ -40,6 +39,7 @@ class ClientReport(BaseReport):
             ('performed_on__gte', date_from),
             ('performed_on__lte', date_to),
             ('where__in', towns),
+            ('services__content_type__id__in', services),
             ('person__content_type', client_contenttype),
             ('person_id__in', client_ids),
         )
@@ -49,6 +49,7 @@ class ClientReport(BaseReport):
         self.date_from = date_from
         self.date_to = date_to
         self.towns = towns
+        self.services = services
 
     def get_filename(self):
         return 'souhrn_klientu.xls'
@@ -78,6 +79,7 @@ class ClientReport(BaseReport):
                 'report': self,
                 'stats': client_stats,
                 'towns': [t.title for t in self.towns],
+                'services': self.services,
                 'date_from': self.date_from,
                 'date_to': self.date_to,
                 'average_age': self.get_average_age(client_stats),
