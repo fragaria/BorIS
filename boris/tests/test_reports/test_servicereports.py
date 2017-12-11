@@ -100,7 +100,7 @@ class TestServiceReports(TestCase):
     def test_include_in_reports(self):
         classes = [s for s in service_list() if s.service.include_in_reports]
         stat_classes = [s[0] for s in ServiceReport()._get_service_stats()]
-        self.assertEqual(classes, stat_classes)
+        self.assertEqual(sorted(classes), sorted(stat_classes))
 
     def test_encounter_first(self):
         e1 = Encounter.objects.first(2011)
