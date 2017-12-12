@@ -255,7 +255,6 @@ class GovCouncilReport(BaseReport):
                                                            DRUGS.OTHER_NON_SUBSTANCE_ADDICTION)
 
         return [  # (<id>, <label>, <client_count>)
-            (_(u'TP - terénní programy'), u'', u''),
             (_(u'skupina 1'), _(u'Klienti - uživatelé drog, kromě alkoholu (sk. 2) a tabáku (sk. 3)'), u''),
             (_(u'1.1'), _(u'základní droga heroin'), drug(DRUGS.HEROIN)),
             (_(u'1.2'), _(
