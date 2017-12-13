@@ -44,5 +44,8 @@
     {% if date_from and date_to %}
         <p style="margin-bottom: 20px;">{{ date_from|date:"j.n.Y" }} - {{ date_to|date:"j.n.Y" }}</p>
     {% endif %}
+    {% if towns %}
+		<p style="margin-bottom: 20px;">Vybraná města: {{ towns|join:", " }}</p>
+	{% endif %}
     {% include "reporting/reports/servicereport_data.html" %}
 {% endblock %}

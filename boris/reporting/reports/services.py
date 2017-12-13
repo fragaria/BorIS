@@ -26,7 +26,7 @@ class ServiceReport(BaseReport):
         self.filtering = dict(filtering)
         self.date_from = date_from
         self.date_to = date_to
-        self.town = towns
+        self.towns = towns
         self.person = person
 
     def get_filename(self):
@@ -54,6 +54,7 @@ class ServiceReport(BaseReport):
                 'person': self.person,
                 'date_from': self.filtering.get('encounter__performed_on__gte'),
                 'date_to': self.filtering.get('encounter__performed_on__lte'),
+                'towns': self.towns,
             },
             context_instance=RequestContext(request)
         )
