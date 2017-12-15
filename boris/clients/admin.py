@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-
+from django import forms
 from django.conf.urls import patterns, url
 from django.contrib import admin
 from django.core.urlresolvers import reverse
@@ -203,7 +203,17 @@ class AnonymousAdmin(AddContactAdmin):
         return False
 
 
+class PractitionerContactForm(forms.ModelForm):
+    class Meta:
+        model = PractitionerContact
+
+    def __init__(self, *args, **kwargs):
+        super(PractitionerContactForm, self).__init__(*args, **kwargs)
+        self.fields['users'].queryset = self.fields['users'].queryset.filter(is_active=True)
+
+
 class PractitionerContactAdmin(BorisBaseAdmin):
+    form = PractitionerContactForm
     list_display = ('date', 'town', 'person_or_institution', 'note', 'user_list')
     list_filter = ('date', 'town', 'users')
     date_hierarchy = 'date'
@@ -223,7 +233,17 @@ class PractitionerContactAdmin(BorisBaseAdmin):
         return bool(obj.pk)
 
 
+class TerrainNotesForm(forms.ModelForm):
+    class Meta:
+        model = TerrainNotes
+
+    def __init__(self, *args, **kwargs):
+        super(TerrainNotesForm, self).__init__(*args, **kwargs)
+        self.fields['users'].queryset = self.fields['users'].queryset.filter(is_active=True)
+
+
 class TerrainNotesAdmin(BorisBaseAdmin):
+    form = TerrainNotesForm
     list_display = ('date', 'town', 'note_short', 'user_list')
     list_filter = ('date', 'town', 'users')
     date_hierarchy = 'date'
@@ -246,7 +266,18 @@ class TerrainNotesAdmin(BorisBaseAdmin):
     def show_save_and_add_another(self, obj):
         return bool(obj.pk)
 
+
+class GroupContactForm(forms.ModelForm):
+    class Meta:
+        model = GroupContact
+
+    def __init__(self, *args, **kwargs):
+        super(GroupContactForm, self).__init__(*args, **kwargs)
+        self.fields['users'].queryset = self.fields['users'].queryset.filter(is_active=True)
+
+
 class GroupContactAdmin(BorisBaseAdmin):
+    form = GroupContactForm
     list_display = ('date', 'town', 'type', 'note', 'user_list', 'client_count')
     list_filter = ('date', 'town', 'type', 'users')
     date_hierarchy = 'date'

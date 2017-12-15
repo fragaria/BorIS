@@ -1,12 +1,23 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
+from django import forms
 
 from boris.syringes.models import SyringeCollection
 from boris.utils.admin import BorisBaseAdmin, textual
 
 
+class SyringeCollectionForm(forms.ModelForm):
+    class Meta:
+        model = SyringeCollection
+
+    def __init__(self, *args, **kwargs):
+        super(SyringeCollectionForm, self).__init__(*args, **kwargs)
+        self.fields['persons'].queryset = self.fields['persons'].queryset.filter(is_active=True)
+
+
 class SyringeCollectionAdmin(BorisBaseAdmin):
+    form = SyringeCollectionForm
     raw_id_fields = ('town',)
     autocomplete_lookup_fields = {
         'fk': ('town',),
