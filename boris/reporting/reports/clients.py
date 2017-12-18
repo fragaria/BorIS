@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.template import loader
 from django.template.context import RequestContext
 from django.utils.translation import ugettext_lazy as _
-
+from numpy import median
 from boris.classification import DRUG_APPLICATION_TYPES as DAT
 from boris.clients.models import Client
 from boris.reporting.core import BaseReport
@@ -66,6 +66,15 @@ class ClientReport(BaseReport):
         return clients
 
     @staticmethod
+    def get_median_age(client_stats, date_to):
+        relative_to = date_to or datetime.date.today()
+        ages = filter(bool, (c.get_relative_age(relative_to) for c in client_stats))
+
+        if any(ages):
+            median_age = median(ages)
+            return int(median_age)
+
+    @staticmethod
     def get_average_age(client_stats, date_to):
         """Return average age of the filtered clients."""
         relative_to = date_to or datetime.date.today()
@@ -86,6 +95,7 @@ class ClientReport(BaseReport):
                 'date_from': self.date_from,
                 'date_to': self.date_to,
                 'average_age': self.get_average_age(client_stats, self.date_to),
+                'median_age': self.get_median_age(client_stats, self.date_to)
             },
             context_instance=RequestContext(request)
         )

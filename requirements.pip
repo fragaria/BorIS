@@ -9,6 +9,7 @@ fragapy==1.2.6
 gunicorn==18.0
 django-model-utils==1.2.0
 python-dateutil==1.5
+numpy==1.13.3
 
 # Temporary till pull request is accepted
 #-e git+https://github.com/fragaria/django-grappelli.git@stable#egg=grappelli
