@@ -320,9 +320,12 @@ class Client(Person):
     @property
     def age(self):
         """Return the client's age in years, if known."""
+        return self.get_relative_age(datetime.date.today())
+
+    def get_relative_age(self, relative_to):
         if not self.birthdate:
             return None
-        age = datetime.date.today() - self.birthdate
+        age = relative_to - self.birthdate
         return int(round(age.days / 365.2425)) - 1
 
     @property

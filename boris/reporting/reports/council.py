@@ -220,7 +220,7 @@ class GovCouncilReport(BaseReport):
     def _get_average_age(self, clients):
         """Get the average age of the input clients."""
         years = [c.birthdate.year for c in clients if c.birthdate]
-        this_year = date.today().year
+        this_year = self.datetime_to.year or date.today().year
         ages = [this_year - year for year in years]
         return int(round(float(sum(ages)) / len(ages))) if ages else 0
 

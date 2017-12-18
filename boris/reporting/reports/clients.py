@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import datetime
 from django.contrib.contenttypes.models import ContentType
 from django.template import loader
 from django.template.context import RequestContext
@@ -65,14 +66,16 @@ class ClientReport(BaseReport):
         return clients
 
     @staticmethod
-    def get_average_age(client_stats):
+    def get_average_age(client_stats, date_to):
         """Return average age of the filtered clients."""
-        ages = filter(bool, (c.age for c in client_stats))
+        relative_to = date_to or datetime.date.today()
+        ages = filter(bool, (c.get_relative_age(relative_to) for c in client_stats))
         if ages:
             return int(round(float(sum(ages)) / len(ages)))
 
     def render(self, request, display_type):
         client_stats = self.get_stats()
+
         return loader.render_to_string(
             self.get_template(display_type),
             {
@@ -82,7 +85,7 @@ class ClientReport(BaseReport):
                 'services': self.services,
                 'date_from': self.date_from,
                 'date_to': self.date_to,
-                'average_age': self.get_average_age(client_stats),
+                'average_age': self.get_average_age(client_stats, self.date_to),
             },
             context_instance=RequestContext(request)
         )
