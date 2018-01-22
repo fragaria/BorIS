@@ -34,7 +34,7 @@ class CustomIndexDashboard(Dashboard):
         self.encounters = []
         self.persons = []
         self.syringe = []
-        self.months = ['Led', 'Uno', 'Bre', 'Dub', 'Kve', 'Crv', 'Crn', 'Srp', 'Zar', 'Rij', 'Lis', 'Pro']
+        self.months = ['Led', 'Úno', 'Bře', 'Dub', 'Kvě', 'Črv', 'Črn', 'Srp', 'Zář', 'Říj', 'Lis', 'Pro']
 
         clients = Client.objects.annotate(num_in=Sum('encounters__services__harmreduction__in_count'),
                                           num_out=Sum('encounters__services__harmreduction__out_count'))

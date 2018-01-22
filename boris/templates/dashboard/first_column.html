@@ -9,9 +9,9 @@
 <div id="encounters" class="ct-chart">
     <script>
         new Chartist.Bar('#encounters', {
-            labels: {{ dashboard.months | safe}},
+            labels: ["{{ dashboard.months | join:'","'}}"],
             series: [
-                {{ dashboard.encounters  | safe }},
+                {{ dashboard.encounters | safe }},
             ]
         }, {
             fullWidth: true,
@@ -23,9 +23,9 @@
 <div id="persons" class="ct-chart">
     <script>
         new Chartist.Bar('#persons', {
-            labels: {{ dashboard.months | safe}},
+            labels: ["{{ dashboard.months | join:'","'}}"],
             series: [
-                {{ dashboard.persons  | safe }},
+                {{ dashboard.persons | safe }},
             ]
         }, {
             fullWidth: true,
@@ -37,9 +37,9 @@
 <div id="syringes" class="ct-chart">
     <script>
         new Chartist.Bar('#syringes', {
-            labels: {{ dashboard.months | safe}},
+            labels: ["{{ dashboard.months | join:'","'}}"],
             series: [
-                {{ dashboard.syringe  | safe }},
+                {{ dashboard.syringe | safe }},
             ]
         }, {
             fullWidth: true,
