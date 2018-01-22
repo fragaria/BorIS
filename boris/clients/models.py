@@ -325,8 +325,8 @@ class Client(Person):
     def get_relative_age(self, relative_to):
         if not self.birthdate:
             return None
-        age = relative_to - self.birthdate
-        return int(round(age.days / 365.2425)) - 1
+        age = relative_to.year - self.birthdate.year - ((relative_to.month, relative_to.day) < (self.birthdate.month, self.birthdate.day))
+        return age
 
     @property
     def hygiene_report_code(self):
