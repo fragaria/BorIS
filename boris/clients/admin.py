@@ -261,7 +261,7 @@ class TerrainNotesAdmin(BorisBaseAdmin):
 
     @textual(_(u'Zápis'))
     def note_short(self, obj):
-        return (obj.note[:100] + '...') if len(obj.note) > 100 else obj.note
+        return obj.note
 
     def show_save_and_add_another(self, obj):
         return bool(obj.pk)
