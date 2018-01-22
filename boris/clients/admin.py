@@ -337,7 +337,7 @@ class FirstEncounterListFilter(admin.SimpleListFilter):
 
 
 class ClientAdmin(AddContactAdmin):
-    list_display = ('code', 'first_name_display', 'last_name_display', 'sex', 'primary_drug',
+    list_display = ('code', 'first_name_display', 'last_name_display', 'sex', 'primary_drug_display',
                     'town', 'encounter_count')
     list_actions = ('add_contact_button',)
     list_filter = ('town', 'sex', 'primary_drug', 'encounters__performed_on', FirstEncounterListFilter)
@@ -373,6 +373,16 @@ class ClientAdmin(AddContactAdmin):
     @textual(_(u'Příjmení'), 'first_name')
     def last_name_display(self, obj):
         return obj.last_name
+
+    @textual(_(u'Primární droga'), 'primary_drug')
+    def primary_drug_display(self, obj):
+        if obj.primary_drug:
+            return obj.primary_drug
+        if obj.close_person:
+            return 'osoba blízká'
+        if obj.sex_partner:
+            return 'sexuální partner'
+        return ''
 
     def change_view(self, request, object_id, extra_context=None):
         extra_context = {
