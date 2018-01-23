@@ -13,6 +13,7 @@ from django.utils.dateformat import format
 from django.utils.formats import get_format
 from django.utils.html import escape, escapejs
 
+from boris.classification import get_drug_by_id
 from boris.clients.models import Client, Town, Anamnesis, DrugUsage, \
     RiskyManners, Region, District, DiseaseTest, Anonymous, \
     PractitionerContact, Person, GroupContact, ClientCard, GroupContactType
@@ -377,7 +378,9 @@ class ClientAdmin(AddContactAdmin):
     @textual(_(u'Primární droga'), 'primary_drug')
     def primary_drug_display(self, obj):
         if obj.primary_drug:
-            return obj.primary_drug
+            drug_choice = get_drug_by_id(obj.primary_drug)
+            if drug_choice:
+                return drug_choice[1]
         if obj.close_person:
             return 'osoba blízká'
         if obj.sex_partner:

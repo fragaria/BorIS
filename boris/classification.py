@@ -159,3 +159,8 @@ ANONYMOUS_TYPES = Choices(
     (5, 'THC', u'THC')
 )
 
+
+def get_drug_by_id(id):
+    for drug in DRUGS:
+        if drug[0] == id:
+            return drug
