@@ -35,5 +35,9 @@
 		<p style="margin-bottom: 20px;">Vybraná města: {{ towns|join:", " }}</p>
 	{% endif %}
 
+    {% if services %}
+        <p style="margin-bottom: 20px;">Vybrané výkony: {{ services|join:", " }}</p>
+    {% endif %}
+
 	{% include "reporting/reports/clientreport_data.html" %}
 {% endblock %}
