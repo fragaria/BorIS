@@ -9,8 +9,8 @@ p = lambda x: os.path.join(PROJECT_ROOT, x)
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'boris.db',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'boris',
         'USER': '',
         'PASSWORD': '',
         'OPTIONS': {
