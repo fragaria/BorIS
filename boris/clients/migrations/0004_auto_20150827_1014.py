@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('file', models.FileField(upload_to=boris.clients.models.get_client_card_filename)),
-                ('client', models.ForeignKey(to='clients.Client', to_field=b'client_card')),
+                ('client', models.ForeignKey(to='clients.Client')),
             ],
             options={
             },
