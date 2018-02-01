@@ -290,14 +290,16 @@ class Service(TimeStampedModel):
         return any([f.editable for f in self._meta.fields if f.name not in skip_fields])
 
     def get_time_spent(self, filtering):
-        from boris.reporting.reports.council import INDIRECT_CONTENT_TYPES
-        from boris.reporting.reports.council import NO_SUBSERVICE_CONTENT_TYPES
+        from boris.reporting.reports.council import get_indirect_content_types
+        from boris.reporting.reports.council import get_no_subservice_content_types
+        indirect_content_types = get_indirect_content_types()
+        no_subservice_content_types = get_no_subservice_content_types()
 
         subservices = self.cast()._get_stats(filtering, only_subservices=True, only_basic=True)
         subservices_count = sum([s[1] for s in subservices])
-        if self.encounter.is_by_phone and self.content_type in INDIRECT_CONTENT_TYPES:
+        if self.encounter.is_by_phone and self.content_type in indirect_content_types:
             return TimeDotation.get_time_for_type(ContentType.objects.get_for_model(IndirectService)) * subservices_count
-        if self.content_type in NO_SUBSERVICE_CONTENT_TYPES:
+        if self.content_type in no_subservice_content_types:
             return TimeDotation.get_time_for_type(self.content_type) * 1
         return TimeDotation.get_time_for_type(self.content_type) * subservices_count
 

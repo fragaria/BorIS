@@ -24,10 +24,23 @@ from boris.syringes.models import SyringeCollection
 from boris.services.models import SocialWork
 from boris.services.models import IndividualCounselling
 from boris.services.models import InformationService
-INDIRECT_CONTENT_TYPES = [ContentType.objects.get_for_model(cls) for cls in
-                          (SocialWork, IndividualCounselling, InformationService)]
-NO_SUBSERVICE_CONTENT_TYPES = [ContentType.objects.get_for_model(cls) for cls in (HarmReduction,)]
 
+_CONTENT_TYPES = {}
+
+def get_indirect_content_types():
+    if not 'indirect' in _CONTENT_TYPES:
+        _CONTENT_TYPES['indirect'] = [
+            ContentType.objects.get_for_model(cls)
+            for cls in (SocialWork, IndividualCounselling, InformationService)
+        ]
+    return _CONTENT_TYPES['indirect']
+
+def get_no_subservice_content_types():
+    if not 'no_subservice' in _CONTENT_TYPES:
+        _CONTENT_TYPES['no_subservice'] = [
+            ContentType.objects.get_for_model(cls) for cls in (HarmReduction,)
+        ]
+    return _CONTENT_TYPES['no_subservice']
 
 class GovCouncilReport(BaseReport):
     title = u'RVKPP'
