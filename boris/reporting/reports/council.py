@@ -21,26 +21,25 @@ from boris.services.models import (Encounter, Address, ContactWork,
 from boris.syringes.models import SyringeCollection
 
 
-from boris.services.models import SocialWork
-from boris.services.models import IndividualCounselling
-from boris.services.models import InformationService
-
 _CONTENT_TYPES = {}
 
+
 def get_indirect_content_types():
-    if not 'indirect' in _CONTENT_TYPES:
+    if 'indirect' not in _CONTENT_TYPES:
         _CONTENT_TYPES['indirect'] = [
             ContentType.objects.get_for_model(cls)
             for cls in (SocialWork, IndividualCounselling, InformationService)
         ]
     return _CONTENT_TYPES['indirect']
 
+
 def get_no_subservice_content_types():
-    if not 'no_subservice' in _CONTENT_TYPES:
+    if 'no_subservice' not in _CONTENT_TYPES:
         _CONTENT_TYPES['no_subservice'] = [
             ContentType.objects.get_for_model(cls) for cls in (HarmReduction,)
         ]
     return _CONTENT_TYPES['no_subservice']
+
 
 class GovCouncilReport(BaseReport):
     title = u'RVKPP'
@@ -249,7 +248,7 @@ class GovCouncilReport(BaseReport):
         for service in self._get_services(Service):
             # prevent double count in case of same service class being multiple on one encounter
             if service.content_type not in content_types:
-                sum += service.get_time_spent(filtering)
+                sum += service.get_time_spent(filtering, get_indirect_content_types(), get_no_subservice_content_types())
                 content_types.append(service.content_type)
         return sum
 
