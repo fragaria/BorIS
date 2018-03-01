@@ -10,8 +10,8 @@ from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
 
 from boris.classification import (DISEASES, DRUGS, DRUG_APPLICATION_TYPES,
-    SEXES)
-from boris.clients.models import Client, Anonymous, Anamnesis, PractitionerContact, GroupContact, TerrainNotes 
+    SEXES, RISKY_BEHAVIOR_PERIODICITY, RISKY_BEHAVIOR_KIND)
+from boris.clients.models import Client, Anonymous, Anamnesis, RiskyManners, PractitionerContact, GroupContact, TerrainNotes 
 from boris.reporting.core import BaseReport
 from boris.services.models import (Encounter, Address, ContactWork,
                                    IncomeFormFillup, IndividualCounselling, CrisisIntervention, SocialWork,
@@ -341,6 +341,107 @@ class ImpactReport(BaseReport):
         return {'bounds': bin_bounds[1:bin_number], 'labels': bin_labels[1:bin_number], 'counts': counts[0:bin_number-1]}
 
 
+    def get_anamnesis_list(self):
+        """
+        Returns all anamnesis to report in the resulting output.
+
+        Filters clients using following rules::
+            * Client must have Anamnesis filled up
+            * First recorded encounter with the client in the given year (and possibly towns)
+              must be witin quarter limited by date range.
+        """
+        # tmp store periodicity
+        p = RISKY_BEHAVIOR_PERIODICITY
+
+        # Get QuerySet of first encounters in the given year/town for all clients.
+        #encounters = Encounter.objects.first(year=self.datetime_from.year, towns=self.towns)
+        encounters = Encounter.objects
+
+        # Filter encounters so that only the specified date range is present.
+        # encounters = encounters.filter(performed_on__gte=self.datetime_from,
+        #                                performed_on__lt=self.datetime_to)
+
+        # Get all clients whose first encounters fall into the specified range.
+        clients = encounters.values('person')
+
+        # Now get all the encounters for these clients that fulfill the specified criteria.
+        # encounters = Encounter.objects.filter(performed_on__gte=self.datetime_from,
+        #                                       performed_on__lt=self.datetime_to,
+        #                                       where__in=self.towns,
+        #                                       person__in=clients)
+        encounters = Encounter.objects.filter(where__in=self.towns,
+                                              person__in=clients)
+
+
+        # Get client PKs from filtered encounters.
+        encounter_data = {}
+
+        for e in encounters:
+            encounter_data.setdefault(e.person_id, {'first_encounter_date': date.max, 'objects': []})
+            encounter_data[e.person_id]['first_encounter_date'] = min(encounter_data[e.person_id]['first_encounter_date'], e.performed_on)
+            encounter_data[e.person_id]['objects'].append(e)
+
+        # Finally, select these clients if they have anamnesis filled up.
+        _a = Anamnesis.objects.filter(client__pk__in=encounter_data.keys()).select_related()
+        _all = []
+
+        # Annotate extra information needed in report.
+        for a in _a:
+            # Date of first encounter with client.
+            a.extra_first_encounter_date = encounter_data[a.client_id]['first_encounter_date']
+            # If has been cured before - True if there is not IncomeExamination
+            # within selected encounters.
+            a.extra_been_cured_before = not Service.objects.filter(encounter__in=encounter_data[a.client_id]['objects'],
+                                                                   content_type=IncomeExamination.real_content_type()).exists()
+            # When showing 'incidency', only those, who have not been cured before
+            # should be returned.
+            if self.kind == 'incidence' and a.extra_been_cured_before is True:
+                continue
+
+            # Information about risky behaviour and it's periodicity.
+            try:
+                ivrm = a.riskymanners_set.get(behavior= RISKY_BEHAVIOR_KIND.INTRAVENOUS_APPLICATION)
+
+                if (ivrm.periodicity_in_present, ivrm.periodicity_in_past) == (p.NEVER, p.NEVER):
+                    a.extra_intravenous_application = 'c'
+                elif ivrm.periodicity_in_present in (p.ONCE, p.OFTEN):
+                    a.extra_intravenous_application = 'b'
+                elif ivrm.periodicity_in_present == p.NEVER and ivrm.periodicity_in_past in (p.ONCE, p.OFTEN):
+                    a.extra_intravenous_application = 'a'
+                else:
+                    a.extra_intravenous_application = 'd'
+            except RiskyManners.DoesNotExist:
+                a.extra_intravenous_application = 'd'
+
+            # Information about syringe sharing activity.
+            if a.extra_intravenous_application in ('a', 'b'):
+                try:
+                    ssrm = a.riskymanners_set.get(behavior= RISKY_BEHAVIOR_KIND.SYRINGE_SHARING)
+
+                    # Use current periodicity in past/current according to
+                    # `extra_intravenous_application`
+                    per = (ssrm.periodicity_in_present
+                           if a.extra_intravenous_application == 'b'
+                           else ssrm.periodicity_in_past)
+
+                    if per in (p.ONCE, p.OFTEN):
+                        a.extra_syringe_sharing = 'yes'
+                    elif per == p.NEVER:
+                        a.extra_syringe_sharing = 'no'
+                    else:
+                        a.extra_syringe_sharing = 'unknown'
+                except RiskyManners.DoesNotExist:
+                    a.extra_syringe_sharing = 'unknown'
+
+            _all.append(a)
+
+
+        #enc = Encounter.objects.first(year=self.datetime_from.year, towns=self.towns)
+           
+        return (_all)
+
+
+
 
     def _get_data_clients(self):
         """Get data rows for the 'clients' kind."""
@@ -578,7 +679,10 @@ class ImpactReport(BaseReport):
                 'client_ids': self._get_direct_client_encounters().values_list('person_id', flat=True),
                 'person_ids': Client.objects.annotate(encounter_count=Count('encounters')).order_by('encounter_count')[325].encounter_count,
                 'enc_dist' : self.get_enc_distribution(),
-                'anamnesis' : Anamnesis.objects.all()
+                # 'anamnesis' : Anamnesis.objects.all(),
+                'anamnesis' : self.get_anamnesis_list(),
+                'anamnesis_fields' : Anamnesis._meta.fields,
+                'client_fields' : Client._meta.fields
             },
             context_instance=RequestContext(request)
         )

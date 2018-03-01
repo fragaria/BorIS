@@ -161,15 +161,24 @@
 
                 },
                 anamnesis: ["{{ anamnesis | join:'","'}}"],
+                anamnesis_fields: ["{{ anamnesis_fields | join:'","' }}"]
             };
-            IMPACT.printMonths = function () {console.log(IMPACT.months);}
+            // IMPACT.printMonths = function () {console.log(IMPACT.months);}
+            //console.log("[{{ client_fields | join:'","' }}]", ["{{ client_fields | join:'","' }}"]);
+            console.log('anamnesis',IMPACT.anamnesis);
+            console.log('anamnesis[0]',IMPACT.anamnesis[0]);
+
+            console.log('anamnesis[0].extra_first_encounter_date',IMPACT.anamnesis[0].extra_first_encounter_date);
+            console.log('anamnesis.client.hygiene_report_code ',IMPACT.anamnesis.client.hygiene_report_code );
+
+
     </script>
 
-    <div id="linechart" style="margin: 0; padding: 0; border: 0;" class="ct-chart">
+<!--     <div id="linechart" style="margin: 0; padding: 0; border: 0;">
         <h1>Počet kontaktů - in d3 linechart</h1>
         <script src="http://d3js.org/d3.v3.js"></script>
         <script type="text/javascript" src="{% sstatic 'd3/d3_kontakty_linechart.js' %}"></script>
-    </div>
+    </div> -->
 
     <!-- load nvd3 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
@@ -178,7 +187,7 @@
 
 
     <h1>Počet kontaktů - in nvd3 barchart</h1>
-     <script type="text/javascript" src="{% sstatic 'd3/d3_kontakty_barchart.js' %}"></script>
+    <script type="text/javascript" src="{% sstatic 'd3/d3_kontakty_barchart.js' %}"></script>
     <div id="my_chart">
       <svg></svg>
     </div>
