@@ -89,3 +89,15 @@ class GovCouncilForm(ReportForm):
     towns = forms.ModelMultipleChoiceField(label=_(u'Město'),
                                            queryset=Town.objects.all(),
                                            required=False)
+
+
+class ImpactForm(ReportForm):
+    date_from = forms.DateField(label=_(u'Od'), required=True, widget=AdminDateWidget())
+    date_to = forms.DateField(label=_(u'Do'), required=True, widget=AdminDateWidget())
+    kind = forms.ChoiceField(((1, u'Klienti'), (2, u'Výkony')),
+                             label=_(u'Druh výstupu'), widget=forms.RadioSelect,
+                             initial=1)
+    towns = forms.ModelMultipleChoiceField(label=_(u'Město'),
+                                           queryset=Town.objects.all(),
+                                           required=False)
+
