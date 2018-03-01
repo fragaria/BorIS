@@ -41,7 +41,10 @@ class EncounterInline(admin.TabularInline):
 
     def goto_link(self, obj):
         if obj.pk:
-            return u'<a href="%s"><strong>%s &raquo;</strong></a>' % (obj.get_admin_url(), _(u'Přejít'))
+            if obj.group_contact:
+                return u'<a href="%s"><strong>%s &raquo;</strong></a>' % (obj.group_contact.get_admin_url(), _(u'Přejít'))
+            else:
+                return u'<a href="%s"><strong>%s &raquo;</strong></a>' % (obj.get_admin_url(), _(u'Přejít'))
         else:
             return _(u'Detaily kontaktu je možné editovat až po uložení.')
     goto_link.short_description = _(u'Přejít')

@@ -125,7 +125,7 @@ class HarmReduction(Service):
                                             'medical_supplies')),
             ((_field_label(cls, 'in_count'), in_sum),),
             ((_field_label(cls, 'out_count'), out_sum),),
-            ((_( u'Návratnost stříkaček'), "{:.2f}%".format(float(in_sum) / float(out_sum) * 100)),),
+            ((_( u'Návratnost stříkaček'), "{:.2f}%".format(float(in_sum) / float(out_sum) * 100) if out_sum != 0 else "-" ),),
             ((_(u'Průměrný počet osob ve SVIP'), int(round(_avg_int(cls, filtering,
                                                                     'svip_person_count')))),),
             ((_(u'Nejvyšší počet osob ve SVIP'), _max_int(cls, filtering,
