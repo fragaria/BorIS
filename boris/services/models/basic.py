@@ -32,6 +32,17 @@ def _boolean_stats(model, filtering, field_names):
         boolean_stats.append((title, cnt))
     return tuple(boolean_stats)
 
+def _boolean_stats(model, filtering, field_names):
+    """Get stats for boolean fields for any service class."""
+    boolean_stats = []
+    for fname in field_names:
+        title = model._meta.get_field(fname).verbose_name.__unicode__()
+        filtering_bln = {fname: True}
+        filtering_bln.update(filtering)
+        cnt = model.objects.filter(**filtering_bln).count()
+        boolean_stats.append((title, cnt))
+    return tuple(boolean_stats)
+
 
 def _field_label(model, field):
     return model._meta.get_field(field).verbose_name.__unicode__()
@@ -399,6 +410,9 @@ class IndividualCounselling(Service):
 
 
 class Address(Service):
+    number_of_addressed = models.PositiveIntegerField(default=1,
+        verbose_name=_(u'1) Počet oslovených'))
+
     class Meta:
         app_label = 'services'
         proxy = True
@@ -407,6 +421,23 @@ class Address(Service):
 
     class Options:
         codenumber = 2
+        fieldsets = (
+            (None, {
+                'fields': ('number_of_addressed'),
+                'classes': ('inline',)
+            }),
+        )
+
+    @classmethod
+    def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
+        boolean_stats = _boolean_stats(cls, filtering, ('number_of_addressed'))
+        if only_subservices:
+            return chain(boolean_stats)
+        return chain( # The total count is computed differently than usually.
+                ((cls.service.title, sum(stat[1] for stat in boolean_stats)),),
+                boolean_stats,
+        )
+
 
 
 class IncomeFormFillup(Service):

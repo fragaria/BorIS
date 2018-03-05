@@ -18,9 +18,10 @@ from boris.services.models import (Encounter, Address, ContactWork,
                                    HarmReduction, BasicMedicalTreatment, InformationService,
                                    IncomeExamination, DiseaseTest, HygienicService, FoodService,
                                    WorkTherapy, PostUsage, UrineTest, GroupCounselling, WorkWithFamily,
-                                   WorkTherapyMeeting, UtilityWork, AsistService, Service)
+                                   WorkTherapyMeeting, UtilityWork, AsistService, Service, Town)
 from boris.syringes.models import SyringeCollection
- 
+import json
+from django.core.serializers.json import DjangoJSONEncoder 
 
 _CONTENT_TYPES = {}
 
@@ -51,13 +52,14 @@ class ImpactReport(BaseReport):
         self.datetime_from = datetime.combine(date_from, time(0))
         self.datetime_to = datetime.combine(date_to, time(23, 59, 59))
         self.kind = 'clients' if int(kind) == 1 else 'services'
-        self.towns = towns
+        # self.towns = towns
+        self.towns = towns or Town.objects.all()
         self.clients_in_location = self._get_all_drug_users().count()
         self.potential_clients = 6*self.clients_in_location
         self.town_population = 10000 
 
-    #
-    #def init_with_context(self, context):
+        #
+        #def init_with_context(self, context):
         #user = context['request'].user
 
         self.first_contact = Encounter.objects.order_by('performed_on')[0] if Encounter.objects.order_by('performed_on') else None
@@ -341,6 +343,16 @@ class ImpactReport(BaseReport):
         return {'bounds': bin_bounds[1:bin_number], 'labels': bin_labels[1:bin_number], 'counts': counts[0:bin_number-1]}
 
 
+    def anamnesis_dictionary(self, x):
+        p = RISKY_BEHAVIOR_PERIODICITY
+        return {
+            p.NEVER : 'never',
+            p.ONCE : 'once',
+            p.OFTEN : 'often',
+            p.UNKNOWN : 'unknown'               
+        }.get(x, 'not found')
+            
+
     def get_anamnesis_list(self):
         """
         Returns all anamnesis to report in the resulting output.
@@ -351,27 +363,30 @@ class ImpactReport(BaseReport):
               must be witin quarter limited by date range.
         """
         # tmp store periodicity
+
         p = RISKY_BEHAVIOR_PERIODICITY
 
         # Get QuerySet of first encounters in the given year/town for all clients.
-        #encounters = Encounter.objects.first(year=self.datetime_from.year, towns=self.towns)
-        encounters = Encounter.objects
+        encounters = Encounter.objects.first(2011 and 2012 and 2013 and 2013 and 2015, towns=self.towns)
+        # encounters = encounters.append(Encounter.objects.first(year=self.datetime_from.year-1, towns=self.towns))
+        # encounters = encounters.append(Encounter.objects.first(year=self.datetime_from.year-2, towns=self.towns))
+        # encounters = encounters.append(Encounter.objects.first(year=self.datetime_from.year-3, towns=self.towns))
+        # encounters = encounters.append(Encounter.objects.first(year=self.datetime_from.year-4, towns=self.towns))
+        # encounters = encounters.append(Encounter.objects.first(year=self.datetime_from.year-5, towns=self.towns))
+
 
         # Filter encounters so that only the specified date range is present.
-        # encounters = encounters.filter(performed_on__gte=self.datetime_from,
-        #                                performed_on__lt=self.datetime_to)
+        encounters = encounters.filter(performed_on__gte=self.datetime_from,
+                                       performed_on__lt=self.datetime_to)
 
         # Get all clients whose first encounters fall into the specified range.
         clients = encounters.values('person')
 
         # Now get all the encounters for these clients that fulfill the specified criteria.
-        # encounters = Encounter.objects.filter(performed_on__gte=self.datetime_from,
-        #                                       performed_on__lt=self.datetime_to,
-        #                                       where__in=self.towns,
-        #                                       person__in=clients)
-        encounters = Encounter.objects.filter(where__in=self.towns,
+        encounters = Encounter.objects.filter(performed_on__gte=self.datetime_from,
+                                              performed_on__lt=self.datetime_to,
+                                              where__in=self.towns,
                                               person__in=clients)
-
 
         # Get client PKs from filtered encounters.
         encounter_data = {}
@@ -395,12 +410,16 @@ class ImpactReport(BaseReport):
                                                                    content_type=IncomeExamination.real_content_type()).exists()
             # When showing 'incidency', only those, who have not been cured before
             # should be returned.
-            if self.kind == 'incidence' and a.extra_been_cured_before is True:
+            #if self.kind == 'incidence' and a.extra_been_cured_before is True:
+            if a.extra_been_cured_before is True:
                 continue
 
             # Information about risky behaviour and it's periodicity.
             try:
-                ivrm = a.riskymanners_set.get(behavior= RISKY_BEHAVIOR_KIND.INTRAVENOUS_APPLICATION)
+                ivrm = a.riskymanners_set.get(behavior=RISKY_BEHAVIOR_KIND.INTRAVENOUS_APPLICATION)
+
+                a.iv_past = self.anamnesis_dictionary(ivrm.periodicity_in_past)
+                a.iv_present = self.anamnesis_dictionary(ivrm.periodicity_in_present)
 
                 if (ivrm.periodicity_in_present, ivrm.periodicity_in_past) == (p.NEVER, p.NEVER):
                     a.extra_intravenous_application = 'c'
@@ -412,14 +431,20 @@ class ImpactReport(BaseReport):
                     a.extra_intravenous_application = 'd'
             except RiskyManners.DoesNotExist:
                 a.extra_intravenous_application = 'd'
+                a.iv_past = 'unknown'
+                a.iv_present = 'unknown'
+
 
             # Information about syringe sharing activity.
-            if a.extra_intravenous_application in ('a', 'b'):
+            if a.extra_intravenous_application not in ('c'):
                 try:
-                    ssrm = a.riskymanners_set.get(behavior= RISKY_BEHAVIOR_KIND.SYRINGE_SHARING)
+                    ssrm = a.riskymanners_set.get(behavior=RISKY_BEHAVIOR_KIND.SYRINGE_SHARING)
 
                     # Use current periodicity in past/current according to
                     # `extra_intravenous_application`
+                    a.ss_past = self.anamnesis_dictionary(ivrm.periodicity_in_past)
+                    a.ss_present = self.anamnesis_dictionary(ivrm.periodicity_in_present)
+
                     per = (ssrm.periodicity_in_present
                            if a.extra_intravenous_application == 'b'
                            else ssrm.periodicity_in_past)
@@ -432,14 +457,44 @@ class ImpactReport(BaseReport):
                         a.extra_syringe_sharing = 'unknown'
                 except RiskyManners.DoesNotExist:
                     a.extra_syringe_sharing = 'unknown'
+                    a.ss_past = 'unknown'
+                    a.ss_present = 'unknown'
+
+            try:
+                usrm = a.riskymanners_set.get(behavior=RISKY_BEHAVIOR_KIND.SEX_WITHOUT_PROTECTION)
+                a.us_past = self.anamnesis_dictionary(usrm.periodicity_in_past)
+                a.us_present = self.anamnesis_dictionary(usrm.periodicity_in_present)
+            except RiskyManners.DoesNotExist:
+                a.us_past = 'unknown'
+                a.us_present = 'unknown'
+ 
+            try:
+                rarm = a.riskymanners_set.get(behavior=RISKY_BEHAVIOR_KIND.RISKY_APPLICATION)
+                a.ra_past = self.anamnesis_dictionary(rarm.periodicity_in_past)
+                a.ra_present = self.anamnesis_dictionary(rarm.periodicity_in_present)
+            except RiskyManners.DoesNotExist:
+                a.ra_past = 'unknown'
+                a.ra_present = 'unknown'
+
+            try:
+                odrm = a.riskymanners_set.get(behavior=RISKY_BEHAVIOR_KIND.OVERDOSING)
+                a.od_past = self.anamnesis_dictionary(odrm.periodicity_in_past)
+                a.od_present = self.anamnesis_dictionary(odrm.periodicity_in_present)
+            except RiskyManners.DoesNotExist:
+                a.od_past = 'unknown'
+                a.od_present = 'unknown'
+
+            try:
+                hcrm = a.riskymanners_set.get(behavior=RISKY_BEHAVIOR_KIND.HEALTH_COMPLICATIONS)
+                a.hc_past = self.anamnesis_dictionary(hcrm.periodicity_in_past)
+                a.hc_present = self.anamnesis_dictionary(hcrm.periodicity_in_present)
+            except RiskyManners.DoesNotExist:
+                a.hc_past = 'unknown'
+                a.hc_present = 'unknown'
 
             _all.append(a)
 
-
-        #enc = Encounter.objects.first(year=self.datetime_from.year, towns=self.towns)
-           
-        return (_all)
-
+        return _all
 
 
 
@@ -681,8 +736,9 @@ class ImpactReport(BaseReport):
                 'enc_dist' : self.get_enc_distribution(),
                 # 'anamnesis' : Anamnesis.objects.all(),
                 'anamnesis' : self.get_anamnesis_list(),
-                'anamnesis_fields' : Anamnesis._meta.fields,
-                'client_fields' : Client._meta.fields
+                #'anamnesis_fields' : Anamnesis._meta.fields,
+                #'anamnesis_jsons' : json.dumps(list(Anamnesis.objects.all())),
+                #'client_fields' : Client._meta.fields
             },
             context_instance=RequestContext(request)
         )
