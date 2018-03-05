@@ -27,12 +27,15 @@ class BaseReportForm(ReportForm):
     date_from = forms.DateField(label=_(u'Od'), required=False, widget=AdminDateWidget())
     date_to = forms.DateField(label=_(u'Do'), required=False, widget=AdminDateWidget())
     towns = forms.ModelMultipleChoiceField(label=_(u'Město'), queryset=Town.objects.all(), required=False)
+
+
+class ServicesReportForm(BaseReportForm):
     services = forms.ModelMultipleChoiceField(label=_(u'Výkony'), required=False,
                                               queryset=ContentType.objects.filter(app_label='services').exclude(
                                                   model__in=['service', 'timedotation', 'encounter']))
 
 
-class ClientsForm(BaseReportForm):
+class ClientsForm(ServicesReportForm):
     age_from = forms.IntegerField(label=_(u'Věk od'), required=False)
     age_to = forms.IntegerField(label=_(u'Věk do'), required=False)
 
