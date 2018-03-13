@@ -12,7 +12,7 @@ from boris.classification import (DISEASES, DRUGS, DRUG_APPLICATION_TYPES,
     SEXES)
 from boris.clients.models import Client, Anonymous
 from boris.reporting.core import BaseReport
-from boris.services.models import (Encounter, Address, ContactWork,
+from boris.services.models import (Encounter, Approach, ContactWork,
                                    IncomeFormFillup, IndividualCounselling, CrisisIntervention, SocialWork,
                                    HarmReduction, BasicMedicalTreatment, InformationService,
                                    IncomeExamination, DiseaseTest, HygienicService, FoodService,
@@ -74,6 +74,21 @@ class GovCouncilReport(BaseReport):
         if self.towns:
             filtering['encounter__where__in'] = self.towns
         return service_cls.objects.filter(**filtering)
+
+    def get_number_of_addressed_count(self):
+        filtering = {
+            'encounter__performed_on__gte': self.datetime_from,
+            'encounter__performed_on__lte': self.datetime_to,
+        }
+        if self.towns:
+            filtering['encounter__where__in'] = self.towns
+
+        approaches = Approach.objects.filter(**filtering)
+        count = 0
+        for a in approaches:
+            count += a.number_of_addressed
+
+        return count
 
     def _get_service_count(self, service_classes, extra_filtering=None):
         """Return the number of performed services of the given class."""
@@ -358,7 +373,7 @@ class GovCouncilReport(BaseReport):
             (_(u'Celkový počet nepřímých kontaktů s identifikovanými klienty'),
              phone_encountered_clients_count, phone_client_encounters.count()),
             (_(u'Úkony potřebné pro zajištění přímé práce s klientem'),
-             'xxx', services(Address)),
+             'xxx', self.get_number_of_addressed_count()),
             (_(u'Kontaktní práce'),
              clients(ContactWork) + anon(ContactWork), services(ContactWork)),
             (_(u'Vstupní zhodnocení stavu klienta'),

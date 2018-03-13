@@ -1,3 +1,5 @@
+
+
   nv.addGraph(function() {
 
     var bounds = IMPACT.encounter_distribution.bounds;
@@ -10,6 +12,7 @@
     console.log("IMPACT.anamnesis_object", IMPACT.anamnesis_object);
 
     var periodicity_dict = {
+        'not found': -2,
         'unknown' : -1,
         'never' : 0,
         'once' : 1,
@@ -17,48 +20,86 @@
     }
 
 
-    var iv_improvement = anamnesis_object.filter(a => {
-        var past = periodicity_dict(a.iv_past);
-        var present = periodicity_dict(a.iv_present);
-        return (past> 0 && present > 0 && past > present)
-    }).length;
-    console.log('iv_improvement',iv_improvement);
+    var manner_dict = {
+        iv : 'Nitrožílní aplikace',
+        ss : 'Sdílení jehel',
+        ra : 'Riziková aplikace',
+        us : 'Nechráněný sex',
+        od : 'Předávkování',
+    }
 
-    
-                // iv_past : "{{ a2.iv_past }}", 
-                // iv_present : "{{ a2.iv_present }}", 
-                // ss_past : "{{ a2.ss_past }}", 
-                // ss_present : "{{ a2.ss_present }}", 
-                // us_past : "{{ a2.us_past }}", 
-                // us_present : "{{ a2.us_present }}", 
-                // ra_past : "{{ a2.ra_past }}", 
-                // ra_present : "{{ a2.ra_present }}", 
-                // od_past : "{{ a2.od_past }}", 
-                // od_present : "{{ a2.od_present }}", 
 
-    get_data = (function() {
+    var improvements = anamnesis_object.filter(a => {
+        var include = false;
+        for (manner in a.riskymanners) {
+            var past = periodicity_dict[a.riskymanners[manner].past];
+            var present = periodicity_dict[a.riskymanners[manner].present];
+            //console.log('filter', past, present, a.riskymanners  );
+            if(!include){
+                include = (present > -1 && past > -1)
+            }
+        }
+        return include;
+        //return (past > present)
+    });
+    console.log('improvements',improvements);
+
+
+    get_improvements = (function() {
         var data_dummy = [];
-        var len = bounds.length;
-        for (var i = 0; i<len; i++) {
-          data_dummy.push({
-              // bound: bounds[i],
-              label: labels[i],
-              count: counts[i],
-          });
-        }        
+        for (manner in manner_dict) {
+            var label = '';
+            var improvement = 0;
+            for (a of anamnesis_object) {
+                var past = periodicity_dict[a.riskymanners[manner].past];
+                var present = periodicity_dict[a.riskymanners[manner].present];                
+                if(present > -1 && past > -1){
+                    if(past > present)
+                        improvement += 1;
+                    if(past < present)
+                        improvement -= 1; 
+                }
+            }
+            data_dummy.push({
+                manner_label: manner_dict[manner],
+                client_count: improvement,
+            });
+        }
+        console.log('data_dummy',data_dummy);   
         return data_dummy;
     })();
-    var data_dist = get_data; 
 
-    dataAnnotated = [
+
+    AnamnesisDataAnnotated = [
       {
-        key: "Distribution of encounters",
-        values: data_dist,
+        key: "Potlačení rizikového chování",
+        values: get_improvements,
         color: "#000000"
       }
     ];
 
 
+    var chart = nv.models.discreteBarChart()
+        .x(function(d) { return d.manner_label })    //Specify the data accessors.
+        .y(function(d) { return d.client_count })
+        .staggerLabels(true)    //Too many bars and not enough room? Try staggering labels.
+        //.tooltips(false)        //Don't show tooltips
+        .showValues(true)       //...instead, show the bar value right on top of each bar.
+        //.transitionDuration(350)
+       // .forceY([0,maxY])
+        ;
+
+    chart.xAxis.axisLabel("Rizikové chování");
+    chart.yAxis.axisLabel("Počet zlepšení ()",);
+    chart.margin({ "top": 15, "right": 10, "bottom": 70, "left": 60 })
+
+    d3.select('#riskymanners_improvement svg')
+        .datum(AnamnesisDataAnnotated)
+        .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
 
   });
 

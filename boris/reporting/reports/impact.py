@@ -11,17 +11,18 @@ from django.utils.translation import ugettext as _
 
 from boris.classification import (DISEASES, DRUGS, DRUG_APPLICATION_TYPES,
     SEXES, RISKY_BEHAVIOR_PERIODICITY, RISKY_BEHAVIOR_KIND)
-from boris.clients.models import Client, Anonymous, Anamnesis, RiskyManners, PractitionerContact, GroupContact, TerrainNotes 
+from boris.clients.models import Client, Anonymous, Anamnesis, RiskyManners, PractitionerContact, GroupContact, TerrainNotes, Town 
 from boris.reporting.core import BaseReport
-from boris.services.models import (Encounter, Address, ContactWork,
+from boris.services.models import (Encounter, Address, Approach, ContactWork,
                                    IncomeFormFillup, IndividualCounselling, CrisisIntervention, SocialWork,
                                    HarmReduction, BasicMedicalTreatment, InformationService,
                                    IncomeExamination, DiseaseTest, HygienicService, FoodService,
                                    WorkTherapy, PostUsage, UrineTest, GroupCounselling, WorkWithFamily,
-                                   WorkTherapyMeeting, UtilityWork, AsistService, Service, Town)
+                                   WorkTherapyMeeting, UtilityWork, AsistService, Service)
 from boris.syringes.models import SyringeCollection
 import json
 from django.core.serializers.json import DjangoJSONEncoder 
+
 
 _CONTENT_TYPES = {}
 
@@ -351,6 +352,23 @@ class ImpactReport(BaseReport):
             p.OFTEN : 'often',
             p.UNKNOWN : 'unknown'               
         }.get(x, 'not found')
+
+
+
+    def get_number_of_addressed_count(self):
+        filtering = {
+            'encounter__performed_on__gte': self.datetime_from,
+            'encounter__performed_on__lte': self.datetime_to,
+        }
+        if self.towns:
+            filtering['encounter__where__in'] = self.towns
+
+        approaches = Approach.objects.filter(**filtering)
+        count = 0
+        for a in approaches:
+            count += a.number_of_addressed
+
+        return count
             
 
     def get_anamnesis_list(self):
@@ -602,7 +620,7 @@ class ImpactReport(BaseReport):
             (_(u'Celkový počet nepřímých kontaktů s identifikovanými klienty'),
              phone_encountered_clients_count, phone_client_encounters.count()),
             (_(u'Úkony potřebné pro zajištění přímé práce s klientem'),
-             'xxx', services(Address)),
+             'xxx', self.get_number_of_addressed_count()),
             (_(u'Kontaktní práce'),
              clients(ContactWork) + anon(ContactWork), services(ContactWork)),
             (_(u'Vstupní zhodnocení stavu klienta'),
@@ -739,6 +757,8 @@ class ImpactReport(BaseReport):
                 #'anamnesis_fields' : Anamnesis._meta.fields,
                 #'anamnesis_jsons' : json.dumps(list(Anamnesis.objects.all())),
                 #'client_fields' : Client._meta.fields
+                'address' : Address.objects.all(),
+                'addressTemp' : Approach.objects.all()
             },
             context_instance=RequestContext(request)
         )

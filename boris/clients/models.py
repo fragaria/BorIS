@@ -269,7 +269,7 @@ class Anonymous(Person):
 
     def is_default_service(self, service):
         """Returns True if ``service`` is default for this person, False otherwise"""
-        return service.class_name() == 'Address'
+        return service.class_name() == 'Approach'
 
 
 class ClientManager(models.Manager):

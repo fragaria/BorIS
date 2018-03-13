@@ -36,3 +36,9 @@ How to participate?
 *******************
 
 Use our GitHub bug tracker when posting issues/ideas.
+
+
+Known Issues
+************
+Application crashes for mySQL 5.7.5+ on e.g. performed_on in hygiene.py. Default value of ONLY_FULL_GROUP_BY has changed in mySQL 5.7.5+.  
+

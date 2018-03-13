@@ -161,29 +161,73 @@
                 },
                 anamnesis: ["{{ anamnesis | join:'","'}}"],
                 // anamnesis_fields: ["{{ anamnesis_fields | join:'","' }}"],
-                anamnesis_object : []
+                anamnesis_object : [],
+                address : ["{{ address | join:'","'}}"],
+                approach : ["{{ approach | join:'","'}}"],
+                address_object: [],
+                approach_object: [],
             };
+
+
+
     </script>
 
     {% for a2 in anamnesis %}
         <script>
             IMPACT.anamnesis_object.push({
                 code: "{{ a2.client.code }}",
-                iv_past : "{{ a2.iv_past }}", 
-                iv_present : "{{ a2.iv_present }}", 
-                ss_past : "{{ a2.ss_past }}", 
-                ss_present : "{{ a2.ss_present }}", 
-                us_past : "{{ a2.us_past }}", 
-                us_present : "{{ a2.us_present }}", 
-                ra_past : "{{ a2.ra_past }}", 
-                ra_present : "{{ a2.ra_present }}", 
-                od_past : "{{ a2.od_past }}", 
-                od_present : "{{ a2.od_present }}", 
+                riskymanners: {
+                    iv : {
+                        past : "{{ a2.iv_past }}", 
+                        present : "{{ a2.iv_present }}", 
+                    },
+                    ss : {
+                        past : "{{ a2.ss_past }}", 
+                        present : "{{ a2.ss_present }}", 
+                    },
+                    us : {
+                        past : "{{ a2.us_past }}", 
+                        present : "{{ a2.us_present }}", 
+                    },
+                    ra : {
+                        past : "{{ a2.ra_past }}", 
+                        present : "{{ a2.ra_present }}", 
+                    },
+                    od : {
+                        past : "{{ a2.od_past }}", 
+                        present : "{{ a2.od_present }}", 
+                    },
+                }
+            })            
+        </script>    
+    {% endfor %}    
+
+
+    {% for a3 in address %}
+        <script>
+            IMPACT.address_object.push({
+                title: "{{ a3.title }}",
+                encounter: "{{ a3.encounter }}",
             })
         </script>    
     {% endfor %}    
+
+
+    {% for a4 in approach %}
+        <script>
+            IMPACT.approach_object.push({
+                title: "{{ a4.title }}",
+                encounter: "{{ a4.encounter }}",
+                number: "{{ a4.number_of_addressed }}",
+            })
+        </script>    
+    {% endfor %} 
+
+
     <script>
         console.log("IMPACT.anamnesis_object", IMPACT.anamnesis_object);
+        console.log('address_object',IMPACT.address_object);    
+        console.log('approach_object',IMPACT.approach_object);    
     </script>    
 
 <!--     <div id="linechart" style="margin: 0; padding: 0; border: 0;">
@@ -225,7 +269,7 @@
     <div id="anamnesis"> 
         <h1> Anamnézy </h1>
         <script type="text/javascript" src="{% sstatic 'd3/d3_anamnesis.js' %}"></script>
-        <div style="height:400px;" id="encounter_distribution">
+        <div style="height:400px;" id="riskymanners_improvement">
           <svg></svg>
         </div>
     </div>
