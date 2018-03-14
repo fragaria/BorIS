@@ -20,6 +20,7 @@ from boris.classification import DISEASES, DISEASE_TEST_SIGN
 
 from .core import Service
 
+from django.forms.widgets import HiddenInput
 
 def _boolean_stats(model, filtering, field_names):
     """Get stats for boolean fields for any service class."""
@@ -31,7 +32,6 @@ def _boolean_stats(model, filtering, field_names):
         cnt = model.objects.filter(**filtering_bln).count()
         boolean_stats.append((title, cnt))
     return tuple(boolean_stats)
-
 
 
 def _field_label(model, field):
@@ -148,11 +148,15 @@ class IncomeExamination(Service):
 
 
 class DiseaseTest(Service):
+    #anamnesis = models.ForeignKey('clients.Anamnesis', to_field='nationality', related_name = '+' )
+    # disease = models.ForeignKey('clients.DiseaseTest', to_field='disease', related_name = '+', verbose_name=_(u'Testované onemocnění') )
+    # sign = models.ForeignKey('clients.DiseaseTest', to_field='result', related_name = '+',  verbose_name=_(u'Stav') )
 
+    #test = models.ManyToManyField(IncomeExamination ,through= 'clients.DiseaseTest', through_fields=('disease', 'result') ,  related_name = '+' )
     disease = models.PositiveSmallIntegerField(choices=DISEASES,
-        default=DISEASES.HIV, verbose_name=_(u'Testované onemocnění'))
+         default=DISEASES.HIV, verbose_name=_(u'Testované onemocnění'))
     sign = models.CharField(max_length=1, choices=DISEASE_TEST_SIGN,
-        default=DISEASE_TEST_SIGN.INCONCLUSIVE, verbose_name=_(u'Stav'))
+         default=DISEASE_TEST_SIGN.INCONCLUSIVE, verbose_name=_(u'Stav'))
 
     class Meta:
         app_label = 'services'
@@ -170,6 +174,7 @@ class DiseaseTest(Service):
 
     @classmethod
     def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
+
         objects = cls.objects.filter(**filtering)
         total_count = objects.count()
         substats = defaultdict(defaultdict)
@@ -409,26 +414,10 @@ class Address(Service):
 
     class Options:
         codenumber = 200
- 
-
-# def _boolean_stats(model, filtering, field_names):
-#     """Get stats for boolean fields for any service class."""
-#     boolean_stats = []
-#     for fname in field_names:
-#         title = model._meta.get_field(fname).verbose_name.__unicode__()
-#         filtering_bln = {fname: True}
-#         filtering_bln.update(filtering)
-#         cnt = model.objects.filter(**filtering_bln).count()
-#         boolean_stats.append((title, cnt))
-#     return tuple(boolean_stats)
-
-# def _sum_int(model, filtering, field):
-#     return model.objects.filter(**filtering).aggregate(Sum(field))['%s__sum' % field] or 0
 
 
 class Approach(Service):
-    number_of_addressed = models.PositiveIntegerField(default=1,
-        verbose_name=_(u'1) Počet oslovených'))
+    number_of_addressed = models.PositiveIntegerField(default=1, verbose_name=_(u'1) Počet oslovených'))
 
     class Meta:
         app_label = 'services'
@@ -436,6 +425,7 @@ class Approach(Service):
         verbose_name_plural = _(u'Oslovení')
 
     class Options:
+        limited_to = ('Anonymous',)
         codenumber = 2
         fieldsets = (
             (None, {
@@ -454,10 +444,8 @@ class Approach(Service):
     def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
         # count_values = _sum_int(cls, filtering, ('number_of_addressed') )
         #dummy_array_of_addressed = ['approach_instance'] * cls.number_of_addressed
-        dummy_array_of_addressed = _sum_int(cls, filtering, 'number_of_addressed')
-        return tuple([('number_of_addressed', dummy_array_of_addressed)])
-
-
+        array_of_addressed = _sum_int(cls, filtering, 'number_of_addressed')
+        return tuple([('number_of_addressed', array_of_addressed)])
 
 
 class IncomeFormFillup(Service):
