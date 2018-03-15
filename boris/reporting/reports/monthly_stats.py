@@ -250,16 +250,16 @@ class StatsByTownInPeriod(ClientReportBase):
     grouping = ('town',)
     grouping_total = ('grouping_constant',)
 
-    def __init__(self, date_from, date_to, towns, *args, **kwargs):
+    def __init__(self, date_from, date_to, towns):
         self.date_from = date_from
         self.date_to = date_to
         self.towns = towns or Town.objects.all()
         self.additional_filtering = {
             'performed_on__gte': date_from,
             'performed_on__lte': date_to,
-            'town__in': self.towns
+            'town__in': self.towns,
         }
-        super(StatsByTownInPeriod, self).__init__(*args, **kwargs)
+        super(StatsByTownInPeriod, self).__init__()
 
     def get_data(self):
         return [
