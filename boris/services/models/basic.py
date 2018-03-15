@@ -18,9 +18,24 @@ from fragapy.fields.models import MultiSelectField
 
 from boris.classification import DISEASES, DISEASE_TEST_SIGN
 
-from .core import Service
+from .core import Service, get_model_for_class_name
 
 from django.forms.widgets import HiddenInput
+
+from boris.services.forms import serviceform_factory, ApproachServiceForm
+#from boris.services.forms import serviceform_factory
+
+from django.contrib.contenttypes.models import ContentType
+
+# from boris.clients.models import Client, Town, Anamnesis, DrugUsage, \
+#     RiskyManners, Region, District, DiseaseTest, Anonymous, \
+#     PractitionerContact, Person, GroupContact, ClientCard, GroupContactType
+
+# from boris.services.models.core import get_model_for_class_name, Service, \
+#     Encounter
+# from boris.clients.models import Client, Anonymous
+
+
 
 def _boolean_stats(model, filtering, field_names):
     """Get stats for boolean fields for any service class."""
@@ -425,7 +440,7 @@ class Approach(Service):
         verbose_name_plural = _(u'Oslovení')
 
     class Options:
-        limited_to = ('Anonymous',)
+        # limited_to = ('Anonymous',)
         codenumber = 2
         fieldsets = (
             (None, {
@@ -439,6 +454,21 @@ class Approach(Service):
 
     def _get_the_number(self):
         return self.number_of_addressed
+
+    @classmethod
+    def form(cls, *args, **kwargs):
+        """
+        Returns completely initialized form class for service editing.
+        """
+        # get_by_natural_key('clients', 'Client')
+
+        print 'got into a form '
+        ct = ContentType.objects.get_by_natural_key('clients','Anonymous')
+        print ct
+        print cls.content_type
+        # cls.Options.fieldsets['number_of_addressed'].widget = HiddenInput()
+        return serviceform_factory(cls, form=ApproachServiceForm)
+
 
     @classmethod
     def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
