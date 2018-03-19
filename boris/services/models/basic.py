@@ -21,19 +21,10 @@ from boris.classification import DISEASES, DISEASE_TEST_SIGN
 from .core import Service, get_model_for_class_name
 
 
-from boris.services.forms import serviceform_factory, ApproachServiceForm
-#from boris.services.forms import serviceform_factory
+from boris.services.forms import serviceform_factory, ServiceForm
 
 from django.contrib.contenttypes.models import ContentType
-
-# from boris.clients.models import Client, Town, Anamnesis, DrugUsage, \
-#     RiskyManners, Region, District, DiseaseTest, Anonymous, \
-#     PractitionerContact, Person, GroupContact, ClientCard, GroupContactType
-
-# from boris.services.models.core import get_model_for_class_name, Service, \
-#     Encounter
-# from boris.clients.models import Client, Anonymous
-
+from django.forms.widgets import HiddenInput
 
 
 def _boolean_stats(model, filtering, field_names):
@@ -421,7 +412,25 @@ class Address(Service):
         verbose_name_plural = _(u'Oslovení')
 
     class Options:
+        limited_to = ('')
         codenumber = 200
+
+
+class ApproachServiceForm(ServiceForm):
+    def __init__(self, encounter, *args, **kwargs):
+        if 'initial' in kwargs:
+            kwargs['initial']['encounter'] = encounter
+        else:
+            kwargs['initial'] = {'encounter': encounter}
+
+        super(ServiceForm, self).__init__(*args, **kwargs)
+
+        self.fields['encounter'].widget = HiddenInput()
+        self.encounter = encounter
+        ct_this = self.encounter.person
+
+        if (str(ct_this.content_type) == 'Klient'):
+            self.fields['number_of_addressed'].widget = HiddenInput()
 
 
 class Approach(Service):
@@ -433,7 +442,6 @@ class Approach(Service):
         verbose_name_plural = _(u'Oslovení')
 
     class Options:
-        # limited_to = ('Anonymous',)
         codenumber = 2
         fieldsets = (
             (None, {
@@ -459,17 +467,13 @@ class Approach(Service):
         ct = ContentType.objects.get_by_natural_key('clients','Anonymous')
         print ct
         print cls.content_type
-        # cls.Options.fieldsets['number_of_addressed'].widget = HiddenInput()
         return serviceform_factory(cls, form=ApproachServiceForm)
 
 
     @classmethod
     def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
-        # count_values = _sum_int(cls, filtering, ('number_of_addressed') )
-        #dummy_array_of_addressed = ['approach_instance'] * cls.number_of_addressed
         array_of_addressed = _sum_int(cls, filtering, 'number_of_addressed')
         return tuple([('number_of_addressed', array_of_addressed)])
->>>>>>> bc5144e... number_of_adressed not visible for client
 
 
 class IncomeFormFillup(Service):

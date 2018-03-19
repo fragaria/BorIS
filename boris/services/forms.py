@@ -9,13 +9,6 @@ from django.forms.widgets import HiddenInput
 from boris.utils.forms import adminform_formfield
 from django.contrib.contenttypes.models import ContentType
 
-# from boris.clients.models import Client, Town, Anamnesis, DrugUsage, \
-#     RiskyManners, Region, District, DiseaseTest, Anonymous, \
-#     PractitionerContact, Person, GroupContact, ClientCard, GroupContactType
-
-# from boris.services.models.core import get_model_for_class_name, Service, \
-#     Encounter
-
 
 class ServiceForm(BetterModelForm):
     @property
@@ -37,24 +30,6 @@ class ServiceForm(BetterModelForm):
 
         self.fields['encounter'].widget = HiddenInput()
         self.encounter = encounter
-
-
-class ApproachServiceForm(ServiceForm):
-    def __init__(self, encounter, *args, **kwargs):
-        if 'initial' in kwargs:
-            kwargs['initial']['encounter'] = encounter
-        else:
-            kwargs['initial'] = {'encounter': encounter}
-
-        super(ServiceForm, self).__init__(*args, **kwargs)
-
-        self.fields['encounter'].widget = HiddenInput()
-        self.encounter = encounter
-        ct_this = self.encounter.person
-
-        if (str(ct_this.content_type) == 'Klient'):
-            self.fields['number_of_addressed'].widget = HiddenInput()
-
 
 
 def serviceform_factory(model, form=ServiceForm, fields=None, excludes=None,
