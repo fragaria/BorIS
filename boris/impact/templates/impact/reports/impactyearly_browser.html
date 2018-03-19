@@ -1,0 +1,76 @@
+{% extends "print_base.html" %}
+{% load i18n %}
+{% load i18n services admin_static sstatic %}
+
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        body { padding: 0 20px; }
+        table td { padding: 5px 5px; }
+    </style>
+{% endblock %}
+
+{% block content %}
+    {% if date_from and date_to %}
+        <p style="margin-bottom: 20px;">{{ date_from|date:"j.n.Y" }} - {{ date_to|date:"j.n.Y" }}</p>
+    {% endif %}
+    {% if towns %}
+        <p style="margin-bottom: 20px;">{{ towns|join:", " }}</p>
+<!--         <p style="overflow: auto;"></p>
+ -->
+    {% endif %}
+    {% include "impact/reports/impactreport_data.html" %}
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
+    <link href="{% sstatic 'css/dashboard.css' %}" rel="stylesheet" type="text/css"/>
+    <script src="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+
+
+    <h1>Počet kontaktů {{first_contact}}</h1>
+    <div id="encounters" class="ct-chart">
+        <script>
+            new Chartist.Bar('#encounters', {
+                labels: ["{{ months | join:'","'}}"],
+                series: [
+                    {{ encounters | safe }},
+                ]
+            }, {
+                fullWidth: true,
+            });
+        </script>
+    </div>
+
+    <h1>Počet nových klientů</h1>
+    <div id="persons" class="ct-chart">
+        <script>
+            new Chartist.Bar('#persons', {
+                labels: ["{{ months | join:'","'}}"],
+                series: [
+                    {{ persons | safe }},
+                ]
+            }, {
+                fullWidth: true,
+            });
+        </script>
+    </div>
+
+    <h1>Počet vyměněných stříkaček</h1>
+    <div id="syringes" class="ct-chart">
+        <script>
+            new Chartist.Bar('#syringes', {
+                labels: ["{{ months | join:'","'}}"],
+                series: [
+                    {{ syringe | safe }},
+                ]
+            }, {
+                fullWidth: true,
+            });
+        </script>
+    </div>
+
+ 
+
+{% endblock %}

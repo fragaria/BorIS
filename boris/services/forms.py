@@ -39,21 +39,6 @@ class ServiceForm(BetterModelForm):
         self.encounter = encounter
 
 
-class ApproachServiceForm(ServiceForm):
-    def __init__(self, encounter, *args, **kwargs):
-        if 'initial' in kwargs:
-            kwargs['initial']['encounter'] = encounter
-        else:
-            kwargs['initial'] = {'encounter': encounter}
-
-        super(ServiceForm, self).__init__(*args, **kwargs)
-
-        self.fields['encounter'].widget = HiddenInput()
-        self.encounter = encounter
-        ct_this = self.encounter.person
-
-        if (str(ct_this.content_type) == 'Klient'):
-            self.fields['number_of_addressed'].widget = HiddenInput()
 
 
 

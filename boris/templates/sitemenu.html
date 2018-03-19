@@ -19,6 +19,7 @@
     {% url "reporting_hygiene" as reporting_hygiene %}
     {% url "reporting_govcouncil" as reporting_govcouncil %}
     {% url "reporting_impact" as reporting_impact %}
+    {% url "impact_impact" as impact_impact %}
     {% url "admin:clients_terrainnotes_changelist" as terrain_notes %}
 
     <li class="{% active index %}"><a href="{{ index }}">{% trans "Nástěnka" %}</a></li>
@@ -30,15 +31,22 @@
     <li class="{% active syringecollection %}"><a href="{{ syringecollection }}">{% trans "Sběr stříkaček" %}</a></li>
     <li class="{% active terrain_notes %}"><a href="{{ terrain_notes }}">{% trans "Zápisy z terénu" %}</a></li>
     <li>
+        <a href="#">{% trans "Dopadové studie" %}</a>
+        <ul>
+            <li class="{% active impact_impact %}" ><a href="{{ impact_impact }}">{% trans "Impakt" %}</a></li> 
+        </ul>
+    </li>
+    <li>
         <a href="#">{% trans "Výstupy" %}</a>
         <ul>
             <li class="{% active reporting_towns %}"><a href="{{ reporting_towns }}">{% trans "Základní souhrnný" %}</a></li>
             <li class="{% active reporting_services %}"><a href="{{ reporting_services }}">{% trans "Výkony" %}</a></li>
             <li class="{% active reporting_clients %}"><a href="{{ reporting_clients }}">{% trans "Klienti" %}</a></li>
-            <li class="{% active reporting_impact %}" hidden ><a href="{{ reporting_impact }}">{% trans "Impakt" %}</a></li> 
             <li class="{% active reporting_yearly %}"><a href="{{ reporting_yearly }}">{% trans "Roční" %}</a></li>
             <li class="{% active reporting_hygiene %}"><a href="{{ reporting_hygiene }}">{% trans "Hygiena" %}</a></li>
             <li class="{% active reporting_govcouncil %}"><a href="{{ reporting_govcouncil }}">{% trans "RVKPP" %}</a></li>
+            <li class="{% active reporting_impact %}" hidden><a href="{{ reporting_impact }}">{% trans "Impakt" %}</a></li> 
+
         </ul>
     </li>
     {% if request.user.is_superuser %}

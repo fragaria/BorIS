@@ -22,8 +22,8 @@ from .core import Service, get_model_for_class_name
 
 from django.forms.widgets import HiddenInput
 
-from boris.services.forms import serviceform_factory, ApproachServiceForm
-#from boris.services.forms import serviceform_factory
+#from boris.services.forms import serviceform_factory, ApproachServiceForm
+from boris.services.forms import serviceform_factory, ServiceForm
 
 from django.contrib.contenttypes.models import ContentType
 
@@ -429,6 +429,23 @@ class Address(Service):
 
     class Options:
         codenumber = 200
+
+
+class ApproachServiceForm(ServiceForm):
+    def __init__(self, encounter, *args, **kwargs):
+        if 'initial' in kwargs:
+            kwargs['initial']['encounter'] = encounter
+        else:
+            kwargs['initial'] = {'encounter': encounter}
+
+        super(ServiceForm, self).__init__(*args, **kwargs)
+
+        self.fields['encounter'].widget = HiddenInput()
+        self.encounter = encounter
+        ct_this = self.encounter.person
+
+        if (str(ct_this.content_type) == 'Klient'):
+            self.fields['number_of_addressed'].widget = HiddenInput()
 
 
 class Approach(Service):
