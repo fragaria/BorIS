@@ -460,13 +460,6 @@ class Approach(Service):
         """
         Returns completely initialized form class for service editing.
         """
-        # get_by_natural_key('clients', 'Client')
-
-        print 'got into a form '
-        ct = ContentType.objects.get_by_natural_key('clients','Anonymous')
-        print ct
-        print cls.content_type
-        # cls.Options.fieldsets['number_of_addressed'].widget = HiddenInput()
         return serviceform_factory(cls, form=ApproachServiceForm)
 
 
