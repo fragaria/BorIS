@@ -11,20 +11,16 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Sum, Max, Avg
 from django.utils.translation import ugettext_lazy as _, ugettext
+from django.contrib.contenttypes.models import ContentType
+from django.forms.widgets import HiddenInput
 
 from model_utils import Choices
 
 from fragapy.fields.models import MultiSelectField
 
 from boris.classification import DISEASES, DISEASE_TEST_SIGN
-
-from .core import Service, get_model_for_class_name
-
-
 from boris.services.forms import serviceform_factory, ServiceForm
-
-from django.contrib.contenttypes.models import ContentType
-from django.forms.widgets import HiddenInput
+from .core import Service
 
 
 def _boolean_stats(model, filtering, field_names):

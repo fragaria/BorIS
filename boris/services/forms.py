@@ -7,7 +7,6 @@ from form_utils.forms import BetterModelForm, BetterModelFormMetaclass
 
 from django.forms.widgets import HiddenInput
 from boris.utils.forms import adminform_formfield
-from django.contrib.contenttypes.models import ContentType
 
 
 class ServiceForm(BetterModelForm):
