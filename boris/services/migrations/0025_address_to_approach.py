@@ -12,14 +12,11 @@ def copy_data(apps, schema_editor):
     Address = apps.get_model("services", "Address")
     Approach = apps.get_model("services", "Approach")
     ApproachCount = Approach.objects.all().count()
-    print 'ApproachCount found to be %d' %ApproachCount
     ct = ContentType.objects.get_by_natural_key("services", "Approach")
-    print 'ContentType of found to be %s' %ct
-
     count = 0
     title = _(u'Oslovení')
     for address in Address.objects.all().order_by('encounter__id').distinct():
-        if(address.title == title):
+        if address.title == title:
             approach = Approach()
             approach.encounter = address.encounter
             approach.title = address.title
@@ -42,6 +39,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-         migrations.RunPython(code=copy_data, reverse_code=reverse)
-        #migrations.RunPython(code=copy_data)
+        migrations.RunPython(code=copy_data, reverse_code=reverse)
     ]

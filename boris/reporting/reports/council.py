@@ -83,10 +83,7 @@ class GovCouncilReport(BaseReport):
         if self.towns:
             filtering['encounter__where__in'] = self.towns
 
-        approaches = Approach.objects.filter(**filtering)
-        count = 0
-        for a in approaches:
-            count += a.number_of_addressed
+        count = Approach._get_stats(filtering)[0][1]
 
         return count
 
@@ -373,6 +370,7 @@ class GovCouncilReport(BaseReport):
             (_(u'Celkový počet nepřímých kontaktů s identifikovanými klienty'),
              phone_encountered_clients_count, phone_client_encounters.count()),
             (_(u'Úkony potřebné pro zajištění přímé práce s klientem'),
+              # 'xxx', services(Approach)),
              'xxx', self.get_number_of_addressed_count()),
             (_(u'Kontaktní práce'),
              clients(ContactWork) + anon(ContactWork), services(ContactWork)),

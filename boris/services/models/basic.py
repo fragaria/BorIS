@@ -414,18 +414,9 @@ class Address(Service):
 
 class ApproachServiceForm(ServiceForm):
     def __init__(self, encounter, *args, **kwargs):
-        if 'initial' in kwargs:
-            kwargs['initial']['encounter'] = encounter
-        else:
-            kwargs['initial'] = {'encounter': encounter}
-
-        super(ServiceForm, self).__init__(*args, **kwargs)
-
-        self.fields['encounter'].widget = HiddenInput()
-        self.encounter = encounter
+        super(ApproachServiceForm, self).__init__(encounter, *args, **kwargs)
         ct_this = self.encounter.person
-
-        if (str(ct_this.content_type) == 'Klient'):
+        if str(ct_this.content_type) == 'Klient':
             self.fields['number_of_addressed'].widget = HiddenInput()
 
 
@@ -449,27 +440,23 @@ class Approach(Service):
     def _prepare_title(self):
         return u'%s (%s)' % (self.service.title, self.number_of_addressed,)
 
-    def _get_the_number(self):
-        return self.number_of_addressed
-
     @classmethod
     def form(cls, *args, **kwargs):
-        """
-        Returns completely initialized form class for service editing.
-        """
-        # get_by_natural_key('clients', 'Client')
-
-        print 'got into a form '
-        ct = ContentType.objects.get_by_natural_key('clients','Anonymous')
-        print ct
-        print cls.content_type
         return serviceform_factory(cls, form=ApproachServiceForm)
-
 
     @classmethod
     def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
-        array_of_addressed = _sum_int(cls, filtering, 'number_of_addressed')
-        return tuple([('number_of_addressed', array_of_addressed)])
+        addressed = _sum_int(cls, filtering, 'number_of_addressed')
+        return tuple([('number_of_addressed', addressed)])
+
+    def get_time_spent(self, filtering, indirect_content_types, no_subservice_content_types ):
+        try:
+            return TimeDotation.get_time_for_type(self.content_type) * self._get_stats(self, filtering)[0][1]
+        except Exception as e:
+            if ' matching query does not exist' in e.message:
+                return 0
+            raise e
+
 
 
 class IncomeFormFillup(Service):
