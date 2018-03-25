@@ -10,12 +10,10 @@ from django.utils.datastructures import SortedDict
 from boris.impact.core import ReportResponse
 from boris.impact import forms
 
-from boris.impact.reports.impact import ImpactReport
-#from boris.reporting.reports.impact import ImpactReport
-#from .reports.impact import ImpactReport
+from boris.impact.reports.impact import ImpactReport, ImpactTimeseries, ImpactClient, ImpactAnamnesis
 
 
-class ReportingInterfaceTab(object):
+class ImpactInterfaceTab(object):
     """
     One tab of the interface. Requires 2 attributes to be set:
         `report`       Report subclass
@@ -48,10 +46,9 @@ def interfacetab_factory(report_cls, form_cls, form_prefix, template='impact/tab
              'template': template}
 
     cls = type(report_cls.__name__ + 'Tab',
-               (ReportingInterfaceTab,),
+               (ImpactInterfaceTab,),
                attrs)
 
-    # print report_cls.__name__ 
     return cls
 
 
@@ -64,12 +61,13 @@ Tabs are defined as ReportInterfaceTab subclasses listed in
 """
 class ImpactReportingInterface(object):
     tabs = (
-        interfacetab_factory(ImpactReport, forms.ImpactForm, 'impact'),
-        interfacetab_factory(ImpactReport, forms.BaseReportForm, 'impactyearly'),
+        interfacetab_factory(ImpactTimeseries, forms.ReportForm, 'timeseries'),
+        interfacetab_factory(ImpactClient, forms.ImpactForm, 'client'),
+        interfacetab_factory(ImpactAnamnesis, forms.ImpactForm, 'anamnesis'),
     )
 
 
-class ReportingInterfaceHandler(object):
+class ImpactInterfaceHandler(object):
     """Class-based view for showing impact interface."""
     id = 'base'
     title = None
@@ -122,9 +120,9 @@ class ReportingInterfaceHandler(object):
     urls = property(get_urls)
 
 
-class ImpactReportingInterfaceHandler(ReportingInterfaceHandler):
+class ImpactReportingInterfaceHandler(ImpactInterfaceHandler):
     id = 'impact'
-    title = u'Dopadová studie - klienti'
+    title = u'Dopadová studie'
     interface_class = ImpactReportingInterface
 
 

@@ -12,7 +12,7 @@ from django.utils.translation import ugettext as _
 from boris.classification import (DISEASES, DRUGS, DRUG_APPLICATION_TYPES,
     SEXES, RISKY_BEHAVIOR_PERIODICITY, RISKY_BEHAVIOR_KIND)
 from boris.clients.models import Client, Anonymous, Anamnesis, RiskyManners, PractitionerContact, GroupContact, TerrainNotes, Town 
-from boris.reporting.core import BaseReport
+from boris.impact.core import BaseReport
 from boris.services.models import (Encounter, Address, Approach, ContactWork,
                                    IncomeFormFillup, IndividualCounselling, CrisisIntervention, SocialWork,
                                    HarmReduction, BasicMedicalTreatment, InformationService,
@@ -44,31 +44,26 @@ def get_no_subservice_content_types():
     return _CONTENT_TYPES['no_subservice']
 
 
+
 class ImpactReport(BaseReport):
     title = u'Impakt'
     description = (u'Podklady pro dopadovou zprávu '
         u'pro koordinaci protidrogové politiky.')
 
-    def __init__(self, date_from, date_to, kind, towns):
+    all_towns = Town.objects.all()
+    first_contact = Encounter.objects.order_by('performed_on')[0] if Encounter.objects.order_by('performed_on') else None
+
+
+    def __init__(self, date_from = (first_contact.performed_on if first_contact != None else None), date_to = datetime.today(), towns = all_towns):
         self.datetime_from = datetime.combine(date_from, time(0))
         self.datetime_to = datetime.combine(date_to, time(23, 59, 59))
-        self.kind = 'clients' if int(kind) == 1 else 'services'
-        # self.towns = towns
-        self.towns = towns or Town.objects.all()
+        self.towns = towns
         self.clients_in_location = self._get_all_drug_users().count()
         self.potential_clients = 6*self.clients_in_location
         self.town_population = 10000 
 
-        #
-        #def init_with_context(self, context):
-        #user = context['request'].user
+        # self.first_contact = first_contact
 
-        self.first_contact = Encounter.objects.order_by('performed_on')[0] if Encounter.objects.order_by('performed_on') else None
-
-        #year = datetime.today().year - 3
-        #month = datetime.today().month
-        #first_contact_year = self.first_contact.performed_on.year
-        #first_contact_month = self.first_contact.performed_on.month
         if(self.first_contact != None):
             number_of_months = (datetime.today().year - self.first_contact.performed_on.year)*12 + datetime.today().month - self.first_contact.performed_on.month 
             year = self.first_contact.performed_on.year
@@ -102,13 +97,6 @@ class ImpactReport(BaseReport):
 
         self.months = self.months[month:] + self.months[:month]
 
-
-    def get_filename(self):
-        if self.kind == 'clients':
-            return 'RVKPP_klienti.xls'
-        return 'RVKPP_vykony.xls'
-
-    # Functions used for service-related computations.
 
     def _get_anonymous_ids(self):
         if not hasattr(self, '_anonymous_ids'):
@@ -280,13 +268,6 @@ class ImpactReport(BaseReport):
         clients = self._get_all_drug_users()
         return clients.filter(primary_drug__in=drugs)
 
-    def _get_average_age(self, clients):
-        """Get the average age of the input clients."""
-        years = [c.birthdate.year for c in clients if c.birthdate]
-        this_year = self.datetime_to.year or date.today().year
-        ages = [this_year - year for year in years]
-        return int(round(float(sum(ages)) / len(ages))) if ages else 0
-
     def _get_services_time(self):
         filtering = {
             'encounter__performed_on__gte': self.datetime_from,
@@ -303,6 +284,14 @@ class ImpactReport(BaseReport):
                 content_types.append(service.content_type)
         return sum
 
+    def get_data(self):
+        """Returns the data table based on the subtype of the report."""
+        return self._get_data_clients()
+
+class ImpactTimeseries(ImpactReport):
+    title = u'Časové řady'
+    description = (u'Časové řady ')
+
     # <--
     def get_drug_occurrence(self):
         drug = lambda *drugs: self._get_primary_drug_users(*drugs).count()
@@ -318,9 +307,49 @@ class ImpactReport(BaseReport):
             'halucinogeny' : drug(DRUGS.LSD, DRUGS.PSYLOCIBE),
             'těkavé látky' : drug(DRUGS.INHALER_DRUGS)
         }
-        #return {'labels': list(map(lambda x: u str(x) ,counts_by_category.keys())), 'values' : counts_by_category.values()  };
         return { 'labels': counts_by_category.keys(), 'values' : counts_by_category.values()}
-        #return {'labels': list(map(lambda x: _(u'%s' % x) ,counts_by_category.keys())), 'values' : counts_by_category.values()  };
+
+
+    def render(self, request, display_type):
+        return loader.render_to_string(
+            self.get_template(display_type),
+            {
+                'date_from': self.datetime_from,
+                'date_to': self.datetime_to,
+                'towns': [t.title for t in self.towns],
+                'encounters': self.encounters,
+                'persons': self.persons,
+                'syringe': self.syringe,
+                'months': self.months,
+                'first_contact': self.first_contact.performed_on.year,
+                'clients_in_location' : self.clients_in_location, 
+                'potential_clients' : self.potential_clients,
+                'town_population' : self.town_population-(7*self.clients_in_location),
+            },
+            context_instance=RequestContext(request)
+        )
+
+
+class ImpactClient(ImpactReport):
+    title = u'Klienti'
+    description = (u'Statistická analýza klientů')
+
+    # <--
+    def get_drug_occurrence(self):
+        drug = lambda *drugs: self._get_primary_drug_users(*drugs).count()
+        counts_by_category = {
+            'heroin' : drug(DRUGS.HEROIN),
+            'buprenorfin' : drug(DRUGS.SUBUTEX_LEGAL, DRUGS.SUBUTEX_ILLEGAL, DRUGS.SUBOXONE),
+            'metadon' : drug(DRUGS.METHADONE),
+            'opiáty' : drug(DRUGS.VENDAL, DRUGS.RAW_OPIUM, DRUGS.BRAUN),
+            'pervitin' : drug(DRUGS.METHAMPHETAMINE),
+            'kokain/crack': drug(DRUGS.COCAINE),
+            'kanabinoidy' : drug(DRUGS.THC),
+            'extáze' : drug(DRUGS.ECSTASY),
+            'halucinogeny' : drug(DRUGS.LSD, DRUGS.PSYLOCIBE),
+            'těkavé látky' : drug(DRUGS.INHALER_DRUGS)
+        }
+        return { 'labels': counts_by_category.keys(), 'values' : counts_by_category.values()}
 
     def get_enc_distribution(self):
         bin_bounds = [0,1,2,3,4,5,10,20,30, 40, 50,100,200,300,400]
@@ -328,6 +357,8 @@ class ImpactReport(BaseReport):
         counts = [0] * bin_number
         bin_labels = [''] * bin_number
         client_encs = Client.objects.annotate(encounter_count=Count('encounters')).order_by('encounter_count')
+        anonymous_ids = self._get_anonymous_ids()
+        anonymous_encs = Encounter.objects.filter(person__in=anonymous_ids).count()
         for i in xrange(bin_number-1):
             if(bin_bounds[i+1]-bin_bounds[i] == 1):
                 bin_labels[i+1] = str(bin_bounds[i+1]) 
@@ -338,7 +369,33 @@ class ImpactReport(BaseReport):
                 if (client_enc.encounter_count > bin_bounds[i] and client_enc.encounter_count <= bin_bounds[i+1]):
                     counts[i] += 1
         
-        return {'bounds': bin_bounds[1:bin_number], 'labels': bin_labels[1:bin_number], 'counts': counts[0:bin_number-1]}
+        return {'bounds': bin_bounds[1:bin_number], 'labels': bin_labels[1:bin_number], 'counts': counts[0:bin_number-1], 'anonymous': anonymous_encs}
+
+    def render(self, request, display_type):
+        return loader.render_to_string(
+            self.get_template(display_type),
+            {
+                'date_from': self.datetime_from,
+                'date_to': self.datetime_to,
+                'towns': [t.title for t in self.towns],
+                'encounters': self.encounters,
+                'persons': self.persons,
+                'syringe': self.syringe,
+                'months': self.months,
+                'first_contact': self.first_contact.performed_on.year,
+                'clients_in_location' : self.clients_in_location, 
+                'potential_clients' : self.potential_clients,
+                'town_population' : self.town_population-(7*self.clients_in_location),
+                'drug_type_occurrence' : self.get_drug_occurrence(),
+                'enc_dist' : self.get_enc_distribution(),
+            },
+            context_instance=RequestContext(request)
+        )
+
+
+class ImpactAnamnesis(ImpactReport):
+    title = u'Anamnézy'
+    description = (u'Statistický výtah z anamnéz')
 
     def anamnesis_dictionary(self, x):
         p = RISKY_BEHAVIOR_PERIODICITY
@@ -379,13 +436,6 @@ class ImpactReport(BaseReport):
 
         # Get QuerySet of first encounters in the given year/town for all clients.
         encounters = Encounter.objects.first(2011 and 2012 and 2013 and 2013 and 2015, towns=self.towns)
-        # encounters = encounters.append(Encounter.objects.first(year=self.datetime_from.year-1, towns=self.towns))
-        # encounters = encounters.append(Encounter.objects.first(year=self.datetime_from.year-2, towns=self.towns))
-        # encounters = encounters.append(Encounter.objects.first(year=self.datetime_from.year-3, towns=self.towns))
-        # encounters = encounters.append(Encounter.objects.first(year=self.datetime_from.year-4, towns=self.towns))
-        # encounters = encounters.append(Encounter.objects.first(year=self.datetime_from.year-5, towns=self.towns))
-
-
         # Filter encounters so that only the specified date range is present.
         encounters = encounters.filter(performed_on__gte=self.datetime_from,
                                        performed_on__lt=self.datetime_to)
@@ -506,32 +556,15 @@ class ImpactReport(BaseReport):
             _all.append(a)
 
         return _all
-
-
-
-    def get_data(self):
-        """Returns the data table based on the subtype of the report."""
-        if self.kind == 'clients':
-            return self._get_data_clients()
-        else:
-            return self._get_data_services()
+ 
 
     def render(self, request, display_type):
-        # by Ochmel
-        # Client.objects.filter(encounters__count_gte=1, encounters__count__lt=3)
-        # Client.objects.annotate(encounter_count=count('encounters')).order_by('encounter_count')
-        # Client.objects.order_by('encounters__count')
-
-        # for client in Client.objects.all().:
-        #     len(client.encounters)
 
         return loader.render_to_string(
             self.get_template(display_type),
             {
-                # 'rows': self.get_data(),
                 'date_from': self.datetime_from,
                 'date_to': self.datetime_to,
-                'report_kind': self.kind,
                 'towns': [t.title for t in self.towns],
                 'encounters': self.encounters,
                 'persons': self.persons,
@@ -539,19 +572,7 @@ class ImpactReport(BaseReport):
                 'months': self.months,
                 'first_contact': self.first_contact.performed_on.year,
                 'clients_in_location' : self.clients_in_location, 
-                'potential_clients' : self.potential_clients,
-                'town_population' : self.town_population-(7*self.clients_in_location),
-                'drug_type_occurrence' : self.get_drug_occurrence(),
-                'client_ids': self._get_direct_client_encounters().values_list('person_id', flat=True),
-                'person_ids': Client.objects.annotate(encounter_count=Count('encounters')).order_by('encounter_count')[325].encounter_count,
-                'enc_dist' : self.get_enc_distribution(),
-                # 'anamnesis' : Anamnesis.objects.all(),
                 'anamnesis' : self.get_anamnesis_list(),
-                #'anamnesis_fields' : Anamnesis._meta.fields,
-                #'anamnesis_jsons' : json.dumps(list(Anamnesis.objects.all())),
-                #'client_fields' : Client._meta.fields
-                'address' : Address.objects.all(),
-                'addressTemp' : Approach.objects.all()
-            },
+          },
             context_instance=RequestContext(request)
         )
