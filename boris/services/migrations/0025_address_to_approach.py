@@ -6,6 +6,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 
 from boris.services.models import Address, Approach
+from boris.services.models.core import TimeDotation
+
 
 
 def copy_data(apps, schema_editor):
@@ -28,7 +30,13 @@ def copy_data(apps, schema_editor):
             approach.modified = address.modified
             approach.save()
             count += 1
+
     print 'Successfully migrated %d services of type Address' % count
+
+
+def delete_adress_timedotations(apps, schema_editor):
+    ct = ContentType.objects.get_by_natural_key("services", "Address")
+    TimeDotation.objects.filter(ct = ct).delete()
 
 
 def reverse(apps, schema_editor):
@@ -42,6 +50,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-         migrations.RunPython(code=copy_data, reverse_code=reverse)
-        #migrations.RunPython(code=copy_data)
+        migrations.RunPython(code=copy_data, reverse_code=reverse),
+        # migrations.RunPython(code=delete_adress_timedotations, reverse_code=reverse)
     ]

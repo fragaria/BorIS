@@ -482,10 +482,16 @@ class Approach(Service):
 
     @classmethod
     def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
-        # count_values = _sum_int(cls, filtering, ('number_of_addressed') )
-        #dummy_array_of_addressed = ['approach_instance'] * cls.number_of_addressed
-        array_of_addressed = _sum_int(cls, filtering, 'number_of_addressed')
-        return tuple([('number_of_addressed', array_of_addressed)])
+        addressed = _sum_int(cls, filtering, 'number_of_addressed')
+        return tuple([('Oslovení', addressed)])
+
+    def get_time_spent(self, filtering, indirect_content_types, no_subservice_content_types ):
+        try:
+            return TimeDotation.get_time_for_type(self.content_type) * self._get_stats(self, filtering)[0][1]
+        except Exception as e:
+            if ' matching query does not exist' in e.message:
+                return 0
+            raise e
 
 
 class IncomeFormFillup(Service):

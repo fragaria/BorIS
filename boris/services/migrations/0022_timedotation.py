@@ -57,6 +57,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        # migrations.DeleteModel(name='TimeDotation'),
+        # migrations.DeleteModel((apps.get_model('services', 'TimeDotation'))),
         migrations.CreateModel(
             name='TimeDotation',
             fields=[
