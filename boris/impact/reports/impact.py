@@ -52,7 +52,6 @@ class ImpactReport(BaseReport):
     all_towns = Town.objects.all()
     first_contact = Encounter.objects.order_by('performed_on')[0] if Encounter.objects.order_by('performed_on') else None
 
-
     def __init__(self, date_from = (first_contact.performed_on if first_contact != None else None), date_to = datetime.today(), towns = all_towns):
         self.datetime_from = datetime.combine(date_from, time(0))
         self.datetime_to = datetime.combine(date_to, time(23, 59, 59))
@@ -95,7 +94,6 @@ class ImpactReport(BaseReport):
             self.syringe.append(syringe_count)
 
         self.months = self.months[month:] + self.months[:month]
-
 
     def _get_anonymous_ids(self):
         if not hasattr(self, '_anonymous_ids'):
@@ -291,24 +289,6 @@ class ImpactTimeseries(ImpactReport):
     title = u'Časové řady'
     description = (u'Časové řady ')
 
-    # <--
-    def get_drug_occurrence(self):
-        drug = lambda *drugs: self._get_primary_drug_users(*drugs).count()
-        counts_by_category = {
-            'heroin' : drug(DRUGS.HEROIN),
-            'buprenorfin' : drug(DRUGS.SUBUTEX_LEGAL, DRUGS.SUBUTEX_ILLEGAL, DRUGS.SUBOXONE),
-            'metadon' : drug(DRUGS.METHADONE),
-            'opiáty' : drug(DRUGS.VENDAL, DRUGS.RAW_OPIUM, DRUGS.BRAUN),
-            'pervitin' : drug(DRUGS.METHAMPHETAMINE),
-            'kokain/crack': drug(DRUGS.COCAINE),
-            'kanabinoidy' : drug(DRUGS.THC),
-            'extáze' : drug(DRUGS.ECSTASY),
-            'halucinogeny' : drug(DRUGS.LSD, DRUGS.PSYLOCIBE),
-            'těkavé látky' : drug(DRUGS.INHALER_DRUGS)
-        }
-        return { 'labels': counts_by_category.keys(), 'values' : counts_by_category.values()}
-
-
     def render(self, request, display_type):
         return loader.render_to_string(
             self.get_template(display_type),
@@ -333,7 +313,6 @@ class ImpactClient(ImpactReport):
     title = u'Klienti'
     description = (u'Statistická analýza klientů')
 
-    # <--
     def get_drug_occurrence(self):
         drug = lambda *drugs: self._get_primary_drug_users(*drugs).count()
         counts_by_category = {

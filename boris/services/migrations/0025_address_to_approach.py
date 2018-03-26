@@ -38,6 +38,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.DeleteModel(name='TimeDotation'),
         migrations.RunPython(code=copy_data, reverse_code=reverse)
     ]

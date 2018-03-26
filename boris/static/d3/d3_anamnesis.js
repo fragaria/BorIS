@@ -1,10 +1,7 @@
 
 
   nv.addGraph(function() {
-
-    var bounds = IMPACT.encounter_distribution.bounds;
-    var counts = IMPACT.encounter_distribution.counts;
-    var labels = IMPACT.encounter_distribution.labels;
+ 
     var anamnesis = IMPACT.anamnesis;
     var anamnesis_object = IMPACT.anamnesis_object;
 
@@ -19,7 +16,6 @@
         'often' : 2
     }
 
-
     var manner_dict = {
         iv : 'Nitrožílní aplikace',
         ss : 'Sdílení jehel',
@@ -27,7 +23,6 @@
         us : 'Nechráněný sex',
         od : 'Předávkování',
     }
-
 
     var improvements = anamnesis_object.filter(a => {
         var include = false;
@@ -40,7 +35,6 @@
             }
         }
         return include;
-        //return (past > present)
     });
     console.log('improvements',improvements);
 

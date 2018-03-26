@@ -1,5 +1,3 @@
-
-
   nv.addGraph(function() {
 
     var encounters = IMPACT.encounters;
@@ -32,11 +30,7 @@
         .x(function(d) { return d.month })    //Specify the data accessors.
         .y(function(d) { return d.enc })
         .staggerLabels(true)    //Too many bars and not enough room? Try staggering labels.
-        //.tooltips(false)        //Don't show tooltips
         .showValues(true)       //...instead, show the bar value right on top of each bar.
-        // .yAxisTickFormat(d3.format(',.0d'));
-        //.transitionDuration(350)
-       // .forceY([0,maxY])
         ;
 
     chart.yAxis.tickFormat(d3.format(',.0d'));

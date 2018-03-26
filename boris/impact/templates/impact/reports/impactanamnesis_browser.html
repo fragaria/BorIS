@@ -23,40 +23,14 @@
     {% include "impact/reports/impactreport_data.html" %}
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
-    <link href="{% sstatic 'css/dashboard.css' %}" rel="stylesheet" type="text/css"/>
-    <script src="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
-
-
-
     <!-- d3  -->
     <script type="text/javascript">
             var IMPACT = {
                 months: ["{{ months| join:'","'}}"],
                 encounters: ["{{ encounters | join:'","'}}"],
-                drug_type_occurrence : {
-                    labels: ["{{ drug_type_occurrence.labels | join:'","' }}"],
-                    series: ["{{ drug_type_occurrence.values | join:'","' }}"],
-                    //series: {{ drug_type_occurrence.values }},
-                },
-                encounter_distribution : {
-                    bounds: ["{{ enc_dist.bounds | join:'","' }}"],
-                    counts: ["{{ enc_dist.counts | join:'","' }}"],
-                    labels: ["{{ enc_dist.labels | join:'","' }}"],
-
-                },
                 anamnesis: ["{{ anamnesis | join:'","'}}"],
-                // anamnesis_fields: ["{{ anamnesis_fields | join:'","' }}"],
                 anamnesis_object : [],
-                address : ["{{ address | join:'","'}}"],
-                approach : ["{{ approach | join:'","'}}"],
-                address_object: [],
-                approach_object: [],
             };
-
-
-
     </script>
 
     {% for a2 in anamnesis %}
@@ -89,26 +63,6 @@
         </script>    
     {% endfor %}    
 
-
-    {% for a3 in address %}
-        <script>
-            IMPACT.address_object.push({
-                title: "{{ a3.title }}",
-                encounter: "{{ a3.encounter }}",
-            })
-        </script>    
-    {% endfor %}    
-
-
-    {% for a4 in approach %}
-        <script>
-            IMPACT.approach_object.push({
-                title: "{{ a4.title }}",
-                encounter: "{{ a4.encounter }}",
-                number: "{{ a4.number_of_addressed }}",
-            })
-        </script>    
-    {% endfor %} 
 
     <!-- load nvd3 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
