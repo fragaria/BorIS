@@ -90,7 +90,7 @@
         ;
 
     chart.xAxis.axisLabel("Rizikové chování");
-    chart.yAxis.axisLabel("Počet zlepšení ()",);
+    chart.yAxis.axisLabel("Počet zlepšení",);
     chart.margin({ "top": 15, "right": 10, "bottom": 70, "left": 60 })
 
     d3.select('#riskymanners_improvement svg')

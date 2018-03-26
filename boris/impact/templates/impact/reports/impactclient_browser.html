@@ -1,0 +1,149 @@
+{% extends "print_base.html" %}
+{% load i18n %}
+{% load i18n services admin_static sstatic %}
+
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        body { padding: 0 20px; }
+        table td { padding: 5px 5px; }
+    </style>
+{% endblock %}
+
+{% block content %}
+    {% if date_from and date_to %}
+        <p style="margin-bottom: 20px;">{{ date_from|date:"j.n.Y" }} - {{ date_to|date:"j.n.Y" }}</p>
+    {% endif %}
+    {% if towns %}
+        <p style="margin-bottom: 20px;">{{ towns|join:", " }}</p>
+<!--         <p style="overflow: auto;"></p>
+ -->
+    {% endif %}
+    {% include "impact/reports/impactreport_data.html" %}
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
+    <link href="{% sstatic 'css/dashboard.css' %}" rel="stylesheet" type="text/css"/>
+    <script src="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+
+
+    <!-- d3  -->
+    <script type="text/javascript">
+            var IMPACT = {
+                months: ["{{ months| join:'","'}}"],
+                encounters: ["{{ encounters | join:'","'}}"],
+                drug_type_occurrence : {
+                    labels: ["{{ drug_type_occurrence.labels | join:'","' }}"],
+                    series: ["{{ drug_type_occurrence.values | join:'","' }}"],
+                    //series: {{ drug_type_occurrence.values }},
+                },
+                encounter_distribution : {
+                    bounds: ["{{ enc_dist.bounds | join:'","' }}"],
+                    counts: ["{{ enc_dist.counts | join:'","' }}"],
+                    labels: ["{{ enc_dist.labels | join:'","' }}"],
+
+                },
+                anamnesis: ["{{ anamnesis | join:'","'}}"],
+                // anamnesis_fields: ["{{ anamnesis_fields | join:'","' }}"],
+                anamnesis_object : [],
+                address : ["{{ address | join:'","'}}"],
+                approach : ["{{ approach | join:'","'}}"],
+                address_object: [],
+                approach_object: [],
+            };
+
+
+
+    </script>
+
+    {% for a2 in anamnesis %}
+        <script>
+            IMPACT.anamnesis_object.push({
+                code: "{{ a2.client.code }}",
+                riskymanners: {
+                    iv : {
+                        past : "{{ a2.iv_past }}", 
+                        present : "{{ a2.iv_present }}", 
+                    },
+                    ss : {
+                        past : "{{ a2.ss_past }}", 
+                        present : "{{ a2.ss_present }}", 
+                    },
+                    us : {
+                        past : "{{ a2.us_past }}", 
+                        present : "{{ a2.us_present }}", 
+                    },
+                    ra : {
+                        past : "{{ a2.ra_past }}", 
+                        present : "{{ a2.ra_present }}", 
+                    },
+                    od : {
+                        past : "{{ a2.od_past }}", 
+                        present : "{{ a2.od_present }}", 
+                    },
+                }
+            })            
+        </script>    
+    {% endfor %}    
+
+
+    {% for a3 in address %}
+        <script>
+            IMPACT.address_object.push({
+                title: "{{ a3.title }}",
+                encounter: "{{ a3.encounter }}",
+            })
+        </script>    
+    {% endfor %}    
+
+
+    {% for a4 in approach %}
+        <script>
+            IMPACT.approach_object.push({
+                title: "{{ a4.title }}",
+                encounter: "{{ a4.encounter }}",
+                number: "{{ a4.number_of_addressed }}",
+            })
+        </script>    
+    {% endfor %} 
+
+
+    <script>
+        console.log("IMPACT.anamnesis_object", IMPACT.anamnesis_object);
+        console.log('address_object',IMPACT.address_object);    
+        console.log('approach_object',IMPACT.approach_object);    
+    </script>    
+
+    <!-- load nvd3 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.4/nv.d3.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.4/nv.d3.min.css"/>
+
+
+    <h1>Počet kontaktů </h1>
+    <script type="text/javascript" src="{% sstatic 'd3/d3_kontakty_barchart.js' %}"></script>
+    <div id="my_chart">
+      <svg></svg>
+    </div>
+
+
+    <div id="piechart" class="ct-chart">
+        <h1 >Zastoupení návykových látek</h1>
+        <script type="text/javascript" src="{% sstatic 'd3/d3_kontakty_piechart.js' %}"></script>
+        <div style="height:700px;" id="my_piechart">
+          <svg></svg>
+        </div>
+    </div>
+
+    <div id="encounter_distribution"> 
+        <h1 > Četnost klientů podle počtu kontaktů</h1>
+        <script type="text/javascript" src="{% sstatic 'd3/d3_encounterdistribution.js' %}"></script>
+        <div style="height:400px;" id="encounter_distribution">
+          <svg></svg>
+        </div>
+    </div>
+ 
+
+{% endblock %}
