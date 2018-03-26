@@ -11,6 +11,8 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Sum, Max, Avg
 from django.utils.translation import ugettext_lazy as _, ugettext
+from django.contrib.contenttypes.models import ContentType
+from django.forms.widgets import HiddenInput
 
 from model_utils import Choices
 
@@ -18,6 +20,7 @@ from fragapy.fields.models import MultiSelectField
 
 from boris.classification import DISEASES, DISEASE_TEST_SIGN
 
+from boris.services.forms import serviceform_factory, ServiceForm
 from .core import Service
 
 
@@ -147,7 +150,6 @@ class IncomeExamination(Service):
 
 
 class DiseaseTest(Service):
-
     disease = models.PositiveSmallIntegerField(choices=DISEASES,
         default=DISEASES.HIV, verbose_name=_(u'Testované onemocnění'))
     sign = models.CharField(max_length=1, choices=DISEASE_TEST_SIGN,
@@ -406,7 +408,54 @@ class Address(Service):
         verbose_name_plural = _(u'Oslovení')
 
     class Options:
+        limited_to = ('')
+        codenumber = 200
+
+
+class ApproachServiceForm(ServiceForm):
+    def __init__(self, encounter, *args, **kwargs):
+        super(ApproachServiceForm, self).__init__(encounter, *args, **kwargs)
+        ct_this = self.encounter.person
+        if str(ct_this.content_type) == 'Klient':
+            self.fields['number_of_addressed'].widget = HiddenInput()
+
+
+class Approach(Service):
+    number_of_addressed = models.PositiveIntegerField(default=1, verbose_name=_(u'1) Počet oslovených'))
+
+    class Meta:
+        app_label = 'services'
+        verbose_name = _(u'Oslovení')
+        verbose_name_plural = _(u'Oslovení')
+
+    class Options:
         codenumber = 2
+        fieldsets = (
+            (None, {
+                'fields': ('encounter','number_of_addressed'),
+                'classes': ('inline',)
+            }),
+        )
+
+    def _prepare_title(self):
+        return u'%s (%s)' % (self.service.title, self.number_of_addressed,)
+
+    @classmethod
+    def form(cls, *args, **kwargs):
+        return serviceform_factory(cls, form=ApproachServiceForm)
+
+    @classmethod
+    def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
+        addressed = _sum_int(cls, filtering, 'number_of_addressed')
+        return tuple([('number_of_addressed', addressed)])
+
+    def get_time_spent(self, filtering, indirect_content_types, no_subservice_content_types ):
+        try:
+            return TimeDotation.get_time_for_type(self.content_type) * self._get_stats(self, filtering)[0][1]
+        except Exception as e:
+            if ' matching query does not exist' in e.message:
+                return 0
+            raise e
 
 
 class IncomeFormFillup(Service):

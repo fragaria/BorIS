@@ -14,6 +14,7 @@ from boris.reporting.reports.monthly_stats import MonthlyStatsByTown, \
     MonthlyStatsByDistrict, StatsByTownInPeriod
 from boris.reporting.reports.services import ServiceReport
 from boris.reporting.reports.clients import ClientReport
+from boris.reporting.reports.impact import ImpactReport
 from boris.reporting.reports.yearly_stats import YearlyStatsByMonth, YearlyStatsByTown, \
     YearlyStatsByDistrict
 from boris.reporting.reports.council import GovCouncilReport
@@ -106,6 +107,11 @@ class HygieneReportingInterface(object):
         interfacetab_factory(HygieneReport, forms.HygieneForm, 'hygiene'),
     )
 
+class ImpactReportingInterface(object):
+    tabs = (
+        interfacetab_factory(ImpactReport, forms.ImpactForm, 'impact'),
+    )
+
 
 class ReportingInterfaceHandler(object):
     """Class-based view for showing reporting interface."""
@@ -195,6 +201,11 @@ class GovCouncilReportingInterfaceHandler(ReportingInterfaceHandler):
     title = u'RVKPP'
     interface_class = GovCouncilReportingInterface
 
+class ImpactReportingInterfaceHandler(ReportingInterfaceHandler):
+    id = 'impact'
+    title = u'Dopadová studie'
+    interface_class = ImpactReportingInterface
+
 
 
 towns = TownReportingInterfaceHandler()
@@ -203,3 +214,4 @@ clients = ClientReportingInterfaceHandler()
 yearly = YearlyReportingInterfaceHandler()
 hygiene = HygieneReportingInterfaceHandler()
 govcouncil = GovCouncilReportingInterfaceHandler()
+impact = ImpactReportingInterfaceHandler()

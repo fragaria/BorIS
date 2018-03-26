@@ -138,12 +138,7 @@ class CustomIndexDashboard(Dashboard):
                     'url': reverse('reporting_hygiene'),
                     'external': False,
                 },
-                {
-                    'title': _(u'Vytvořit výstup pro RVKPP'),
-                    'url': reverse('reporting_govcouncil'),
-                    'external': False,
-                },
-            ]
+             ]
         ))
 
         # append a recent actions module

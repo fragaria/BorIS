@@ -7,6 +7,14 @@ from form_utils.forms import BetterModelForm, BetterModelFormMetaclass
 
 from django.forms.widgets import HiddenInput
 from boris.utils.forms import adminform_formfield
+from django.contrib.contenttypes.models import ContentType
+
+# from boris.clients.models import Client, Town, Anamnesis, DrugUsage, \
+#     RiskyManners, Region, District, DiseaseTest, Anonymous, \
+#     PractitionerContact, Person, GroupContact, ClientCard, GroupContactType
+
+# from boris.services.models.core import get_model_for_class_name, Service, \
+#     Encounter
 
 
 class ServiceForm(BetterModelForm):
