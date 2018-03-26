@@ -150,15 +150,10 @@ class IncomeExamination(Service):
 
 
 class DiseaseTest(Service):
-    #anamnesis = models.ForeignKey('clients.Anamnesis', to_field='nationality', related_name = '+' )
-    # disease = models.ForeignKey('clients.DiseaseTest', to_field='disease', related_name = '+', verbose_name=_(u'Testované onemocnění') )
-    # sign = models.ForeignKey('clients.DiseaseTest', to_field='result', related_name = '+',  verbose_name=_(u'Stav') )
-
-    #test = models.ManyToManyField(IncomeExamination ,through= 'clients.DiseaseTest', through_fields=('disease', 'result') ,  related_name = '+' )
     disease = models.PositiveSmallIntegerField(choices=DISEASES,
-         default=DISEASES.HIV, verbose_name=_(u'Testované onemocnění'))
+        default=DISEASES.HIV, verbose_name=_(u'Testované onemocnění'))
     sign = models.CharField(max_length=1, choices=DISEASE_TEST_SIGN,
-         default=DISEASE_TEST_SIGN.INCONCLUSIVE, verbose_name=_(u'Stav'))
+        default=DISEASE_TEST_SIGN.INCONCLUSIVE, verbose_name=_(u'Stav'))
 
     class Meta:
         app_label = 'services'
@@ -176,7 +171,6 @@ class DiseaseTest(Service):
 
     @classmethod
     def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
-
         objects = cls.objects.filter(**filtering)
         total_count = objects.count()
         substats = defaultdict(defaultdict)
@@ -407,7 +401,6 @@ class IndividualCounselling(Service):
 
 
 class Address(Service):
-
     class Meta:
         app_label = 'services'
         proxy = True

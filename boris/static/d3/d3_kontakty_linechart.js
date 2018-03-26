@@ -31,9 +31,6 @@
     var months = IMPACT.months;
     var encounters = encounters.map(item => {return Number(item);});
 
-    console.log('encounters', encounters);
-    console.log('months', months);
-
     get_data = (function() {
         var data = [];
         var len = months.length;
@@ -48,10 +45,7 @@
 
     var data = get_data; 
 
-    console.log('data',data);
-
     x.domain(data.map(function(d) { return d.month; }));
-    //y.domain(d3.extent(data, function(d) { return d.frequency; }));
     y.domain([0, d3.max(data, function(d) { return d.enc; })]);
 
     // for x-axis format
@@ -79,7 +73,4 @@
         .style("stroke", "steelblue")
         .style("fill", "none")
         .attr("d", line);
-
-
-
    })

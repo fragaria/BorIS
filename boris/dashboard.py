@@ -138,12 +138,7 @@ class CustomIndexDashboard(Dashboard):
                     'url': reverse('reporting_hygiene'),
                     'external': False,
                 },
-                # {
-                #     'title': _(u'Vytvořit dopadovou studii'),
-                #     'url': reverse('reporting_impact'),
-                #     'external': False,
-                # },
-            ]
+             ]
         ))
 
         # append a recent actions module

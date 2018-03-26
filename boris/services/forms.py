@@ -39,9 +39,6 @@ class ServiceForm(BetterModelForm):
         self.encounter = encounter
 
 
-
-
-
 def serviceform_factory(model, form=ServiceForm, fields=None, excludes=None,
                         fieldsets=None, row_attrs=None,
                         formfield_callback=adminform_formfield):
