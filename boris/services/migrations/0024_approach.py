@@ -23,4 +23,5 @@ class Migration(migrations.Migration):
             },
             bases=('services.service',),
         ),
+        # migrations.RunSQL('ALTER TABLE "services_approach" ENGINE=MYISAM;')
     ]
