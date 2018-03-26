@@ -14,7 +14,6 @@ def add_default_times(apps, schema_editor):
     update_all_contenttypes(interactive=False)
 
     DATA = [
-        ((apps.get_model('services', 'Address')), 60),
         ((apps.get_model('services', 'Approach')), 60),
         ((apps.get_model('services', 'ContactWork')), 10),
         ((apps.get_model('services', 'IncomeFormFillup')), 60),
@@ -57,8 +56,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        # migrations.DeleteModel(name='TimeDotation'),
-        # migrations.DeleteModel((apps.get_model('services', 'TimeDotation'))),
         migrations.CreateModel(
             name='TimeDotation',
             fields=[

@@ -83,11 +83,7 @@ class GovCouncilReport(BaseReport):
         if self.towns:
             filtering['encounter__where__in'] = self.towns
 
-        approaches = Approach.objects.filter(**filtering)
-        count = 0
-        for a in approaches:
-            count += a.number_of_addressed
-
+        count = Approach._get_stats(filtering)[0][1]
         return count
 
     def _get_service_count(self, service_classes, extra_filtering=None):
