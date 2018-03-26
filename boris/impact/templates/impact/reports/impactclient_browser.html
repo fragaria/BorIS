@@ -53,9 +53,6 @@
                 address_object: [],
                 approach_object: [],
             };
-
-
-
     </script>
 
     {% for a2 in anamnesis %}
@@ -109,18 +106,10 @@
         </script>    
     {% endfor %} 
 
-
-    <script>
-        console.log("IMPACT.anamnesis_object", IMPACT.anamnesis_object);
-        console.log('address_object',IMPACT.address_object);    
-        console.log('approach_object',IMPACT.approach_object);    
-    </script>    
-
     <!-- load nvd3 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.4/nv.d3.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.4/nv.d3.min.css"/>
-
 
     <h1>Počet kontaktů </h1>
     <script type="text/javascript" src="{% sstatic 'd3/d3_kontakty_barchart.js' %}"></script>
@@ -128,11 +117,10 @@
       <svg></svg>
     </div>
 
-
     <div id="piechart" class="ct-chart">
         <h1 >Zastoupení návykových látek</h1>
         <script type="text/javascript" src="{% sstatic 'd3/d3_kontakty_piechart.js' %}"></script>
-        <div style="height:700px;" id="my_piechart">
+        <div style="height:700px; width: 500px" id="my_piechart">
           <svg></svg>
         </div>
     </div>
@@ -140,7 +128,7 @@
     <div id="encounter_distribution"> 
         <h1 > Četnost klientů podle počtu kontaktů</h1>
         <script type="text/javascript" src="{% sstatic 'd3/d3_encounterdistribution.js' %}"></script>
-        <div style="height:400px;" id="encounter_distribution">
+        <div style="height:400px; width: :1000px;" id="encounter_distribution">
           <svg></svg>
         </div>
     </div>

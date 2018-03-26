@@ -1,7 +1,7 @@
 {% extends "admin/base_site.html" %}
 {% load i18n admin_modify grp_tags reporting_tags admin_static sstatic %}
 
-{% block title %}{% trans "Výstupy" %}{{ block.super }}{% endblock %}
+{% block title %}{% trans "Studie" %}{{ block.super }}{% endblock %}
 
 {% block javascripts %}
     {{ block.super }}
@@ -31,14 +31,14 @@
 {% block breadcrumbs %}
     <div id="breadcrumbs">
          <a href="../">{% trans "Home" %}</a> &rsaquo;
-         <a href=".">{% trans "Výstupy" %}</a>
+         <a href=".">{% trans "Studie" %}</a>
     </div>
 {% endblock %}
 
 <!-- CONTENT -->
 {% block content %}
     <div class="container-flexible" id="tabs">
-        <h1>{% trans "Výstupy" %} - {{ name }}</h1>
+        <h1>{% trans "Studie" %} - {{ name }}</h1>
         <ul>
             {% for tab, form in tabs %}
             <li><a href="#tabs-{{ forloop.counter }}">{{ tab.get_title }}</a></li>

@@ -91,8 +91,9 @@
 
     chart.xAxis.axisLabel("Rizikové chování");
     chart.yAxis.axisLabel("Počet zlepšení",);
+    chart.yAxis.tickFormat(d3.format(',.0d'));
     chart.margin({ "top": 15, "right": 10, "bottom": 70, "left": 60 })
-
+    chart.valueFormat(d3.format(',.0d'));
     d3.select('#riskymanners_improvement svg')
         .datum(AnamnesisDataAnnotated)
         .call(chart);

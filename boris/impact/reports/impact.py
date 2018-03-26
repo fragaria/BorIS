@@ -44,7 +44,6 @@ def get_no_subservice_content_types():
     return _CONTENT_TYPES['no_subservice']
 
 
-
 class ImpactReport(BaseReport):
     title = u'Impakt'
     description = (u'Podklady pro dopadovou zprávu '
