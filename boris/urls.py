@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.static import serve
 
 from boris.reporting import admin as reporting
+from boris.impact import admin as impact
 
 
 @login_required
@@ -26,16 +27,19 @@ urlpatterns = patterns('',
     (r'^reporting/yearly/', include(reporting.yearly.urls)),
     (r'^reporting/hygiene/', include(reporting.hygiene.urls)),
     (r'^reporting/govcouncil/', include(reporting.govcouncil.urls)),
+    # (r'^reporting/impact/', include(reporting.impact.urls)),
+
+    (r'^impact/impact/', include(impact.impact.urls)),
 
     (r'^services/', include('boris.services.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
-     url(r'^doc/', include('django.contrib.admindocs.urls')),
+    url(r'^doc/', include('django.contrib.admindocs.urls')),
 
     url(r'^media/(?P<path>.*)$', protected_serve, {'document_root': settings.MEDIA_ROOT}),
 
     # Uncomment the next line to enable the admin:
-     url(r'^', include(admin.site.urls)),
+    url(r'^', include(admin.site.urls)),
 )
 
 urlpatterns += staticfiles_urlpatterns()

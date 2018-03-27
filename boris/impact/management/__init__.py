@@ -1,1 +1,0 @@
-import install_views

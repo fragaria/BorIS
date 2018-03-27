@@ -7,50 +7,11 @@ from django.shortcuts import render
 from django.template.defaultfilters import slugify
 from django.utils.datastructures import SortedDict
 
-from boris.impact.core import ReportResponse
+from boris.reporting.core import ReportResponse
 from boris.impact import forms
 
 from boris.impact.reports.impact import ImpactReport, ImpactTimeseries, ImpactClient, ImpactAnamnesis
-
-
-class ImpactInterfaceTab(object):
-    """
-    One tab of the interface. Requires 2 attributes to be set:
-        `report`       Report subclass
-        `form`         Form used to get parameters for report initiation
-        `form prefix`  Prefix to separate forms' id namespaces on the rendered page.
-    """
-    report = None
-    form = None
-    form_prefix = None
-    template = None
-
-    @classmethod
-    def get_urlname(cls):
-        return 'impact_%s' % cls.__name__.lower()
-
-    def get_title(self):
-        return self.report.title
-
-    def get_description(self):
-        return self.report.description
-
-    def get_absolute_url(self):
-        return reverse(self.get_urlname())
-
-
-def interfacetab_factory(report_cls, form_cls, form_prefix, template='impact/tab.html'):
-    attrs = {'report': report_cls,
-             'form': form_cls,
-             'form_prefix': form_prefix,
-             'template': template}
-
-    cls = type(report_cls.__name__ + 'Tab',
-               (ImpactInterfaceTab,),
-               attrs)
-
-    return cls
-
+from boris.reporting.admin import interfacetab_factory
 
 """
 Separate report forms are splitted to tabs in admin, this
@@ -94,7 +55,7 @@ class ImpactInterfaceHandler(object):
             tabs[tab] = form
 
         ctx = {'tabs': tabs.items(), 'interface': interface, 'name': self.title}
-        return render(request, 'impact/interface.html', ctx)
+        return render(request, 'reporting/interface.html', ctx)
 
     def get_urls(self):
         """

@@ -4,8 +4,8 @@ from django.http import HttpResponse
 from django.template import loader
 from django.template.context import RequestContext
 
-from boris.impact.forms import OUTPUT_BROWSER, OUTPUT_OFFICE
-
+from boris.reporting.forms import OUTPUT_BROWSER, OUTPUT_OFFICE
+from boris.reporting.core import BaseReport, ReportResponse
 
 class hashdict(dict):
     """
@@ -34,34 +34,10 @@ class ReportResponse(HttpResponse):
                 self[key] = val
 
 
-class BaseReport(object):
-    title = None
-    description = None
-    contenttype_office = 'application/vnd.ms-excel; charset=utf-8'
-    browser_only = False
+class BaseImpact(BaseReport):
 
     def get_filename(self):
-        return 'report.xls'
-
-    def contenttype(self, display_type):
-        if self.browser_only:
-            return 'text/html'
-
-        return {
-            OUTPUT_BROWSER: 'text/html',
-            OUTPUT_OFFICE: self.contenttype_office,
-        }[display_type]
-
-    def response_headers(self, display_type):
-        if self.browser_only:
-            return {}
-
-        return {
-            OUTPUT_BROWSER: {},
-            OUTPUT_OFFICE: {
-                'Content-Disposition': 'attachment; filename=%s' % self.get_filename()
-            }
-        }[display_type]
+        return 'impact.xls'
 
     def get_template(self, display_type):
         if self.browser_only:
@@ -73,139 +49,4 @@ class BaseReport(object):
         )
 
 
-class Report(BaseReport):
-    """
-    Base class for reporting output.
 
-    Subclasses might (or must) specify the following attributes:
-
-    - columns (required) - column titles for the rendered tables
-    - grouping (required)
-    - grouping_total (required) - grouping for the last report column ("Total")
-    - additional_filtering (optional)
-    - additional_excludes (optional)
-
-    and methods:
-
-    - get_data (required) - returns the data to be used in the template
-    """
-    columns = None
-    aggregation_classes = ()
-
-    def __unicode__(self):
-        return self.title
-
-    def get_context(self):
-        return {'report': self}
-
-    def render(self, request, display_type):
-        return loader.render_to_string(
-            self.get_template(display_type),
-            self.get_context(),
-            context_instance=RequestContext(request))
-
-    @property
-    def aggregations(self):
-        if not hasattr(self, '_aggregations'):
-            self._aggregations = [aggregation_class(self) for aggregation_class in self.aggregation_classes]
-        return self._aggregations
-
-    def get_data(self, *args, **kwargs):
-        raise NotImplementedError
-
-
-class Aggregation(object):
-    """
-    Main reporting logic lives in AggregationRow. It does aggregation
-    on queryset specified by report.
-
-    Subclasses can supply filtering/excluding, grouping and column, which
-    should be treated as distinct (the one to report on).
-    """
-    filtering = {}
-    excludes = {}
-    aggregation_dbcol = 'id'
-    model = None
-
-    def __init__(self, report):
-        self._filtering = self._prepare_expression(self.filtering)
-        self._excludes = self._prepare_expression(self.excludes)
-
-        if hasattr(report, 'additional_filtering'):
-            self._filtering = self._filtering & self._prepare_expression(report.additional_filtering)
-        if hasattr(report, 'additional_excludes'):
-            self._excludes = self._excludes & self._prepare_expression(report.additional_excludes)
-        self.report = report
-
-    def _values(self):
-        if not hasattr(self, '_vals'):
-            qset = self.model.objects.all()
-
-            if self._filtering:
-                qset = qset.filter(self._filtering)
-
-            if self._excludes:
-                qset = qset.exclude(self._excludes)
-
-            self._vals = defaultdict(int)
-
-            for grouping in (self.report.grouping, self.report.grouping_total):
-                vals = qset.values(*grouping).order_by().annotate(total=self.get_annotation_func())
-
-                for value in vals:
-                    key = make_key((k, value[k]) for k in grouping)
-                    # non-existent entries return None, hence "or 0"
-                    self._vals[key] += value['total'] or 0
-
-        return self._vals
-
-    def _prepare_expression(self, qset_expression):
-        from django.db.models import Q
-        if isinstance(qset_expression, dict):
-            return Q(**qset_expression)
-        else:
-            return qset_expression
-
-    def get_annotation_func(self):
-        """
-        Function to create reporting on. Defaults to COUNT.
-        """
-        from django.db.models import Count
-        return Count(self.aggregation_dbcol, distinct=True)
-
-    def get_val(self, key):
-        """
-        Return value for given column.
-        """
-        return self._values()[key]
-
-
-class SumAggregation(Aggregation):
-    """
-    Row that uses SUM instead of COUNT to aggregate.
-    """
-    def get_annotation_func(self):
-        from django.db.models import Sum
-        return Sum(self.aggregation_dbcol)
-
-
-class NonDistinctCountAggregation(Aggregation):
-    """
-    Row that uses COUNT without distinct to annotate.
-    """
-    def get_annotation_func(self):
-        from django.db.models import Count
-        return Count(self.aggregation_dbcol, distinct=False)
-
-
-class SuperAggregation(Aggregation):
-    """ Provides an 'aggregation' (sum) over aggregations. """
-    aggregation_classes = []
-
-    def __init__(self, report):
-        self.aggregations = [
-            aggr_class(report) for aggr_class in self.aggregation_classes
-        ]
-
-    def get_val(self, key):
-        return sum(aggregation.get_val(key) for aggregation in self.aggregations)

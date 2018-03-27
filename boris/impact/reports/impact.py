@@ -8,43 +8,27 @@ from django.db.models import Q, Sum
 from django.template import loader
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
+from django.core.serializers.json import DjangoJSONEncoder 
 
 from boris.classification import (DISEASES, DRUGS, DRUG_APPLICATION_TYPES,
     SEXES, RISKY_BEHAVIOR_PERIODICITY, RISKY_BEHAVIOR_KIND)
 from boris.clients.models import Client, Anonymous, Anamnesis, RiskyManners, PractitionerContact, GroupContact, TerrainNotes, Town 
-from boris.impact.core import BaseReport
-from boris.services.models import (Encounter, Address, Approach, ContactWork,
+from boris.impact.core import BaseImpact
+from boris.services.models import (Encounter, Address, ContactWork,
                                    IncomeFormFillup, IndividualCounselling, CrisisIntervention, SocialWork,
                                    HarmReduction, BasicMedicalTreatment, InformationService,
                                    IncomeExamination, DiseaseTest, HygienicService, FoodService,
                                    WorkTherapy, PostUsage, UrineTest, GroupCounselling, WorkWithFamily,
                                    WorkTherapyMeeting, UtilityWork, AsistService, Service)
 from boris.syringes.models import SyringeCollection
+from boris.reporting.reports.council import get_indirect_content_types, get_no_subservice_content_types
 import json
-from django.core.serializers.json import DjangoJSONEncoder 
 
 
 _CONTENT_TYPES = {}
 
 
-def get_indirect_content_types():
-    if 'indirect' not in _CONTENT_TYPES:
-        _CONTENT_TYPES['indirect'] = [
-            ContentType.objects.get_for_model(cls)
-            for cls in (SocialWork, IndividualCounselling, InformationService)
-        ]
-    return _CONTENT_TYPES['indirect']
-
-
-def get_no_subservice_content_types():
-    if 'no_subservice' not in _CONTENT_TYPES:
-        _CONTENT_TYPES['no_subservice'] = [
-            ContentType.objects.get_for_model(cls) for cls in (HarmReduction,)
-        ]
-    return _CONTENT_TYPES['no_subservice']
-
-
-class ImpactReport(BaseReport):
+class ImpactReport(BaseImpact):
     title = u'Impakt'
     description = (u'Podklady pro dopadovou zprávu '
         u'pro koordinaci protidrogové politiky.')
@@ -285,6 +269,7 @@ class ImpactReport(BaseReport):
         """Returns the data table based on the subtype of the report."""
         return self._get_data_clients()
 
+
 class ImpactTimeseries(ImpactReport):
     title = u'Časové řady'
     description = (u'Časové řady ')
@@ -383,21 +368,6 @@ class ImpactAnamnesis(ImpactReport):
             p.OFTEN : 'often',
             p.UNKNOWN : 'unknown'               
         }.get(x, 'not found')
-
-    def get_number_of_addressed_count(self):
-        filtering = {
-            'encounter__performed_on__gte': self.datetime_from,
-            'encounter__performed_on__lte': self.datetime_to,
-        }
-        if self.towns:
-            filtering['encounter__where__in'] = self.towns
-
-        approaches = Approach.objects.filter(**filtering)
-        count = 0
-        for a in approaches:
-            count += a.number_of_addressed
-
-        return count
 
     def get_anamnesis_list(self):
         """
