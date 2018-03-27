@@ -14,7 +14,7 @@ def add_default_times(apps, schema_editor):
     update_all_contenttypes(interactive=False)
 
     DATA = [
-        ((apps.get_model('services', 'Approach')), 60),
+        ((apps.get_model('services', 'Address')), 60),
         ((apps.get_model('services', 'ContactWork')), 10),
         ((apps.get_model('services', 'IncomeFormFillup')), 60),
         ((apps.get_model('services', 'IndividualCounselling')), 30),

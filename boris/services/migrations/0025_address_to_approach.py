@@ -4,10 +4,10 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes.management import update_all_contenttypes
 
 from boris.services.models import Address, Approach
 from boris.services.models.core import TimeDotation
-
 
 
 def copy_data(apps, schema_editor):
@@ -31,9 +31,25 @@ def copy_data(apps, schema_editor):
     print 'Successfully migrated %d services of type Address' % count
 
 
-def delete_adress_timedotations(apps, schema_editor):
+def add_default_approach_time(apps, schema_editor):
+    TimeDotation = apps.get_model('services', 'TimeDotation')
+
+    # create ct for IndirectService now (otherwise would be created in post_migrate signal, which is too late)
+    update_all_contenttypes( interactive=False )
+
+    data =  ((apps.get_model('services', 'Approach')), 60)
+    
+    print 'Adding dotation for ct: %s' % data[0]._meta.object_name
+    ct = ContentType.objects.get_by_natural_key(data[0]._meta.app_label,
+                                                data[0]._meta.object_name.lower())
+    td, _ = TimeDotation.objects.get_or_create(content_type_id=ct.id,
+                                                default_minutes=data[1],
+                                                defaults={'minutes': data[1]})
+
+
+def delete_address_timedotations(apps, schema_editor):
     ct = ContentType.objects.get_by_natural_key("services", "Address")
-    TimeDotation.objects.filter(ct = ct).delete()
+    TimeDotation.objects.filter( content_type_id=ct.id ).delete()
 
 
 def reverse(apps, schema_editor):
@@ -48,5 +64,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(code=copy_data, reverse_code=reverse),
-        # migrations.RunPython(code=delete_adress_timedotations, reverse_code=reverse)
+        migrations.RunPython(code=add_default_approach_time, reverse_code=reverse),
+        migrations.RunPython(code=delete_address_timedotations, reverse_code=reverse)
     ]
