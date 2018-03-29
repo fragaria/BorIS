@@ -22,7 +22,6 @@ Tabs are defined as ReportInterfaceTab subclasses listed in
 """
 class ImpactReportingInterface(object):
     tabs = (
-        # interfacetab_factory(ImpactTimeseries, forms.ReportForm, 'timeseries'),
         interfacetab_factory(ImpactClient, forms.ImpactForm, 'client'),
         interfacetab_factory(ImpactAnamnesis, forms.ImpactForm, 'anamnesis'),
     )

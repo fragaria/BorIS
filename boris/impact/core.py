@@ -19,21 +19,6 @@ def make_key(expression):
     return hashdict(expression)
 
 
-class ReportResponse(HttpResponse):
-    """
-    Ancestor of HttpRespose which takes report class and its args and kwargs
-    that renders itself.
-    """
-    def __init__(self, report_class, request, display_type, *args, **kwargs):
-        report = report_class(*args, **kwargs)
-        content = report.render(request, display_type)
-        super(ReportResponse, self).__init__(content=content,
-                                             content_type=report.contenttype(display_type))
-        if report.response_headers(display_type):
-            for key, val in report.response_headers(display_type).items():
-                self[key] = val
-
-
 class BaseImpact(BaseReport):
 
     def get_filename(self):

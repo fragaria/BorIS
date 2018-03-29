@@ -45,8 +45,6 @@
             <li class="{% active reporting_yearly %}"><a href="{{ reporting_yearly }}">{% trans "Roční" %}</a></li>
             <li class="{% active reporting_hygiene %}"><a href="{{ reporting_hygiene }}">{% trans "Hygiena" %}</a></li>
             <li class="{% active reporting_govcouncil %}"><a href="{{ reporting_govcouncil }}">{% trans "RVKPP" %}</a></li>
-            <li class="{% active reporting_impact %}" hidden><a href="{{ reporting_impact }}">{% trans "Impakt" %}</a></li> 
-
         </ul>
     </li>
     {% if request.user.is_superuser %}
