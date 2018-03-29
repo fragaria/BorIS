@@ -504,6 +504,54 @@ class ImpactAnamnesis(ImpactReport):
             _all.append(a)
 
         return _all
+
+    def get_anamnesis_improvements(self):
+        anamnesis = self.get_anamnesis_list()
+
+        periodicity_dict = {
+            'not found': -2,
+            'unknown' : -1,
+            'never' : 0,
+            'once' : 1,
+            'often' : 2
+        }
+
+        manner_dict = {
+            'iv' : 'Nitrožílní aplikace',
+            'ss' : 'Sdílení jehel',
+            'ra' : 'Riziková aplikace',
+            'us' : 'Nechráněný sex',
+            'od' : 'Předávkování',
+        }
+
+        labels = []
+        counts = []
+
+        for manner in manner_dict: 
+            label = ''
+            improvement = 0
+
+            manner_key_prefix = "%s" % (manner) 
+            past_key = manner_key_prefix+'_past'
+            present_key = manner_key_prefix+'_present'
+            for a in anamnesis:
+                past = periodicity_dict[getattr(a,past_key)]
+                present = periodicity_dict[getattr(a,present_key)]              
+                if(present > -1 and past > -1):
+                    if past > present:
+                        improvement += 1
+                    elif past < present:
+                        improvement -= 1
+
+            labels.append(manner_dict[manner])
+            counts.append(improvement)
+
+        data_dummy = {
+                'labels': labels,
+                'counts': counts,
+        }
+             
+        return data_dummy;
  
 
     def render(self, request, display_type):
@@ -521,6 +569,7 @@ class ImpactAnamnesis(ImpactReport):
                 'first_contact': self.first_contact.performed_on.year,
                 'clients_in_location' : self.clients_in_location, 
                 'anamnesis' : self.get_anamnesis_list(),
+                'rm_improvements' : self.get_anamnesis_improvements(),
           },
             context_instance=RequestContext(request)
         )

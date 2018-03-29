@@ -19,51 +19,19 @@
         <p style="margin-bottom: 20px;">{{ towns|join:", " }}</p>
 
     {% endif %}
-    {% include "impact/reports/impactreport_data.html" %}
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 
-    <script type="text/javascript">
-            var IMPACT = {
-                months: ["{{ months| join:'","'}}"],
-                encounters: ["{{ encounters | join:'","'}}"],
-                drug_type_occurrence : {
-                    labels: ["{{ drug_type_occurrence.labels | join:'","' }}"],
-                    series: ["{{ drug_type_occurrence.values | join:'","' }}"],
-                },
-                encounter_distribution : {
-                    bounds: ["{{ enc_dist.bounds | join:'","' }}"],
-                    counts: ["{{ enc_dist.counts | join:'","' }}"],
-                    labels: ["{{ enc_dist.labels | join:'","' }}"],
-
-                },
-             };
-    </script>
-
-    <!-- load nvd3 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.4/nv.d3.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.4/nv.d3.min.css"/>
+    {% include 'd3_dependencies.html'%}
 
     <h1>Počet kontaktů </h1>
-    <script type="text/javascript" src="{% sstatic 'd3/d3_kontakty_barchart.js' %}"></script>
-    <div id="my_chart">
-      <svg></svg>
-    </div>
+        {% include "d3_barchart.html" with values=encounters labels=months xlabel="" ylabel="Kontakty" templateId="enc_vs_months" only %}
+    
 
-    <div id="piechart" class="ct-chart">
-        <h1 >Zastoupení návykových látek</h1>
-        <script type="text/javascript" src="{% sstatic 'd3/d3_kontakty_piechart.js' %}"></script>
-        <div style="height:700px; width: 500px" id="my_piechart">
-          <svg></svg>
-        </div>
-    </div>
+<!--     <h1>Zastoupení návykových látek</h1>
+        {% include "d3_piechart.html" with values=drug_type_occurrence.values labels=drug_type_occurrence.labels templateId="drug_occurence" only %}
+ --> 
 
-    <div id="encounter_distribution"> 
-        <h1 > Četnost klientů podle počtu kontaktů</h1>
-        <script type="text/javascript" src="{% sstatic 'd3/d3_encounterdistribution.js' %}"></script>
-        <div style="height:400px; width: :1000px;" id="encounter_distribution">
-          <svg></svg>
-        </div>
-    </div>
+    <h1> Četnost klientů podle počtu kontaktů</h1>
+        {% include "d3_barchart.html" with values=enc_dist.counts labels=enc_dist.labels xlabel="Kontakty" ylabel="Klienti" templateId="cli_vs_enc" only %}
 
 {% endblock %}
