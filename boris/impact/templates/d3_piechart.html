@@ -8,9 +8,6 @@
     var d3_select = '#'+template_id+' svg'
     values = values.map(item => {return Number(item);});
 
-    console.log('labels',labels);
-    console.log('values',values);
-
     get_data = (function() {
         var data = [];
         var len = Math.min(labels.length, values.length);
@@ -28,8 +25,6 @@
         values: get_data,
       },
     ];
-
-    console.log('dataAnnotated', dataAnnotated);
 
     var chart = nv.models.pieChart()
         .x(function(d) { return d.value })
