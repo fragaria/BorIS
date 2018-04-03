@@ -73,6 +73,8 @@ class GovCouncilReport(BaseReport):
             filtering.update(extra_filtering)
         if self.towns:
             filtering['encounter__where__in'] = self.towns
+
+        print service_cls.objects.filter(**filtering).count()
         return service_cls.objects.filter(**filtering)
 
     def get_number_of_addressed_count(self):
@@ -256,12 +258,13 @@ class GovCouncilReport(BaseReport):
         if self.towns:
             filtering['encounter__where__in'] = self.towns
         sum = 0
-        content_types = []
+        service_encounters = []
         for service in self._get_services(Service):
+            service_encounter = [ service.content_type, service.encounter]
             # prevent double count in case of same service class being multiple on one encounter
-            if service.content_type not in content_types:
+            if service_encounter not in service_encounters:
                 sum += service.get_time_spent(filtering, get_indirect_content_types(), get_no_subservice_content_types())
-                content_types.append(service.content_type)
+                service_encounters.append(service_encounter)
         return sum
 
     # <--
