@@ -27,9 +27,6 @@ urlpatterns = patterns('',
     (r'^reporting/yearly/', include(reporting.yearly.urls)),
     (r'^reporting/hygiene/', include(reporting.hygiene.urls)),
     (r'^reporting/govcouncil/', include(reporting.govcouncil.urls)),
-    # (r'^reporting/impact/', include(reporting.impact.urls)),
-
-    (r'^impact/impact/', include(impact.impact.urls)),
 
     (r'^impact/impact/', include(impact.impact.urls)),
 

@@ -11,13 +11,12 @@ from django.utils.translation import ugettext as _
 
 from boris.classification import (DRUGS, RISKY_BEHAVIOR_PERIODICITY, RISKY_BEHAVIOR_KIND)
 from boris.clients.models import Client, Anamnesis, RiskyManners, Town
-from boris.dashboard import MONTHS_SHORT,CustomIndexDashboard
+from boris.dashboard import MONTHS_SHORT
 from boris.impact.core import BaseImpact
 from boris.reporting.reports.council import GovCouncilReport
 from boris.services.models import (Encounter, HarmReduction, IncomeExamination, Service)
 
 _CONTENT_TYPES = {}
-
 
 
 class ImpactReport(BaseImpact, GovCouncilReport):
@@ -26,7 +25,6 @@ class ImpactReport(BaseImpact, GovCouncilReport):
 
     all_towns = Town.objects.all()
     first_contact = Encounter.objects.order_by('performed_on')[0] if Encounter.objects.order_by('performed_on') else None
-
 
     def __init__(self, date_from=None, date_to=None, towns=None):
         if date_from is None:

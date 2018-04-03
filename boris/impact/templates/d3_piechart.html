@@ -2,16 +2,6 @@
 <script>
   nv.addGraph(function() {
 
-<<<<<<< HEAD
-    var labels = ["{{ labels| join:'","'}}"];
-    var values = ["{{ values| join:'","'}}"];
-    var template_id = "{{templateId}}";
-    var d3_select = '#'+template_id+' svg'
-    values = values.map(item => {return Number(item);});
-    labels = labels.map(item => {return String(item);});
-
-    get_data = (function() {
-=======
     var labels = ["{{ labels | join:'","' }}"];
     var values = ["{{ values | join:'","' }}"];
     var template_id = "{{ template_id }}";
@@ -20,7 +10,6 @@
     labels = labels.map(item => {return String(item);});
 
     var dataAnnotated = (function() {
->>>>>>> test
         var data = [];
         var len = Math.min(labels.length, values.length);
         for (var i = 0; i<len; i++) {
@@ -31,10 +20,6 @@
           }        
         return data;
     })();
-<<<<<<< HEAD
-    let dataAnnotated = get_data
-=======
->>>>>>> test
 
     var chart = nv.models.pieChart()
         .y(function(d) { return d.value })
@@ -46,12 +31,7 @@
         .height(600)
         ;
 
-<<<<<<< HEAD
-    chart.valueFormat(function(d) { return d; })
-
-=======
     chart.valueFormat(function(d) { return d; });
->>>>>>> test
 
     d3.select(d3_select)
         .datum(dataAnnotated)
@@ -64,10 +44,6 @@
 
 </script>
 
-<<<<<<< HEAD
-<div id="{{templateId}}" style= 'height: 600px;'>
-=======
 <div id="{{ template_id }}" style= 'height: 600px;'>
->>>>>>> test
     <svg></svg>
 </div>

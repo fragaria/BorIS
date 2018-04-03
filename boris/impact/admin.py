@@ -24,7 +24,6 @@ class ImpactInterfaceHandler(ReportingInterfaceHandler):
     id = 'base'
     title = None
     interface_class = None
-
     url_title = 'impact'
 
 
