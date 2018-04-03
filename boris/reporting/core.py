@@ -39,6 +39,7 @@ class BaseReport(object):
     description = None
     contenttype_office = 'application/vnd.ms-excel; charset=utf-8'
     browser_only = False
+    template_path = 'reporting'
 
     def get_filename(self):
         return 'report.xls'
@@ -65,11 +66,11 @@ class BaseReport(object):
 
     def get_template(self, display_type):
         if self.browser_only:
-            return ('reporting/reports/%s_browser.html' % (self.__class__.__name__.lower()))
+            return '%s/reports/%s_browser.html' % (self.template_path, self.__class__.__name__.lower())
 
         return (
-            'reporting/reports/%s_%s.html' % (self.__class__.__name__.lower(),
-                display_type), # display_type can be "browser" or "office"
+            '%s/reports/%s_%s.html' % (self.template_path, self.__class__.__name__.lower(),
+                display_type),  # display_type can be "browser" or "office"
         )
 
 

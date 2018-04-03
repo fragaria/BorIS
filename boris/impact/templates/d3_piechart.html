@@ -2,14 +2,14 @@
 <script>
   nv.addGraph(function() {
 
-    var labels = ["{{ labels| join:'","'}}"];
-    var values = ["{{ values| join:'","'}}"];
-    var template_id = "{{templateId}}";
-    var d3_select = '#'+template_id+' svg'
+    var labels = ["{{ labels | join:'","' }}"];
+    var values = ["{{ values | join:'","' }}"];
+    var template_id = "{{ template_id }}";
+    var d3_select = '#' + template_id + ' svg';
     values = values.map(item => {return Number(item);});
     labels = labels.map(item => {return String(item);});
 
-    get_data = (function() {
+    var dataAnnotated = (function() {
         var data = [];
         var len = Math.min(labels.length, values.length);
         for (var i = 0; i<len; i++) {
@@ -20,7 +20,6 @@
           }        
         return data;
     })();
-    let dataAnnotated = get_data
 
     var chart = nv.models.pieChart()
         .y(function(d) { return d.value })
@@ -32,8 +31,7 @@
         .height(600)
         ;
 
-    chart.valueFormat(function(d) { return d; })
-
+    chart.valueFormat(function(d) { return d; });
 
     d3.select(d3_select)
         .datum(dataAnnotated)
@@ -46,6 +44,6 @@
 
 </script>
 
-<div id="{{templateId}}" style= 'height: 600px;'>
+<div id="{{ template_id }}" style= 'height: 600px;'>
     <svg></svg>
 </div>
