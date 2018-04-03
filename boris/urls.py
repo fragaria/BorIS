@@ -31,6 +31,8 @@ urlpatterns = patterns('',
 
     (r'^impact/impact/', include(impact.impact.urls)),
 
+    (r'^impact/impact/', include(impact.impact.urls)),
+
     (r'^services/', include('boris.services.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:

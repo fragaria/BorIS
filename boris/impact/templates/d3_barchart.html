@@ -2,6 +2,7 @@
 <script>
   nv.addGraph(function() {
  
+<<<<<<< HEAD
     var labels = ["{{ labels| join:'","'}}"];
     var values = ["{{ values| join:'","'}}"];
     var xlabel = "{{xlabel}}";
@@ -12,6 +13,18 @@
     values = values.map(item => {return Number(item);});
 
     get_data = (function() {
+=======
+    var labels = ["{{ labels | join:'","' }}"];
+    var values = ["{{ values | join:'","' }}"];
+    var xlabel = "{{ xlabel }}";
+    var ylabel = "{{ ylabel }}";
+    var template_id = "{{ template_id }}";
+    var d3_select = '#' + template_id + ' svg';
+
+    values = values.map(item => {return Number(item);});
+
+    var get_data = (function() {
+>>>>>>> test
         var data = [];
         var len = Math.min(labels.length, values.length);
         for (var i = 0; i<len; i++) {
@@ -39,7 +52,11 @@
     chart.xAxis.axisLabel(xlabel);
     chart.yAxis.axisLabel(ylabel);
     chart.yAxis.tickFormat(d3.format(',.0d'));
+<<<<<<< HEAD
     chart.margin({ "top": 15, "right": 10, "bottom": 70, "left": 60 })
+=======
+    chart.margin({ "top": 15, "right": 10, "bottom": 70, "left": 60 });
+>>>>>>> test
     chart.valueFormat(d3.format(',.0d'));
     d3.select(d3_select)
         .datum(dataAnnotated)
@@ -52,6 +69,10 @@
   });
 </script>
 
+<<<<<<< HEAD
 <div id="{{templateId}}">
+=======
+<div id="{{ template_id }}">
+>>>>>>> test
     <svg></svg>
 </div>
