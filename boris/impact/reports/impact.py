@@ -11,7 +11,7 @@ from django.utils.translation import ugettext as _
 
 from boris.classification import (DRUGS, RISKY_BEHAVIOR_PERIODICITY, RISKY_BEHAVIOR_KIND)
 from boris.clients.models import Client, Anamnesis, RiskyManners, Town
-from boris.dashboard import MONTHS_SHORT
+from boris.dashboard import MONTHS_SHORT,CustomIndexDashboard
 from boris.impact.core import BaseImpact
 from boris.reporting.reports.council import GovCouncilReport
 from boris.services.models import (Encounter, HarmReduction, IncomeExamination, Service)
@@ -40,25 +40,17 @@ class ImpactReport(BaseImpact, GovCouncilReport):
         self.potential_clients = 6 * self.clients_in_location
         self.town_population = 10000
 
-        super(ImpactReport, self).__init__(self.datetime_from, self.datetime_to, 1, self.towns)
-
-        # self.first_contact = first_contact
-
-        if self.first_contact is not None:
-            number_of_months = (datetime.today().year - self.first_contact.performed_on.year)*12 + datetime.today().month - self.first_contact.performed_on.month
-            year = self.first_contact.performed_on.year
-            month = self.first_contact.performed_on.month
-        else:
-            number_of_months = 12
-            year = datetime.today().year - 3
-            month = datetime.today().month
+        GovCouncilReport.__init__(self, self.datetime_from, self.datetime_to, 1, self.towns)
 
         self.encounters = []
         self.persons = []
         self.syringe = []
         self.months = deepcopy(MONTHS_SHORT)
 
-        for i in range(number_of_months):
+        year = datetime.today().year - 1
+        month = datetime.today().month
+
+        for i in range(12):
             month += 1
             if month == 13:
                 month = 1
