@@ -1,0 +1,51 @@
+
+<script>
+  nv.addGraph(function() {
+
+    var labels = ["{{ labels| join:'","'}}"];
+    var values = ["{{ values| join:'","'}}"];
+    var template_id = "{{templateId}}";
+    var d3_select = '#'+template_id+' svg'
+    values = values.map(item => {return Number(item);});
+    labels = labels.map(item => {return String(item);});
+
+    get_data = (function() {
+        var data = [];
+        var len = Math.min(labels.length, values.length);
+        for (var i = 0; i<len; i++) {
+          data.push({
+              'label': labels[i],
+              'value': values[i]
+            });
+          }        
+        return data;
+    })();
+    let dataAnnotated = get_data
+
+    var chart = nv.models.pieChart()
+        .y(function(d) { return d.value })
+        .x(function(d) { return d.label })
+        .showLabels(true)     //Display pie labels
+        .labelType("percent") //Configure what type of data to show in the label. Can be "key", "value" or "percent"
+        .donut(true)          //Turn on Donut mode. Makes pie chart look tasty!
+        .donutRatio(0.35)     //Configure how big you want the donut hole size to be.
+        .height(600)
+        ;
+
+    chart.valueFormat(function(d) { return d; })
+
+
+    d3.select(d3_select)
+        .datum(dataAnnotated)
+        .call(chart);
+    
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+</script>
+
+<div id="{{templateId}}" style= 'height: 600px;'>
+    <svg></svg>
+</div>

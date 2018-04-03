@@ -1,0 +1,37 @@
+{% extends "print_base.html" %}
+{% load i18n %}
+{% load i18n services admin_static sstatic %}
+
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        body { padding: 0 20px; }
+        table td { padding: 5px 5px; }
+    </style>
+{% endblock %}
+
+{% block content %}
+    {% if date_from and date_to %}
+        <p style="margin-bottom: 20px;">{{ date_from|date:"j.n.Y" }} - {{ date_to|date:"j.n.Y" }}</p>
+    {% endif %}
+    {% if towns %}
+        <p style="margin-bottom: 20px;">{{ towns|join:", " }}</p>
+
+    {% endif %}
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    {% include 'd3_dependencies.html'%}
+
+    <h1>Počet kontaktů </h1>
+        {% include "d3_barchart.html" with values=encounters labels=months xlabel="" ylabel="Kontakty" templateId="enc_vs_months" only %}
+    
+
+    <h1>Zastoupení návykových látek</h1>
+        {% include "d3_piechart.html" with values=drug_type_occurrence.values labels=drug_type_occurrence.labels templateId="drug_occurence" only %}
+ 
+
+    <h1> Četnost klientů podle počtu kontaktů</h1>
+        {% include "d3_barchart.html" with values=enc_dist.counts labels=enc_dist.labels xlabel="Kontakty" ylabel="Klienti" templateId="cli_vs_enc" only %}
+
+{% endblock %}

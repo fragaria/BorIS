@@ -1,0 +1,31 @@
+{% extends "print_base.html" %}
+{% load i18n %}
+{% load i18n services admin_static sstatic %}
+
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        body { padding: 0 20px; }
+        table td { padding: 5px 5px; }
+    </style>
+{% endblock %}
+
+{% block content %}
+    {% if date_from and date_to %}
+        <p style="margin-bottom: 20px;">{{ date_from|date:"j.n.Y" }} - {{ date_to|date:"j.n.Y" }}</p>
+    {% endif %}
+    {% if towns %}
+        <p style="margin-bottom: 20px;">{{ towns|join:", " }}</p>
+
+    {% endif %}
+    {% include "impact/reports/impactreport_data.html" %}
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <!-- load nvd3 -->
+    {% include 'd3_dependencies.html'%}
+
+    <h1>Počet kontaktů </h1>
+        {% include "d3_barchart.html" with values=rm_improvements.counts labels=rm_improvements.labels xlabel="Rizikové chování" ylabel="Zlepšení" templateId="ana_imp" only %}
+    
+{% endblock %}
