@@ -33,6 +33,9 @@ class ImpactReport(BaseImpact, GovCouncilReport):
             date_to = datetime.today()
         if towns is None:
             towns = self.all_towns
+        elif len(towns)==0:
+            towns = self.all_towns
+
         self.datetime_from = datetime.combine(date_from, time(0))
         self.datetime_to = datetime.combine(date_to, time(23, 59, 59))
         self.towns = towns
@@ -181,9 +184,9 @@ class ImpactAnamnesis(ImpactReport):
         # tmp store periodicity
 
         p = RISKY_BEHAVIOR_PERIODICITY
-
         # Get QuerySet of first encounters in the given year/town for all clients.
-        encounters = Encounter.objects.first(2011 and 2012 and 2013 and 2013 and 2015, towns=self.towns)
+        encounters = Encounter.objects.first(year = 2015, towns=self.towns)
+
         # Filter encounters so that only the specified date range is present.
         encounters = encounters.filter(performed_on__gte=self.datetime_from,
                                        performed_on__lt=self.datetime_to)
