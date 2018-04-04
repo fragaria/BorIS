@@ -31,9 +31,7 @@ class ImpactReport(BaseImpact, GovCouncilReport):
             date_from = self.first_contact.performed_on if self.first_contact is not None else None
         if date_to:
             date_to = datetime.today()
-        if towns is None:
-            towns = self.all_towns
-        elif len(towns)==0:
+        if towns is None or len(towns) == 0:
             towns = self.all_towns
 
         self.datetime_from = datetime.combine(date_from, time(0))
