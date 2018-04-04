@@ -258,6 +258,8 @@ class GovCouncilReport(BaseReport):
         sum = 0
         service_encounters = []
         for service in self._get_services(Service):
+            print service.content_type
+            print service.content_type_id
             service_encounter = [ service.content_type, service.encounter]
             # prevent double count in case of same service class being multiple on one encounter
             if service_encounter not in service_encounters:

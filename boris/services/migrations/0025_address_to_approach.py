@@ -35,21 +35,20 @@ def add_default_approach_time(apps, schema_editor):
     TimeDotation = apps.get_model('services', 'TimeDotation')
 
     # create ct for IndirectService now (otherwise would be created in post_migrate signal, which is too late)
-    update_all_contenttypes( interactive=False )
+    update_all_contenttypes(interactive=False)
 
-    data =  ((apps.get_model('services', 'Approach')), 60)
-    
+    data = ((apps.get_model('services', 'Approach')), 60)
+
     print 'Adding dotation for ct: %s' % data[0]._meta.object_name
     ct = ContentType.objects.get_by_natural_key(data[0]._meta.app_label,
                                                 data[0]._meta.object_name.lower())
     td, _ = TimeDotation.objects.get_or_create(content_type_id=ct.id,
-                                                default_minutes=data[1],
-                                                defaults={'minutes': data[1]})
-
+                                               default_minutes=data[1],
+                                               defaults={'minutes': data[1]})
 
 def delete_address_timedotations(apps, schema_editor):
     ct = ContentType.objects.get_by_natural_key("services", "Address")
-    TimeDotation.objects.filter( content_type_id=ct.id ).delete()
+    TimeDotation.objects.filter(content_type_id=ct.id).delete()
 
 
 def reverse(apps, schema_editor):
@@ -65,5 +64,5 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunPython(code=copy_data, reverse_code=reverse),
         migrations.RunPython(code=add_default_approach_time, reverse_code=reverse),
-        migrations.RunPython(code=delete_address_timedotations, reverse_code=reverse)
+        migrations.RunPython(code=delete_address_timedotations, reverse_code=reverse),
     ]

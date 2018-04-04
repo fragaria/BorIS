@@ -449,13 +449,30 @@ class Approach(Service):
         addressed = _sum_int(cls, filtering, 'number_of_addressed')
         return tuple([('Oslovení', addressed)])
 
-    def get_time_spent(self, filtering, indirect_content_types, no_subservice_content_types ):
+    def get_time_spent(self, filtering, indirect_content_types, no_subservice_content_types):
         try:
-            return TimeDotation.get_time_for_type(self.content_type) * self._get_stats(self, filtering)[0][1]
+            print "subservices tried"
+            subservices = self.cast()._get_stats(filtering, only_subservices=True, only_basic=True)
+            subservices_count = sum([s[1] for s in subservices])
+            if self.encounter.is_by_phone and self.content_type in indirect_content_types:
+                return TimeDotation.get_time_for_type(ContentType.objects.get_for_model(IndirectService)) * subservices_count  * self._get_stats(self, filtering)[0][1]
+            if self.content_type in no_subservice_content_types:
+                return TimeDotation.get_time_for_type(self.content_type) * 1 * self._get_stats(self, filtering)[0][1]
+            return TimeDotation.get_time_for_type(self.content_type) * subservices_count * self._get_stats(self, filtering)[0][1]
         except Exception as e:
             if ' matching query does not exist' in e.message:
                 return 0
             raise e
+
+
+
+    # def get_time_spent(self, filtering, indirect_content_types, no_subservice_content_types ):
+    #     try:
+    #         return TimeDotation.get_time_for_type(self.content_type) * self._get_stats(self, filtering)[0][1]
+    #     except Exception as e:
+    #         if ' matching query does not exist' in e.message:
+    #             return 0
+    #         raise e
 
 
 
