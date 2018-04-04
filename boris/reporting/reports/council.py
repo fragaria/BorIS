@@ -73,8 +73,6 @@ class GovCouncilReport(BaseReport):
             filtering.update(extra_filtering)
         if self.towns:
             filtering['encounter__where__in'] = self.towns
-
-        print service_cls.objects.filter(**filtering).count()
         return service_cls.objects.filter(**filtering)
 
     def _get_service_count(self, service_classes, extra_filtering=None):
