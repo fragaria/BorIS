@@ -1,0 +1,57 @@
+
+<script>
+  nv.addGraph(function() {
+ 
+    var labels = ["{{ labels | join:'","' }}"];
+    var values = ["{{ values | join:'","' }}"];
+    var xlabel = "{{ xlabel }}";
+    var ylabel = "{{ ylabel }}";
+    var template_id = "{{ template_id }}";
+    var d3_select = '#' + template_id + ' svg';
+
+    values = values.map(item => {return Number(item);});
+
+    var get_data = (function() {
+        var data = [];
+        var len = Math.min(labels.length, values.length);
+        for (var i = 0; i<len; i++) {
+          data.push({
+              "label": labels[i],
+              "value": values[i],
+            });
+          }        
+        return data;
+    })();
+
+    var dataAnnotated = [
+      {
+        values: get_data,
+      },
+    ];
+
+    var chart = nv.models.discreteBarChart()
+        .x(function(d) { return d.label })    //Specify the data accessors.
+        .y(function(d) { return d.value })
+        .staggerLabels(true)    //Too many bars and not enough room? Try staggering labels.
+        .showValues(true)       //...instead, show the bar value right on top of each bar.
+        ;
+
+    chart.xAxis.axisLabel(xlabel);
+    chart.yAxis.axisLabel(ylabel);
+    chart.yAxis.tickFormat(d3.format(',.0d'));
+    chart.margin({ "top": 15, "right": 10, "bottom": 70, "left": 60 });
+    chart.valueFormat(d3.format(',.0d'));
+    d3.select(d3_select)
+        .datum(dataAnnotated)
+        .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+
+  });
+</script>
+
+<div id="{{ template_id }}">
+    <svg></svg>
+</div>
