@@ -138,6 +138,8 @@ class FirstContactCountDU(FirstContactCount):
     title = _(u'z toho s UD')
     filtering = (
         Q(person__client__primary_drug__isnull=False) &
+        Q(person__client__sex_partner=False) &
+        Q(person__client__close_person=False) &
         Q(content_type_model='incomeexamination')
     ) | (
         Q(person__anonymous__drug_user_type__in=(ANONYMOUS_TYPES.IV, ANONYMOUS_TYPES.NON_IV)) &
