@@ -12,7 +12,7 @@ from nose import tools
 from boris.classification import DRUGS
 from boris.reporting.reports.services import ServiceReport
 from boris.services import views
-from boris.services.models import (Address, UtilityWork, SocialWork,
+from boris.services.models import (Approach, UtilityWork, SocialWork,
     InformationService, HarmReduction, service_list, Encounter)
 from boris.services.views import HandleForm
 from boris.tests.helpers import (get_tst_town, get_tst_client, create_service)
@@ -39,9 +39,9 @@ class TestServiceReports(TestCase):
         self.town2 = get_tst_town()
         self.client1 = get_tst_client('c1', {'town': self.town1, 'primary_drug': drug})
         self.client2 = get_tst_client('c2', {'town': self.town1, 'primary_drug': drug})
-        create_service(Address, self.client1, date(2011, 11, 1), self.town1)
-        create_service(Address, self.client1, date(2011, 11, 3), self.town1)
-        create_service(Address, self.client2, date(2011, 11, 1), self.town1)
+        create_service(Approach, self.client1, date(2011, 11, 1), self.town1)
+        create_service(Approach, self.client1, date(2011, 11, 3), self.town1)
+        create_service(Approach, self.client2, date(2011, 11, 1), self.town1)
         create_service(UtilityWork, self.client1, date(2011, 11, 1), self.town2)
         social_work_kwargs = {'other': True}
         create_service(SocialWork, self.client1, date(2012, 11, 1), self.town1, social_work_kwargs)
@@ -55,7 +55,7 @@ class TestServiceReports(TestCase):
         r = ServiceReport(**filtering)
         stats = normalize_stats(r._get_service_stats())
         expected = {
-            Address: ((Address.service.title, 3),),
+            Approach: ((Approach.service.title, 3),),
             UtilityWork: ((UtilityWork.service.title, 1),),
             SocialWork: ((SocialWork.service.title, 2), (SocialWork._meta.get_field('other').verbose_name.__unicode__(), 1)),
             # InformationService: ((InformationService.service.title, 1),),
@@ -68,7 +68,7 @@ class TestServiceReports(TestCase):
         r = ServiceReport(**filtering)
         stats = normalize_stats(r._get_service_stats())
         expected = {
-            Address: ((Address.service.title, 1),)
+            Approach: ((Approach.service.title, 1),)
         }
         self.assertEqual(stats, expected)
 

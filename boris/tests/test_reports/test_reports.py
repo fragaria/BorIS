@@ -7,11 +7,11 @@ from boris.classification import SEXES, DRUGS, DRUG_APPLICATION_TYPES, \
 from boris.clients.models import Anonymous
 from boris.syringes.models import SyringeCollection
 from boris.services.models.core import Encounter
-from boris.services.models.basic import Address, PhoneUsage, \
+from boris.services.models.basic import Approach, PhoneUsage, \
     HarmReduction, IncomeExamination, DiseaseTest
 from boris.reporting.reports.monthly_stats import AllClientEncounters, \
     MaleClientEncounters, IvClientEncounters, \
-    AllAddresses, AddressesDU, \
+    AllApproaches, ApproachesDU, \
     EncounterCount, ClientEncounterCount, \
     PhoneEncounterCount, FirstContactCount, \
     FirstContactCountDU, FirstContactCountIV, HarmReductionCount, \
@@ -149,14 +149,14 @@ class TestServiceAggregations(InitialDataTestCase):
         self.anonym1 = Anonymous.objects.get(sex=SEXES.MALE, drug_user_type=ANONYMOUS_TYPES.IV)
         self.anonym2 = Anonymous.objects.get(sex=SEXES.MALE, drug_user_type=ANONYMOUS_TYPES.NON_USER)
 
-        # services - addresses
-        create_service(Address, self.client1, date(2011, 11, 1), self.town1)
-        create_service(Address, self.client1, date(2011, 11, 1), self.town2)
-        create_service(Address, self.client1, date(2011, 12, 1), self.town2)
-        create_service(Address, self.client3, date(2011, 11, 1), self.town1)
-        create_service(Address, self.anonym1, date(2011, 11, 1), self.town1)
-        create_service(Address, self.anonym1, date(2011, 11, 1), self.town1)
-        create_service(Address, self.anonym2, date(2011, 11, 1), self.town1)
+        # services - approaches
+        create_service(Approach, self.client1, date(2011, 11, 1), self.town1)
+        create_service(Approach, self.client1, date(2011, 11, 1), self.town2)
+        create_service(Approach, self.client1, date(2011, 12, 1), self.town2)
+        create_service(Approach, self.client3, date(2011, 11, 1), self.town1)
+        create_service(Approach, self.anonym1, date(2011, 11, 1), self.town1)
+        create_service(Approach, self.anonym1, date(2011, 11, 1), self.town1)
+        create_service(Approach, self.anonym2, date(2011, 11, 1), self.town1)
 
         # services - income examinations
         create_service(IncomeExamination, self.client1, date(2011, 11, 1), self.town1)
@@ -185,13 +185,13 @@ class TestServiceAggregations(InitialDataTestCase):
 
         self.report = MockMonthlyReport()
 
-    def test_all_addresses(self):
-        aggregation = AllAddresses(self.report)
+    def test_all_approaches(self):
+        aggregation = AllApproaches(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
         tools.assert_equals(aggregation.get_val(key), 5)
 
-    def test_all_addresses_du(self):
-        aggregation = AddressesDU(self.report)
+    def test_all_approaches_du(self):
+        aggregation = ApproachesDU(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
         tools.assert_equals(aggregation.get_val(key), 3)
 
@@ -251,11 +251,11 @@ class TestMixedAggregations(InitialDataTestCase):
         self.anonym = Anonymous.objects.get(sex=SEXES.MALE, drug_user_type=ANONYMOUS_TYPES.IV)
 
         # services
-        create_service(Address, self.client1, date(2011, 11, 1), self.town1)
-        create_service(Address, self.client2, date(2011, 11, 1), self.town1)
-        create_service(Address, self.client1, date(2011, 12, 1), self.town1)
-        create_service(Address, self.client1, date(2011, 11, 1), self.town2)
-        create_service(Address, self.anonym, date(2011, 11, 1), self.town1)
+        create_service(Approach, self.client1, date(2011, 11, 1), self.town1)
+        create_service(Approach, self.client2, date(2011, 11, 1), self.town1)
+        create_service(Approach, self.client1, date(2011, 12, 1), self.town1)
+        create_service(Approach, self.client1, date(2011, 11, 1), self.town2)
+        create_service(Approach, self.anonym, date(2011, 11, 1), self.town1)
         create_service(PhoneUsage, self.client1, date(2011, 11, 1), self.town1, is_by_phone=True)
         create_service(PhoneUsage, self.anonym, date(2011, 11, 1), self.town1, is_by_phone=True)
 
