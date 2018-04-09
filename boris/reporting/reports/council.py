@@ -371,7 +371,6 @@ class GovCouncilReport(BaseReport):
             (_(u'Celkový počet nepřímých kontaktů s identifikovanými klienty'),
              phone_encountered_clients_count, phone_client_encounters.count()),
             (_(u'Úkony potřebné pro zajištění přímé práce s klientem'),
-              # 'xxx', services(Approach)),
              'xxx', self.get_number_of_addressed_count()),
             (_(u'Kontaktní práce'),
              clients(ContactWork) + anon(ContactWork), services(ContactWork)),
