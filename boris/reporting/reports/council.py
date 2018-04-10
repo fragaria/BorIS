@@ -12,7 +12,7 @@ from boris.classification import (DISEASES, DRUGS, DRUG_APPLICATION_TYPES,
     SEXES)
 from boris.clients.models import Client, Anonymous
 from boris.reporting.core import BaseReport
-from boris.services.models import (Encounter, Address, ContactWork,
+from boris.services.models import (Encounter, Approach, ContactWork,
                                    IncomeFormFillup, IndividualCounselling, CrisisIntervention, SocialWork,
                                    HarmReduction, BasicMedicalTreatment, InformationService,
                                    IncomeExamination, DiseaseTest, HygienicService, FoodService,
@@ -74,6 +74,18 @@ class GovCouncilReport(BaseReport):
         if self.towns:
             filtering['encounter__where__in'] = self.towns
         return service_cls.objects.filter(**filtering)
+
+    def get_number_of_addressed_count(self):
+        filtering = {
+            'encounter__performed_on__gte': self.datetime_from,
+            'encounter__performed_on__lte': self.datetime_to,
+        }
+        if self.towns:
+            filtering['encounter__where__in'] = self.towns
+
+        count = Approach._get_stats(filtering)[0][1]
+
+        return count
 
     def _get_service_count(self, service_classes, extra_filtering=None):
         """Return the number of performed services of the given class."""
@@ -246,10 +258,10 @@ class GovCouncilReport(BaseReport):
         sum = 0
         service_encounters = []
         for service in self._get_services(Service):
-            service_encounter = [ service.content_type, service.encounter]
+            service_encounter = [service.content_type, service.encounter]
             # prevent double count in case of same service class being multiple on one encounter
             if service_encounter not in service_encounters:
-                sum += service.get_time_spent(filtering, get_indirect_content_types(), get_no_subservice_content_types())
+                sum += service.cast().get_time_spent(filtering, get_indirect_content_types(), get_no_subservice_content_types())
                 service_encounters.append(service_encounter)
         return sum
 
@@ -359,7 +371,7 @@ class GovCouncilReport(BaseReport):
             (_(u'Celkový počet nepřímých kontaktů s identifikovanými klienty'),
              phone_encountered_clients_count, phone_client_encounters.count()),
             (_(u'Úkony potřebné pro zajištění přímé práce s klientem'),
-             'xxx', services(Address)),
+             'xxx', self.get_number_of_addressed_count()),
             (_(u'Kontaktní práce'),
              clients(ContactWork) + anon(ContactWork), services(ContactWork)),
             (_(u'Vstupní zhodnocení stavu klienta'),

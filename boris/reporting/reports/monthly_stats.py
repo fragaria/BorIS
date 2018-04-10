@@ -67,16 +67,16 @@ class AnonymousAggregation(NonDistinctCountAggregation, EncounterAggregation):
     }
 
 
-class AllAddresses(ServiceAggregation):
+class AllApproaches(ServiceAggregation):
     title = _(u'Počet oslovených')
     aggregation_dbcol = 'id'
-    filtering = {'content_type_model': 'address'}
+    filtering = {'content_type_model': 'approach'}
 
 
-class AddressesDU(AllAddresses):
+class ApproachesDU(AllApproaches):
     title = _(u'Z toho UD')
     filtering = (
-        Q(content_type_model='address')
+        Q(content_type_model='approach')
     ) & (
         Q(person__client__primary_drug__isnull=False) |
         Q(person__anonymous__drug_user_type__in=(ANONYMOUS_TYPES.IV,
@@ -84,10 +84,10 @@ class AddressesDU(AllAddresses):
     )
 
 
-class AddressesDUTHC(AllAddresses):
+class ApproachesDUTHC(AllApproaches):
     title = _(u'Z toho uživatelů THC')
     filtering = (
-        Q(content_type_model='address')
+        Q(content_type_model='approach')
     ) & (
         Q(person__client__primary_drug__in=(DRUGS.THC,)) |
         Q(person__anonymous__drug_user_type__in=(ANONYMOUS_TYPES.THC,))
@@ -188,9 +188,9 @@ class ClientReportBase(Report):
         NonIvClientEncounters,
         ClosePersonEncounters,
         AnonymousAggregation,
-        AllAddresses,
-        AddressesDU,
-        AddressesDUTHC,
+        AllApproaches,
+        ApproachesDU,
+        ApproachesDUTHC,
     ] + disease_tests + [
         EncounterCount,
         ClientEncounterCount,
