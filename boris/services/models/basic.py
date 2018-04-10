@@ -446,8 +446,9 @@ class Approach(Service):
 
     @classmethod
     def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
+        title = cls.service.title
         addressed = _sum_int(cls, filtering, 'number_of_addressed')
-        return tuple([('Oslovení', addressed)])
+        return tuple([(title, addressed)])
 
     def get_time_spent(self, filtering, indirect_content_types, no_subservice_content_types ):
         try:

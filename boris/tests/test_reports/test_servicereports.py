@@ -13,7 +13,7 @@ from boris.classification import DRUGS
 from boris.reporting.reports.services import ServiceReport
 from boris.services import views
 from boris.services.models import (Approach, UtilityWork, SocialWork,
-    InformationService, HarmReduction, service_list, Encounter)
+                                   InformationService, HarmReduction, service_list, Encounter)
 from boris.services.views import HandleForm
 from boris.tests.helpers import (get_tst_town, get_tst_client, create_service)
 
@@ -24,7 +24,7 @@ def normalize_stats(stats):
     for service, services in stats.items():
         non_zero_services = []
         for title, count in services:
-            if count != 0:
+            if count != 0 and count != '-':
                 non_zero_services.append((title, count))
         if non_zero_services:
             clean_stats[service] = tuple(non_zero_services)
@@ -32,6 +32,8 @@ def normalize_stats(stats):
 
 
 class TestServiceReports(TestCase):
+
+    maxDiff = None
 
     def setUp(self):
         drug = DRUGS.HEROIN
