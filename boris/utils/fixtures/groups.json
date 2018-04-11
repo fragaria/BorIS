@@ -216,9 +216,9 @@
           "phoneusage"
         ],
         [
-          "add_address",
+          "add_approach",
           "services",
-          "address"
+          "approach"
         ],
         [
           "add_basicmedicaltreatment",
@@ -256,9 +256,9 @@
           "service"
         ],
         [
-          "change_address",
+          "change_approach",
           "services",
-          "address"
+          "approach"
         ],
         [
           "change_basicmedicaltreatment",
@@ -296,9 +296,9 @@
           "service"
         ],
         [
-          "delete_address",
+          "delete_approach",
           "services",
-          "address"
+          "approach"
         ],
         [
           "delete_basicmedicaltreatment",
