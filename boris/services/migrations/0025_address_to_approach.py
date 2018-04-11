@@ -44,7 +44,7 @@ def add_default_approach_time(apps, schema_editor):
     ct = ContentType.objects.get_by_natural_key(data[0]._meta.app_label,
                                                 data[0]._meta.object_name.lower())
     td, _ = TimeDotation.objects.get_or_create(content_type_id=ct.id,
-                                               default_minutes=data[1],
+                                               default_minutes=60,
                                                defaults={'minutes': data[1]})
 
 
