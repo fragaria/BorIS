@@ -2,15 +2,12 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-from itertools import chain
+from django.db.models import Q
 
 
 def clear_drugs_for_nonusers(apps, schema_editor):
     clients = apps.get_model("clients", "Client")
-    clients = clients.objects.all()
-    sex_partners = clients.filter(sex_partner=True)
-    close_person = clients.filter(close_person=True)
-    relatives = chain(sex_partners, close_person)
+    relatives = clients.objects.filter(Q(sex_partner=True) | Q(close_person=True))
     count = 0
     for relative in relatives:
         relative.primary_drug = None
