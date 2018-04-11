@@ -16,12 +16,11 @@ def copy_data(apps, schema_editor):
     approach_ct = ContentType.objects.get_by_natural_key("services", "Approach")
     address_ct = ContentType.objects.get_by_natural_key("services", "address")
     count = 0
-    title = _(u'Oslovení')
     for address in Address.objects.all().order_by('encounter__id').distinct():
         if address.content_type_id == address_ct.id:
             approach = Approach()
             approach.encounter = address.encounter
-            approach.title = address.title
+            approach.title = u'%s (%s)' % (address.title, approach.number_of_addressed)
             approach.content_type_id = approach_ct.id
             approach.created = address.created
             approach.modified = address.modified
