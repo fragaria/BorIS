@@ -450,14 +450,6 @@ class Approach(Service):
         addressed = _sum_int(cls, filtering, 'number_of_addressed')
         return tuple([(title, addressed)])
 
-    def get_time_spent(self, filtering, indirect_content_types, no_subservice_content_types ):
-        try:
-            return TimeDotation.get_time_for_type(self.content_type) * self.number_of_addressed
-        except Exception as e:
-            if ' matching query does not exist' in e.message:
-                return 0
-            raise e
-
 
 class IncomeFormFillup(Service):
     class Meta:
