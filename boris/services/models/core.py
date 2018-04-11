@@ -8,6 +8,7 @@ from datetime import date
 import operator
 
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models import SET_NULL
 from django.utils.encoding import force_unicode
@@ -271,7 +272,8 @@ class Service(TimeStampedModel):
         """
         try:
             return self.content_type.get_object_for_this_type(pk=self.pk)
-        except ContentType.DoesNotExist:  # E.g mock. objects or some not-yet-saved objects.
+        except ObjectDoesNotExist, e:  # E.g mock. objects or some not-yet-saved objects.
+            print u'Problem casting a service %s: %s' % (self.id, e)
             return self
 
     @classmethod
@@ -291,6 +293,7 @@ class Service(TimeStampedModel):
 
     def get_time_spent(self, filtering, indirect_content_types, no_subservice_content_types):
         try:
+            filtering['encounter__id'] = self.encounter.id
             subservices = self.cast()._get_stats(filtering, only_subservices=True, only_basic=True)
             subservices_count = sum([s[1] for s in subservices])
             if self.encounter.is_by_phone and self.content_type in indirect_content_types:
