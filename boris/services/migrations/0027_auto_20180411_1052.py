@@ -19,7 +19,7 @@ def clear_drugs_for_nonusers(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('services', '0023_auto_20171027_1724'),
+        ('services', '0026_remove_addresses'),
     ]
 
     operations = [
