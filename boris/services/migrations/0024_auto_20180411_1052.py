@@ -11,6 +11,7 @@ def clear_drugs_for_nonusers(apps, schema_editor):
     count = 0
     for relative in relatives:
         relative.primary_drug = None
+        relative.primary_drug_usage = None
         relative.save()
         count += 1
     print 'Successfully set primary drugs to None for %d sex partners and close persons' % count
