@@ -94,16 +94,6 @@ class HygienicService(Service):
                 boolean_stats,
         )
 
-    @classmethod
-    def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
-        boolean_stats = _boolean_stats(cls, filtering, ('clothing_wash', 'shower', 'social_clothing'))
-        if only_subservices:
-            return chain(boolean_stats)
-        return chain( # The total count is computed differently than usually.
-                ((cls.service.title, sum(stat[1] for stat in boolean_stats)),),
-                boolean_stats,
-        )
-
 
 class InternetUsage(Service):
     class Meta:

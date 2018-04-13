@@ -20,7 +20,6 @@ from boris.services.models import (Encounter, Address, ContactWork,
                                    WorkTherapyMeeting, UtilityWork, AsistService, Service)
 from boris.syringes.models import SyringeCollection
 
-
 _CONTENT_TYPES = {}
 
 
@@ -84,57 +83,38 @@ class GovCouncilReport(BaseReport):
             res += self._get_services(service_cls, extra_filtering=extra_filtering).count()
         return res
 
-    # def _get_services_time(self):
-    #     filtering = {
-    #         'encounter__performed_on__gte': self.datetime_from,
-    #         'encounter__performed_on__lte': self.datetime_to,
-    #     }
-    #     if self.towns:
-    #         filtering['encounter__where__in'] = self.towns
-    #     sum = 0
-    #     service_encounters = []
-    #     for service in self._get_services(Service):
-    #         service_encounter = [ service.content_type, service.encounter]
-    #         # prevent double count in case of same service class being multiple on one encounter
-    #         if service_encounter not in service_encounters:
-    #             sum += service.get_time_spent(filtering, get_indirect_content_types(), get_no_subservice_content_types())
-    #             service_encounters.append(service_encounter)
-    #     return sum
-
-    # def get_time_spent(self, filtering, indirect_content_types, no_subservice_content_types):
-    #     try:
-    #         subservices = self.cast()._get_stats(filtering, only_subservices=True, only_basic=True)
-    #         subservices_count = sum([s[1] for s in subservices])
-    #         if self.encounter.is_by_phone and self.content_type in indirect_content_types:
-    #             return TimeDotation.get_time_for_type(ContentType.objects.get_for_model(IndirectService)) * subservices_count
-    #         if self.content_type in no_subservice_content_types:
-    #             return TimeDotation.get_time_for_type(self.content_type) * 1
-    #         return TimeDotation.get_time_for_type(self.content_type) * subservices_count
-    #     except Exception as e:
-    #         if ' matching query does not exist' in e.message:
-    #             return 0
-    #         raise e
-
-    # def _get_service_count_all(self):
-    #     """Return the number of performed services of the given class."""
-    #     filtering = {
-    #         'encounter__performed_on__gte': self.datetime_from,
-    #         'encounter__performed_on__lte': self.datetime_to,
-    #     }
-    #     if self.towns:
-    #         filtering['encounter__where__in'] = self.towns
-    #     # sum = 0
-    #     service_encounters = []
-    #     for service in self._get_services(Service):
-    #         service_encounter = [service.content_type, service.encounter]
-    #         print service_encounter
-    #         # prevent double count in case of same service class being multiple on one encounter
-    #         if service_encounter not in service_encounters:
-    #             sum += 1
-    #             service_encounters.append(service_encounter)
-    #         # else:
-    #         #     print service_encounter
-    #     return sum
+    def _get_service_count_all(self):
+        """Return the number of all performed services and subservices."""
+        filtering = {
+            'encounter__performed_on__gte': self.datetime_from,
+            'encounter__performed_on__lte': self.datetime_to,
+        }
+        if self.towns:
+            filtering['encounter__where__in'] = self.towns
+        indirect_content_types = get_indirect_content_types()
+        no_subservice_content_types = get_no_subservice_content_types()
+        total_count = 0
+        # prevents double-counting of a service
+        content_types = []
+        for service in self._get_services(Service):
+            content_type = [service.content_type]
+            if content_type not in content_types:
+                try:
+                    subservices = service.cast()._get_stats(filtering, only_subservices=True, only_basic=True)
+                    subservices_count = sum([list(s)[1] for s in subservices])
+                    if service.encounter.is_by_phone and service.content_type in indirect_content_types:
+                        total_count += subservices_count
+                    elif service.content_type in no_subservice_content_types:
+                        total_count += 1
+                    else:
+                        total_count += subservices_count
+                    if service.content_type not in no_subservice_content_types:
+                        content_types.append(content_type)
+                except Exception as e:
+                    if ' matching query does not exist' in e.message:
+                        return 0
+                    raise e
+        return total_count
 
     def get_direct_subservice_count(self, service_classes):
         return self._get_subservice_count(service_classes, extra_filtering={'encounter__is_by_phone': False})
@@ -499,11 +479,7 @@ class GovCouncilReport(BaseReport):
             (_(u'Adiktologická terapie skupinová, typ I. pro skupinu max. 9 osob (38026)'),
              '', ''),
             (_(u'Celkový počet/čas všech poskytnutných výkonů (hod)'),
-             self._get_service_count(Service), '%.2f' % (self._get_services_time() / 60.0)),
-            # (_(u'Celkový počet/čas všech poskytnutných výkonů (hod)'),
-            #  self._get_service_count_all(), '%.2f' % (self._get_services_time() / 60.0)),
-            # (_(u'Celkový počet/čas všech poskytnutných výkonů (hod)'),
-            #  total_clients_count, '%.2f' % (self._get_services_time() / 60.0)),
+             self._get_service_count_all(), '%.2f' % (self._get_services_time() / 60.0)),
         ]
 
     def get_data(self):
