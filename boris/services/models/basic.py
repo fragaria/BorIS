@@ -311,12 +311,11 @@ class SocialWork(Service):
 
     @classmethod
     def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
-        service = super(SocialWork, cls)._get_stats(filtering, only_subservices)
-        subservices = (_boolean_stats(cls, filtering, (
-            'social', 'legal', 'service_mediation', 'assistance_service', 'probation_supervision', 'other')))
+        boolean_stats = _boolean_stats(cls, filtering, ('social', 'legal', 'service_mediation',
+                                                        'assistance_service', 'probation_supervision', 'other'))
         if only_subservices:
-            return subservices
-        return service + subservices
+            return chain(boolean_stats)
+        return chain(((cls.service.title, sum(stat[1] for stat in boolean_stats)),),boolean_stats,)
 
 
 class UtilityWork(Service):
@@ -392,12 +391,11 @@ class IndividualCounselling(Service):
 
     @classmethod
     def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
-        service = super(IndividualCounselling, cls)._get_stats(filtering, only_subservices)
-        subservices = (_boolean_stats(cls, filtering, (
-            'general', 'structured', 'pre_treatment', 'guarantee_interview', 'advice_to_parents')))
+        boolean_stats = _boolean_stats(cls, filtering, ('general', 'structured',
+                                                        'pre_treatment', 'guarantee_interview', 'advice_to_parents'))
         if only_subservices:
-            return subservices
-        return service + subservices
+            return chain(boolean_stats)
+        return chain(((cls.service.title, sum(stat[1] for stat in boolean_stats)),),boolean_stats,)
 
 
 class Address(Service):
