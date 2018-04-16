@@ -94,21 +94,16 @@ class GovCouncilReport(BaseReport):
         for service in self._get_services(Service):
             content_type = [service.content_type]
             if content_type not in content_types:
-                try:
-                    subservices = service.cast()._get_stats(filtering, only_subservices=True, only_basic=True)
-                    subservices_count = sum([list(s)[1] for s in subservices])
-                    if service.encounter.is_by_phone and service.content_type in indirect_content_types:
-                        total_count += subservices_count
-                    elif service.content_type in no_subservice_content_types:
-                        total_count += 1
-                    else:
-                        total_count += subservices_count
-                    if service.content_type not in no_subservice_content_types:
-                        content_types.append(content_type)
-                except Exception as e:
-                    if ' matching query does not exist' in e.message:
-                        return 0
-                    raise e
+                subservices = service.cast().get_stats(filtering, only_subservices=True, only_basic=True)[1]
+                subservices_count = sum([list(s)[1] for s in subservices])
+                if service.encounter.is_by_phone and service.content_type in indirect_content_types:
+                    total_count += subservices_count
+                elif service.content_type in no_subservice_content_types:
+                    total_count += 1
+                else:
+                    total_count += subservices_count
+                if service.content_type not in no_subservice_content_types:
+                    content_types.append(content_type)
         return total_count
 
     def get_direct_subservice_count(self, service_classes):
@@ -369,7 +364,6 @@ class GovCouncilReport(BaseReport):
         phone_encountered_client_ids = set(phone_client_encounters.values_list('person_id', flat=True))
         directly_encountered_clients_count = len(directly_encountered_client_ids)
         phone_encountered_clients_count = len(phone_encountered_client_ids)
-        total_clients_count = len(directly_encountered_client_ids & phone_encountered_client_ids)
 
         pregnancy_test_services = self._get_services(UrineTest).filter(pregnancy_test=True)
         drug_test_services = self._get_services(UrineTest).filter(drug_test=True)
@@ -468,7 +462,7 @@ class GovCouncilReport(BaseReport):
             (_(u'Adiktologická terapie skupinová, typ I. pro skupinu max. 9 osob (38026)'),
              '', ''),
             (_(u'Celkový počet/čas všech poskytnutných výkonů (hod)'),
-             self._get_service_count_all(), '%.2f' % (self._get_services_time() / 60.0)),
+             u'', '%s / %.2f' % (self._get_service_count_all(), self._get_services_time() / 60.0)),
         ]
 
     def get_data(self):
