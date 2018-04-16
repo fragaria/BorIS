@@ -20,7 +20,6 @@ from boris.services.models import (Encounter, Approach, ContactWork,
                                    WorkTherapyMeeting, UtilityWork, AsistService, Service)
 from boris.syringes.models import SyringeCollection
 
-
 _CONTENT_TYPES = {}
 
 
@@ -95,6 +94,39 @@ class GovCouncilReport(BaseReport):
         for service_cls in service_classes:
             res += self._get_services(service_cls, extra_filtering=extra_filtering).count()
         return res
+
+    def _get_service_count_all(self):
+        """Return the number of all performed services and subservices."""
+        filtering = {
+            'encounter__performed_on__gte': self.datetime_from,
+            'encounter__performed_on__lte': self.datetime_to,
+        }
+        if self.towns:
+            filtering['encounter__where__in'] = self.towns
+        indirect_content_types = get_indirect_content_types()
+        no_subservice_content_types = get_no_subservice_content_types()
+        total_count = 0
+        # prevents double-counting of a service
+        content_types = []
+        for service in self._get_services(Service):
+            content_type = [service.content_type]
+            if content_type not in content_types:
+                try:
+                    subservices = service.cast()._get_stats(filtering, only_subservices=True, only_basic=True)
+                    subservices_count = sum([list(s)[1] for s in subservices])
+                    if service.encounter.is_by_phone and service.content_type in indirect_content_types:
+                        total_count += subservices_count
+                    elif service.content_type in no_subservice_content_types:
+                        total_count += 1
+                    else:
+                        total_count += subservices_count
+                    if service.content_type not in no_subservice_content_types:
+                        content_types.append(content_type)
+                except Exception as e:
+                    if ' matching query does not exist' in e.message:
+                        return 0
+                    raise e
+        return total_count
 
     def get_direct_subservice_count(self, service_classes):
         return self._get_subservice_count(service_classes, extra_filtering={'encounter__is_by_phone': False})
@@ -459,7 +491,7 @@ class GovCouncilReport(BaseReport):
             (_(u'Adiktologická terapie skupinová, typ I. pro skupinu max. 9 osob (38026)'),
              '', ''),
             (_(u'Celkový počet/čas všech poskytnutných výkonů (hod)'),
-             total_clients_count, '%.2f' % (self._get_services_time() / 60.0)),
+             self._get_service_count_all(), '%.2f' % (self._get_services_time() / 60.0)),
         ]
 
     def get_data(self):
