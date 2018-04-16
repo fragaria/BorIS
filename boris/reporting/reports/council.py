@@ -64,26 +64,14 @@ class GovCouncilReport(BaseReport):
         return self._anonymous_ids
 
     def _get_services(self, service_cls, extra_filtering=None):
-        filtering = {
-            'encounter__performed_on__gte': self.datetime_from,
-            'encounter__performed_on__lte': self.datetime_to,
-        }
+        filtering = self.__default_service_filtering()
         if extra_filtering is not None:
             filtering.update(extra_filtering)
-        if self.towns:
-            filtering['encounter__where__in'] = self.towns
         return service_cls.objects.filter(**filtering)
 
     def get_number_of_approached_count(self):
-        filtering = {
-            'encounter__performed_on__gte': self.datetime_from,
-            'encounter__performed_on__lte': self.datetime_to,
-        }
-        if self.towns:
-            filtering['encounter__where__in'] = self.towns
-
+        filtering = self.__default_service_filtering()
         count = Approach._get_stats(filtering)[0][1]
-
         return count
 
     def _get_service_count(self, service_classes, extra_filtering=None):
@@ -97,12 +85,7 @@ class GovCouncilReport(BaseReport):
 
     def _get_service_count_all(self):
         """Return the number of all performed services and subservices."""
-        filtering = {
-            'encounter__performed_on__gte': self.datetime_from,
-            'encounter__performed_on__lte': self.datetime_to,
-        }
-        if self.towns:
-            filtering['encounter__where__in'] = self.towns
+        filtering = self.__default_service_filtering()
         indirect_content_types = get_indirect_content_types()
         no_subservice_content_types = get_no_subservice_content_types()
         total_count = 0
@@ -136,14 +119,9 @@ class GovCouncilReport(BaseReport):
         This is used when count of services should be in fact sum of selected subservices"""
         if not isinstance(service_classes, collections.Iterable):
             service_classes = [service_classes]
-        filtering = {
-            'encounter__performed_on__gte': self.datetime_from,
-            'encounter__performed_on__lte': self.datetime_to,
-        }
+        filtering = self.__default_service_filtering()
         if extra_filtering is not None:
             filtering.update(extra_filtering)
-        if self.towns:
-            filtering['encounter__where__in'] = self.towns
         res = 0
         for service_cls in service_classes:
             stats = service_cls.get_stats(filtering, only_subservices=True, only_basic=True)[1]
@@ -184,13 +162,10 @@ class GovCouncilReport(BaseReport):
     def _get_anonymous_count(self, service_cls):
         """Return number of services of the given class performed by anonyms."""
         anonymous_ids = self._get_anonymous_ids()
-        filtering = {
-            'encounter__performed_on__gte': self.datetime_from,
-            'encounter__performed_on__lte': self.datetime_to,
+        filtering = self.__default_service_filtering()
+        filtering.update({
             'encounter__person__in': anonymous_ids,
-        }
-        if self.towns:
-            filtering['encounter__where__in'] = self.towns
+        })
         return service_cls.objects.filter(**filtering).count()
 
     def _get_syringes_count(self):
@@ -210,12 +185,7 @@ class GovCouncilReport(BaseReport):
         return self.__get_client_encounters({'is_by_phone': True})
 
     def __get_client_encounters(self, filtering):
-        filtering.update({
-            'performed_on__gte': self.datetime_from,
-            'performed_on__lte': self.datetime_to,
-        })
-        if self.towns:
-            filtering['where__in'] = self.towns
+        filtering = self.__default_encounter_filtering(filtering)
         exclude = {'person__in': self._get_anonymous_ids()}
         return Encounter.objects.filter(**filtering).exclude(**exclude)
 
@@ -245,24 +215,14 @@ class GovCouncilReport(BaseReport):
 
     def _get_all_drug_users(self):
         """Return all non-anonymous drug users from the given time period."""
-        filtering = {
-            'performed_on__gte': self.datetime_from,
-            'performed_on__lte': self.datetime_to,
-        }
-        if self.towns:
-            filtering['where__in'] = self.towns
+        filtering = self.__default_encounter_filtering()
         encounters = Encounter.objects.filter(**filtering)
         clients = encounters.values_list('person', flat=True)
         return Client.objects.filter(pk__in=clients, close_person=False, sex_partner=False).exclude(primary_drug=None)
 
     def _get_clients_non_drug_users(self):
         """Return all sex partners and close persons from the given time period."""
-        filtering = {
-            'performed_on__gte': self.datetime_from,
-            'performed_on__lte': self.datetime_to,
-        }
-        if self.towns:
-            filtering['where__in'] = self.towns
+        filtering = self.__default_encounter_filtering()
         encounters = Encounter.objects.filter(**filtering)
         clients = encounters.values_list('person', flat=True)
         return Client.objects.filter(pk__in=clients).filter(
@@ -281,12 +241,7 @@ class GovCouncilReport(BaseReport):
         return int(round(float(sum(ages)) / len(ages))) if ages else 0
 
     def _get_services_time(self):
-        filtering = {
-            'encounter__performed_on__gte': self.datetime_from,
-            'encounter__performed_on__lte': self.datetime_to,
-        }
-        if self.towns:
-            filtering['encounter__where__in'] = self.towns
+        filtering = self.__default_service_filtering()
         sum = 0
         service_encounters = []
         for service in self._get_services(Service):
@@ -296,6 +251,28 @@ class GovCouncilReport(BaseReport):
                 sum += service.cast().get_time_spent(filtering, get_indirect_content_types(), get_no_subservice_content_types())
                 service_encounters.append(service_encounter)
         return sum
+
+    def __default_service_filtering(self, filtering=None):
+        if filtering is None:
+            filtering = {}
+        filtering.update({
+            'encounter__performed_on__gte': self.datetime_from,
+            'encounter__performed_on__lte': self.datetime_to,
+        })
+        if self.towns:
+            filtering['encounter__where__in'] = self.towns
+        return filtering
+
+    def __default_encounter_filtering(self, filtering=None):
+        if filtering is None:
+            filtering = {}
+        filtering.update({
+            'performed_on__gte': self.datetime_from,
+            'performed_on__lte': self.datetime_to,
+        })
+        if self.towns:
+            filtering['where__in'] = self.towns
+        return filtering
 
     # <--
 
