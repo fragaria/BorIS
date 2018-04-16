@@ -180,6 +180,9 @@ class EncounterAdmin(BorisBaseAdmin):
 
     def change_button(self, obj):
         if obj is not None and not obj.is_editable():
+            if obj.group_contact:
+                return u'<a href="%s" class="changelink cbutton">%s</a>' % (
+                    obj.group_contact.get_admin_url(), _('zobrazit'))
             return u'<a href="%s" class="changelink cbutton">%s</a>' % (
                 obj.get_admin_url(), _('zobrazit'))
         return u'<a href="%s" class="changelink cbutton">%s</a>' % (
