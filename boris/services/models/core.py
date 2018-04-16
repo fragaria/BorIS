@@ -333,6 +333,9 @@ class IndirectService(Service):
         verbose_name = _(u'Telefonické, písemné a internetové p.')
         verbose_name_plural = _(u'Telefonické, písemné a internetové p.')
 
+    class Options:
+        is_available = lambda person: False
+
 
 def service_list(person=None, diseases_last=False):
     """
