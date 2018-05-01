@@ -295,9 +295,7 @@ class Service(TimeStampedModel):
         try:
             if self.content_type in no_subservice_content_types:
                 return TimeDotation.get_time_for_type(self.content_type) * 1
-            filtering_ = filtering.copy()
-            filtering_['encounter__id'] = self.encounter.id
-            subservices = self.cast()._get_stats(filtering_, only_subservices=True, only_basic=True)
+            subservices = self.cast().__class__._get_stats(filtering, only_subservices=True, only_basic=True)
             subservices_count = sum([s[1] for s in subservices])
             if self.encounter.is_by_phone and self.content_type in indirect_content_types:
                 return TimeDotation.get_time_for_type(ContentType.objects.get_for_model(IndirectService)) * subservices_count

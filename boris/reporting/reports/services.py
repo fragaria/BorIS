@@ -48,10 +48,17 @@ class ServiceReport(BaseReport):
         filtering = self.filtering
         indirect_content_types = get_indirect_content_types()
         no_subservice_content_types = get_no_subservice_content_types()
+        total_time_spent = 0
         for service in services:
             service_records = service.objects.filter(**filtering)
-            total_time_spent += sum([service_record.get_time_spent(self.filtering, indirect_content_types, no_subservice_content_types)
-                                     for service_record in service_records])
+            content_types = []
+            for service_record in service_records:
+                content_type = [service.content_type]
+                if content_type not in content_types:
+                    total_time_spent += service_record.get_time_spent(self.filtering,
+                                                                      indirect_content_types,
+                                                                      no_subservice_content_types)
+                    content_types.append(content_type)
         time_stats = (u'Celkový čas poskytnutých výkonů (hod)', '%.2f' % (total_time_spent/60.0))
         return [(None, (time_stats,))]
 

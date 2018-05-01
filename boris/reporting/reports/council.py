@@ -238,13 +238,15 @@ class GovCouncilReport(BaseReport):
     def _get_services_time(self):
         filtering = self.__default_service_filtering()
         sum = 0
-        service_encounters = []
+        indirect_content_types = get_indirect_content_types()
+        no_subservice_content_types = get_no_subservice_content_types()
+        content_types = []
         for service in self._get_services(Service):
-            service_encounter = [service.content_type, service.encounter]
+            content_type = [service.content_type]
             # prevent double count in case of same service class being multiple on one encounter
-            if service_encounter not in service_encounters:
-                sum += service.cast().get_time_spent(filtering, get_indirect_content_types(), get_no_subservice_content_types())
-                service_encounters.append(service_encounter)
+            if content_type not in content_types:
+                sum += service.cast().get_time_spent(filtering, indirect_content_types, no_subservice_content_types)
+                content_types.append(content_type)
         return sum
 
     def __default_service_filtering(self, filtering=None):
