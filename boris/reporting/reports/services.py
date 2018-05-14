@@ -44,7 +44,6 @@ class ServiceReport(BaseReport):
 
     def _get_service_time(self):
         services = self._get_services()
-        total_time_spent = 0
         filtering = self.filtering
         indirect_content_types = get_indirect_content_types()
         no_subservice_content_types = get_no_subservice_content_types()
