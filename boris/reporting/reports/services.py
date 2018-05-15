@@ -5,7 +5,7 @@ from django.template.context import RequestContext
 
 from boris.reporting.core import BaseReport
 from boris.reporting.reports.council import (get_indirect_content_types, get_no_subservice_content_types)
-from boris.services.models import service_list, Encounter
+from boris.services.models import service_list, Encounter, TimeDotation
 
 
 class ServiceReport(BaseReport):
@@ -59,7 +59,7 @@ class ServiceReport(BaseReport):
                                                                       no_subservice_content_types)
                     content_types.append(content_type)
         time_stats = (u'Celkový čas poskytnutých výkonů (hod)', '%.2f' % (total_time_spent/60.0))
-        return [(None, (time_stats,))]
+        return [(TimeDotation, (time_stats,))]
 
     def get_stats(self):
         encounters = Encounter.objects.filter(**self.enc_filtering)

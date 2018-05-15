@@ -13,7 +13,7 @@ from boris.classification import DRUGS
 from boris.reporting.reports.services import ServiceReport
 from boris.services import views
 from boris.services.models import (Approach, UtilityWork, SocialWork,
-                                   InformationService, HarmReduction, service_list, Encounter)
+                                   InformationService, HarmReduction, service_list, Encounter, TimeDotation)
 from boris.services.views import HandleForm
 from boris.tests.helpers import (get_tst_town, get_tst_client, create_service)
 
@@ -87,7 +87,10 @@ class TestServiceReports(TestCase):
         filtering = {'date_to': date(2010, 1, 1)}
         r = ServiceReport(**filtering)
         stats = normalize_stats(r.get_stats())
-        expected = {None: ((u'Počet kontaktů (z toho přímých)', '0 (0)'), )}
+        expected = {
+            None: ((u'Počet kontaktů (z toho přímých)', '0 (0)'), ),
+            TimeDotation: ((u'Celkov\xfd \u010das poskytnut\xfdch v\xfdkon\u016f (hod)', '0.00'),)
+        }
         self.assertEqual(stats, expected)
 
     def test_filter_by_town(self):
