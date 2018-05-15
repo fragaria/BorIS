@@ -4,6 +4,7 @@ from django.template import loader
 from django.template.context import RequestContext
 
 from boris.reporting.core import BaseReport
+from boris.reporting.reports.council import (get_indirect_content_types, get_no_subservice_content_types)
 from boris.services.models import service_list, Encounter
 
 
@@ -33,10 +34,32 @@ class ServiceReport(BaseReport):
         return 'souhrn_vykonu.doc'
 
     def _get_service_stats(self):
-        return [
-            service.get_stats(self.filtering) for service in service_list(self.person, diseases_last=True)
-            if service.service.include_in_reports
-        ]
+        services = self._get_services()
+        return [service.get_stats(self.filtering) for service in services]
+
+    def _get_services(self):
+        services = [service for service in service_list(self.person, diseases_last=True)
+                    if service.service.include_in_reports]
+        return services
+
+    def _get_service_time(self):
+        services = self._get_services()
+        filtering = self.filtering
+        indirect_content_types = get_indirect_content_types()
+        no_subservice_content_types = get_no_subservice_content_types()
+        total_time_spent = 0
+        for service in services:
+            service_records = service.objects.filter(**filtering)
+            content_types = []
+            for service_record in service_records:
+                content_type = [service.content_type]
+                if content_type not in content_types:
+                    total_time_spent += service_record.get_time_spent(self.filtering,
+                                                                      indirect_content_types,
+                                                                      no_subservice_content_types)
+                    content_types.append(content_type)
+        time_stats = (u'Celkový čas poskytnutých výkonů (hod)', '%.2f' % (total_time_spent/60.0))
+        return [(None, (time_stats,))]
 
     def get_stats(self):
         encounters = Encounter.objects.filter(**self.enc_filtering)
@@ -44,7 +67,7 @@ class ServiceReport(BaseReport):
         direct_enc_count = encounters.filter(is_by_phone=False).count()
         encounter_stats = (u'Počet kontaktů (z toho přímých)', '%i (%i)' % (
             all_enc_count, direct_enc_count))
-        return [(None, (encounter_stats,))] + self._get_service_stats()
+        return [(None, (encounter_stats,))] + self._get_service_time() + self._get_service_stats()
 
     def render(self, request, display_type):
         return loader.render_to_string(

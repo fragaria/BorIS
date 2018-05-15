@@ -293,13 +293,12 @@ class Service(TimeStampedModel):
 
     def get_time_spent(self, filtering, indirect_content_types, no_subservice_content_types):
         try:
-            filtering['encounter__id'] = self.encounter.id
-            subservices = self.cast()._get_stats(filtering, only_subservices=True, only_basic=True)
+            if self.content_type in no_subservice_content_types:
+                return TimeDotation.get_time_for_type(self.content_type) * 1
+            subservices = self.cast().__class__._get_stats(filtering, only_subservices=True, only_basic=True)
             subservices_count = sum([s[1] for s in subservices])
             if self.encounter.is_by_phone and self.content_type in indirect_content_types:
                 return TimeDotation.get_time_for_type(ContentType.objects.get_for_model(IndirectService)) * subservices_count
-            if self.content_type in no_subservice_content_types:
-                return TimeDotation.get_time_for_type(self.content_type) * 1
             return TimeDotation.get_time_for_type(self.content_type) * subservices_count
         except Exception as e:
             if ' matching query does not exist' in e.message:
