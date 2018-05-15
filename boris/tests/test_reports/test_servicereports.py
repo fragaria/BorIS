@@ -59,7 +59,7 @@ class TestServiceReports(TestCase):
         expected = {
             Approach: ((Approach.service.title, 3),),
             UtilityWork: ((UtilityWork.service.title, 1),),
-            SocialWork: ((SocialWork.service.title, 2), (SocialWork._meta.get_field('other').verbose_name.__unicode__(), 1)),
+            SocialWork: ((SocialWork.service.title, 1), (SocialWork._meta.get_field('other').verbose_name.__unicode__(), 1)),
             # InformationService: ((InformationService.service.title, 1),),
             HarmReduction: ((HarmReduction.service.title, 1), (HarmReduction._meta.get_field('condoms').verbose_name.__unicode__(), 1), (HarmReduction._meta.get_field('in_count').verbose_name.__unicode__(), 87))
         }
