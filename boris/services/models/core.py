@@ -288,18 +288,24 @@ class Service(TimeStampedModel):
         Returns True if this service is user-editable - if it has something
         what a user can change.
         """
-        skip_fields = ('encounter', 'id', 'service_ptr')
+        skip_fields = ('encounter', 'id', 'service_ptr', 'number_of_addressed')
         return any([f.editable for f in self._meta.fields if f.name not in skip_fields])
 
-    def get_time_spent(self, filtering, indirect_content_types, no_subservice_content_types):
+    @classmethod
+    def get_time_spent(cls, service, indirect_content_types, no_subservice_content_types):
+        """
+        Returns count of minutes spent on `service` type of service during it's encounter.
+        In case the encounter has multiple subservices of the same type, all are counted, not just `service`.
+        """
         try:
-            if self.content_type in no_subservice_content_types:
-                return TimeDotation.get_time_for_type(self.content_type) * 1
-            subservices = self.cast().__class__._get_stats(filtering, only_subservices=True, only_basic=True)
+            filtering = {'encounter': service.encounter}
+            if service.content_type in no_subservice_content_types:
+                return TimeDotation.get_time_for_type(service.content_type) * 1
+            subservices = cls._get_stats(filtering, only_subservices=True, only_basic=True)
             subservices_count = sum([s[1] for s in subservices])
-            if self.encounter.is_by_phone and self.content_type in indirect_content_types:
+            if service.encounter.is_by_phone and service.content_type in indirect_content_types:
                 return TimeDotation.get_time_for_type(ContentType.objects.get_for_model(IndirectService)) * subservices_count
-            return TimeDotation.get_time_for_type(self.content_type) * subservices_count
+            return TimeDotation.get_time_for_type(service.content_type) * subservices_count
         except Exception as e:
             if ' matching query does not exist' in e.message:
                 return 0

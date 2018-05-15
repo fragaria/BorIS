@@ -24,6 +24,7 @@ _CONTENT_TYPES = {}
 
 
 def get_indirect_content_types():
+    # 'indirect' services done by phone are counted as IndirectService in regards to time dotations
     if 'indirect' not in _CONTENT_TYPES:
         _CONTENT_TYPES['indirect'] = [
             ContentType.objects.get_for_model(cls)
@@ -33,6 +34,7 @@ def get_indirect_content_types():
 
 
 def get_no_subservice_content_types():
+    # 'no subservice' services count as 1 service disregarding selected subservices
     if 'no_subservice' not in _CONTENT_TYPES:
         _CONTENT_TYPES['no_subservice'] = [
             ContentType.objects.get_for_model(cls) for cls in (HarmReduction,)
@@ -236,16 +238,15 @@ class GovCouncilReport(BaseReport):
         return int(round(float(sum(ages)) / len(ages))) if ages else 0
 
     def _get_services_time(self):
-        filtering = self.__default_service_filtering()
         sum = 0
         indirect_content_types = get_indirect_content_types()
         no_subservice_content_types = get_no_subservice_content_types()
         content_types = []
         for service in self._get_services(Service):
-            content_type = [service.content_type]
+            content_type = (service.content_type, service.encounter)
             # prevent double count in case of same service class being multiple on one encounter
             if content_type not in content_types:
-                sum += service.cast().get_time_spent(filtering, indirect_content_types, no_subservice_content_types)
+                sum += service.cast().__class__.get_time_spent(service, indirect_content_types, no_subservice_content_types)
                 content_types.append(content_type)
         return sum
 

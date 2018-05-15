@@ -52,9 +52,9 @@ class ServiceReport(BaseReport):
             service_records = service.objects.filter(**filtering)
             content_types = []
             for service_record in service_records:
-                content_type = [service.content_type]
+                content_type = (service.content_type, service_record.encounter)
                 if content_type not in content_types:
-                    total_time_spent += service_record.get_time_spent(self.filtering,
+                    total_time_spent += service_record.cast().__class__.get_time_spent(service_record,
                                                                       indirect_content_types,
                                                                       no_subservice_content_types)
                     content_types.append(content_type)
