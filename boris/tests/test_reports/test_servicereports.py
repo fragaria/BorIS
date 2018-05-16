@@ -15,7 +15,7 @@ from boris.services import views
 from boris.services.models import (Approach, UtilityWork, SocialWork,
                                    InformationService, HarmReduction, service_list, Encounter, TimeDotation)
 from boris.services.views import HandleForm
-from boris.tests.helpers import (get_tst_town, get_tst_client, create_service)
+from boris.tests.helpers import (get_tst_town, get_tst_client, create_service, InitialDataTestCase)
 
 
 def normalize_stats(stats):
@@ -31,9 +31,15 @@ def normalize_stats(stats):
     return clean_stats
 
 
-class TestServiceReports(TestCase):
+class TestServiceReports(InitialDataTestCase):
 
     maxDiff = None
+
+    @classmethod
+    def setUpClass(cls):
+        super(TestServiceReports, cls).setUpClass()
+        # use dotations from initial_data as migration generated get deleted in flush
+        TimeDotation.objects.all().delete()
 
     def setUp(self):
         drug = DRUGS.HEROIN
@@ -92,6 +98,28 @@ class TestServiceReports(TestCase):
             TimeDotation: ((u'Celkov\xfd \u010das poskytnut\xfdch v\xfdkon\u016f (hod)', '0.00'),)
         }
         self.assertEqual(stats, expected)
+
+    def test_time_dotations_2011(self):
+        filtering = {'date_to': date(2012, 1, 1)}
+        r = ServiceReport(**filtering)
+        stats = normalize_stats(r.get_stats())
+        expected = {
+            None: ((u'Počet kontaktů (z toho přímých)', '7 (7)'), ),
+            TimeDotation: ((u'Celkov\xfd \u010das poskytnut\xfdch v\xfdkon\u016f (hod)', '3.08'),)
+        }
+        self.assertEqual(stats[None], expected[None])
+        self.assertEqual(stats[TimeDotation], expected[TimeDotation])
+
+    def test_time_dotations_2012(self):
+        filtering = {'date_from': date(2012, 1, 1)}
+        r = ServiceReport(**filtering)
+        stats = normalize_stats(r.get_stats())
+        expected = {
+            None: ((u'Počet kontaktů (z toho přímých)', '1 (1)'), ),
+            TimeDotation: ((u'Celkov\xfd \u010das poskytnut\xfdch v\xfdkon\u016f (hod)', '0.50'),),
+        }
+        self.assertEqual(stats[None], expected[None])
+        self.assertEqual(stats[TimeDotation], expected[TimeDotation])
 
     def test_filter_by_town(self):
         filtering = {'towns': [self.town2]}

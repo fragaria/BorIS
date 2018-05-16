@@ -1,0 +1,52 @@
+[
+  {
+    "fields": {
+      "minutes": 5,
+      "default_minutes": 5,
+      "content_type": 29
+    },
+    "description": "HarmReduction",
+    "model": "services.timedotation",
+    "pk": 6
+  },
+  {
+    "fields": {
+      "minutes": 5,
+      "default_minutes": 5,
+      "content_type": 32
+    },
+    "description": "InformationService",
+    "model": "services.timedotation",
+    "pk": 5
+  },
+  {
+    "fields": {
+      "minutes": 30,
+      "default_minutes": 30,
+      "content_type": 33
+    },
+    "description": "SocialWork",
+    "model": "services.timedotation",
+    "pk": 4
+  },
+  {
+    "fields": {
+      "minutes": 30,
+      "default_minutes": 30,
+      "content_type": 34
+    },
+    "description": "UtilityWork",
+    "model": "services.timedotation",
+    "pk": 3
+  },
+  {
+    "fields": {
+      "minutes": 60,
+      "default_minutes": 60,
+      "content_type": 36
+    },
+    "description": "Approach",
+    "model": "services.timedotation",
+    "pk": 2
+  }
+]
