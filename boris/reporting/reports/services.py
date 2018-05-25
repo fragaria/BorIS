@@ -52,11 +52,11 @@ class ServiceReport(BaseReport):
             service_records = service.objects.filter(**filtering)
             keys = []
             for service_record in service_records:
-                service_key = (service.content_type, service_record.encounter)
+                service_key = service_record.encounter.id
                 if service_key not in keys:
                     total_time_spent += service_record.cast().__class__.get_time_spent(service_record,
-                                                                      indirect_content_types,
-                                                                      no_subservice_content_types)
+                                                                                       indirect_content_types,
+                                                                                       no_subservice_content_types)
                     keys.append(service_key)
         time_stats = (u'Celkový čas poskytnutých výkonů (hod)', '%.2f' % (total_time_spent/60.0))
         return [(TimeDotation, (time_stats,))]

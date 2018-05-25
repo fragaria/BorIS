@@ -17,7 +17,7 @@ from boris.services.models import (Encounter, Approach, ContactWork,
                                    HarmReduction, BasicMedicalTreatment, InformationService,
                                    IncomeExamination, DiseaseTest, HygienicService, FoodService,
                                    WorkTherapy, PostUsage, UrineTest, GroupCounselling, WorkWithFamily,
-                                   WorkTherapyMeeting, UtilityWork, AsistService, Service)
+                                   WorkTherapyMeeting, UtilityWork, AsistService, Service, service_list)
 from boris.syringes.models import SyringeCollection
 
 _CONTENT_TYPES = {}
@@ -238,17 +238,23 @@ class GovCouncilReport(BaseReport):
         return int(round(float(sum(ages)) / len(ages))) if ages else 0
 
     def _get_services_time(self):
-        sum = 0
+        services = [service for service in service_list()
+                    if service.service.include_in_reports]
+        filtering = self.__default_service_filtering()
         indirect_content_types = get_indirect_content_types()
         no_subservice_content_types = get_no_subservice_content_types()
-        keys = []
-        for service in self._get_services(Service):
-            service_key = (service.content_type, service.encounter)
-            # prevent double count in case of same service class being multiple on one encounter
-            if service_key not in keys:
-                sum += service.cast().__class__.get_time_spent(service, indirect_content_types, no_subservice_content_types)
-                keys.append(service_key)
-        return sum
+        total_time_spent = 0
+        for service in services:
+            service_records = service.objects.filter(**filtering)
+            keys = []
+            for service_record in service_records:
+                service_key = service_record.encounter.id
+                if service_key not in keys:
+                    total_time_spent += service_record.cast().__class__.get_time_spent(service_record,
+                                                                                       indirect_content_types,
+                                                                                       no_subservice_content_types)
+                    keys.append(service_key)
+        return total_time_spent
 
     def __default_service_filtering(self, filtering=None):
         if filtering is None:
