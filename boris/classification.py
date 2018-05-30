@@ -78,6 +78,7 @@ DRUGS = Choices( # (Numbers reflect the old drug ids.)
     (22, 'VENDAL', u'Vendal'),
     (23, 'LSD', u'LSD'),
     (24, 'PSYLOCIBE', u'Lysohlávky'),
+    (28, 'FENTANYL', u'Fentanyl'),
     (25, 'UNKNOWN', u'Neznámo'),
     (26, 'PATHOLOGICAL_GAMBLING', u'Patologické hráčství'),
     (27, 'OTHER_NON_SUBSTANCE_ADDICTION', u'Jiná nelátková závislost'),

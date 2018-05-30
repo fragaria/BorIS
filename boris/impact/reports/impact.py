@@ -105,7 +105,7 @@ class ImpactClient(ImpactReport):
             'heroin': drug(DRUGS.HEROIN),
             'buprenorfin': drug(DRUGS.SUBUTEX_LEGAL, DRUGS.SUBUTEX_ILLEGAL, DRUGS.SUBOXONE),
             'metadon': drug(DRUGS.METHADONE),
-            'opiáty': drug(DRUGS.VENDAL, DRUGS.RAW_OPIUM, DRUGS.BRAUN),
+            'opiáty': drug(DRUGS.VENDAL, DRUGS.RAW_OPIUM, DRUGS.BRAUN, DRUGS.FENTANYL),
             'pervitin': drug(DRUGS.METHAMPHETAMINE),
             'kokain/crack': drug(DRUGS.COCAINE),
             'kanabinoidy': drug(DRUGS.THC),

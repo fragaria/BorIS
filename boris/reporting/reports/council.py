@@ -282,7 +282,7 @@ class GovCouncilReport(BaseReport):
                 u'základní droga metadon - zneužívaný (non lege artis, injekčně, bez indikace lékařem, z černého trhu atd.)'),
              drug(DRUGS.METHADONE)),
             (_(u'1.4'), _(u'základní droga jiné opiáty (opium, morfium, fentanyl, tramadol etc.)'),
-             drug(DRUGS.VENDAL, DRUGS.RAW_OPIUM, DRUGS.BRAUN)),
+             drug(DRUGS.VENDAL, DRUGS.RAW_OPIUM, DRUGS.BRAUN, DRUGS.FENTANYL)),
             (_(u'1.5'), _(u'základní droga pervitin'), drug(DRUGS.METHAMPHETAMINE)),
             (_(u'1.6'), _(u'základní droga kokain/crack'), drug(DRUGS.COCAINE)),
             (_(u'1.7'), _(u'základní droga kanabinoidy'), drug(DRUGS.THC)),
