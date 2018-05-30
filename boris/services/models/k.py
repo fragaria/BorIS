@@ -110,40 +110,23 @@ class InternetUsage(Service):
         limited_to = ('Client', )
 
 
-class WorkTherapy(Service):
+class Therapy(Service):
+    work_therapy = models.BooleanField(default=False,
+                                  verbose_name=_(u'a) Pracovní terapie'))
+    therapy_meeting = models.BooleanField(default=False,
+                                          verbose_name=_(u'b) Schůzka pracovní terapie'))
+    community_work = models.BooleanField(default=False,
+                                         verbose_name=_(u'c) Obecně prospěšné práce'))
+
     class Meta:
         app_label = 'services'
-        proxy = True
         verbose_name = _(u'Pracovní terapie (samospráva)')
         verbose_name_plural = _(u'Pracovní terapie (samospráva)')
 
     class Options:
         codenumber = 19
-        limited_to = ('Client', )
-
-
-class WorkTherapyMeeting(Service):
-    class Meta:
-        app_label = 'services'
-        proxy = True
-        verbose_name = _(u'Schůzka pracovní terapie (samosprávy)')
-        verbose_name_plural = _(u'Schůzka pracovní terapie (samosprávy)')
-
-    class Options:
-        codenumber = 20
-        limited_to = ('Client', )
-
-
-class CommunityWork(Service):
-    class Meta:
-        app_label = 'services'
-        proxy = True
-        verbose_name = _(u'Obecně prospěšné práce')
-        verbose_name_plural = _(u'Obecně prospěšné práce')
-
-    class Options:
-        codenumber = 21
-        limited_to = ('Client', )
+        agg_type = SUBSERVICES_AGGREGATION_SUM
+        agg_fields = ['work_therapy', 'therapy_meeting', 'community_work']
 
 
 class PostUsage(Service):

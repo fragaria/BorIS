@@ -404,18 +404,6 @@ class IndividualCounselling(Service):
         return chain(((cls.service.title, sum(stat[1] for stat in boolean_stats)),),boolean_stats,)
 
 
-class Address(Service):
-    class Meta:
-        app_label = 'services'
-        proxy = True
-        verbose_name = _(u'Oslovení')
-        verbose_name_plural = _(u'Oslovení')
-
-    class Options:
-        limited_to = ('')
-        codenumber = 200
-
-
 class ApproachServiceForm(ServiceForm):
     def __init__(self, encounter, *args, **kwargs):
         super(ApproachServiceForm, self).__init__(encounter, *args, **kwargs)
@@ -517,3 +505,20 @@ class WorkForClient(Service):
                 ((cls.service.title, sum(stat[1] for stat in boolean_stats)),),
                 boolean_stats,
         )
+
+
+# deleted models are kept here to prevent errors in migrations
+class WorkTherapy(Service):
+    pass
+
+
+class WorkTherapyMeeting(Service):
+    pass
+
+
+class CommunityWork(Service):
+    pass
+
+
+class Address(Service):
+    pass

@@ -15,8 +15,8 @@ from boris.services.models import (Encounter, Approach, ContactWork,
                                    IncomeFormFillup, IndividualCounselling, CrisisIntervention, SocialWork,
                                    HarmReduction, BasicMedicalTreatment, InformationService,
                                    IncomeExamination, DiseaseTest, HygienicService, FoodService,
-                                   WorkTherapy, PostUsage, UrineTest, GroupCounselling, WorkWithFamily,
-                                   WorkTherapyMeeting, UtilityWork, AsistService, Service, service_list, TimeDotation,
+                                   Therapy, PostUsage, UrineTest, GroupCounselling, WorkWithFamily,
+                                   UtilityWork, AsistService, Service, service_list, TimeDotation,
                                    SUBSERVICES_AGGREGATION_NO_SUBSERVICES)
 from boris.syringes.models import SyringeCollection
 
@@ -383,7 +383,7 @@ class GovCouncilReport(BaseReport):
             (_(u'Skupiny pro rodiče a osoby blízké klientovi'),
              '', ''),
             (_(u'Pracovní terapie'),
-             clients([WorkTherapy, WorkTherapyMeeting]), services([WorkTherapy, WorkTherapyMeeting])),
+             clients(Therapy), services(Therapy)),
             (_(u'Sociální práce (odkazy, asistence, soc.-právní pomoc, case management)'),
              self._get_direct_client_count(SocialWork) + clients([AsistService, UtilityWork]), services([AsistService]) + self.get_direct_subservice_count(SocialWork) + subservices(UtilityWork)),
             (_(u'Práce s rodinou'),
