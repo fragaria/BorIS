@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-from django.conf import settings
 from django.template import loader
 from django.template.context import RequestContext
 
 from boris.reporting.core import BaseReport
-from boris.reporting.reports.council import (get_indirect_content_types, get_no_subservice_content_types)
 from boris.services.models import service_list, Encounter, TimeDotation
 
 
@@ -45,20 +43,12 @@ class ServiceReport(BaseReport):
     def _get_service_time(self):
         services = self._get_services()
         filtering = self.filtering
-        indirect_content_types = get_indirect_content_types()
-        no_subservice_content_types = get_no_subservice_content_types()
+
         total_time_spent = 0
         for service in services:
-            service_records = service.objects.filter(**filtering)
-            keys = []
-            for service_record in service_records:
-                service_key = service_record.encounter.id
-                if service_key not in keys:
-                    total_time_spent += service_record.cast().__class__.get_time_spent(service_record,
-                                                                                       indirect_content_types,
-                                                                                       no_subservice_content_types)
-                    keys.append(service_key)
-        time_stats = (u'Celkový čas poskytnutých výkonů (hod)', '%.2f' % (total_time_spent/60.0))
+            enc_ids = service.objects.filter(**filtering).values_list('encounter__id', flat=True)
+            total_time_spent += TimeDotation.time_spent_on_encounters(enc_ids, service)
+        time_stats = (u'Celkový čas poskytnutých výkonů (hod)', '%.2f' % (float(total_time_spent)/60.0))
         return [(TimeDotation, (time_stats,))]
 
     def get_stats(self):

@@ -5,7 +5,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from boris.services.models.basic import _boolean_stats
-from .core import Service
+from .core import Service, SUBSERVICES_AGGREGATION_CUSTOM, SUBSERVICES_AGGREGATION_SUM
 
 
 def _group_service_title(instance, service):
@@ -32,6 +32,7 @@ class GroupCounselling(Service):
     class Options:
         codenumber = 15
         limited_to = ('Client', )
+        agg_type = SUBSERVICES_AGGREGATION_CUSTOM
 
     @classmethod
     def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
@@ -75,18 +76,20 @@ class HygienicService(Service):
 
     class Options:
         codenumber = 17
+        agg_type = SUBSERVICES_AGGREGATION_SUM
+        agg_fields = ['clothing_wash', 'shower', 'social_clothing']
         form_template = 'services/forms/small_cells.html'
         limited_to = ('Client', )
         fieldsets = (
             (None, {
-                'fields': ('encounter', 'clothing_wash', 'shower', 'social_clothing'),
+                'fields': ['encounter', ] + agg_fields,
                 'classes': ('inline',)
             }),
         )
 
     @classmethod
     def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
-        boolean_stats = _boolean_stats(cls, filtering, ('clothing_wash', 'shower', 'social_clothing'))
+        boolean_stats = _boolean_stats(cls, filtering, cls.Options.agg_fields)
         if only_subservices:
             return chain(boolean_stats)
         return chain( # The total count is computed differently than usually.
@@ -192,17 +195,19 @@ class UrineTest(Service):
 
     class Options:
         codenumber = 25
+        agg_type = SUBSERVICES_AGGREGATION_SUM
+        agg_fields = ['drug_test', 'pregnancy_test']
         limited_to = ('Client', )
         fieldsets = (
             (None, {
-                'fields': ('encounter', 'drug_test', 'pregnancy_test'),
+                'fields': ['encounter', ] + agg_fields,
                 'classes': ('inline',)
             }),
         )
 
     @classmethod
     def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
-        boolean_stats = _boolean_stats(cls, filtering, ('drug_test', 'pregnancy_test'))
+        boolean_stats = _boolean_stats(cls, filtering, cls.Options.agg_fields)
         if only_subservices:
             return chain(boolean_stats)
         return chain( # The total count is computed differently than usually.

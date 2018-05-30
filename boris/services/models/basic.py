@@ -11,7 +11,6 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Sum, Max, Avg
 from django.utils.translation import ugettext_lazy as _, ugettext
-from django.contrib.contenttypes.models import ContentType
 from django.forms.widgets import HiddenInput
 
 from model_utils import Choices
@@ -20,7 +19,8 @@ from fragapy.fields.models import MultiSelectField
 
 from boris.classification import DISEASES, DISEASE_TEST_SIGN
 from boris.services.forms import serviceform_factory, ServiceForm
-from .core import Service, TimeDotation
+from .core import Service, SUBSERVICES_AGGREGATION_NO_SUBSERVICES, SUBSERVICES_AGGREGATION_MULTICHOICE, \
+    SUBSERVICES_AGGREGATION_CUSTOM, SUBSERVICES_AGGREGATION_SUM
 
 
 def _boolean_stats(model, filtering, field_names):
@@ -80,6 +80,7 @@ class HarmReduction(Service):
 
     class Options:
         codenumber = 3
+        agg_type = SUBSERVICES_AGGREGATION_NO_SUBSERVICES
         title = _(u'Výměnný a jiný harm reduction program')
         form_template = 'services/forms/small_cells.html'
         limited_to = ('Client',)
@@ -161,6 +162,7 @@ class DiseaseTest(Service):
         verbose_name_plural = _(u'Testování infekčních nemocí')
 
     class Options:
+        agg_type = SUBSERVICES_AGGREGATION_NO_SUBSERVICES
         codenumber = 8
         limited_to = ('Client',)
 
@@ -206,6 +208,8 @@ class AsistService(Service):
 
     class Options:
         codenumber = 9
+        agg_type = SUBSERVICES_AGGREGATION_MULTICHOICE
+        agg_fields = ['where']
         limited_to = ('Client',)
 
     def _prepare_title(self):
@@ -235,19 +239,19 @@ class InformationService(Service):
 
     class Options:
         codenumber = 10
+        agg_type = SUBSERVICES_AGGREGATION_CUSTOM
+        agg_fields = ['safe_usage', 'safe_sex', 'medical', 'socio_legal', 'cure_possibilities', 'literature', 'other']
         form_template = 'services/forms/small_cells.html'
         fieldsets = (
             (None, {
-                'fields': ('encounter', 'safe_usage', 'safe_sex', 'medical',
-                    'socio_legal', 'cure_possibilities', 'literature', 'other'),
+                'fields': ['encounter', ] + agg_fields,
                 'classes': ('inline',)
             }),
         )
 
     @classmethod
     def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
-        boolean_stats = _boolean_stats(cls, filtering, ('safe_usage', 'safe_sex',
-            'medical', 'socio_legal', 'cure_possibilities', 'literature', 'other'))
+        boolean_stats = _boolean_stats(cls, filtering, cls.Options.agg_fields)
         if only_subservices:
             return chain(boolean_stats)
         return chain( # The total count is computed differently than usually.
@@ -301,18 +305,18 @@ class SocialWork(Service):
     class Options:
         codenumber = 6
         limited_to = ('Client',)
+        agg_type = SUBSERVICES_AGGREGATION_CUSTOM
+        agg_fields = ['social', 'legal', 'service_mediation', 'assistance_service', 'probation_supervision', 'other']
         fieldsets = (
             (None, {
-                'fields': ('encounter', 'social', 'legal', 'service_mediation',
-                            'assistance_service', 'probation_supervision', 'other'),
+                'fields': ['encounter', ] + agg_fields,
                 'classes': ('inline',)
             }),
         )
 
     @classmethod
     def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
-        boolean_stats = _boolean_stats(cls, filtering, ('social', 'legal', 'service_mediation',
-                                                        'assistance_service', 'probation_supervision', 'other'))
+        boolean_stats = _boolean_stats(cls, filtering, cls.Options.agg_fields)
         if only_subservices:
             return chain(boolean_stats)
         return chain(((cls.service.title, sum(stat[1] for stat in boolean_stats)),),boolean_stats,)
@@ -330,6 +334,8 @@ class UtilityWork(Service):
 
     class Options:
         codenumber = 12
+        agg_type = SUBSERVICES_AGGREGATION_MULTICHOICE
+        agg_fields = ['refs']
 
     @classmethod
     def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
@@ -381,18 +387,18 @@ class IndividualCounselling(Service):
     class Options:
         codenumber = 5
         limited_to = ('Client',)
+        agg_type = SUBSERVICES_AGGREGATION_CUSTOM
+        agg_fields = ['general', 'structured', 'pre_treatment', 'guarantee_interview', 'advice_to_parents']
         fieldsets = (
             (None, {
-                'fields': ('encounter', 'general', 'structured',
-                           'pre_treatment', 'guarantee_interview', 'advice_to_parents'),
+                'fields': ['encounter', ] + agg_fields,
                 'classes': ('inline',)
             }),
         )
 
     @classmethod
     def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
-        boolean_stats = _boolean_stats(cls, filtering, ('general', 'structured',
-                                                        'pre_treatment', 'guarantee_interview', 'advice_to_parents'))
+        boolean_stats = _boolean_stats(cls, filtering, cls.Options.agg_fields)
         if only_subservices:
             return chain(boolean_stats)
         return chain(((cls.service.title, sum(stat[1] for stat in boolean_stats)),),boolean_stats,)
@@ -428,9 +434,11 @@ class Approach(Service):
 
     class Options:
         codenumber = 2
+        agg_type = SUBSERVICES_AGGREGATION_SUM
+        agg_fields = ['number_of_addressed', ]
         fieldsets = (
             (None, {
-                'fields': ('encounter','number_of_addressed'),
+                'fields': ['encounter', ] + agg_fields,
                 'classes': ('inline',)
             }),
         )
@@ -490,19 +498,19 @@ class WorkForClient(Service):
 
     class Options:
         codenumber = 28
+        agg_type = SUBSERVICES_AGGREGATION_SUM
+        agg_fields = ['contact_institution', 'message', 'search_information', 'case_conference']
         form_template = 'services/forms/small_cells.html'
         fieldsets = (
             (None, {
-                'fields': ('encounter', 'contact_institution', 'message', 'search_information',
-                    'case_conference'),
+                'fields': ['encounter', ] + agg_fields,
                 'classes': ('inline',)
             }),
         )
 
     @classmethod
     def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
-        boolean_stats = _boolean_stats(cls, filtering, ('contact_institution', 'message',
-            'search_information', 'case_conference'))
+        boolean_stats = _boolean_stats(cls, filtering, cls.Options.agg_fields)
         if only_subservices:
             return chain(boolean_stats)
         return chain( # The total count is computed differently than usually.

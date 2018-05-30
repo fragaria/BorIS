@@ -9,7 +9,7 @@ import operator
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import models
+from django.db import models, connection
 from django.db.models import SET_NULL
 from django.utils.encoding import force_unicode
 from django.utils.functional import curry
@@ -292,24 +292,15 @@ class Service(TimeStampedModel):
         return any([f.editable for f in self._meta.fields if f.name not in skip_fields])
 
     @classmethod
-    def get_time_spent(cls, service, indirect_content_types, no_subservice_content_types):
+    def get_time_spent(cls, content_type, filtering):
         """
-        Returns count of minutes spent on `service` type of service during it's encounter.
-        In case the encounter has multiple subservices of the same type, all are counted, not just `service`.
+        Returns count of minutes spent on `service` type of service during encounters.
         """
-        try:
-            filtering = {'encounter': service.encounter}
-            if service.content_type in no_subservice_content_types:
-                return TimeDotation.get_time_for_type(service.content_type) * 1
-            subservices = cls._get_stats(filtering, only_subservices=True, only_basic=True)
-            subservices_count = sum([s[1] for s in subservices])
-            if service.encounter.is_by_phone and service.content_type in indirect_content_types:
-                return TimeDotation.get_time_for_type(ContentType.objects.get_for_model(IndirectService)) * subservices_count
-            return TimeDotation.get_time_for_type(service.content_type) * subservices_count
-        except Exception as e:
-            if ' matching query does not exist' in e.message:
-                return 0
-            raise e
+        if hasattr(cls.Options, 'agg_type') and cls.Options.agg_type == SUBSERVICES_AGGREGATION_NO_SUBSERVICES:
+            return TimeDotation.get_time_for_type(content_type) * 1
+        subservices = cls._get_stats(filtering, only_subservices=True, only_basic=True)
+        subservices_count = sum([s[1] for s in subservices])
+        return TimeDotation.get_time_for_type(content_type) * subservices_count
 
     @classmethod
     def class_name(cls):
@@ -335,6 +326,7 @@ class IndirectService(Service):
     # dummy class to enable setting timedotation for indirect encounters
     class Meta:
         app_label = 'services'
+        proxy = True
         verbose_name = _(u'Telefonické, písemné a internetové p.')
         verbose_name_plural = _(u'Telefonické, písemné a internetové p.')
 
@@ -370,6 +362,18 @@ def get_model_for_class_name(class_name):
     raise ValueError('Service `%s` is not registered' % class_name)
 
 
+SUBSERVICES_AGGREGATION_SUM = 'sum'
+SUBSERVICES_AGGREGATION_MULTICHOICE = 'multichoice'
+SUBSERVICES_AGGREGATION_CUSTOM = 'custom'
+SUBSERVICES_AGGREGATION_NO_SUBSERVICES = 'no_subservices'
+
+
+SUM_SUBSERVICES_QUERY = 'SELECT SUM(%s) as total FROM %s sub JOIN services_service s ON (sub.service_ptr_id = s.id) ' \
+                        'WHERE s.encounter_id IN (%s)'
+SUM_MULTICHOICE_QUERY = 'SELECT `%s` as total FROM %s sub JOIN services_service s ON (sub.service_ptr_id = s.id) ' \
+                        'WHERE s.encounter_id IN (%s)'
+
+
 class TimeDotation(models.Model, AdminLinkMixin):
     content_type = models.ForeignKey(ContentType, editable=False, verbose_name=_(u'Typ služby'))
     minutes = models.PositiveIntegerField(verbose_name=_(u'Počet minut'))
@@ -386,3 +390,53 @@ class TimeDotation(models.Model, AdminLinkMixin):
             return TimeDotation.objects.get(content_type_id=ct.id).minutes
         except TimeDotation.DoesNotExist:
             return 0
+
+    @classmethod
+    def time_spent_on_encounters(cls, ids, service):
+        if len(ids) == 0:
+            return 0
+
+        ct = ContentType.objects.get_for_model(service, for_concrete_model=False)
+
+        if hasattr(service.Options, 'agg_type'):
+            with connection.cursor() as cursor:
+                if service.Options.agg_type == SUBSERVICES_AGGREGATION_SUM:
+                    fields = ' + '.join(service.Options.agg_fields)
+                    cursor.execute(SUM_SUBSERVICES_QUERY % (fields,
+                                                            service._meta.db_table,
+                                                            ','.join([str(id) for id in ids])))
+                    subservices_count = cursor.fetchone()[0]
+                    if subservices_count is not None:
+                        return cls.get_time_for_type(ct) * subservices_count
+                elif service.Options.agg_type == SUBSERVICES_AGGREGATION_MULTICHOICE:
+                    assert len(service.Options.agg_fields) == 1
+                    field = service.Options.agg_fields[0]
+                    cursor.execute(SUM_MULTICHOICE_QUERY % (field,
+                                                            service._meta.db_table,
+                                                            ','.join([str(id) for id in ids])))
+                    selected_choices = cursor.fetchall()
+                    selected_choices_count = sum([len(choices[0].split(',')) for choices in selected_choices
+                                                  if choices[0] != ''])
+                    return cls.get_time_for_type(ct) * selected_choices_count
+                elif service.Options.agg_type == SUBSERVICES_AGGREGATION_CUSTOM:
+                    from boris.reporting.reports.council import get_indirect_services
+                    if service in get_indirect_services():
+                        direct_time = TimeDotation._time_spent_filtering(ids, ct, service, False)
+                        indirect_ct = ContentType.objects.get_for_model(IndirectService, for_concrete_model=False)
+                        indirect_time = TimeDotation._time_spent_filtering(ids, indirect_ct, service, True)
+                        return direct_time + indirect_time
+                    else:
+                        return TimeDotation._time_spent_filtering(ids, ct, service)
+
+        if (hasattr(service._meta, 'proxy') and service._meta.proxy) or \
+           (hasattr(service.Options, 'agg_type') and service.Options.agg_type) == SUBSERVICES_AGGREGATION_NO_SUBSERVICES:
+            return cls.get_time_for_type(ct) * len(ids)
+
+        return 0
+
+    @classmethod
+    def _time_spent_filtering(cls, ids, indirect_ct, service, is_by_phone=None):
+        filtering = {'encounter__id__in': ids}
+        if is_by_phone is not None:
+            filtering.update({'encounter__is_by_phone': is_by_phone})
+        return service.get_time_spent(indirect_ct, filtering)

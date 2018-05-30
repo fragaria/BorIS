@@ -2,7 +2,6 @@
 """Report for the Czech Government Council for Drug Policy Coordination."""
 import collections
 from datetime import datetime, date, time
-from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q, Sum
 from django.template import loader
 from django.template.context import RequestContext
@@ -17,29 +16,20 @@ from boris.services.models import (Encounter, Approach, ContactWork,
                                    HarmReduction, BasicMedicalTreatment, InformationService,
                                    IncomeExamination, DiseaseTest, HygienicService, FoodService,
                                    WorkTherapy, PostUsage, UrineTest, GroupCounselling, WorkWithFamily,
-                                   WorkTherapyMeeting, UtilityWork, AsistService, Service, service_list)
+                                   WorkTherapyMeeting, UtilityWork, AsistService, Service, service_list, TimeDotation,
+                                   SUBSERVICES_AGGREGATION_NO_SUBSERVICES)
 from boris.syringes.models import SyringeCollection
 
-_CONTENT_TYPES = {}
+_SERVICES = {}
 
 
-def get_indirect_content_types():
+def get_indirect_services():
     # 'indirect' services done by phone are counted as IndirectService in regards to time dotations
-    if 'indirect' not in _CONTENT_TYPES:
-        _CONTENT_TYPES['indirect'] = [
-            ContentType.objects.get_for_model(cls)
-            for cls in (SocialWork, IndividualCounselling, InformationService)
+    if 'indirect' not in _SERVICES:
+        _SERVICES['indirect'] = [
+            SocialWork, IndividualCounselling, InformationService
         ]
-    return _CONTENT_TYPES['indirect']
-
-
-def get_no_subservice_content_types():
-    # 'no subservice' services count as 1 service disregarding selected subservices
-    if 'no_subservice' not in _CONTENT_TYPES:
-        _CONTENT_TYPES['no_subservice'] = [
-            ContentType.objects.get_for_model(cls) for cls in (HarmReduction,)
-        ]
-    return _CONTENT_TYPES['no_subservice']
+    return _SERVICES['indirect']
 
 
 class GovCouncilReport(BaseReport):
@@ -88,24 +78,22 @@ class GovCouncilReport(BaseReport):
     def _get_service_count_all(self):
         """Return the number of all performed services and subservices."""
         filtering = self.__default_service_filtering()
-        indirect_content_types = get_indirect_content_types()
-        no_subservice_content_types = get_no_subservice_content_types()
+        indirect_content_types = get_indirect_services()
         total_count = 0
         # prevents double-counting of a service
         content_types = []
         for service in self._get_services(Service):
-            content_type = [service.content_type]
+            content_type = service.content_type
             if content_type not in content_types:
                 subservices = service.cast().get_stats(filtering, only_subservices=True, only_basic=True)[1]
                 subservices_count = sum([list(s)[1] for s in subservices])
-                if service.encounter.is_by_phone and service.content_type in indirect_content_types:
+                if service.encounter.is_by_phone and service in indirect_content_types:
                     total_count += subservices_count
-                elif service.content_type in no_subservice_content_types:
+                elif hasattr(service.Options, 'agg_type') and service.Options.agg_type == SUBSERVICES_AGGREGATION_NO_SUBSERVICES:
                     total_count += 1
                 else:
                     total_count += subservices_count
-                if service.content_type not in no_subservice_content_types:
-                    content_types.append(content_type)
+                content_types.append(content_type)
         return total_count
 
     def get_direct_subservice_count(self, service_classes):
@@ -241,19 +229,11 @@ class GovCouncilReport(BaseReport):
         services = [service for service in service_list()
                     if service.service.include_in_reports]
         filtering = self.__default_service_filtering()
-        indirect_content_types = get_indirect_content_types()
-        no_subservice_content_types = get_no_subservice_content_types()
+
         total_time_spent = 0
         for service in services:
-            service_records = service.objects.filter(**filtering)
-            keys = []
-            for service_record in service_records:
-                service_key = service_record.encounter.id
-                if service_key not in keys:
-                    total_time_spent += service_record.cast().__class__.get_time_spent(service_record,
-                                                                                       indirect_content_types,
-                                                                                       no_subservice_content_types)
-                    keys.append(service_key)
+            enc_ids = service.objects.filter(**filtering).values_list('encounter__id', flat=True)
+            total_time_spent += TimeDotation.time_spent_on_encounters(enc_ids, service)
         return total_time_spent
 
     def __default_service_filtering(self, filtering=None):
@@ -471,7 +451,7 @@ class GovCouncilReport(BaseReport):
             (_(u'Adiktologická terapie skupinová, typ I. pro skupinu max. 9 osob (38026)'),
              '', ''),
             (_(u'Celkový počet/čas všech poskytnutných výkonů (hod)'),
-             u'', '%s / %.2f' % (self._get_service_count_all(), self._get_services_time() / 60.0)),
+             u'', '%s / %.2f' % (self._get_service_count_all(), float(self._get_services_time()) / 60.0)),
         ]
 
     def get_data(self):
