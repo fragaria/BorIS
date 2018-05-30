@@ -11,10 +11,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='indirectservice',
-            name='service_ptr',
-        ),
         migrations.DeleteModel(
             name='IndirectService',
         ),
