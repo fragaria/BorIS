@@ -19,6 +19,7 @@ def migrate_therapy(apps, schema_editor):
     WorkTherapyMeeting = apps.get_model("services", "WorkTherapyMeeting")
     CommunityWork = apps.get_model("services", "CommunityWork")
 
+    count = 0
     for service in WorkTherapy.objects.all():
         if service.content_type_id == ct_wt.id:
             s = Therapy()
@@ -30,6 +31,7 @@ def migrate_therapy(apps, schema_editor):
             s.content_type_id = ct.id
             s.save()
             service.delete()
+            count += 1
     for service in WorkTherapyMeeting.objects.all():
         if service.content_type_id == ct_wtm.id:
             s = Therapy()
@@ -41,6 +43,7 @@ def migrate_therapy(apps, schema_editor):
             s.content_type_id = ct.id
             s.save()
             service.delete()
+            count += 1
     for service in CommunityWork.objects.all():
         if service.content_type_id == ct_cw.id:
             s = Therapy()
@@ -52,6 +55,9 @@ def migrate_therapy(apps, schema_editor):
             s.content_type_id = ct.id
             s.save()
             service.delete()
+            count += 1
+
+    print 'Successfully migrated %d services of type Therapy' % count
 
 
 def reverse(apps, schema_editor):
