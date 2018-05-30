@@ -2,7 +2,7 @@
 
 from datetime import date
 import sys
-
+from django.contrib.contenttypes.models import ContentType
 from django.core.handlers.wsgi import WSGIRequest
 from django.core.servers.basehttp import ServerHandler
 from django.http import Http404
@@ -15,7 +15,7 @@ from boris.services import views
 from boris.services.models import (Approach, UtilityWork, SocialWork,
                                    InformationService, HarmReduction, service_list, Encounter, TimeDotation)
 from boris.services.views import HandleForm
-from boris.tests.helpers import (get_tst_town, get_tst_client, create_service, InitialDataTestCase)
+from boris.tests.helpers import (get_tst_town, get_tst_client, create_service)
 
 
 def normalize_stats(stats):
@@ -31,7 +31,7 @@ def normalize_stats(stats):
     return clean_stats
 
 
-class TestServiceReports(InitialDataTestCase):
+class TestServiceReports(TestCase):
 
     maxDiff = None
 
@@ -42,6 +42,7 @@ class TestServiceReports(InitialDataTestCase):
         TimeDotation.objects.all().delete()
 
     def setUp(self):
+        self.load_time_dotations()
         drug = DRUGS.HEROIN
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
@@ -57,6 +58,17 @@ class TestServiceReports(InitialDataTestCase):
         create_service(InformationService, self.client1, date(2011, 11, 1), self.town1)
         harm_reduction_kwargs = {'in_count': 87, 'condoms': True}
         create_service(HarmReduction, self.client1, date(2011, 11, 1), self.town1, harm_reduction_kwargs)
+
+    def load_time_dotations(self):
+        self.load_time_dotation(HarmReduction, 5)
+        self.load_time_dotation(InformationService, 5)
+        self.load_time_dotation(SocialWork, 30)
+        self.load_time_dotation(UtilityWork, 30)
+        self.load_time_dotation(Approach, 60)
+
+    def load_time_dotation(self, model, minutes):
+        ct = ContentType.objects.get_for_model(model, for_concrete_model=False)
+        TimeDotation.objects.get_or_create(content_type=ct, minutes=minutes, default_minutes=minutes)
 
     def test_no_filter(self):
         filtering = {}
