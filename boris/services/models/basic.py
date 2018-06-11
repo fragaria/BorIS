@@ -509,16 +509,24 @@ class WorkForClient(Service):
 
 # deleted models are kept here to prevent errors in migrations
 class WorkTherapy(Service):
-    pass
+    class Options:
+        is_available = lambda person: False
+        include_in_reports = False
 
 
 class WorkTherapyMeeting(Service):
-    pass
+    class Options:
+        is_available = lambda person: False
+        include_in_reports = False
 
 
 class CommunityWork(Service):
-    pass
+    class Options:
+        include_in_reports = False
+        is_available = lambda person: False
 
 
 class Address(Service):
-    pass
+    class Options:
+        include_in_reports = False
+        is_available = lambda person: False
