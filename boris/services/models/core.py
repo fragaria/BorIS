@@ -288,7 +288,9 @@ class Service(TimeStampedModel):
         Returns True if this service is user-editable - if it has something
         what a user can change.
         """
-        skip_fields = ('encounter', 'id', 'service_ptr', 'number_of_addressed')
+        skip_fields = ['encounter', 'id', 'service_ptr']
+        if not hasattr(self.encounter.person, 'anonymous'):
+            skip_fields += ['number_of_addressed']
         return any([f.editable for f in self._meta.fields if f.name not in skip_fields])
 
     @classmethod
