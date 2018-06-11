@@ -67,9 +67,9 @@ class AnonymousAggregation(NonDistinctCountAggregation, EncounterAggregation):
     }
 
 
-class AllApproaches(ServiceAggregation):
+class AllApproaches(ServiceAggregation, SumAggregation):
     title = _(u'Počet oslovených')
-    aggregation_dbcol = 'id'
+    aggregation_dbcol = 'grouping_constant'
     filtering = {'content_type_model': 'approach'}
 
 

@@ -36,13 +36,14 @@ SELECT
 	MONTH(services_encounter.performed_on) AS month,
 	clients_client.person_ptr_id is NOT NULL AS is_client,
 	clients_anonymous.person_ptr_id IS NOT NULL AS is_anonymous,
-	1 AS grouping_constant
+	COALESCE (services_approach.number_of_addressed, 1) AS grouping_constant
 FROM
 	services_service
 	JOIN services_encounter ON (services_service.encounter_id = services_encounter.id)
 	JOIN django_content_type ON (services_service.content_type_id = django_content_type.id)
 	LEFT OUTER JOIN clients_client ON (services_encounter.person_id = clients_client.person_ptr_id)
 	LEFT OUTER JOIN clients_anonymous ON (services_encounter.person_id = clients_anonymous.person_ptr_id)
+	LEFT OUTER JOIN services_approach ON (services_service.id = services_approach.service_ptr_id)
 );
 
 
