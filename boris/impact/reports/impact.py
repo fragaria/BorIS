@@ -24,9 +24,12 @@ class ImpactReport(BaseImpact, GovCouncilReport):
     description = u'Podklady pro dopadovou zprávu pro koordinaci protidrogové politiky.'
 
     all_towns = Town.objects.all()
-    first_contact = Encounter.objects.order_by('performed_on')[0] if Encounter.objects.order_by('performed_on') else None
+    first_contact = None
 
     def __init__(self, date_from=None, date_to=None, towns=None):
+        if Encounter.objects.count():
+            self.first_contact = Encounter.objects.order_by('performed_on')[0]
+
         if date_from is None:
             date_from = self.first_contact.performed_on if self.first_contact is not None else None
         if date_to:
