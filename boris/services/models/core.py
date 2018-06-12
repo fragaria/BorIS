@@ -334,6 +334,7 @@ class IndirectService(Service):
 
     class Options:
         is_available = lambda person: False
+        codenumber = 13
 
 
 def service_list(person=None, diseases_last=False):
