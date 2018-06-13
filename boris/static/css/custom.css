@@ -161,7 +161,7 @@ header#grp-header #grp-navigation .grp-collapse .grp-open .grp-collapse-handler 
 }
 
 #grp-content { top: 0; }
-@media screen and (max-width: 1300px) {
+@media screen and (max-width: 1395px) {
     #grp-content {
         top: 30px;
     }
