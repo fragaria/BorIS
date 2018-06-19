@@ -128,6 +128,16 @@ class Therapy(Service):
         agg_type = SUBSERVICES_AGGREGATION_SUM
         agg_fields = ['work_therapy', 'therapy_meeting', 'community_work']
 
+    @classmethod
+    def _get_stats(cls, filtering, only_subservices=False, only_basic=False):
+        boolean_stats = _boolean_stats(cls, filtering, cls.Options.agg_fields)
+        if only_subservices:
+            return chain(boolean_stats)
+        return chain( # The total count is computed differently than usually.
+                ((cls.service.title, sum(stat[1] for stat in boolean_stats)),),
+                boolean_stats,
+        )
+
 
 class PostUsage(Service):
     class Meta:
