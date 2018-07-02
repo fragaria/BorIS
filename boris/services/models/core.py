@@ -422,14 +422,7 @@ class TimeDotation(models.Model, AdminLinkMixin):
                                                   if choices[0] != ''])
                     return cls.get_time_for_type(ct) * selected_choices_count
                 elif service.Options.agg_type == SUBSERVICES_AGGREGATION_CUSTOM:
-                    from boris.reporting.reports.council import get_indirect_services
-                    if service in get_indirect_services():
-                        direct_time = TimeDotation._time_spent_filtering(ids, ct, service, False)
-                        indirect_ct = ContentType.objects.get_for_model(IndirectService, for_concrete_model=False)
-                        indirect_time = TimeDotation._time_spent_filtering(ids, indirect_ct, service, True)
-                        return direct_time + indirect_time
-                    else:
-                        return TimeDotation._time_spent_filtering(ids, ct, service)
+                    return TimeDotation._time_spent_filtering(ids, ct, service)
 
         if (hasattr(service._meta, 'proxy') and service._meta.proxy) or \
            (hasattr(service.Options, 'agg_type') and service.Options.agg_type) == SUBSERVICES_AGGREGATION_NO_SUBSERVICES:
@@ -438,8 +431,6 @@ class TimeDotation(models.Model, AdminLinkMixin):
         return 0
 
     @classmethod
-    def _time_spent_filtering(cls, ids, indirect_ct, service, is_by_phone=None):
+    def _time_spent_filtering(cls, ids, ct, service):
         filtering = {'encounter__id__in': ids}
-        if is_by_phone is not None:
-            filtering.update({'encounter__is_by_phone': is_by_phone})
-        return service.get_time_spent(indirect_ct, filtering)
+        return service.get_time_spent(ct, filtering)

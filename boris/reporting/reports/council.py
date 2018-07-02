@@ -23,15 +23,6 @@ from boris.syringes.models import SyringeCollection
 _SERVICES = {}
 
 
-def get_indirect_services():
-    # 'indirect' services done by phone are counted as IndirectService in regards to time dotations
-    if 'indirect' not in _SERVICES:
-        _SERVICES['indirect'] = [
-            SocialWork, IndividualCounselling, InformationService
-        ]
-    return _SERVICES['indirect']
-
-
 class GovCouncilReport(BaseReport):
     title = u'RVKPP'
     description = (u'Tiskový výstup pro Radu vlády '
@@ -78,7 +69,6 @@ class GovCouncilReport(BaseReport):
     def _get_service_count_all(self):
         """Return the number of all performed services and subservices."""
         filtering = self.__default_service_filtering()
-        indirect_content_types = get_indirect_services()
         total_count = 0
         # prevents double-counting of a service
         content_types = []
@@ -87,9 +77,7 @@ class GovCouncilReport(BaseReport):
             if content_type not in content_types:
                 subservices = service.cast().get_stats(filtering, only_subservices=True, only_basic=True)[1]
                 subservices_count = sum([list(s)[1] for s in subservices])
-                if service.encounter.is_by_phone and service in indirect_content_types:
-                    total_count += subservices_count
-                elif hasattr(service.Options, 'agg_type') and service.Options.agg_type == SUBSERVICES_AGGREGATION_NO_SUBSERVICES:
+                if hasattr(service.Options, 'agg_type') and service.Options.agg_type == SUBSERVICES_AGGREGATION_NO_SUBSERVICES:
                     total_count += 1
                 else:
                     total_count += subservices_count
@@ -369,7 +357,7 @@ class GovCouncilReport(BaseReport):
             (_(u'Vstupní zhodnocení stavu klienta'),
              clients(IncomeFormFillup), services(IncomeFormFillup)),
             (_(u'Individuální poradenství'),
-             self._get_direct_client_count(IndividualCounselling), self.get_direct_subservice_count(IndividualCounselling)),
+             clients(IndividualCounselling), subservices(IndividualCounselling)),
             (_(u'Individuální psychoterapie'),
              '', ''),
             (_(u'Skupinové poradenství'),
@@ -385,7 +373,7 @@ class GovCouncilReport(BaseReport):
             (_(u'Pracovní terapie'),
              clients(Therapy), services(Therapy)),
             (_(u'Sociální práce (odkazy, asistence, soc.-právní pomoc, case management)'),
-             self._get_direct_client_count(SocialWork) + clients([AsistService, UtilityWork]), services([AsistService]) + self.get_direct_subservice_count(SocialWork) + subservices(UtilityWork)),
+             clients([SocialWork, AsistService, UtilityWork]), services([AsistService]) + subservices([SocialWork, UtilityWork])),
             (_(u'Práce s rodinou'),
              clients(WorkWithFamily), services(WorkWithFamily)),
             (_(u'Socioterapie'),
@@ -409,7 +397,7 @@ class GovCouncilReport(BaseReport):
             (_(u'Korespondenční práce'),
              clients(PostUsage), services(PostUsage)),
             (_(u'Informační servis'),
-             self._get_direct_client_count(InformationService), self.get_direct_subservice_count(InformationService)),
+             clients(InformationService), subservices(InformationService)),
             (_(u'Edukativní program/beseda'),
              '', ''),
             (_(u'Distribuce harm reduction materiálu'),
