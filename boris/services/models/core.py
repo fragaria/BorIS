@@ -325,7 +325,6 @@ class Service(TimeStampedModel):
 
 
 class IndirectService(Service):
-    # dummy class to enable setting timedotation for indirect encounters
     class Meta:
         app_label = 'services'
         proxy = True

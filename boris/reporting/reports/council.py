@@ -17,7 +17,7 @@ from boris.services.models import (Encounter, Approach, ContactWork,
                                    IncomeExamination, DiseaseTest, HygienicService, FoodService,
                                    Therapy, PostUsage, UrineTest, GroupCounselling, WorkWithFamily,
                                    UtilityWork, AsistService, Service, service_list, TimeDotation,
-                                   SUBSERVICES_AGGREGATION_NO_SUBSERVICES)
+                                   SUBSERVICES_AGGREGATION_NO_SUBSERVICES, IndirectService)
 from boris.syringes.models import SyringeCollection
 
 _SERVICES = {}
@@ -161,15 +161,6 @@ class GovCouncilReport(BaseReport):
         filtering = self.__default_encounter_filtering(filtering)
         exclude = {'person__in': self._get_anonymous_ids()}
         return Encounter.objects.filter(**filtering).exclude(**exclude)
-
-    def _get_phone_advice_count(self):
-        sum = 0
-        for cls in (SocialWork, IndividualCounselling, InformationService):
-            filtering = {
-                'encounter__is_by_phone': True,
-            }
-            sum += self._get_subservice_count(cls, extra_filtering=filtering)
-        return sum
 
     def _get_performed_tests_count(self, disease):
         filtering = {'disease': disease}
@@ -393,7 +384,7 @@ class GovCouncilReport(BaseReport):
             (_(u'Základní zdravotní ošetření (vč. první pomoci)'),
              clients(BasicMedicalTreatment), services(BasicMedicalTreatment)),
             (_(u'Telefonické, písemné a internetové poradenství'),
-             'xxx', self._get_phone_advice_count()),
+             clients(IndirectService), subservices(IndirectService)),
             (_(u'Korespondenční práce'),
              clients(PostUsage), services(PostUsage)),
             (_(u'Informační servis'),
