@@ -2,7 +2,6 @@
 """Report for the Czech Government Council for Drug Policy Coordination."""
 import collections
 from datetime import datetime, date, time
-from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q, Sum
 from django.template import loader
 from django.template.context import RequestContext
@@ -12,33 +11,16 @@ from boris.classification import (DISEASES, DRUGS, DRUG_APPLICATION_TYPES,
     SEXES)
 from boris.clients.models import Client, Anonymous
 from boris.reporting.core import BaseReport
-from boris.services.models import (Encounter, Address, ContactWork,
+from boris.services.models import (Encounter, Approach, ContactWork,
                                    IncomeFormFillup, IndividualCounselling, CrisisIntervention, SocialWork,
                                    HarmReduction, BasicMedicalTreatment, InformationService,
                                    IncomeExamination, DiseaseTest, HygienicService, FoodService,
-                                   WorkTherapy, PostUsage, UrineTest, GroupCounselling, WorkWithFamily,
-                                   WorkTherapyMeeting, UtilityWork, AsistService, Service)
+                                   Therapy, PostUsage, UrineTest, GroupCounselling, WorkWithFamily,
+                                   UtilityWork, AsistService, Service, service_list, TimeDotation,
+                                   SUBSERVICES_AGGREGATION_NO_SUBSERVICES, IndirectService)
 from boris.syringes.models import SyringeCollection
 
-
-_CONTENT_TYPES = {}
-
-
-def get_indirect_content_types():
-    if 'indirect' not in _CONTENT_TYPES:
-        _CONTENT_TYPES['indirect'] = [
-            ContentType.objects.get_for_model(cls)
-            for cls in (SocialWork, IndividualCounselling, InformationService)
-        ]
-    return _CONTENT_TYPES['indirect']
-
-
-def get_no_subservice_content_types():
-    if 'no_subservice' not in _CONTENT_TYPES:
-        _CONTENT_TYPES['no_subservice'] = [
-            ContentType.objects.get_for_model(cls) for cls in (HarmReduction,)
-        ]
-    return _CONTENT_TYPES['no_subservice']
+_SERVICES = {}
 
 
 class GovCouncilReport(BaseReport):
@@ -65,15 +47,15 @@ class GovCouncilReport(BaseReport):
         return self._anonymous_ids
 
     def _get_services(self, service_cls, extra_filtering=None):
-        filtering = {
-            'encounter__performed_on__gte': self.datetime_from,
-            'encounter__performed_on__lte': self.datetime_to,
-        }
+        filtering = self.__default_service_filtering()
         if extra_filtering is not None:
             filtering.update(extra_filtering)
-        if self.towns:
-            filtering['encounter__where__in'] = self.towns
         return service_cls.objects.filter(**filtering)
+
+    def get_number_of_approached_count(self):
+        filtering = self.__default_service_filtering()
+        count = Approach._get_stats(filtering)[0][1]
+        return count
 
     def _get_service_count(self, service_classes, extra_filtering=None):
         """Return the number of performed services of the given class."""
@@ -84,6 +66,24 @@ class GovCouncilReport(BaseReport):
             res += self._get_services(service_cls, extra_filtering=extra_filtering).count()
         return res
 
+    def _get_service_count_all(self):
+        """Return the number of all performed services and subservices."""
+        filtering = self.__default_service_filtering()
+        total_count = 0
+        # prevents double-counting of a service
+        content_types = []
+        for service in self._get_services(Service):
+            content_type = service.content_type
+            if content_type not in content_types:
+                subservices = service.cast().get_stats(filtering, only_subservices=True, only_basic=True)[1]
+                subservices_count = sum([list(s)[1] for s in subservices])
+                if hasattr(service.Options, 'agg_type') and service.Options.agg_type == SUBSERVICES_AGGREGATION_NO_SUBSERVICES:
+                    total_count += 1
+                else:
+                    total_count += subservices_count
+                content_types.append(content_type)
+        return total_count
+
     def get_direct_subservice_count(self, service_classes):
         return self._get_subservice_count(service_classes, extra_filtering={'encounter__is_by_phone': False})
 
@@ -92,14 +92,9 @@ class GovCouncilReport(BaseReport):
         This is used when count of services should be in fact sum of selected subservices"""
         if not isinstance(service_classes, collections.Iterable):
             service_classes = [service_classes]
-        filtering = {
-            'encounter__performed_on__gte': self.datetime_from,
-            'encounter__performed_on__lte': self.datetime_to,
-        }
+        filtering = self.__default_service_filtering()
         if extra_filtering is not None:
             filtering.update(extra_filtering)
-        if self.towns:
-            filtering['encounter__where__in'] = self.towns
         res = 0
         for service_cls in service_classes:
             stats = service_cls.get_stats(filtering, only_subservices=True, only_basic=True)[1]
@@ -140,13 +135,10 @@ class GovCouncilReport(BaseReport):
     def _get_anonymous_count(self, service_cls):
         """Return number of services of the given class performed by anonyms."""
         anonymous_ids = self._get_anonymous_ids()
-        filtering = {
-            'encounter__performed_on__gte': self.datetime_from,
-            'encounter__performed_on__lte': self.datetime_to,
+        filtering = self.__default_service_filtering()
+        filtering.update({
             'encounter__person__in': anonymous_ids,
-        }
-        if self.towns:
-            filtering['encounter__where__in'] = self.towns
+        })
         return service_cls.objects.filter(**filtering).count()
 
     def _get_syringes_count(self):
@@ -166,23 +158,9 @@ class GovCouncilReport(BaseReport):
         return self.__get_client_encounters({'is_by_phone': True})
 
     def __get_client_encounters(self, filtering):
-        filtering.update({
-            'performed_on__gte': self.datetime_from,
-            'performed_on__lte': self.datetime_to,
-        })
-        if self.towns:
-            filtering['where__in'] = self.towns
+        filtering = self.__default_encounter_filtering(filtering)
         exclude = {'person__in': self._get_anonymous_ids()}
         return Encounter.objects.filter(**filtering).exclude(**exclude)
-
-    def _get_phone_advice_count(self):
-        sum = 0
-        for cls in (SocialWork, IndividualCounselling, InformationService):
-            filtering = {
-                'encounter__is_by_phone': True,
-            }
-            sum += self._get_subservice_count(cls, extra_filtering=filtering)
-        return sum
 
     def _get_performed_tests_count(self, disease):
         filtering = {'disease': disease}
@@ -201,24 +179,14 @@ class GovCouncilReport(BaseReport):
 
     def _get_all_drug_users(self):
         """Return all non-anonymous drug users from the given time period."""
-        filtering = {
-            'performed_on__gte': self.datetime_from,
-            'performed_on__lte': self.datetime_to,
-        }
-        if self.towns:
-            filtering['where__in'] = self.towns
+        filtering = self.__default_encounter_filtering()
         encounters = Encounter.objects.filter(**filtering)
         clients = encounters.values_list('person', flat=True)
         return Client.objects.filter(pk__in=clients, close_person=False, sex_partner=False).exclude(primary_drug=None)
 
     def _get_clients_non_drug_users(self):
         """Return all sex partners and close persons from the given time period."""
-        filtering = {
-            'performed_on__gte': self.datetime_from,
-            'performed_on__lte': self.datetime_to,
-        }
-        if self.towns:
-            filtering['where__in'] = self.towns
+        filtering = self.__default_encounter_filtering()
         encounters = Encounter.objects.filter(**filtering)
         clients = encounters.values_list('person', flat=True)
         return Client.objects.filter(pk__in=clients).filter(
@@ -237,21 +205,37 @@ class GovCouncilReport(BaseReport):
         return int(round(float(sum(ages)) / len(ages))) if ages else 0
 
     def _get_services_time(self):
-        filtering = {
+        services = [service for service in service_list()
+                    if service.service.include_in_reports]
+        filtering = self.__default_service_filtering()
+
+        total_time_spent = 0
+        for service in services:
+            enc_ids = service.objects.filter(**filtering).values_list('encounter__id', flat=True)
+            total_time_spent += TimeDotation.time_spent_on_encounters(enc_ids, service)
+        return total_time_spent
+
+    def __default_service_filtering(self, filtering=None):
+        if filtering is None:
+            filtering = {}
+        filtering.update({
             'encounter__performed_on__gte': self.datetime_from,
             'encounter__performed_on__lte': self.datetime_to,
-        }
+        })
         if self.towns:
             filtering['encounter__where__in'] = self.towns
-        sum = 0
-        service_encounters = []
-        for service in self._get_services(Service):
-            service_encounter = [ service.content_type, service.encounter]
-            # prevent double count in case of same service class being multiple on one encounter
-            if service_encounter not in service_encounters:
-                sum += service.get_time_spent(filtering, get_indirect_content_types(), get_no_subservice_content_types())
-                service_encounters.append(service_encounter)
-        return sum
+        return filtering
+
+    def __default_encounter_filtering(self, filtering=None):
+        if filtering is None:
+            filtering = {}
+        filtering.update({
+            'performed_on__gte': self.datetime_from,
+            'performed_on__lte': self.datetime_to,
+        })
+        if self.towns:
+            filtering['where__in'] = self.towns
+        return filtering
 
     # <--
 
@@ -277,7 +261,7 @@ class GovCouncilReport(BaseReport):
                 u'základní droga metadon - zneužívaný (non lege artis, injekčně, bez indikace lékařem, z černého trhu atd.)'),
              drug(DRUGS.METHADONE)),
             (_(u'1.4'), _(u'základní droga jiné opiáty (opium, morfium, fentanyl, tramadol etc.)'),
-             drug(DRUGS.VENDAL, DRUGS.RAW_OPIUM, DRUGS.BRAUN)),
+             drug(DRUGS.VENDAL, DRUGS.RAW_OPIUM, DRUGS.BRAUN, DRUGS.FENTANYL)),
             (_(u'1.5'), _(u'základní droga pervitin'), drug(DRUGS.METHAMPHETAMINE)),
             (_(u'1.6'), _(u'základní droga kokain/crack'), drug(DRUGS.COCAINE)),
             (_(u'1.7'), _(u'základní droga kanabinoidy'), drug(DRUGS.THC)),
@@ -348,7 +332,6 @@ class GovCouncilReport(BaseReport):
         phone_encountered_client_ids = set(phone_client_encounters.values_list('person_id', flat=True))
         directly_encountered_clients_count = len(directly_encountered_client_ids)
         phone_encountered_clients_count = len(phone_encountered_client_ids)
-        total_clients_count = len(directly_encountered_client_ids & phone_encountered_client_ids)
 
         pregnancy_test_services = self._get_services(UrineTest).filter(pregnancy_test=True)
         drug_test_services = self._get_services(UrineTest).filter(drug_test=True)
@@ -359,13 +342,13 @@ class GovCouncilReport(BaseReport):
             (_(u'Celkový počet nepřímých kontaktů s identifikovanými klienty'),
              phone_encountered_clients_count, phone_client_encounters.count()),
             (_(u'Úkony potřebné pro zajištění přímé práce s klientem'),
-             'xxx', services(Address)),
+             'xxx', self.get_number_of_approached_count()),
             (_(u'Kontaktní práce'),
              clients(ContactWork) + anon(ContactWork), services(ContactWork)),
             (_(u'Vstupní zhodnocení stavu klienta'),
              clients(IncomeFormFillup), services(IncomeFormFillup)),
             (_(u'Individuální poradenství'),
-             self._get_direct_client_count(IndividualCounselling), self.get_direct_subservice_count(IndividualCounselling)),
+             clients(IndividualCounselling), subservices(IndividualCounselling)),
             (_(u'Individuální psychoterapie'),
              '', ''),
             (_(u'Skupinové poradenství'),
@@ -379,9 +362,9 @@ class GovCouncilReport(BaseReport):
             (_(u'Skupiny pro rodiče a osoby blízké klientovi'),
              '', ''),
             (_(u'Pracovní terapie'),
-             clients([WorkTherapy, WorkTherapyMeeting]), services([WorkTherapy, WorkTherapyMeeting])),
+             clients(Therapy), services(Therapy)),
             (_(u'Sociální práce (odkazy, asistence, soc.-právní pomoc, case management)'),
-             self._get_direct_client_count(SocialWork) + clients([AsistService, UtilityWork]), services([AsistService]) + self.get_direct_subservice_count(SocialWork) + subservices(UtilityWork)),
+             clients([SocialWork, AsistService, UtilityWork]), services([AsistService]) + subservices([SocialWork, UtilityWork])),
             (_(u'Práce s rodinou'),
              clients(WorkWithFamily), services(WorkWithFamily)),
             (_(u'Socioterapie'),
@@ -401,11 +384,11 @@ class GovCouncilReport(BaseReport):
             (_(u'Základní zdravotní ošetření (vč. první pomoci)'),
              clients(BasicMedicalTreatment), services(BasicMedicalTreatment)),
             (_(u'Telefonické, písemné a internetové poradenství'),
-             'xxx', self._get_phone_advice_count()),
+             clients(IndirectService), subservices(IndirectService)),
             (_(u'Korespondenční práce'),
              clients(PostUsage), services(PostUsage)),
             (_(u'Informační servis'),
-             self._get_direct_client_count(InformationService), self.get_direct_subservice_count(InformationService)),
+             clients(InformationService), subservices(InformationService)),
             (_(u'Edukativní program/beseda'),
              '', ''),
             (_(u'Distribuce harm reduction materiálu'),
@@ -447,7 +430,7 @@ class GovCouncilReport(BaseReport):
             (_(u'Adiktologická terapie skupinová, typ I. pro skupinu max. 9 osob (38026)'),
              '', ''),
             (_(u'Celkový počet/čas všech poskytnutných výkonů (hod)'),
-             total_clients_count, '%.2f' % (self._get_services_time() / 60.0)),
+             u'', '%s / %.2f' % (self._get_service_count_all(), float(self._get_services_time()) / 60.0)),
         ]
 
     def get_data(self):

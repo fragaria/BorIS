@@ -112,6 +112,7 @@ class ReportingInterfaceHandler(object):
     id = 'base'
     title = None
     interface_class = None
+    url_title = 'reporting'
 
     def __call__(self, request, tab_class=None):
         interface = self.interface_class()
@@ -146,7 +147,7 @@ class ReportingInterfaceHandler(object):
 
         urlpatterns = patterns('',
             url('^$', admin.site.admin_view(self.__call__, cacheable=True),
-                name='reporting_%s' % self.id)
+                name='%s_%s' % (self.url_title, self.id))
         )
 
         for t in interface.tabs:
@@ -156,7 +157,7 @@ class ReportingInterfaceHandler(object):
                     kwargs={'tab_class': t}, name=t.get_urlname())
             )
 
-        return urlpatterns, 'reporting', None
+        return urlpatterns, self.url_title, None
     urls = property(get_urls)
 
 

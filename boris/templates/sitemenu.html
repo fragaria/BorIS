@@ -18,6 +18,7 @@
     {% url "reporting_yearly" as reporting_yearly %}
     {% url "reporting_hygiene" as reporting_hygiene %}
     {% url "reporting_govcouncil" as reporting_govcouncil %}
+    {% url "impact_impact" as impact_impact %}
     {% url "admin:clients_terrainnotes_changelist" as terrain_notes %}
 
     <li class="{% active index %}"><a href="{{ index }}">{% trans "Nástěnka" %}</a></li>
@@ -28,6 +29,12 @@
     <li class="{% active group_contact %}"><a href="{{ group_contact }}">{% trans "Skupinové kontakty" %}</a></li>
     <li class="{% active syringecollection %}"><a href="{{ syringecollection }}">{% trans "Sběr stříkaček" %}</a></li>
     <li class="{% active terrain_notes %}"><a href="{{ terrain_notes }}">{% trans "Zápisy z terénu" %}</a></li>
+    <li>
+        <a href="#">{% trans "Studie" %}</a>
+        <ul>
+            <li class="{% active impact_impact %}" ><a href="{{ impact_impact }}">{% trans "Dopadové studie" %}</a></li> 
+        </ul>
+    </li>
     <li>
         <a href="#">{% trans "Výstupy" %}</a>
         <ul>

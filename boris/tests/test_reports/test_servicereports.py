@@ -2,7 +2,7 @@
 
 from datetime import date
 import sys
-
+from django.contrib.contenttypes.models import ContentType
 from django.core.handlers.wsgi import WSGIRequest
 from django.core.servers.basehttp import ServerHandler
 from django.http import Http404
@@ -12,8 +12,8 @@ from nose import tools
 from boris.classification import DRUGS
 from boris.reporting.reports.services import ServiceReport
 from boris.services import views
-from boris.services.models import (Address, UtilityWork, SocialWork,
-    InformationService, HarmReduction, service_list, Encounter)
+from boris.services.models import (Approach, UtilityWork, SocialWork,
+                                   InformationService, HarmReduction, service_list, Encounter, TimeDotation)
 from boris.services.views import HandleForm
 from boris.tests.helpers import (get_tst_town, get_tst_client, create_service)
 
@@ -24,7 +24,7 @@ def normalize_stats(stats):
     for service, services in stats.items():
         non_zero_services = []
         for title, count in services:
-            if count != 0:
+            if count != 0 and count != '-':
                 non_zero_services.append((title, count))
         if non_zero_services:
             clean_stats[service] = tuple(non_zero_services)
@@ -33,15 +33,24 @@ def normalize_stats(stats):
 
 class TestServiceReports(TestCase):
 
+    maxDiff = None
+
+    @classmethod
+    def setUpClass(cls):
+        super(TestServiceReports, cls).setUpClass()
+        # use dotations from initial_data as migration generated get deleted in flush
+        TimeDotation.objects.all().delete()
+
     def setUp(self):
+        self.load_time_dotations()
         drug = DRUGS.HEROIN
         self.town1 = get_tst_town()
         self.town2 = get_tst_town()
         self.client1 = get_tst_client('c1', {'town': self.town1, 'primary_drug': drug})
         self.client2 = get_tst_client('c2', {'town': self.town1, 'primary_drug': drug})
-        create_service(Address, self.client1, date(2011, 11, 1), self.town1)
-        create_service(Address, self.client1, date(2011, 11, 3), self.town1)
-        create_service(Address, self.client2, date(2011, 11, 1), self.town1)
+        create_service(Approach, self.client1, date(2011, 11, 1), self.town1)
+        create_service(Approach, self.client1, date(2011, 11, 3), self.town1)
+        create_service(Approach, self.client2, date(2011, 11, 1), self.town1)
         create_service(UtilityWork, self.client1, date(2011, 11, 1), self.town2)
         social_work_kwargs = {'other': True}
         create_service(SocialWork, self.client1, date(2012, 11, 1), self.town1, social_work_kwargs)
@@ -50,14 +59,25 @@ class TestServiceReports(TestCase):
         harm_reduction_kwargs = {'in_count': 87, 'condoms': True}
         create_service(HarmReduction, self.client1, date(2011, 11, 1), self.town1, harm_reduction_kwargs)
 
+    def load_time_dotations(self):
+        self.load_time_dotation(HarmReduction, 5)
+        self.load_time_dotation(InformationService, 5)
+        self.load_time_dotation(SocialWork, 30)
+        self.load_time_dotation(UtilityWork, 30)
+        self.load_time_dotation(Approach, 60)
+
+    def load_time_dotation(self, model, minutes):
+        ct = ContentType.objects.get_for_model(model, for_concrete_model=False)
+        TimeDotation.objects.get_or_create(content_type=ct, minutes=minutes, default_minutes=minutes)
+
     def test_no_filter(self):
         filtering = {}
         r = ServiceReport(**filtering)
         stats = normalize_stats(r._get_service_stats())
         expected = {
-            Address: ((Address.service.title, 3),),
+            Approach: ((Approach.service.title, 3),),
             UtilityWork: ((UtilityWork.service.title, 1),),
-            SocialWork: ((SocialWork.service.title, 2), (SocialWork._meta.get_field('other').verbose_name.__unicode__(), 1)),
+            SocialWork: ((SocialWork.service.title, 1), (SocialWork._meta.get_field('other').verbose_name.__unicode__(), 1)),
             # InformationService: ((InformationService.service.title, 1),),
             HarmReduction: ((HarmReduction.service.title, 1), (HarmReduction._meta.get_field('condoms').verbose_name.__unicode__(), 1), (HarmReduction._meta.get_field('in_count').verbose_name.__unicode__(), 87))
         }
@@ -68,7 +88,7 @@ class TestServiceReports(TestCase):
         r = ServiceReport(**filtering)
         stats = normalize_stats(r._get_service_stats())
         expected = {
-            Address: ((Address.service.title, 1),)
+            Approach: ((Approach.service.title, 1),)
         }
         self.assertEqual(stats, expected)
 
@@ -85,8 +105,33 @@ class TestServiceReports(TestCase):
         filtering = {'date_to': date(2010, 1, 1)}
         r = ServiceReport(**filtering)
         stats = normalize_stats(r.get_stats())
-        expected = {None: ((u'Počet kontaktů (z toho přímých)', '0 (0)'), )}
+        expected = {
+            None: ((u'Počet kontaktů (z toho přímých)', '0 (0)'), ),
+            TimeDotation: ((u'Celkov\xfd \u010das poskytnut\xfdch v\xfdkon\u016f (hod)', '0.00'),)
+        }
         self.assertEqual(stats, expected)
+
+    def test_time_dotations_2011(self):
+        filtering = {'date_to': date(2012, 1, 1)}
+        r = ServiceReport(**filtering)
+        stats = normalize_stats(r.get_stats())
+        expected = {
+            None: ((u'Počet kontaktů (z toho přímých)', '7 (7)'), ),
+            TimeDotation: ((u'Celkov\xfd \u010das poskytnut\xfdch v\xfdkon\u016f (hod)', '3.08'),)
+        }
+        self.assertEqual(stats[None], expected[None])
+        self.assertEqual(stats[TimeDotation], expected[TimeDotation])
+
+    def test_time_dotations_2012(self):
+        filtering = {'date_from': date(2012, 1, 1)}
+        r = ServiceReport(**filtering)
+        stats = normalize_stats(r.get_stats())
+        expected = {
+            None: ((u'Počet kontaktů (z toho přímých)', '1 (1)'), ),
+            TimeDotation: ((u'Celkov\xfd \u010das poskytnut\xfdch v\xfdkon\u016f (hod)', '0.50'),),
+        }
+        self.assertEqual(stats[None], expected[None])
+        self.assertEqual(stats[TimeDotation], expected[TimeDotation])
 
     def test_filter_by_town(self):
         filtering = {'towns': [self.town2]}

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from copy import deepcopy
 
 import datetime
 from django.core.urlresolvers import reverse
@@ -22,6 +23,8 @@ class StatisticFirstColumn(DashboardModule):
 class StatisticSecondColumn(DashboardModule):
     template = 'dashboard/second_column.html'
 
+MONTHS_SHORT = ['Led', 'Úno', 'Bře', 'Dub', 'Kvě', 'Črv', 'Črn', 'Srp', 'Zář', 'Říj', 'Lis', 'Pro']
+
 
 class CustomIndexDashboard(Dashboard):
     """
@@ -34,7 +37,7 @@ class CustomIndexDashboard(Dashboard):
         self.encounters = []
         self.persons = []
         self.syringe = []
-        self.months = ['Led', 'Úno', 'Bře', 'Dub', 'Kvě', 'Črv', 'Črn', 'Srp', 'Zář', 'Říj', 'Lis', 'Pro']
+        self.months = deepcopy(MONTHS_SHORT)
 
         clients = Client.objects.annotate(num_in=Sum('encounters__services__harmreduction__in_count'),
                                           num_out=Sum('encounters__services__harmreduction__out_count'))
