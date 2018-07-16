@@ -32,13 +32,13 @@ class AllClientEncounters(EncounterAggregation):
 class IvClientEncounters(AllClientEncounters):
     title = _(u'Z toho injekčních uživatelů drog')
     filtering = {'is_client': True, 'primary_drug_usage__in': (DRUG_APPLICATION_TYPES.VEIN_INJECTION, DRUG_APPLICATION_TYPES.MUSCLE_INJECTION),
-                 'is_close_person': False, 'is_sex_partner': False}
+                 'is_close_person': False}
 
 
 class NonIvClientEncounters(AllClientEncounters):
     title = _(u'Z toho neinjekčních uživatelů drog')
     filtering = {'is_client': True, 'primary_drug__isnull': False,
-                 'is_close_person': False, 'is_sex_partner': False}
+                 'is_close_person': False}
     excludes = {'primary_drug_usage__in': (DRUG_APPLICATION_TYPES.VEIN_INJECTION, DRUG_APPLICATION_TYPES.MUSCLE_INJECTION)}
 
 
@@ -50,11 +50,6 @@ class MaleClientEncounters(AllClientEncounters):
 class ClosePersonEncounters(AllClientEncounters):
     title = _(u'Z toho osob blízkých (rodiče apod.)')
     filtering = {'is_close_person': True}
-
-
-class SexPartnerEncounters(AllClientEncounters):
-    title = _(u'Z toho sexuálních partnerů')
-    filtering = {'is_sex_partner': True}
 
 
 class AnonymousAggregation(NonDistinctCountAggregation, EncounterAggregation):
@@ -138,7 +133,6 @@ class FirstContactCountDU(FirstContactCount):
     title = _(u'z toho s UD')
     filtering = (
         Q(person__client__primary_drug__isnull=False) &
-        Q(person__client__sex_partner=False) &
         Q(person__client__close_person=False) &
         Q(content_type_model='incomeexamination')
     ) | (
@@ -186,7 +180,6 @@ class ClientReportBase(Report):
         AllClientEncounters,
         MaleClientEncounters,
         IvClientEncounters,
-        SexPartnerEncounters,
         NonIvClientEncounters,
         ClosePersonEncounters,
         AnonymousAggregation,

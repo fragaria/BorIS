@@ -16,7 +16,6 @@ from boris.reporting.reports.monthly_stats import AllClientEncounters, \
     PhoneEncounterCount, FirstContactCount, \
     FirstContactCountDU, FirstContactCountIV, HarmReductionCount, \
     GatheredSyringes, IssuedSyringes, SyringeCollectionCount, disease_tests, ClosePersonEncounters, \
-    SexPartnerEncounters, \
     AnonymousAggregation, NonIvClientEncounters
 from boris.reporting.core import make_key
 from boris.reporting.management.install_views import install_views
@@ -63,7 +62,7 @@ class TestEncounterAggregations(InitialDataTestCase):
         self.client4 = get_tst_client('c4', {'town': self.town1})
         self.client5 = get_tst_client('c5', {'town': self.town2})
         self.client6 = get_tst_client('c6', {'town': self.town2})
-        self.client7 = get_tst_client('c7', {'town': self.town2, 'sex_partner': True})
+        self.client7 = get_tst_client('c7', {'town': self.town2, 'close_person': True})
 
         create_encounter(self.client1, date(2011, 11, 1))
         create_encounter(self.client1, date(2011, 11, 1))
@@ -123,11 +122,6 @@ class TestEncounterAggregations(InitialDataTestCase):
         aggregation = ClosePersonEncounters(self.report)
         key = make_key({'month': 11, 'town': self.town1.pk})
         tools.assert_equals(aggregation.get_val(key), 1)
-
-    def test_sex_partners(self):
-        aggregation = SexPartnerEncounters(self.report)
-        key = make_key({'month': 11, 'town': self.town2.pk})
-        tools.assert_equals(aggregation.get_val(key), 1)  # 0
 
 
 class TestServiceAggregations(InitialDataTestCase):
@@ -233,6 +227,18 @@ class TestServiceAggregations(InitialDataTestCase):
                 break
         key = make_key({'month': 11, 'town': self.town1.pk})
         tools.assert_equals(aggregation.get_val(key), 1)
+
+    # def test_median(self):
+    #     data = [
+    #         [1, 2, 3, 4],
+    #         [1, 2, 3, 4, 5],
+    #         [432, 57653.4, 111, 3333, 563.00006],
+    #         [0, None, 2, 25, None, 32, None, None, None, None]
+    #     ]
+    #     for array in data:
+    #         m_1 = utils.median(array)
+    #         m_2 = numpy.median(array)
+    #         assert m_1 == m_2
 
 
 class TestMixedAggregations(InitialDataTestCase):

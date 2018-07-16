@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
+from boris import utils
+
 import datetime
 from django.contrib.contenttypes.models import ContentType
 from django.template import loader
 from django.template.context import RequestContext
 from django.utils.translation import ugettext_lazy as _
-from numpy import median
 from boris.classification import DRUG_APPLICATION_TYPES as DAT
 from boris.clients.models import Client
 from boris.reporting.core import BaseReport
@@ -15,8 +16,6 @@ def enrich_with_type(client):
     """Enrich client with his/her 'type', as understood by this report."""
     if client.close_person:
         client.type_ = _(u'Osoba blízká')
-    elif client.sex_partner:
-        client.type_ = _(u'Sexuální partner')
     elif client.primary_drug_usage in (DAT.VEIN_INJECTION, DAT.MUSCLE_INJECTION):
         client.type_ = _(u'IV uživatel')
     else:
@@ -71,7 +70,7 @@ class ClientReport(BaseReport):
         ages = filter(bool, (c.get_relative_age(relative_to) for c in client_stats))
 
         if any(ages):
-            median_age = median(ages)
+            median_age = utils.median(ages)
             return int(median_age)
 
     @staticmethod

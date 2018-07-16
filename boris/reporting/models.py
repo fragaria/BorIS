@@ -15,7 +15,6 @@ class SearchEncounter(models.Model):
     is_client = models.BooleanField(default=None)
     is_anonymous = models.BooleanField(default=None)
     is_close_person = models.BooleanField(default=None)
-    is_sex_partner = models.BooleanField(default=None)
     is_by_phone = models.BooleanField(default=None)
     client_sex = models.PositiveSmallIntegerField()
     primary_drug = models.PositiveSmallIntegerField()

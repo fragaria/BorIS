@@ -13,7 +13,6 @@ SELECT
 	clients_client.primary_drug,
 	clients_client.primary_drug_usage,
 	clients_client.close_person as is_close_person,
-	clients_client.sex_partner as is_sex_partner,
 	clients_anonymous.person_ptr_id IS NOT NULL AS is_anonymous,
 	1 AS grouping_constant
 FROM
