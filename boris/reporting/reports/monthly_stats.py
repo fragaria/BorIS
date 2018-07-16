@@ -48,7 +48,7 @@ class MaleClientEncounters(AllClientEncounters):
 
 
 class ClosePersonEncounters(AllClientEncounters):
-    title = _(u'Z toho osob blízkých (rodiče apod.)')
+    title = _(u'Z toho osob blízkých (rodiče, sex. partneři apod.)')
     filtering = {'is_close_person': True}
 
 
