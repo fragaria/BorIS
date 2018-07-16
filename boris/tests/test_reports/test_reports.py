@@ -234,6 +234,18 @@ class TestServiceAggregations(InitialDataTestCase):
         key = make_key({'month': 11, 'town': self.town1.pk})
         tools.assert_equals(aggregation.get_val(key), 1)
 
+    # def test_median(self):
+    #     data = [
+    #         [1, 2, 3, 4],
+    #         [1, 2, 3, 4, 5],
+    #         [432, 57653.4, 111, 3333, 563.00006],
+    #         [0, None, 2, 25, None, 32, None, None, None, None]
+    #     ]
+    #     for array in data:
+    #         m_1 = utils.median(array)
+    #         m_2 = numpy.median(array)
+    #         assert m_1 == m_2
+
 
 class TestMixedAggregations(InitialDataTestCase):
     """
