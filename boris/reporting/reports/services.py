@@ -2,6 +2,7 @@
 from django.template import loader
 from django.template.context import RequestContext
 
+from boris.clients.models import Client
 from boris.reporting.core import BaseReport
 from boris.services.models import service_list, Encounter, TimeDotation
 
@@ -11,11 +12,17 @@ class ServiceReport(BaseReport):
     description = u'Statistiky jednotlivých výkonů splňujících zadaná kritéria.'
     contenttype_office = 'application/vnd.ms-word; charset=utf-8'
 
-    def __init__(self, date_from=None, date_to=None, towns=None, person=None):
+    def __init__(self, date_from=None, date_to=None, towns=None, person=None, towns_residence=None):
+        clients = Client.objects.all()
+        if towns_residence is not None:
+            clients = clients.filter(town__in=towns_residence)
+        client_ids = clients.values_list('id', flat=True)
+
         enc_filtering = (
             ('performed_on__gte', date_from),
             ('performed_on__lte', date_to),
             ('where__in', towns),
+            ('person__id__in', client_ids),
             ('person', person),
         )
         enc_filtering = [(f[0], f[1]) for f in enc_filtering if f[1]]
@@ -26,6 +33,7 @@ class ServiceReport(BaseReport):
         self.date_from = date_from
         self.date_to = date_to
         self.towns = towns
+        self.towns_residence = towns_residence
         self.person = person
 
     def get_filename(self):
@@ -68,6 +76,7 @@ class ServiceReport(BaseReport):
                 'date_from': self.filtering.get('encounter__performed_on__gte'),
                 'date_to': self.filtering.get('encounter__performed_on__lte'),
                 'towns': self.towns,
+                'towns_residence': self.towns_residence,
             },
             context_instance=RequestContext(request)
         )

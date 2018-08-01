@@ -35,6 +35,10 @@
 		<p style="margin-bottom: 20px;">Vybraná města: {{ towns|join:", " }}</p>
 	{% endif %}
 
+    {% if towns_residence %}
+		<p style="margin-bottom: 20px;">Vybraná města: {{ towns_residence|join:", " }}</p>
+	{% endif %}
+
     {% if services %}
         <p style="margin-bottom: 20px;">Vybrané výkony: {{ services|join:", " }}</p>
     {% endif %}
