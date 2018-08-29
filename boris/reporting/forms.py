@@ -26,7 +26,7 @@ class ReportForm(forms.Form):
 class BaseReportForm(ReportForm):
     date_from = forms.DateField(label=_(u'Od'), required=False, widget=AdminDateWidget())
     date_to = forms.DateField(label=_(u'Do'), required=False, widget=AdminDateWidget())
-    towns = forms.ModelMultipleChoiceField(label=_(u'Město'), queryset=Town.objects.all(), required=False)
+    towns = forms.ModelMultipleChoiceField(label=_(u'Místo poskytnutí služby'), queryset=Town.objects.all(), required=False)
 
 
 class ResidenceReportForm(BaseReportForm):
