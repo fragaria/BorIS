@@ -6,9 +6,6 @@
             {% for town in report.towns %}
                 <th>{{ town.title }}</th>
             {% endfor %}
-            {% for town in report.towns_residence %}
-                <th>{{ towns_residence.title }}</th>
-            {% endfor %}
             <th>Celkem</th>
         </tr>
         {% for aggregation in data %}
