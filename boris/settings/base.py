@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import os
+
 from os.path import dirname, join, abspath
 from django.utils.functional import curry
 
@@ -10,13 +12,16 @@ PROJECT_ROOT = abspath(dirname(boris.__file__))
 gettext = lambda s: s
 
 # suppressed -- emails sent by sentry instead
-ADMINS = (
-#    ('Filip Varecha', 'filip.varecha@fragaria.cz'),
-#    ('Hynek Urban', 'hynek.urban@fragaria.cz'),
-)
+ADMINS = [('Admin', os.environ.get('BORIS_ADMIN_EMAIL'))] if 'BORIS_ADMIN_EMAIL' in os.environ else []
 MANAGERS = ADMINS
 
-EMAIL_SUBJECT_PREFIX = '[BORIS] '
+EMAIL_SUBJECT_PREFIX = '[%s] ' % os.environ.get('BORIS_INSTALLATION')
+
+SECRET_KEY = os.environ.get('BORIS_SECRET_KEY')
+
+DEBUG = os.environ.get('BORIS_DEBUG', '0') == '1'
+
+ALLOWED_HOSTS = os.environ.get('BORIS_ALLOWED_HOSTS', '').split(',') if 'BORIS_ALLOWED_HOSTS' in os.environ else []
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -142,11 +147,34 @@ GRAPPELLI_ADMIN_TITLE = gettext(u'<span class="logo"></span> - Elektronická dat
 GRAPPELLI_INDEX_DASHBOARD = 'boris.dashboard.CustomIndexDashboard'
 
 # SENTRY ---------------------------------------------------------------------
-RAVEN_CONFIG = {
-    'dsn': 'http://5a785de534534233a7f0d4dea28725e9:2a36fdc33ff94bcf9e4d2767d6a4aabc@sentry2.fragaria.cz/8',
-}
+# Only configure sentry if dsn is provided
+if 'BORIS_SENTRY_DSN' in os.environ:
+    RAVEN_CONFIG = {
+        'dsn': os.environ.get('BORIS_SENTRY_DSN'),
+        'name': os.environ.get('BORIS_SENTRY_DSN'),
+        'release': boris.__versionstr__,
+    }
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
+# Database --------------------------------------------------------------------
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ.get('BORIS_DB_NAME'),
+        'USER': os.environ.get('BORIS_DB_USER'),
+        'PASSWORD': os.environ.get('BORIS_DB_PASSWORD'),
+        'HOST': os.environ.get('BORIS_DB_HOST', 'localhost'),
+        'PORT': os.environ.get('BORIS_DB_PORT', '3306'),
+        'OPTIONS': {
+            'charset': 'utf8',
+            'init_command': 'SET '
+                'default_storage_engine=MyISAM,'
+                'character_set_connection=utf8,'
+                'collation_connection=utf8_general_ci'
+        },
+    },
+}
 
 UTILITY_WORK_CHOICES = [('fp', 'FIELD_PROGRAMME', u'1) Terénní programy'),
                         ('cc', 'CONTACT_CENTER', u'2) Kontaktní centrum'),

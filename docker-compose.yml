@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+    db:
+        image: mysql:5.7
+        command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci --init-connect='SET NAMES UTF8;'
+        volumes:
+            - db_data:/var/lib/mysql
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: somepass
+            MYSQL_DATABASE: boris
+            MYSQL_USER: boris
+            MYSQL_PASSWORD: boris
+    boris:
+        build: .
+        command: python boris/manage.py runserver 0.0.0.0:8000
+        volumes:
+            - .:/boris
+        ports:
+            - "8000:8000"
+        restart: always
+        environment:
+            BORIS_DEBUG: 1
+            BORIS_ADMIN_EMAIL: info@fragaria.cz
+            BORIS_INSTALLATION: dev
+            BORIS_ALLOWED_HOSTS: localhost
+            BORIS_DB_HOST: db
+            BORIS_DB_PORT: 3306
+            BORIS_DB_NAME: boris
+            BORIS_DB_USER: boris
+            BORIS_DB_PASSWORD: boris
+            BORIS_SECRET_KEY: somesecret
+
+volumes:
+    db_data:
