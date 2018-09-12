@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.contrib.contenttypes.management import update_all_contenttypes
 from django.contrib.contenttypes.models import ContentType
 from django.db import migrations
 from django.utils.translation import ugettext_lazy as _
 
 from boris.services.models.core import TimeDotation
+from boris.utils.contenttypes import update_all_contenttypes
 
 
 def copy_data(apps, schema_editor):

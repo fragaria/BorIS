@@ -56,6 +56,9 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    # Serve staticfiles
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -94,6 +97,9 @@ STATICFILES_DIRS = (
 
 STATIC_URL = '/static/'
 
+# Compressed static files
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 INSTALLED_APPS = [
     'grappelli.dashboard',
     'grappelli',
@@ -107,6 +113,9 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.redirects',
     'django.contrib.sitemaps',
+
+    # Staticfiles served by WhiteNoise
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
 
 #    'south',  # TODO delete

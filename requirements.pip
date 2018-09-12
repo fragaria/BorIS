@@ -1,15 +1,17 @@
 anyjson==0.3.3
-django==1.7.2
+django==1.8.19
 South==0.8.4
 django-grappelli==2.6.3
 # temporary till pull request is accepted
 # -e git+https://github.com/fragaria/django-grappelli.git#egg=grappelli
 raven>=3.3.3
 fragapy==1.2.6
-gunicorn==18.0
+gunicorn==19.9.0
 django-model-utils==1.2.0
 django-form-utils==1.0.3
 python-dateutil==1.5
+# For simple serving of static assets
+whitenoise==4.0
 
 # Temporary till pull request is accepted
 #-e git+https://github.com/fragaria/django-grappelli.git@stable#egg=grappelli

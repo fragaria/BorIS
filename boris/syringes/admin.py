@@ -10,6 +10,7 @@ from boris.utils.admin import BorisBaseAdmin, textual
 class SyringeCollectionForm(forms.ModelForm):
     class Meta:
         model = SyringeCollection
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         super(SyringeCollectionForm, self).__init__(*args, **kwargs)

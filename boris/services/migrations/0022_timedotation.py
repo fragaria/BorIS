@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.contrib.contenttypes.management import update_all_contenttypes
 from django.contrib.contenttypes.models import ContentType
 from django.db import models, migrations
+
 import fragapy.common.models.adminlink
+
+from boris.utils.contenttypes import update_all_contenttypes
 
 
 def add_default_times(apps, schema_editor):

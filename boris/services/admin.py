@@ -56,6 +56,7 @@ EncounterInline.service_list = service_list
 class EncounterForm(forms.ModelForm):
     class Meta:
         model = Encounter
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         super(EncounterForm, self).__init__(*args, **kwargs)

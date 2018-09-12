@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.contrib.contenttypes.management import update_all_contenttypes
 from django.contrib.contenttypes.models import ContentType
 from django.db import models, migrations
+
+from boris.utils.contenttypes import update_all_contenttypes
 
 
 def migrate_therapy(apps, schema_editor):

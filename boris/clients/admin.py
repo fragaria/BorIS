@@ -207,6 +207,7 @@ class AnonymousAdmin(AddContactAdmin):
 class PractitionerContactForm(forms.ModelForm):
     class Meta:
         model = PractitionerContact
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         super(PractitionerContactForm, self).__init__(*args, **kwargs)
@@ -237,6 +238,7 @@ class PractitionerContactAdmin(BorisBaseAdmin):
 class TerrainNotesForm(forms.ModelForm):
     class Meta:
         model = TerrainNotes
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         super(TerrainNotesForm, self).__init__(*args, **kwargs)
@@ -271,6 +273,7 @@ class TerrainNotesAdmin(BorisBaseAdmin):
 class GroupContactForm(forms.ModelForm):
     class Meta:
         model = GroupContact
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         super(GroupContactForm, self).__init__(*args, **kwargs)

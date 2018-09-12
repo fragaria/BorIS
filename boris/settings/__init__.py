@@ -15,7 +15,6 @@ Thus, we're changing module into package:
 
 from base import *
 from config import *
-from logging import *
 
 # load any settings for local development
 try:
