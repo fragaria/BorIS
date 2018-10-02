@@ -16,8 +16,6 @@ def enrich_with_type(client):
     """Enrich client with his/her 'type', as understood by this report."""
     if client.close_person:
         client.type_ = _(u'Osoba blízká')
-    elif client.sex_partner:
-        client.type_ = _(u'Sexuální partner')
     elif client.primary_drug_usage in (DAT.VEIN_INJECTION, DAT.MUSCLE_INJECTION):
         client.type_ = _(u'IV uživatel')
     else:
@@ -32,9 +30,12 @@ class ClientReport(BaseReport):
     columns = (_(u'Klientský kód'), _(u'Pohlaví'), _(u'Věk'), _(u'Město'),
         _(u'Typ klienta'), _(u'Primární droga'))
 
-    def __init__(self, date_from=None, date_to=None, towns=None, services=None, age_to=None, age_from=None):
+    def __init__(self, date_from=None, date_to=None, towns=None, towns_residence=None, services=None, age_to=None,
+                 age_from=None):
         client_contenttype = ContentType.objects.get_by_natural_key('clients', 'Client')
         clients = Client.objects.filter_by_age(age_from, age_to)
+        if towns_residence is not None:
+            clients = clients.filter(town__in=towns_residence)
         client_ids = clients.values_list('id', flat=True)
 
         filtering = (
@@ -51,6 +52,7 @@ class ClientReport(BaseReport):
         self.date_from = date_from
         self.date_to = date_to
         self.towns = towns
+        self.towns_residence = towns_residence
         self.services = services
 
     def get_filename(self):
@@ -92,6 +94,7 @@ class ClientReport(BaseReport):
                 'report': self,
                 'stats': client_stats,
                 'towns': [t.title for t in self.towns],
+                'towns_residence': self.towns_residence,
                 'services': self.services,
                 'date_from': self.date_from,
                 'date_to': self.date_to,

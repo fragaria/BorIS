@@ -182,15 +182,14 @@ class GovCouncilReport(BaseReport):
         filtering = self.__default_encounter_filtering()
         encounters = Encounter.objects.filter(**filtering)
         clients = encounters.values_list('person', flat=True)
-        return Client.objects.filter(pk__in=clients, close_person=False, sex_partner=False).exclude(primary_drug=None)
+        return Client.objects.filter(pk__in=clients, close_person=False).exclude(primary_drug=None)
 
     def _get_clients_non_drug_users(self):
         """Return all sex partners and close persons from the given time period."""
         filtering = self.__default_encounter_filtering()
         encounters = Encounter.objects.filter(**filtering)
         clients = encounters.values_list('person', flat=True)
-        return Client.objects.filter(pk__in=clients).filter(
-            Q(close_person=True) | Q(sex_partner=True))
+        return Client.objects.filter(pk__in=clients).filter(close_person=True)
 
     def _get_primary_drug_users(self, *drugs):
         """Return all clients with primary drugs from the given ones."""

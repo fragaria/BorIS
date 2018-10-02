@@ -353,7 +353,7 @@ class ClientAdmin(AddContactAdmin):
             ('first_name', 'last_name'),
             ('birthdate', 'birthdate_year_only'),
             ('email', 'phone_number'),
-            ('close_person', 'sex_partner'),
+            ('close_person', ),
             ('primary_drug', 'primary_drug_usage'),
             ('first_contact_verbose', 'last_contact_verbose'),
             'anamnesis_link',
@@ -386,8 +386,6 @@ class ClientAdmin(AddContactAdmin):
                 return drug_choice[1]
         if obj.close_person:
             return 'osoba blízká'
-        if obj.sex_partner:
-            return 'sexuální partner'
         return ''
 
     def change_view(self, request, object_id, extra_context=None):

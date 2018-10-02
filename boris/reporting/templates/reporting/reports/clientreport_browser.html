@@ -32,7 +32,11 @@
     </p>
 
     {% if towns %}
-		<p style="margin-bottom: 20px;">Vybraná města: {{ towns|join:", " }}</p>
+		<p style="margin-bottom: 20px;">Místo poskytnutí služby: {{ towns|join:", " }}</p>
+	{% endif %}
+
+    {% if towns_residence %}
+		<p style="margin-bottom: 20px;">Bydliště klienta: {{ towns_residence|join:", " }}</p>
 	{% endif %}
 
     {% if services %}
