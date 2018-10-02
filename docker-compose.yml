@@ -14,17 +14,17 @@ services:
             MYSQL_PASSWORD: boris
     boris:
         build: .
-        command: sh -c "gunicorn boris.wsgi -b 0.0.0.0:80 -w 1 -t 600 --access-logfile - --error-logfile - --log-level debug"
         volumes:
             - .:/boris
         ports:
-            - "8000:80"
+            - "8000:8000"
         restart: always
         environment:
             BORIS_DEBUG: 0
             BORIS_ADMIN_EMAIL: info@fragaria.cz
             BORIS_INSTALLATION: dev
             BORIS_ALLOWED_HOSTS: localhost
+            BORIS_WORKERS: 1
             BORIS_DB_HOST: db
             BORIS_DB_PORT: 3306
             BORIS_DB_NAME: boris

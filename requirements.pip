@@ -17,4 +17,4 @@ whitenoise==4.0
 #-e git+https://github.com/fragaria/django-grappelli.git@stable#egg=grappelli
 #-e git+https://github.com/carljm/django-form-utils.git@41b3af2ff2c89940dc7b331135681c093526b508#egg=form_utils
 
-MySQL-Python==1.2.5
+mysqlclient==1.3.13

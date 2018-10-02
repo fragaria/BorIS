@@ -151,6 +151,52 @@ SESSION_SAVE_EVERY_REQUEST = True
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
+loggers = ['sentry', 'console'] if 'BORIS_SENTRY_DSN' in os.environ else ['console']
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'sentry': {
+            'level': 'WARNING',
+            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': loggers,
+            'propagate': True,
+        },
+        'celery': {
+            'level': 'INFO',
+            'handlers': loggers,
+            'propagate': False,
+        },
+        'raven': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'sentry.errors': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
+        }
+    },
+}
+
 # GRAPPELLI RELATED ----------------------------------------------------------
 GRAPPELLI_ADMIN_TITLE = gettext(u'<span class="logo"></span> - Elektronická databáze pro evidenci výkonů v sociálních službách')
 GRAPPELLI_INDEX_DASHBOARD = 'boris.dashboard.CustomIndexDashboard'
@@ -164,7 +210,6 @@ if 'BORIS_SENTRY_DSN' in os.environ:
         'release': boris.__versionstr__,
     }
 
-TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 # Database --------------------------------------------------------------------
 DATABASES = {
