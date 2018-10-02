@@ -14,3 +14,4 @@ boris.db
 .idea
 .DS_Store
 boris/media/
+static

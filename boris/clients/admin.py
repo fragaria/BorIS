@@ -171,8 +171,8 @@ class PersonAdmin(BorisBaseAdmin):
 class AddContactAdmin(BorisBaseAdmin):
     list_actions = ('change_button', 'add_contact_button')
 
-    def queryset(self, request):
-        return super(AddContactAdmin, self).queryset(request).extra(
+    def get_queryset(self, request):
+        return super(AddContactAdmin, self).get_queryset(request).extra(
             select={
                 'ecnt': 'SELECT COUNT(*) FROM services_encounter '
                         'WHERE services_encounter.person_id = clients_person.id'

@@ -6,6 +6,8 @@ services:
         command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci --init-connect='SET NAMES UTF8;'
         volumes:
             - db_data:/var/lib/mysql
+        ports:
+            - "33306:3306"
         restart: always
         environment:
             MYSQL_ROOT_PASSWORD: somepass
@@ -14,6 +16,7 @@ services:
             MYSQL_PASSWORD: boris
     boris:
         build: .
+        command: django-admin.py runserver 0.0.0.0:8000
         volumes:
             - .:/boris
         ports:

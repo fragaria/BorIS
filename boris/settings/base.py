@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
-
+import random
 from os.path import dirname, join, abspath
+
 from django.utils.functional import curry
 
 import boris
@@ -17,7 +18,7 @@ MANAGERS = ADMINS
 
 EMAIL_SUBJECT_PREFIX = '[%s] ' % os.environ.get('BORIS_INSTALLATION')
 
-SECRET_KEY = os.environ.get('BORIS_SECRET_KEY')
+SECRET_KEY = os.environ.get('BORIS_SECRET_KEY', ''.join([random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50)]))
 
 DEBUG = os.environ.get('BORIS_DEBUG', '0') == '1'
 
@@ -51,8 +52,10 @@ ROOT_URLCONF = 'boris.urls'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
+    ('django.template.loaders.cached.Loader', (
+        'django.template.loaders.filesystem.Loader',
+        'django.template.loaders.app_directories.Loader',
+    )),
 )
 
 MIDDLEWARE_CLASSES = (
@@ -82,20 +85,16 @@ TEMPLATE_DIRS = (
     join(PROJECT_ROOT, 'templates'),
 )
 
-FIXTURE_DIRS = (
-   join(PROJECT_ROOT, 'fixtures'),
-)
-
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder"
 )
 
-STATICFILES_DIRS = (
-   join(PROJECT_ROOT, 'static_ex'),
-)
-
 STATIC_URL = '/static/'
+STATIC_ROOT = join(PROJECT_ROOT, '..', 'static')
+
+ADMIN_MEDIA_PREFIX = STATIC_URL + "grappelli/"
+
 
 # Compressed static files
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
