@@ -117,7 +117,6 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
 
-#    'south',  # TODO delete
     'form_utils',
     'raven.contrib.django.raven_compat',
 
@@ -131,12 +130,6 @@ INSTALLED_APPS = [
     'boris.users',
     'boris.utils'
 ]
-
-# always freeze south migrations
-SOUTH_AUTO_FREEZE_APP = True
-
-# don't run south tests
-SKIP_SOUTH_TESTS = True
 
 # logout the user on browser close
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True

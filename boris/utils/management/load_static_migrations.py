@@ -1,7 +1,5 @@
 from django.core.management import call_command
-
-from south.signals import post_migrate
-
+from django.db.models.signals import post_migrate
 
 def load_static_data(app, **kwargs):
     global APPS_TO_WAIT_FOR

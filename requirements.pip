@@ -1,6 +1,5 @@
 anyjson==0.3.3
 django==1.8.19
-South==0.8.4
 django-grappelli==2.6.3
 # temporary till pull request is accepted
 # -e git+https://github.com/fragaria/django-grappelli.git#egg=grappelli
