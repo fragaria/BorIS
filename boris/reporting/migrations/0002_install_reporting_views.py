@@ -1,25 +1,20 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models, migrations
+from django.db import migrations, models
 
 from boris.reporting.management.install_views import install_views
-
-
-def run_install_views(apps, schema_editor):
-    install_views(None)
-
-
-def reverse(apps, schema_editor):
-    pass
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('reporting', '0001_initial'),
+        ('clients', '0024_auto_20180716_1630'),
         ('services', '0031_worktherapy_to_therapy'),
+        ('syringes', '0001_initial'),
     ]
 
     operations = [
-        migrations.RunPython(code=run_install_views, reverse_code=reverse),
+        migrations.RunPython(install_views),
     ]

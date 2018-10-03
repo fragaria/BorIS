@@ -4,7 +4,7 @@ import sys
 from django.apps import apps
 from django.contrib.auth.management import _get_all_permissions
 from django.contrib.auth.models import Permission, Group
-from django.contrib.contenttypes.management import create_contenttypes
+from django.contrib.contenttypes.management import update_contenttypes
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import NoArgsCommand
 from django.db import models
@@ -14,13 +14,13 @@ from django.db.models.loading import get_app
 class Command(NoArgsCommand):
     help = 'test'
 
-    def handle_noargs(self, **options):
+    def handle_noargs(self, *args, **options):
         app = get_app('services')
         try:
             boris_config = apps.get_app_config('boris')
         except:
             raise EnvironmentError('Cannot find app `boris`. App configs are: %s' % apps.get_app_configs())
-        create_contenttypes(boris_config, 2, interactive=False)
+        update_contenttypes(boris_config, 2, interactive=False)
         app_models = models.get_models(app)
         # This will hold the permissions we're looking for as
         # (content_type, (codename, name))

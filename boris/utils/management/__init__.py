@@ -1,1 +1,0 @@
-import load_static_migrations

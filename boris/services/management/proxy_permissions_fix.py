@@ -23,7 +23,7 @@ def delete_proxy_permissions(sender, **kwargs):
         permissions = Permission.objects.filter(content_type__app_label='services')\
             .exclude(codename__endswith='_service').exclude(codename__endswith='_groupcontact').exclude(codename__endswith='_encounter')
 
-        print "Deleting %s permissions..." % permissions.count()
+        print "Fixing Django perms: Deleting invalid %s permissions for services..." % permissions.count()
         permissions.delete()
         print "Done."
 
