@@ -16,8 +16,6 @@ def enrich_with_type(client):
     """Enrich client with his/her 'type', as understood by this report."""
     if client.close_person:
         client.type_ = _(u'Osoba blízká')
-    elif client.sex_partner:
-        client.type_ = _(u'Sexuální partner')
     elif client.primary_drug_usage in (DAT.VEIN_INJECTION, DAT.MUSCLE_INJECTION):
         client.type_ = _(u'IV uživatel')
     else:
