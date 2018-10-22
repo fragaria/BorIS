@@ -180,6 +180,9 @@ class Aggregation(object):
         """
         return self._values()[key]
 
+    def get_total(self, key):
+        return self.get_val(make_key(((key, 1),)))
+
 
 class SumAggregation(Aggregation):
     """
@@ -188,6 +191,17 @@ class SumAggregation(Aggregation):
     def get_annotation_func(self):
         from django.db.models import Sum
         return Sum(self.aggregation_dbcol)
+
+    def get_total(self, key):
+        """
+        Return value for given column.
+        SumAggregation total needs to be handled differently (sum of all grouping_constant values).
+        """
+        res = 0
+        for val in self._values():
+            if key in val:
+                res += self._values()[val]
+        return res
 
 
 class NonDistinctCountAggregation(Aggregation):
