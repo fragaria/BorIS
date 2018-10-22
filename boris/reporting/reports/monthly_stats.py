@@ -260,7 +260,7 @@ class StatsByTownInPeriod(ClientReportBase):
         return [
             (aggregation.title, [
                 aggregation.get_val(make_key((('town', town.pk),))) for town in self.towns
-            ] + [aggregation.get_val(make_key((('grouping_constant', 1),)))]
+            ] + [aggregation.get_total('grouping_constant')]
             ) for aggregation in self.aggregations
         ]
 
