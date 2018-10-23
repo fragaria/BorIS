@@ -33,10 +33,13 @@
     </div>
 {% endblock %}
 
+{% block content_title %}
+<h1>{% trans "Výstupy" %} - {{ name }}</h1>
+{% endblock %}
+
 <!-- CONTENT -->
 {% block content %}
-    <div class="container-flexible" id="tabs">
-        <h1>{% trans "Výstupy" %} - {{ name }}</h1>
+    <div id="tabs">
         <ul>
             {% for tab, form in tabs %}
             <li><a href="#tabs-{{ forloop.counter }}">{{ tab.get_title }}</a></li>
