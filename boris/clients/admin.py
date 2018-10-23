@@ -173,9 +173,8 @@ class AddContactAdmin(BorisBaseAdmin):
 
     def get_queryset(self, request):
         return super(AddContactAdmin, self).get_queryset(request).extra(
-            select={
-                'ecnt': 'SELECT COUNT(*) FROM services_encounter '
-                        'WHERE services_encounter.person_id = clients_person.id'
+            select= {
+                'ecnt': 'select count(*) from services_encounter where services_encounter.person_id = clients_person.id'
             }
         )
 

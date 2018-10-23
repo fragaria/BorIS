@@ -139,7 +139,7 @@ def __border_date(cl, first_encounter, opts, fn):
             return fn([d for d in IncomeExamination.objects.filter(**opts).values_list('encounter__performed_on', flat=True) if d])
         if first_encounter == 'ne':
             return fn([d for d in IncomeExamination.objects.exclude(**opts).values_list('encounter__performed_on', flat=True) if d])
-        return fn([d for d in cl.queryset.values_list('encounters__performed_on', flat=True) if d])
+        return fn([d[0] for d in cl.queryset.values_list('encounters__performed_on', 'ecnt') if d[0]])
     except ValueError:
         return None
 
