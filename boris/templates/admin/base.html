@@ -19,7 +19,6 @@
         {% endif %}
 
     <link href="{% sstatic 'grappelli/tinymce/jscripts/tiny_mce/themes/advanced/skins/grappelli/content_grid.css' %}" rel="stylesheet" type="text/css" />
-    <link href="{% sstatic 'grappelli/css/jquery-ui-grappelli-extensions.css' %}" rel="stylesheet" type="text/css" />
     {% endblock %}
 
     <!-- EXTRASTYLES -->
@@ -64,12 +63,7 @@
         {% endif %}
 
         <script type="text/javascript" charset="utf-8">
-            var url = "{% sstatic 'grappelli/jquery/i18n/ui.datepicker-cs.js' %}";
-            grp.jQuery.getScript(url);
-        </script>
-
-        <script type="text/javascript" charset="utf-8">
-            var url = "{% sstatic 'grappelli/jquery/i18n/ui.datepicker-cs.js' %}";
+            var url = "{% sstatic 'grappelli-ext/jquery/i18n/ui.datepicker-cs.js' %}";
             grp.jQuery.getScript(url);
         </script>
 
