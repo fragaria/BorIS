@@ -17,6 +17,8 @@ ADMINS = [('Admin', os.environ.get('BORIS_ADMIN_EMAIL'))] if 'BORIS_ADMIN_EMAIL'
 MANAGERS = ADMINS
 
 EMAIL_SUBJECT_PREFIX = '[%s] ' % os.environ.get('BORIS_INSTALLATION')
+EMAIL_HOST = os.environ.get('BORIS_EMAIL_HOST', 'localhost')
+EMAIL_PORT = os.environ.get('BORIS_EMAIL_PORT', 25)
 
 SECRET_KEY = os.environ.get('BORIS_SECRET_KEY', ''.join([random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50)]))
 
