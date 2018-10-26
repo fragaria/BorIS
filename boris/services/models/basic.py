@@ -507,6 +507,7 @@ class WorkForClient(Service):
         )
 
 
+# TODO: verify this is needed
 # deleted models are kept here to prevent errors in migrations
 class WorkTherapy(Service):
     class Options:
