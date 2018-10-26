@@ -33,10 +33,21 @@ class ResidenceReportForm(BaseReportForm):
     towns_residence = forms.ModelMultipleChoiceField(label=_(u'Bydliště klienta'), queryset=Town.objects.all(), required=False)
 
 
+services_qset = ContentType.objects \
+    .filter(app_label='services') \
+    .exclude(model__in=[
+        'service',
+        'timedotation',
+        'encounter',
+        # TODO: remove when models are removed for good
+        'worktherapy',
+        'worktherapymeeting',
+        'communitywork',
+        'address'
+    ])
+
 class ServicesReportForm(ResidenceReportForm):
-    services = forms.ModelMultipleChoiceField(label=_(u'Výkony'), required=False,
-                                              queryset=ContentType.objects.filter(app_label='services').exclude(
-                                                  model__in=['service', 'timedotation', 'encounter']))
+    services = forms.ModelMultipleChoiceField(label=_(u'Výkony'), required=False, queryset=services_qset)
 
 
 class ClientsForm(ServicesReportForm):

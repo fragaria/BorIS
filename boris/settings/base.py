@@ -103,7 +103,8 @@ ADMIN_MEDIA_PREFIX = STATIC_URL + "grappelli/"
 
 
 # Compressed static files
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+if not DEBUG:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 INSTALLED_APPS = [
     'grappelli.dashboard',

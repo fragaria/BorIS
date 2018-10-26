@@ -47,6 +47,10 @@ ol {
     height: 200px;
 }
 
-#grp-content-container > div > #column_2 {
+.dashboard #grp-content-container .g-d-c {
+    width: 1080px;
+}
+
+#grp-content-container #column_2 {
     width: 360px;
 }
