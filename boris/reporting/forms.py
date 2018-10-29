@@ -39,11 +39,6 @@ services_qset = ContentType.objects \
         'service',
         'timedotation',
         'encounter',
-        # TODO: remove when models are removed for good
-        'worktherapy',
-        'worktherapymeeting',
-        'communitywork',
-        'address'
     ])
 
 class ServicesReportForm(ResidenceReportForm):
