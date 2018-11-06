@@ -144,11 +144,9 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # store session data in cache if possible
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 
-# after 30 minutes of inactivity, user will be logged out
-SESSION_COOKIE_AGE = 60 * 30
+# after 4 hours of inactivity, user will be logged out
+SESSION_COOKIE_AGE = 60 * 60 * 4
 SESSION_SAVE_EVERY_REQUEST = True
-
-MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
