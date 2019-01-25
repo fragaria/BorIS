@@ -30,8 +30,8 @@ class ProxyInheritanceManager(InheritanceManager):
     Assumes its proxy models have ForeignKey to ContentType called
     'content_type'.
     """
-    def get_query_set(self):
-        qset = super(ProxyInheritanceManager, self).get_query_set()
+    def get_queryset(self):
+        qset = super(ProxyInheritanceManager, self).get_queryset()
         meta = self.model._meta
         if meta.proxy:
             content_type = ContentType.objects.get_by_natural_key(meta.app_label,
