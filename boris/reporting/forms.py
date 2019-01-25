@@ -71,7 +71,10 @@ class ClientsForm(ServicesReportForm):
 
 
 class MonthlyStatsForm(ReportForm):
-    year = forms.IntegerField(widget=SelectYearWidget(history=10), label=_(u'Rok'))
+    def __init__(self, *args, **kwargs):
+        super(MonthlyStatsForm, self).__init__(*args, **kwargs)
+        # Init dynamically to prevent non up-to-date year list
+        self.fields['year'] = forms.IntegerField(widget=SelectYearWidget(history=10), label=_(u'Rok'))
 
 
 class ServiceForm(ResidenceReportForm):
