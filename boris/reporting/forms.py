@@ -7,7 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 
 from boris.clients.models import Town, Person
-from boris.services.models import Encounter, Service
+from boris.services.models import Encounter, Service, service_list
 from boris.utils.widgets import SelectYearWidget
 
 
@@ -33,16 +33,20 @@ class ResidenceReportForm(BaseReportForm):
     towns_residence = forms.ModelMultipleChoiceField(label=_(u'Bydliště klienta'), queryset=Town.objects.all(), required=False)
 
 
-services_qset = ContentType.objects \
-    .filter(app_label='services') \
-    .exclude(model__in=[
-        'service',
-        'timedotation',
-        'encounter',
-    ])
-
 class ServicesReportForm(ResidenceReportForm):
-    services = forms.ModelMultipleChoiceField(label=_(u'Výkony'), required=False, queryset=services_qset)
+    def __init__(self, *args, **kwargs):
+        super(ServicesReportForm, self).__init__(*args, **kwargs)
+        # Remove services excluded from reporting
+        unavailable_services = [service_model for service_model in service_list() if not service_model.service.include_in_reports]
+        services_qset = ContentType.objects \
+            .filter(app_label='services') \
+            .exclude(model__in=[
+                'service',
+                'timedotation',
+                'encounter',
+            ] + [s._meta.object_name.lower() for s in unavailable_services])
+
+        self.fields['services'] = forms.ModelMultipleChoiceField(label=_(u'Výkony'), required=False, queryset=services_qset)
 
 
 class ClientsForm(ServicesReportForm):
