@@ -28,7 +28,7 @@ RUN apk add --no-cache --virtual .build-deps \
         \( -type d -a -name test -o -name tests \) \
         -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
         -exec rm -rf '{}' + \
-    && apk add --virtual .rundeps py-mysqldb \
+    && apk add --virtual .rundeps py-mysqldb tzdata \
     && apk del .build-deps
 
 COPY --chown=boris ./boris $BORIS_PATH/boris
