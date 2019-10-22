@@ -60,8 +60,9 @@ class ClientReport(BaseReport):
 
     def get_stats(self):
         person_ids = Encounter.objects.filter(**self.filtering).values_list(
-            'person', flat=True) # distinct() cannot be used here because
-                                 # Encounters are ordered by default.
+            'person', flat=True).select_related('services', 'services__content_type')
+        # distinct() cannot be used here because
+        # Encounters are ordered by default.
         clients = Client.objects.filter(person_ptr__in=person_ids).order_by(
             'code')
         for client in clients:
