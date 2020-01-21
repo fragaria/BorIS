@@ -214,7 +214,7 @@ admin.site.register(Encounter, EncounterAdmin)
 
 
 class TimeDotationAdmin(BorisBaseAdmin):
-    ordering = ('content_type__name', )
+    ordering = ('content_type__model', )
     list_display = ('content_type', 'minutes', 'default_minutes')
     readonly_fields = ('content_type', 'default_minutes',)
     fieldsets = (
