@@ -23,10 +23,10 @@ services:
             - "8000:8000"
         restart: always
         environment:
-            BORIS_DEBUG: 1
+            BORIS_DEBUG: ${BORIS_DEBUG:-1}
             BORIS_ADMIN_EMAIL: info@fragaria.cz
             BORIS_INSTALLATION: dev
-            BORIS_ALLOWED_HOSTS: localhost
+            BORIS_ALLOWED_HOSTS: localhost,0.0.0.0,127.0.0.1
             BORIS_WORKERS: 1
             BORIS_DB_HOST: db
             BORIS_DB_PORT: 3306

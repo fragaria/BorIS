@@ -33,6 +33,6 @@ RUN apk add --no-cache --virtual .build-deps \
 
 COPY --chown=boris ./boris $BORIS_PATH/boris
 USER boris
-RUN django-admin.py collectstatic --noinput --verbosity=0
+RUN BORIS_DEBUG=0 django-admin.py collectstatic --noinput --verbosity=0
 
 CMD ["sh", "-c", "gunicorn boris.wsgi -b 0.0.0.0:8000 -w $BORIS_WORKERS -t ${BORIS_WORKER_TIMEOUT:-60} -n ${BORIS_INSTALLATION}-worker --access-logfile - --error-logfile - --log-level ${BORIS_LOG_LEVEL:-info}"]

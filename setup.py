@@ -65,7 +65,7 @@ setup(
         'django-model-utils==3.2.0',
         'django-form-utils==1.0.3',
         'raven>=3.3.3',
-        'fragapy==1.2.6',
+        'fragapy==1.3.0',
         'gunicorn==19.9.0',
     ],
     setup_requires=[
