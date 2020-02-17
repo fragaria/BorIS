@@ -5,6 +5,8 @@
 /.project
 /.pydevproject
 /.settings
+.venv
+.env
 boris/settings/local.py
 test_boris/settings/local.py
 boris.db
@@ -12,6 +14,7 @@ boris.db
 *sublime*
 .ropeproject
 .idea
+.vscode
 .DS_Store
 boris/media/
 static
