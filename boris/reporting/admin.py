@@ -1,11 +1,11 @@
 # -*- coding: utf8 -*-
+from collections import OrderedDict
 
-from django.conf.urls import url, patterns
+from django.conf.urls import url
 from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
 from django.template.defaultfilters import slugify
-from django.utils.datastructures import SortedDict
 
 from boris.reporting.core import ReportResponse
 from boris.reporting import forms
@@ -116,7 +116,7 @@ class ReportingInterfaceHandler(object):
 
     def __call__(self, request, tab_class=None):
         interface = self.interface_class()
-        tabs = SortedDict()
+        tabs = OrderedDict()
 
         for t in interface.tabs:
             tab = t()
@@ -145,19 +145,19 @@ class ReportingInterfaceHandler(object):
 
         interface = self.interface_class()
 
-        urlpatterns = patterns('',
+        urlpatterns = [
             url('^$', admin.site.admin_view(self.__call__, cacheable=True),
                 name='%s_%s' % (self.url_title, self.id))
-        )
+        ]
 
         for t in interface.tabs:
-            urlpatterns += patterns('',
+            urlpatterns += [
                 url(r'^%s/$' % slugify(t.__name__), admin.site.admin_view(
                             self.__call__, cacheable=False),
                     kwargs={'tab_class': t}, name=t.get_urlname())
-            )
+            ]
 
-        return urlpatterns, self.url_title, None
+        return urlpatterns, None, None
     urls = property(get_urls)
 
 

@@ -2,7 +2,6 @@ from collections import defaultdict
 
 from django.http import HttpResponse
 from django.template import loader
-from django.template.context import RequestContext
 
 from boris.reporting.forms import OUTPUT_BROWSER, OUTPUT_OFFICE
 
@@ -103,7 +102,7 @@ class Report(BaseReport):
         return loader.render_to_string(
             self.get_template(display_type),
             self.get_context(),
-            context_instance=RequestContext(request))
+        )
 
     @property
     def aggregations(self):

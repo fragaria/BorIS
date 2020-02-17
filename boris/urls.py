@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.contrib import admin
 from django.conf.urls.static import static
@@ -17,20 +17,20 @@ def protected_serve(request, path, document_root=None, show_indexes=False):
 
 admin.autodiscover()
 
-urlpatterns = patterns('',
+urlpatterns = [
     # Django grappelli
-    (r'^grappelli/', include('grappelli.urls')),
+    url(r'^grappelli/', include('grappelli.urls')),
 
-    (r'^reporting/towns/', include(reporting.towns.urls)),
-    (r'^reporting/services/', include(reporting.services.urls)),
-    (r'^reporting/clients/', include(reporting.clients.urls)),
-    (r'^reporting/yearly/', include(reporting.yearly.urls)),
-    (r'^reporting/hygiene/', include(reporting.hygiene.urls)),
-    (r'^reporting/govcouncil/', include(reporting.govcouncil.urls)),
+    url(r'^reporting/towns/', include(reporting.towns.urls)),
+    url(r'^reporting/services/', include(reporting.services.urls)),
+    url(r'^reporting/clients/', include(reporting.clients.urls)),
+    url(r'^reporting/yearly/', include(reporting.yearly.urls)),
+    url(r'^reporting/hygiene/', include(reporting.hygiene.urls)),
+    url(r'^reporting/govcouncil/', include(reporting.govcouncil.urls)),
 
-    (r'^impact/impact/', include(impact.impact.urls)),
+    url(r'^impact/impact/', include(impact.impact.urls)),
 
-    (r'^services/', include('boris.services.urls')),
+    url(r'^services/', include('boris.services.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     url(r'^doc/', include('django.contrib.admindocs.urls')),
@@ -39,7 +39,7 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^', include(admin.site.urls)),
-)
+]
 
 urlpatterns += staticfiles_urlpatterns()
 

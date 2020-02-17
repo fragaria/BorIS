@@ -1,11 +1,11 @@
 {% extends "admin/base_site.html" %}
-{% load i18n admin_modify grp_tags reporting_tags admin_static sstatic %}
+{% load i18n admin_modify grp_tags reporting_tags admin_static static %}
 
 {% block title %}{% trans "Výstupy" %}{{ block.super }}{% endblock %}
 
 {% block javascripts %}
     {{ block.super }}
-    <script src="{% sstatic 'js/jquery.cookie.js' %}" type="text/javascript"></script>
+    <script src="{% static 'js/jquery.cookie.js' %}" type="text/javascript"></script>
     <script type="text/javascript" charset="utf-8">
         (function($) {
             $(document).ready(function() {

@@ -1,9 +1,9 @@
 {% extends "admin/clients/person/change_form.html" %}
-{% load i18n services admin_static sstatic %}
+{% load i18n services admin_static static %}
 
 {% block extrahead %}
     {{ block.super }}
-    <link href="{% sstatic 'css/clients.css' %}" rel="stylesheet" type="text/css" media="screen" />
+    <link href="{% static 'css/clients.css' %}" rel="stylesheet" type="text/css" media="screen" />
 
     <script type="text/javascript">
         function dismissAddAnamnesisPopup(win, newId, newRepr) {
@@ -49,7 +49,7 @@
                 });
                 $('#id_close_person').change();
             });
-            
+
         })(grp.jQuery);
     </script>
 {% endblock %}

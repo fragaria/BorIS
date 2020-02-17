@@ -2,7 +2,6 @@
 from datetime import date, datetime, time
 
 from django.template import loader
-from django.template.context import RequestContext
 
 from boris.classification import SEXES
 from boris.clients.models import Anamnesis, RiskyManners, Town
@@ -126,5 +125,4 @@ class HygieneReport(BaseReport):
                 'datetime_to': self.datetime_to,
                 'SEXES': SEXES,
             },
-            context_instance=RequestContext(request)
         )

@@ -4,7 +4,6 @@ import collections
 from datetime import datetime, date, time
 from django.db.models import Q, Sum
 from django.template import loader
-from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
 
 from boris.classification import (DISEASES, DRUGS, DRUG_APPLICATION_TYPES,
@@ -449,5 +448,4 @@ class GovCouncilReport(BaseReport):
                 'report_kind': self.kind,
                 'towns': [t.title for t in self.towns],
             },
-            context_instance=RequestContext(request)
         )

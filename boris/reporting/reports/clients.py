@@ -4,7 +4,6 @@ from boris import utils
 import datetime
 from django.contrib.contenttypes.models import ContentType
 from django.template import loader
-from django.template.context import RequestContext
 from django.utils.translation import ugettext_lazy as _
 from boris.classification import DRUG_APPLICATION_TYPES as DAT
 from boris.clients.models import Client
@@ -101,5 +100,4 @@ class ClientReport(BaseReport):
                 'average_age': self.get_average_age(client_stats, self.date_to),
                 'median_age': self.get_median_age(client_stats, self.date_to)
             },
-            context_instance=RequestContext(request)
         )

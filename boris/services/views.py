@@ -8,7 +8,6 @@ import anyjson
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404
-from django.template.context import RequestContext
 from django.template.loader import render_to_string
 
 from boris.services.models.core import get_model_for_class_name, Service, \
@@ -65,8 +64,7 @@ class HandleForm(object):
             else:
                 resp = {
                     'ok': False,
-                    'content': render_to_string(form.template_list, ctx,
-                        context_instance=RequestContext(request))
+                    'content': render_to_string(form.template_list, ctx)
                 }
             return HttpResponse(anyjson.dumps(resp), content_type='application/json')
         else:

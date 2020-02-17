@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 from django import forms
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -127,7 +127,7 @@ class AnamnesisAdmin(BorisBaseAdmin):
         """
         request = kwargs.get('request', None)
         if request is not None:
-            if request.GET.get('_popup', False) and request.GET.get('client_id') and db_field.name == 'client':
+            if request.GET.get('client_id') and db_field.name == 'client':
                 cid = request.GET.get('client_id')
                 kwargs['widget'] = ReadOnlyWidget(cid, Client.objects.get(pk=cid))
                 kwargs['initial'] = cid
@@ -151,7 +151,7 @@ class AnamnesisAdmin(BorisBaseAdmin):
             return super(AnamnesisAdmin, self).response_add(request, obj, post_url_continue)
 
     def response_change(self, request, obj):
-        if "_popup" in request.REQUEST and not '_continue' in request.REQUEST.dicts[0]:
+        if "_popup" in request.POST and not '_continue' in request.POST.dicts[0]:
             return HttpResponse('<script type="text/javascript">window.close();</script>')
         else:
             return super(AnamnesisAdmin, self).response_change(request, obj)
@@ -401,7 +401,7 @@ class ClientAdmin(AddContactAdmin):
 
     def get_urls(self):
         urls = super(ClientAdmin, self).get_urls()
-        my_urls = patterns('',
+        my_urls = [
             url(r'^add-note/$',
                 self.admin_site.admin_view(add_note),
                 name='clients_add_note'
@@ -414,7 +414,7 @@ class ClientAdmin(AddContactAdmin):
                 self.admin_site.admin_view(delete_note),
                 name='clients_delete_note'
             ),
-        )
+        ]
         return my_urls + urls
 
     def _contact_verbose(self, val):
@@ -440,10 +440,10 @@ class ClientAdmin(AddContactAdmin):
         if anamnesis == -1:
             return _(u'(Nejdřív prosím uložte klienta)')
         elif anamnesis:
-            return u'<a class="cbutton" href="%s?client_id=%s" onclick="return showAddAnotherPopup(this);">%s</a>' % (
+            return u'<a class="cbutton" href="%s?client_id=%s&_popup=1" onclick="return showAddAnotherPopup(this);">%s</a>' % (
                 obj.anamnesis.get_admin_url(), obj.pk, _(u'Zobrazit'))
         else:
-            return '<a class="cbutton high1" href="%s?client_id=%s" id="add_id_anamnesis" onclick="return showAddAnotherPopup(this);">%s</a>' % (
+            return '<a class="cbutton high1" href="%s?client_id=%s&_popup=1" id="add_id_anamnesis" onclick="return showAddAnotherPopup(this);">%s</a>' % (
                 reverse('admin:clients_anamnesis_add'), obj.pk, _(u'Přidat anamnézu'))
     anamnesis_link.allow_tags = True
     anamnesis_link.short_description = _(u'Anamnéza')

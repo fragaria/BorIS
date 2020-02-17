@@ -6,7 +6,6 @@ from datetime import datetime, date, time
 from django.db.models import Count
 from django.db.models import Sum
 from django.template import loader
-from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
 
 from boris.classification import (DRUGS, RISKY_BEHAVIOR_PERIODICITY, RISKY_BEHAVIOR_KIND)
@@ -90,11 +89,10 @@ class ImpactTimeseries(ImpactReport):
                 'syringe': self.syringe,
                 'months': self.months,
                 'first_contact': self.first_contact.performed_on.year,
-                'clients_in_location': self.clients_in_location, 
+                'clients_in_location': self.clients_in_location,
                 'potential_clients': self.potential_clients,
                 'town_population': self.town_population - (7 * self.clients_in_location),
             },
-            context_instance=RequestContext(request)
         )
 
 
@@ -128,14 +126,14 @@ class ImpactClient(ImpactReport):
         anonymous_encs = Encounter.objects.filter(person__in=anonymous_ids).count()
         for i in xrange(bin_number-1):
             if bin_bounds[i+1] - bin_bounds[i] == 1:
-                bin_labels[i+1] = str(bin_bounds[i+1]) 
+                bin_labels[i+1] = str(bin_bounds[i+1])
             else:
                 bin_labels[i+1] = str(bin_bounds[i]+1) + '-' + str(bin_bounds[i+1])
-    
+
             for client_enc in client_encs:
                 if bin_bounds[i] < client_enc.encounter_count <= bin_bounds[i+1]:
                     counts[i] += 1
-        
+
         return {'bounds': bin_bounds[1:bin_number], 'labels': bin_labels[1:bin_number], 'counts': counts[0:bin_number-1], 'anonymous': anonymous_encs}
 
     def render(self, request, display_type):
@@ -150,13 +148,12 @@ class ImpactClient(ImpactReport):
                 'syringe': self.syringe,
                 'months': self.months,
                 'first_contact': self.first_contact.performed_on.year,
-                'clients_in_location': self.clients_in_location, 
+                'clients_in_location': self.clients_in_location,
                 'potential_clients': self.potential_clients,
                 'town_population': self.town_population-(7*self.clients_in_location),
                 'drug_type_occurrence': self.get_drug_occurrence(),
                 'enc_dist': self.get_enc_distribution(),
             },
-            context_instance=RequestContext(request)
         )
 
 
@@ -170,7 +167,7 @@ class ImpactAnamnesis(ImpactReport):
             p.NEVER: 'never',
             p.ONCE: 'once',
             p.OFTEN: 'often',
-            p.UNKNOWN: 'unknown'               
+            p.UNKNOWN: 'unknown'
         }.get(x, 'not found')
 
     def get_anamnesis_list(self):
@@ -279,7 +276,7 @@ class ImpactAnamnesis(ImpactReport):
             except RiskyManners.DoesNotExist:
                 a.us_past = 'unknown'
                 a.us_present = 'unknown'
- 
+
             try:
                 rarm = a.riskymanners_set.get(behavior=RISKY_BEHAVIOR_KIND.RISKY_APPLICATION)
                 a.ra_past = self.anamnesis_dictionary(rarm.periodicity_in_past)
@@ -330,16 +327,16 @@ class ImpactAnamnesis(ImpactReport):
         labels = []
         counts = []
 
-        for manner in manner_dict: 
+        for manner in manner_dict:
             label = ''
             improvement = 0
 
-            manner_key_prefix = "%s" % manner 
+            manner_key_prefix = "%s" % manner
             past_key = manner_key_prefix+'_past'
             present_key = manner_key_prefix+'_present'
             for a in anamnesis:
                 past = periodicity_dict[getattr(a,past_key)]
-                present = periodicity_dict[getattr(a,present_key)]              
+                present = periodicity_dict[getattr(a,present_key)]
                 if present > -1 and past > -1:
                     if past > present:
                         improvement += 1
@@ -353,9 +350,9 @@ class ImpactAnamnesis(ImpactReport):
                 'labels': labels,
                 'counts': counts,
         }
-             
+
         return data_dummy
- 
+
     def render(self, request, display_type):
         return loader.render_to_string(
             self.get_template(display_type),
@@ -368,9 +365,8 @@ class ImpactAnamnesis(ImpactReport):
                 'syringe': self.syringe,
                 'months': self.months,
                 'first_contact': self.first_contact.performed_on.year,
-                'clients_in_location': self.clients_in_location, 
+                'clients_in_location': self.clients_in_location,
                 'anamnesis': self.get_anamnesis_list(),
                 'rm_improvements': self.get_anamnesis_improvements(),
             },
-            context_instance=RequestContext(request)
         )

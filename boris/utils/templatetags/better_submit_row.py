@@ -4,6 +4,7 @@ Created on 24.3.2012
 @author: xaralis
 '''
 from django import template
+from django.template.context import Context
 
 register = template.Library()
 
@@ -12,7 +13,8 @@ def orig_submit_row(context):
     change = context['change']
     is_popup = context['is_popup']
     save_as = context['save_as']
-    return {
+    ctx = Context(context)
+    ctx.update({
         'show_delete_link': (not is_popup and context['has_delete_permission']
                               and (change or ('show_delete' in context and context['show_delete']))),
         'show_save_as_new': not is_popup and change and save_as,
@@ -21,7 +23,8 @@ def orig_submit_row(context):
         'show_save_and_continue': not is_popup and context['has_change_permission'],
         'is_popup': is_popup,
         'show_save': True
-    }
+    })
+    return ctx
 
 
 def get_captions(context):

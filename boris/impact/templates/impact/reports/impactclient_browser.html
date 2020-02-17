@@ -1,6 +1,6 @@
 {% extends "print_base.html" %}
 {% load i18n %}
-{% load i18n services admin_static sstatic %}
+{% load i18n services admin_static %}
 
 
 {% block extrastyle %}
@@ -25,11 +25,11 @@
 
     <h1>Počet kontaktů </h1>
         {% include "d3_barchart.html" with values=encounters labels=months xlabel="" ylabel="Kontakty" template_id="enc_vs_months" only %}
-    
+
 
     <h1>Zastoupení návykových látek</h1>
         {% include "d3_piechart.html" with values=drug_type_occurrence.values labels=drug_type_occurrence.labels template_id="drug_occurence" only %}
- 
+
 
     <h1> Četnost klientů podle počtu kontaktů</h1>
         {% include "d3_barchart.html" with values=enc_dist.counts labels=enc_dist.labels xlabel="Kontakty" ylabel="Klienti" template_id="cli_vs_enc" only %}

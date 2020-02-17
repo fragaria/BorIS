@@ -60,9 +60,9 @@ setup(
     ],
     install_requires=[
         'setuptools>=0.6b1',
-        'Django==1.8.19',
-        'django-grappelli==2.6.3',
-        'django-model-utils==1.2.0',
+        'Django==1.11.28',
+        'django-grappelli==2.10.4',
+        'django-model-utils==3.2.0',
         'django-form-utils==1.0.3',
         'raven>=3.3.3',
         'fragapy==1.2.6',

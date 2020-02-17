@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.template import loader
-from django.template.context import RequestContext
 
 from boris.clients.models import Client
 from boris.reporting.core import BaseReport
@@ -78,5 +77,4 @@ class ServiceReport(BaseReport):
                 'towns': self.towns,
                 'towns_residence': self.towns_residence,
             },
-            context_instance=RequestContext(request)
         )

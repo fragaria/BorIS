@@ -52,13 +52,29 @@ MEDIA_URL = '/media/'
 
 ROOT_URLCONF = 'boris.urls'
 
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    ('django.template.loaders.cached.Loader', (
-        'django.template.loaders.filesystem.Loader',
-        'django.template.loaders.app_directories.Loader',
-    )),
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            join(PROJECT_ROOT, 'templates'),
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
+                # list if you haven't customized them:
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
 
 MIDDLEWARE_CLASSES = (
     # Serve staticfiles
@@ -69,22 +85,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.http.ConditionalGetMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-)
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    'django.contrib.messages.context_processors.messages',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.request',
-    'django.core.context_processors.media',
-    'django.core.context_processors.static',
-)
-
-TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-    join(PROJECT_ROOT, 'templates'),
 )
 
 STATICFILES_FINDERS = (
@@ -195,8 +195,9 @@ LOGGING = {
 }
 
 # GRAPPELLI RELATED ----------------------------------------------------------
-GRAPPELLI_ADMIN_TITLE = gettext(u'<span class="logo"></span> - Elektronická databáze pro evidenci výkonů v sociálních službách')
+GRAPPELLI_ADMIN_TITLE = gettext(u'Elektronická databáze pro evidenci výkonů v sociálních službách')
 GRAPPELLI_INDEX_DASHBOARD = 'boris.dashboard.CustomIndexDashboard'
+GRAPPELLI_CLEAN_INPUT_TYPES = True
 
 # SENTRY ---------------------------------------------------------------------
 # Only configure sentry if dsn is provided

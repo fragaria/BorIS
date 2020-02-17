@@ -82,7 +82,7 @@ header#grp-header #grp-navigation ul#grp-user-tools {
 #grp-header li.search span {
     display: block;
     float: left;
-    margin-right: 20px; 
+    margin-right: 20px;
 }
 #grp-header li.search input {
     float: left;
@@ -197,10 +197,19 @@ div.grp-dynamic-form>a.grp-add-handler+ul.grp-tools { top: -24px !important; }
 
 header#grp-header #grp-navigation ul#grp-user-tools>li a#remove_id_globalsearch_client { padding: 2px; }
 
+
+div.grp-readonly {
+    border: none;
+}
+
 /* TAB fix */
 .ui-tabs-nav { border: 0 !important; }
 .ui-tabs-panel.ui-widget-content { border: 0 !important; }
 .ui-tabs-panel fieldset.grp-module { border-radius: 0 5px 5px 5px; }
+
+select {
+    -webkit-appearance: none;
+}
 
 select, .selector select[multiple=multiple] {
     overflow: scroll;

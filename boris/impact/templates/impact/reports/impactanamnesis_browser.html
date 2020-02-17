@@ -1,6 +1,6 @@
 {% extends "print_base.html" %}
 {% load i18n %}
-{% load i18n services admin_static sstatic %}
+{% load i18n services admin_static %}
 
 
 {% block extrastyle %}
@@ -27,5 +27,5 @@
 
     <h1>Počet kontaktů </h1>
         {% include "d3_barchart.html" with values=rm_improvements.counts labels=rm_improvements.labels xlabel="Rizikové chování" ylabel="Zlepšení" template_id="ana_imp" only %}
-    
+
 {% endblock %}
