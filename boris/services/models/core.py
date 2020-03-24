@@ -234,6 +234,8 @@ class Service(TimeStampedModel):
 
     class Meta:
         app_label = 'services'
+        verbose_name = u'Služba'
+        verbose_name_plural = u'Služby'
         ordering = ('encounter',)
 
     class Options:
