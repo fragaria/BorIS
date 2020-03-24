@@ -1,4 +1,8 @@
 DEBUG = True
+INTERNAL_IPS = [
+    'localhost',
+    '127.0.0.1',
+]
 
 # Don't log to sentry on local.
 LOGGING = {
