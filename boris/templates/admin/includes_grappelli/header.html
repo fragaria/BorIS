@@ -42,7 +42,7 @@
                 <form>
                 <div class="autocomplete-wrapper-fk">
                     <input id="id_globalsearch_client" class="vForeignKeyRawIdAdminField" type="text" value="" name="globalsearch_client">
-                    <a id="lookup_id_globalsearch_client" class="related-lookup" href="{% url 'admin:clients_client_changelist' %}" style="display: none;"></a>
+                    <a id="lookup_id_globalsearch_client" class="related-lookup" href="{% url 'admin:clients_client_changelist' %}?_to_field=id" style="display: none;"></a>
                 </div>
                 </form>
             </li>
@@ -62,8 +62,8 @@
 
             self.init = function () {
                 self.searchElement.grp_autocomplete_fk({
-                    lookup_url:"/grappelli/lookup/related/",
-                    autocomplete_lookup_url:"/grappelli/lookup/autocomplete/"
+                    lookup_url:"{% url 'grp_related_lookup' %}",
+                    autocomplete_lookup_url:"{% url 'grp_autocomplete_lookup' %}"
                 });
 
                 self.lookupElement.unbind('click').click(function () {

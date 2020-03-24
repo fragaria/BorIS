@@ -12,8 +12,8 @@
                 grappelli.initDateAndTimePicker();
 
                 $('.form-container .vForeignKeyRawIdAdminField').grp_autocomplete_fk({
-                    lookup_url:"/grappelli/lookup/related/",
-                    autocomplete_lookup_url:"/grappelli/lookup/autocomplete/"
+                    lookup_url:"{% url 'grp_related_lookup' %}",
+                    autocomplete_lookup_url:"{% url 'grp_autocomplete_lookup' %}"
                 });
             });
         })(grp.jQuery);
