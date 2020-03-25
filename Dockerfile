@@ -23,6 +23,7 @@ RUN apk add --no-cache --virtual .build-deps \
     libffi-dev \
     mariadb-dev \
     sudo \
+    git \
     && sudo -u boris -H sh -c "pip install -r requirements.pip --user" \
     && find /usr/local \
         \( -type d -a -name test -o -name tests \) \
