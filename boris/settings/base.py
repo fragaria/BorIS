@@ -76,7 +76,7 @@ TEMPLATES = [
     },
 ]
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     # Serve staticfiles
     'whitenoise.middleware.WhiteNoiseMiddleware',
 
