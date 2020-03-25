@@ -119,7 +119,7 @@ class ServiceOptions(object):
         """
         from django import template
         t = template.loader.select_template(self.get_description_template_list())
-        return t.render(template.Context())
+        return t.render(template.Context().flatten())
 
     def get_fieldsets(self):
         """
