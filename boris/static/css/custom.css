@@ -227,3 +227,24 @@ select, .selector select[multiple=multiple] {
 #notes_wrap .iso-date {
     display: none;
 }
+
+.ui-widget-header {
+    border: 1px solid rgb(68, 68, 68);
+    background: rgb(214, 214, 214);
+}
+.ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited,
+.ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited {
+    color: rgb(68, 68, 68);
+}
+.ui-tabs .ui-tabs-nav li.ui-tabs-active {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+.ui-widget,
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button,
+.grp-font-family, .grp-button, input[type="submit"], a.grp-button, button.grp-button, input[type="button"].grp-button, .ui-datepicker, #ui-timepicker, .ui-autocomplete, body {
+    font-family: Arial,sans-serif;
+}
+.span-4 {
+    width: 150px;
+}
