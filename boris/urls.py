@@ -28,7 +28,7 @@ urlpatterns = [
     url(r'^reporting/hygiene/', include(reporting.hygiene.urls)),
     url(r'^reporting/govcouncil/', include(reporting.govcouncil.urls)),
 
-    url(r'^impact/impact/', include(impact.impact.urls)),
+    # url(r'^impact/impact/', include(impact.impact.urls)),
 
     url(r'^services/', include('boris.services.urls')),
 
