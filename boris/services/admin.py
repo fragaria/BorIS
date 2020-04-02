@@ -97,7 +97,7 @@ class EncounterAdmin(BorisBaseAdmin):
                 'name': force_unicode(verbose_name), 'obj': force_unicode(obj)}
             self.message_user(request, msg + ' ' + (
                 _("You may add another %s below.") % force_unicode(verbose_name)))
-            return HttpResponseRedirect("../add/?previous_id=%i" % obj.pk)
+            return HttpResponseRedirect("../../add/?previous_id=%i" % obj.pk)
 
     def response_change(self, request, obj):
         redir_prefill = self._prepare_for_prefilling(request, obj)
