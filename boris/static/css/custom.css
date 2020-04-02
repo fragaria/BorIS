@@ -207,7 +207,7 @@ div.grp-readonly {
 .ui-tabs-panel.ui-widget-content { border: 0 !important; }
 .ui-tabs-panel fieldset.grp-module { border-radius: 0 5px 5px 5px; }
 
-select {
+select, select:focus {
     -webkit-appearance: none;
 }
 
