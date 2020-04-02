@@ -215,6 +215,10 @@ select, .selector select[multiple=multiple] {
     overflow: scroll;
 }
 
+.selector {
+    width: 100%;
+}
+
 #notes_wrap .date {
     width: 150px;
 }
