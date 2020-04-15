@@ -249,19 +249,23 @@ class StatsByTownInPeriod(ClientReportBase):
         self.date_from = date_from
         self.date_to = date_to
         self.towns = towns or Town.objects.all()
-        self.additional_filtering = {
-            'performed_on__gte': date_from,
-            'performed_on__lte': date_to,
-            'town__in': self.towns,
-        }
+        af = {}
+        if date_from is not None:
+            af['performed_on__gte'] = date_from
+        if date_to is not None:
+            af['performed_on__lte'] = date_to,
+        if self.towns:
+            af['town__in'] = self.towns
+        self.additional_filtering = af
         super(StatsByTownInPeriod, self).__init__()
 
     def get_data(self):
+        data = {}
+        for aggregation in self.aggregations:
+            data[aggregation] = [aggregation.get_val(make_key((('town', town.pk),))) for town in self.towns]
+
         return [
-            (aggregation.title, [
-                aggregation.get_val(make_key((('town', town.pk),))) for town in self.towns
-            ] + [aggregation.get_val(make_key((('grouping_constant', 1),)))]
-            ) for aggregation in self.aggregations
+            (aggregation.title, data[aggregation] + [sum(data[aggregation])]) for aggregation in self.aggregations
         ]
 
 
