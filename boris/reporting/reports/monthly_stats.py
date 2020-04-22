@@ -253,7 +253,7 @@ class StatsByTownInPeriod(ClientReportBase):
         if date_from is not None:
             af['performed_on__gte'] = date_from
         if date_to is not None:
-            af['performed_on__lte'] = date_to,
+            af['performed_on__lte'] = date_to
         if self.towns:
             af['town__in'] = self.towns
         self.additional_filtering = af
