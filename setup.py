@@ -60,7 +60,7 @@ setup(
     ],
     install_requires=[
         'setuptools>=0.6b1',
-        'Django==1.11.28',
+        'Django==1.7.2',
         'south==0.8.4',
         'django-grappelli>=2.6.3',
         'django-model-utils',
