@@ -4,7 +4,7 @@ South==0.8.4
 django-grappelli==2.6.3
 # temporary till pull request is accepted
 # -e git+https://github.com/fragaria/django-grappelli.git#egg=grappelli
-raven>=3.3.3
+raven==6.10.0
 fragapy==1.2.6
 gunicorn==18.0
 django-model-utils==1.2.0
