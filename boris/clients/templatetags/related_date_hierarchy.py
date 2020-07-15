@@ -154,7 +154,7 @@ def __filtering(cl):
         # filter `encounter` in IncomeExamination the same way we filter `encounters` in Clients
         if key.startswith('encounters__'):
             opts['encounter' + key[10:]] = cl.params[key]
-        if key not in ('first_encounter', 'o', 'q'):
+        if key not in ('first_encounter', 'o', 'q', 'all'):
             clients = Client.objects.filter(**{key: cl.params[key]})
             ids_set &= set(clients.values_list('id', flat=True))
     if bool(ids_set):
