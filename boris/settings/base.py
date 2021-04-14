@@ -148,6 +148,9 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 SESSION_COOKIE_AGE = 60 * 60 * 4
 SESSION_SAVE_EVERY_REQUEST = True
 
+# raise limit for POST fields as client change may contain many contacts
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
+
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 loggers = ['sentry', 'console'] if 'BORIS_SENTRY_DSN' in os.environ else ['console']
