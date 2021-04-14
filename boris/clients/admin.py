@@ -151,7 +151,7 @@ class AnamnesisAdmin(BorisBaseAdmin):
             return super(AnamnesisAdmin, self).response_add(request, obj, post_url_continue)
 
     def response_change(self, request, obj):
-        if "_popup" in request.POST and not '_continue' in request.POST.dicts[0]:
+        if "_popup" in request.POST and '_continue' not in request.POST:
             return HttpResponse('<script type="text/javascript">window.close();</script>')
         else:
             return super(AnamnesisAdmin, self).response_change(request, obj)
