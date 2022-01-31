@@ -1,6 +1,12 @@
 BorIS
 =====
 
+Announcement
+************
+
+This repository is no longer maintained. In January 2022 the project has been moved under (Semiramis)[http://www.os-semiramis.cz/]
+and further development is not part of this fork.
+
 What is this project about?
 ***************************
 
