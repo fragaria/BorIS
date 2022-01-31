@@ -143,7 +143,7 @@ GRAPPELLI_INDEX_DASHBOARD = 'boris.dashboard.CustomIndexDashboard'
 
 # SENTRY ---------------------------------------------------------------------
 RAVEN_CONFIG = {
-    'dsn': 'https://dd0da834eca546f2a3e29a46b9875015@fraga-sentry2.f1.f-app.it/11',
+    'dsn': None,  # set DSN here
 }
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
